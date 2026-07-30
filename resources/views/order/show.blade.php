@@ -49,53 +49,81 @@ Game :
 
 
 
-{{-- Data Player --}}
+{{-- ==========================
+     DATA PLAYER
+========================== --}}
 
-@if($order->game->player_input_type == 'uid')
+<h5>Data Player</h5>
 
-<p>
-    <strong>UID</strong><br>
-    {{ $order->player_uid }}
-</p>
+@switch($order->game->player_input_type)
 
-@elseif($order->game->player_input_type == 'uid_server')
+    @case('uid')
 
-<p>
-    <strong>UID</strong><br>
-    {{ $order->player_uid }}
-</p>
+        <div class="mb-2">
+            <strong>UID</strong><br>
+            {{ $order->player_uid }}
+        </div>
 
-<p>
-    <strong>Server</strong><br>
-    {{ $order->server_id }}
-</p>
+    @break
 
-@elseif($order->game->player_input_type == 'riot_id')
 
-<p>
-    <strong>Riot ID</strong><br>
-    {{ $order->player_data['riot_id'] ?? '-' }}
-</p>
+    @case('uid_server')
 
-<p>
-    <strong>Tag</strong><br>
-    {{ $order->player_data['tag'] ?? '-' }}
-</p>
+        <div class="mb-2">
+            <strong>UID</strong><br>
+            {{ $order->player_uid }}
+        </div>
 
-@elseif($order->game->player_input_type == 'email')
+        <div class="mb-2">
+            <strong>Server</strong><br>
+            {{ $order->server_id }}
+        </div>
 
-<p>
-    <strong>Email Player</strong><br>
-    {{ $order->player_data['email'] ?? '-' }}
-</p>
+    @break
 
-@else
 
-<p class="text-muted">
-    Game ini tidak memerlukan data player.
-</p>
+    @case('riot_id')
 
-@endif
+        <div class="mb-2">
+            <strong>Riot ID</strong><br>
+            {{ $order->player_data['riot_id'] ?? '-' }}
+        </div>
+
+        <div class="mb-2">
+            <strong>Tag</strong><br>
+            {{ $order->player_data['tag'] ?? '-' }}
+        </div>
+
+    @break
+
+
+    @case('email')
+
+        <div class="mb-2">
+            <strong>Email Player</strong><br>
+            {{ $order->player_data['email'] ?? '-' }}
+        </div>
+
+    @break
+
+
+    @case('login')
+
+        <div class="mb-2">
+            <strong>Login ID</strong><br>
+            {{ $order->player_data['login_id'] ?? '-' }}
+        </div>
+
+    @break
+
+
+    @default
+
+        <div class="alert alert-secondary mb-0">
+            Game ini tidak memerlukan data player.
+        </div>
+
+@endswitch
 
 <hr>
 

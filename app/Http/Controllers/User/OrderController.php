@@ -249,140 +249,95 @@ $nickname=null;
 
 
 
-switch(
-$item->game->player_input_type
-)
+switch($item->game->player_input_type)
 {
-
 
 case 'uid':
 
+    $request->validate([
+        'uid_player'=>'required'
+    ]);
 
-$request->validate([
+    $playerUid = $request->uid_player;
 
-'uid_player'=>'required'
-
-]);
-
-
-
-$playerUid =
-$request->uid_player;
-
-
-
-$playerData=[
-
-'uid'=>$request->uid_player
-
-];
-
+    $playerData = [
+        'uid'=>$request->uid_player
+    ];
 
 break;
-
-
 
 
 case 'uid_server':
 
+    $request->validate([
+        'uid_player'=>'required',
+        'server_id'=>'required'
+    ]);
 
-$request->validate([
+    $playerUid = $request->uid_player;
+    $serverId = $request->server_id;
 
-'uid_player'=>'required',
-
-'server_id'=>'required'
-
-]);
-
-
-
-$playerUid =
-$request->uid_player;
-
-
-$serverId =
-$request->server_id;
-
-
-
-$playerData=[
-
-'uid'=>$request->uid_player,
-
-'server'=>$request->server_id
-
-];
-
+    $playerData = [
+        'uid'=>$request->uid_player,
+        'server'=>$request->server_id
+    ];
 
 break;
-
-
-
 
 
 case 'riot_id':
 
+    $request->validate([
+        'riot_id'=>'required',
+        'riot_tag'=>'required'
+    ]);
 
-$request->validate([
+    $playerUid = $request->riot_id;
+    $playerData = [
+        'riot_id'=>$request->riot_id,
+        'tag'=>$request->riot_tag
+    ];
 
-'riot_id'=>'required',
-
-'riot_tag'=>'required'
-
-]);
-
-
-
-$playerData=[
-
-'riot_id'=>$request->riot_id,
-
-'tag'=>$request->riot_tag
-
-];
-
-
+    
 break;
-
-
-
 
 
 case 'email':
 
+    $request->validate([
+        'player_email'=>'required|email'
+    ]);
 
-$request->validate([
-
-'player_email'=>'required|email'
-
-]);
-
-
-
-$playerData=[
-
-'email'=>$request->player_email
-
-];
-
+    $playerUid = $request->email;
+    $playerData = [
+        'email'=>$request->player_email
+    ];
 
 break;
 
 
+/* TAMBAHKAN DI SINI */
+case 'login':
+
+    $request->validate([
+        'login_id'=>'required'
+    ]);
+
+    $playerUid = $request->login;
+    $playerData = [
+        'login_id'=>$request->login_id
+    ];
+
+break;
 
 
 case 'none':
 
-
-$playerData=[];
-
+    $playerData = [];
 
 break;
 
-
-
 }
-
 
 
 
