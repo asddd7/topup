@@ -8,13 +8,26 @@ use Illuminate\Database\Eloquent\Model;
 class Game extends Model
 {
 
-protected $fillable=[
+protected $fillable = [
 
-'game_name',
-'game_logo',
-'publisher',
-'player_input_type',
-'is_active'
+    'game_name',
+    'slug',
+    'game_logo',
+    'publisher',
+
+    'player_input_type',
+
+    'input_label',
+    'input_label_2',
+
+    'input_placeholder',
+    'input_placeholder_2',
+
+    'login_guide',
+    'description',
+
+    'sort_order',
+    'is_active'
 
 ];
 

@@ -256,14 +256,12 @@ id="item_id">
 
 {{-- INPUT PLAYER DINAMIS --}}
 
-@if($game->player_input_type == 'uid')
-
 
 <div class="mb-3">
 
 <label class="form-label">
 
-UID Player
+{{ $game->input_label }}
 
 </label>
 
@@ -271,128 +269,25 @@ UID Player
 type="text"
 name="uid_player"
 class="form-control"
-placeholder="Masukkan UID Player"
+placeholder="{{ $game->input_placeholder }}"
 required>
 
 </div>
 
+@if($game->input_label_2)
 
-
-@elseif($game->player_input_type == 'uid_server')
-
-
-<div class="mb-3">
-
-<label class="form-label">
-
-UID Player
-
+<label>
+{{ $game->input_label_2 }}
 </label>
 
 <input
-type="text"
-name="uid_player"
-class="form-control"
-placeholder="Masukkan UID Player"
-required>
-
-</div>
-
-
-
-<div class="mb-3">
-
-<label class="form-label">
-
-Server ID
-
-</label>
-
-<input
-type="text"
 name="server_id"
-class="form-control"
-placeholder="Contoh: 1234"
-required>
-
-</div>
-
-
-
-@elseif($game->player_input_type == 'riot_id')
-
-
-<div class="mb-3">
-
-<label class="form-label">
-
-Riot ID
-
-</label>
-
-<input
-type="text"
-name="riot_id"
-class="form-control"
-placeholder="Contoh: PlayerName"
-required>
-
-</div>
-
-
-
-<div class="mb-3">
-
-<label class="form-label">
-
-Tag
-
-</label>
-
-<input
-type="text"
-name="riot_tag"
-class="form-control"
-placeholder="Contoh: #1234"
-required>
-
-</div>
-
-
-
-@elseif($game->player_input_type == 'email')
-
-
-<div class="mb-3">
-
-<label class="form-label">
-
-Email Akun
-
-</label>
-
-<input
-type="email"
-name="player_email"
-class="form-control"
-placeholder="Email akun game"
-required>
-
-</div>
-
-
-
-@elseif($game->player_input_type == 'none')
-
-
-<div class="alert alert-info">
-
-Top up ini tidak membutuhkan data akun.
-
-</div>
-
+placeholder="{{ $game->input_placeholder_2 }}"
+class="form-control">
 
 @endif
+
+
 
 
 

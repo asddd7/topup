@@ -85,6 +85,22 @@
                             type="button"
                             class="nav-link"
                             data-bs-toggle="pill"
+                            data-bs-target="#game">
+
+                            <i class="fa-solid fa-gamepad me-1"></i>
+
+                            Game
+
+                        </button>
+
+                    </li>
+
+                    <li class="nav-item">
+
+                        <button
+                            type="button"
+                            class="nav-link"
+                            data-bs-toggle="pill"
                             data-bs-target="#contact">
 
                             <i class="fa-solid fa-phone me-1"></i>
@@ -209,6 +225,120 @@
                                 class="form-control"
                                 rows="3"
                                 name="hero_subtitle">{{ $settings['hero_subtitle']->setting_value ?? '' }}</textarea>
+
+                        </div>
+
+                    </div>
+
+                    {{-- GAME --}}
+
+                    <div
+                        class="tab-pane fade"
+                        id="game">
+
+                        <div class="table-responsive">
+
+                            <table class="table table-bordered align-middle">
+
+                                <thead class="table-light">
+
+                                <tr>
+
+                                    <th width="220">
+                                        Game
+                                    </th>
+
+                                    <th>
+                                        Label Input 1
+                                    </th>
+
+                                    <th>
+                                        Placeholder 1
+                                    </th>
+
+                                    <th>
+                                        Label Input 2
+                                    </th>
+
+                                    <th>
+                                        Placeholder 2
+                                    </th>
+
+                                </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                @foreach($games as $game)
+
+                                <tr>
+
+                                    <td>
+
+                                        <strong>
+
+                                            {{ $game->game_name }}
+
+                                        </strong>
+
+                                        <br>
+
+                                        <small class="text-muted">
+
+                                            {{ ucfirst(str_replace('_',' ',$game->player_input_type)) }}
+
+                                        </small>
+
+                                    </td>
+
+                                    <td>
+
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            name="games[{{ $game->id }}][input_label]"
+                                            value="{{ $game->input_label }}">
+
+                                    </td>
+
+                                    <td>
+
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            name="games[{{ $game->id }}][input_placeholder]"
+                                            value="{{ $game->input_placeholder }}">
+
+                                    </td>
+
+                                    <td>
+
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            name="games[{{ $game->id }}][input_label_2]"
+                                            value="{{ $game->input_label_2 }}">
+
+                                    </td>
+
+                                    <td>
+
+                                        <input
+                                            type="text"
+                                            class="form-control"
+                                            name="games[{{ $game->id }}][input_placeholder_2]"
+                                            value="{{ $game->input_placeholder_2 }}">
+
+                                    </td>
+
+                                </tr>
+
+                                @endforeach
+
+                                </tbody>
+
+                            </table>
 
                         </div>
 

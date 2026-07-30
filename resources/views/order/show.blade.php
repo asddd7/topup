@@ -53,77 +53,130 @@ Game :
      DATA PLAYER
 ========================== --}}
 
-<h5>Data Player</h5>
-
-@switch($order->game->player_input_type)
-
-    @case('uid')
-
-        <div class="mb-2">
-            <strong>UID</strong><br>
-            {{ $order->player_uid }}
-        </div>
-
-    @break
+<h5>
+    Data Player
+</h5>
 
 
-    @case('uid_server')
+<div class="card bg-light border-0">
 
-        <div class="mb-2">
-            <strong>UID</strong><br>
-            {{ $order->player_uid }}
-        </div>
-
-        <div class="mb-2">
-            <strong>Server</strong><br>
-            {{ $order->server_id }}
-        </div>
-
-    @break
+<div class="card-body">
 
 
-    @case('riot_id')
-
-        <div class="mb-2">
-            <strong>Riot ID</strong><br>
-            {{ $order->player_data['riot_id'] ?? '-' }}
-        </div>
-
-        <div class="mb-2">
-            <strong>Tag</strong><br>
-            {{ $order->player_data['tag'] ?? '-' }}
-        </div>
-
-    @break
+@if($order->game->player_input_type != 'none')
 
 
-    @case('email')
+<div class="mb-3">
 
-        <div class="mb-2">
-            <strong>Email Player</strong><br>
-            {{ $order->player_data['email'] ?? '-' }}
-        </div>
+<strong>
 
-    @break
+{{ $order->game->input_label ?? 'Player ID' }}
 
+</strong>
 
-    @case('login')
-
-        <div class="mb-2">
-            <strong>Login ID</strong><br>
-            {{ $order->player_data['login_id'] ?? '-' }}
-        </div>
-
-    @break
+<br>
 
 
-    @default
+@if(
+in_array(
+$order->game->player_input_type,
+[
+'uid',
+'uid_server'
+]
+)
+)
 
-        <div class="alert alert-secondary mb-0">
-            Game ini tidak memerlukan data player.
-        </div>
+{{ $order->player_uid ?? '-' }}
 
-@endswitch
+
+@elseif(
+$order->game->player_input_type == 'riot_id'
+)
+
+{{ $order->player_data['riot_id'] ?? '-' }}
+
+
+@elseif(
+$order->game->player_input_type == 'email'
+)
+
+{{ $order->player_data['email'] ?? '-' }}
+
+
+@elseif(
+$order->game->player_input_type == 'login'
+)
+
+{{ $order->player_data['login_id'] ?? '-' }}
+
+
+@endif
+
+
+</div>
+
+
+
+
+@if(
+$order->game->input_label_2
+)
+
+
+<div class="mb-3">
+
+<strong>
+
+{{ $order->game->input_label_2 }}
+
+</strong>
+
+<br>
+
+
+@if(
+$order->game->player_input_type == 'uid_server'
+)
+
+{{ $order->server_id ?? '-' }}
+
+
+@elseif(
+$order->game->player_input_type == 'riot_id'
+)
+
+{{ $order->player_data['tag'] ?? '-' }}
+
+
+@endif
+
+
+</div>
+
+
+@endif
+
+
+
+
+@else
+
+
+<div class="alert alert-secondary">
+
+Game ini tidak membutuhkan data player.
+
+</div>
+
+
+@endif
+
+
+
+</div>
+
+</div>
 
 <hr>
 
