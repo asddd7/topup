@@ -1,0 +1,52 @@
+.auth-overlay{
+    position:fixed;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:rgba(0,0,0,.45);
+    z-index:1055;
+}
+
+.auth-card{
+    width:100%;
+    max-width:420px;
+    border:none;
+    border-radius:18px;
+    background:#fff;
+    box-shadow:0 15px 40px rgba(0,0,0,.18);
+    animation:popup .25s ease;
+}
+
+.auth-input,
+.auth-btn{
+    height:48px;
+    border-radius:12px;
+}
+
+.logo{
+    width:85px;
+    height:85px;
+    margin:auto;
+    border-radius:50%;
+    background:#0d6efd;
+    color:#fff;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-size:35px;
+}
+
+@keyframes popup{
+
+    from{
+        opacity:0;
+        transform:scale(.9);
+    }
+
+    to{
+        opacity:1;
+        transform:scale(1);
+    }
+
+}

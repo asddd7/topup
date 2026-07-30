@@ -1,0 +1,88 @@
+.page-wrapper{
+    display:flex;
+    min-height:100vh;
+}
+
+.main-content{
+    margin-left:260px;
+    width:100%;
+    min-height:100vh;
+    padding:30px;
+    display:flex;
+    flex-direction:column;
+}
+
+.content-wrapper{
+    flex:1;
+}
+
+.customer-footer{
+    margin-top:30px;
+}
+
+@media(max-width:991px){
+
+.main-content{
+    margin-left:0;
+    padding:20px;
+}
+
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width:991px){
+
+    .main-content{
+        margin-left:0;
+        padding:20px;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .banner-image{
+        height:180px;
+    }
+
+    .game-logo,
+    .game-placeholder{
+        width:75px;
+        height:75px;
+        border-radius:16px;
+    }
+
+    .top-card img{
+        height:120px;
+    }
+
+}
+@media(max-width:768px){
+
+.section-box{
+
+padding:18px;
+
+}
+
+.top-card img{
+
+height:120px;
+
+}
+
+.game-logo,
+.game-placeholder{
+
+width:75px;
+
+height:75px;
+
+border-radius:18px;
+
+}
+
+}

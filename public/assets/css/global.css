@@ -1,0 +1,13 @@
+body{
+    background:#fff;
+    font-family:'Poppins',sans-serif;
+    min-height:100vh;
+}
+
+a{
+    text-decoration:none;
+}
+
+img{
+    max-width:100%;
+}

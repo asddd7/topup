@@ -1,0 +1,209 @@
+body{
+
+    background:#f4f6f9;
+
+    font-family:'Poppins',sans-serif;
+
+    min-height:100vh;
+
+}
+
+
+
+/* wrapper */
+
+.page-wrapper{
+
+    min-height:100vh;
+
+    display:flex;
+
+}
+
+
+
+/* content kanan */
+.main-content{
+
+    margin-left:260px;
+
+    padding:30px;
+
+    min-height:100vh;
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+
+
+.content-area{
+
+    flex:1;
+
+}
+
+
+
+.customer-footer{
+
+    position:sticky;
+
+    bottom:20px;
+
+    margin-top:30px;
+
+}
+
+
+
+/* area isi */
+
+.content-wrapper{
+
+    flex:1;
+
+}
+
+
+@media(max-width:991px){
+
+
+.main-content{
+
+    margin-left:0;
+
+    width:100%;
+
+}
+
+
+
+}
+
+
+/* Background gelap */
+.auth-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.45);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:1055;
+}
+
+/* Card Login */
+.auth-card{
+
+    width:100%;
+    max-width:420px;
+
+    background:#fff;
+
+    border-radius:18px;
+
+    border:none;
+
+    box-shadow:0 15px 40px rgba(0,0,0,.18);
+
+    animation:popup .25s ease;
+
+}
+
+@keyframes popup{
+
+    from{
+        opacity:0;
+        transform:scale(.9);
+    }
+
+    to{
+        opacity:1;
+        transform:scale(1);
+    }
+
+}
+
+.logo{
+
+    width:85px;
+    height:85px;
+
+    margin:auto;
+
+    border-radius:50%;
+
+    background:#0d6efd;
+
+    color:white;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:35px;
+
+}
+
+.auth-close{
+
+    position:absolute;
+
+    top:15px;
+
+    right:15px;
+
+}
+
+.auth-input{
+
+    border-radius:12px;
+
+    height:48px;
+
+}
+
+.auth-btn{
+
+    border-radius:12px;
+
+    height:48px;
+
+}
+
+.banner-thumb{
+
+    width:220px;
+
+    height:124px;
+
+    object-fit:cover;
+
+    border-radius:10px;
+
+    border:1px solid #ddd;
+
+}
+
+.banner-preview{
+
+    width:100%;
+
+    max-width:600px;
+
+    height:338px;
+
+    object-fit:cover;
+
+    border-radius:12px;
+
+    border:1px solid #ddd;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.15);
+
+}
