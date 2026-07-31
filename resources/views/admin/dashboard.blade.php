@@ -2,97 +2,379 @@
 
 @section('title','Dashboard Admin')
 
+
 @section('content')
+
 
 <div class="container-fluid">
 
-<h2 class="mb-4">
+
+<h3 class="fw-bold mb-4">
 
 Dashboard Admin
 
-</h2>
+</h3>
 
-<div class="card shadow-sm mb-4">
+
+
+
+<div class="row g-3 mb-4">
+
+
+<div class="col-md-3">
+
+<div class="card shadow-sm border-0">
 
 <div class="card-body">
 
-Selamat datang,
 
-<strong>{{ Auth::user()->name }}</strong>
+<h6>
+Total Pesanan
+</h6>
+
+
+<h2 class="fw-bold">
+
+{{$totalOrder}}
+
+</h2>
+
 
 </div>
 
 </div>
 
+</div>
 
-<h4 class="fw-bold mb-3">
 
-Shortcut Pengaturan Game
+
+
+
+<div class="col-md-3">
+
+<div class="card shadow-sm border-0">
+
+<div class="card-body">
+
+
+<h6>
+Menunggu Pembayaran
+</h6>
+
+
+<h2 class="fw-bold text-warning">
+
+{{$waitingPayment}}
+
+</h2>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+
+
+
+
+<div class="col-md-3">
+
+<div class="card shadow-sm border-0">
+
+<div class="card-body">
+
+
+<h6>
+Jumlah Game
+</h6>
+
+
+<h2 class="fw-bold">
+
+{{$totalGame}}
+
+</h2>
+
+
+</div>
+
+</div>
+
+</div>
+
+
+
+
+
+<div class="col-md-3">
+
+<div class="card shadow-sm border-0">
+
+<div class="card-body">
+
+
+<h6>
+Pendapatan
+</h6>
+
+
+<h4 class="fw-bold text-success">
+
+Rp {{number_format($income)}}
 
 </h4>
 
-<div class="row">
 
-@foreach($games as $game)
+</div>
 
-<div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-4">
+</div>
 
-<a
-href="{{ route('admin.game.manage',$game->id) }}"
+</div>
+
+
+
+</div>
+
+
+
+
+
+<h5 class="fw-bold mb-3">
+
+Shortcut
+
+</h5>
+
+
+
+<div class="row g-3 mb-4">
+
+<div class="col-md-2">
+
+
+<a href="{{route('admin.payment-confirmation.index')}}"
 class="text-decoration-none">
 
-<div class="card shadow h-100 text-center">
 
-<div class="card-body">
+<div class="card shadow-sm text-center p-3">
 
-@if($game->game_logo)
 
-<img
-src="{{ asset('storage/'.$game->game_logo) }}"
-class="img-fluid rounded mb-3"
-style="
-height:80px;
-object-fit:contain;
-">
+<i class="fa-solid fa-money-check-dollar fa-2x text-success"></i>
 
-@endif
 
-<h6>
+<h6 class="mt-2">
 
-{{ $game->game_name }}
+Konfirmasi
 
 </h6>
+    @php
+        $waiting = \App\Models\Order::where('status','Paid')->count();
+    @endphp
 
-<small class="text-muted">
-
-{{ $game->items()->count() }}
-
-Item
-
-</small>
-
-<br>
-
-<small class="text-success">
-
-{{ $game->discounts()->count() }}
-
-Voucher
-
-</small>
+    @if($waiting)
+        <span class="badge bg-danger float-end">
+            {{ $waiting }}
+        </span>
+    @endif
 
 </div>
 
-</div>
 
 </a>
 
+
 </div>
+
+
+
+
+
+<div class="col-md-2">
+
+
+<a href="{{route('admin.game.index')}}"
+class="text-decoration-none">
+
+
+<div class="card shadow-sm text-center p-3">
+
+
+<i class="fa-solid fa-gamepad fa-2x text-danger"></i>
+
+
+<h6 class="mt-2">
+
+Game
+
+</h6>
+
+
+</div>
+
+
+</a>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-2">
+
+
+<a href="{{route('admin.discount.index')}}"
+class="text-decoration-none">
+
+
+<div class="card shadow-sm text-center p-3">
+
+
+<i class="fa-solid fa-ticket fa-2x text-warning"></i>
+
+
+<h6 class="mt-2">
+
+Voucher
+
+</h6>
+
+
+</div>
+
+
+</a>
+
+
+</div>
+
+
+
+
+
+<div class="col-md-2">
+
+
+<a href="{{route('admin.setting.index')}}"
+class="text-decoration-none">
+
+
+<div class="card shadow-sm text-center p-3">
+
+
+<i class="fa-solid fa-gears fa-2x text-secondary"></i>
+
+
+<h6 class="mt-2">
+
+Setting
+
+</h6>
+
+
+</div>
+
+
+</a>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="card shadow-sm">
+
+
+<div class="card-header">
+
+Order Terbaru
+
+</div>
+
+
+
+<div class="card-body">
+
+
+<table class="table">
+
+
+<tr>
+
+<th>Invoice</th>
+
+<th>Game</th>
+
+<th>Total</th>
+
+<th>Status</th>
+
+</tr>
+
+
+
+@foreach($recentOrders as $order)
+
+
+<tr>
+
+<td>
+
+{{$order->invoice_number}}
+
+</td>
+
+
+<td>
+
+{{$order->game->game_name}}
+
+</td>
+
+
+<td>
+
+Rp {{number_format($order->total_price)}}
+
+</td>
+
+
+<td>
+
+<span class="badge bg-warning">
+
+{{$order->status}}
+
+</span>
+
+</td>
+
+
+</tr>
+
 
 @endforeach
 
-</div>
+
+</table>
+
 
 </div>
+
+
+</div>
+
+
+</div>
+
 
 @endsection

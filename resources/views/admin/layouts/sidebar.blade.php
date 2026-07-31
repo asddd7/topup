@@ -70,19 +70,6 @@ style="width:260px;">
 
         </a>
 
-
-<a href="{{ route('admin.payment.index') }}"
-class="list-group-item">
-
-
-<i class="fa-solid fa-credit-card me-2"></i>
-
-
-Metode Pembayaran
-
-
-</a>
-
         <a href="{{ route('admin.banner.index') }}"
         class="list-group-item">
 

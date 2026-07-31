@@ -3,77 +3,73 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Order;
 use App\Models\Game;
 use App\Models\Item;
-use App\Models\Order;
-use App\Models\Discount;
+
 
 class DashboardController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $games = Game::where(
-            'is_active',
-            1
-        )
-        ->orderBy('sort_order')
-        ->get();
 
-        return view(
-            'admin.dashboard',
-            compact('games')
-        );
-    }
+public function index()
+{
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+$totalOrder =
+Order::count();
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+$waitingPayment =
+Order::where(
+'status',
+'Waiting Payment'
+)
+->count();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
+
+
+$totalGame =
+Game::count();
+
+
+
+$totalItem =
+Item::count();
+
+
+
+$income =
+Order::where(
+'status',
+'Completed'
+)
+->sum('total_price');
+
+
+
+$recentOrders =
+Order::with('game')
+->latest()
+->limit(5)
+->get();
+
+
+
+return view(
+'admin.dashboard',
+compact(
+
+'totalOrder',
+'waitingPayment',
+'totalGame',
+'totalItem',
+'income',
+'recentOrders'
+
+));
+
+}
+
+
 }
