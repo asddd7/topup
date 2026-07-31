@@ -76,6 +76,148 @@
 <div class="card-body">
 
 
+<form method="GET"
+      action="{{ route('admin.game.items',$game->id) }}">
+
+
+<div class="row g-2 mb-4">
+
+
+    {{-- SEARCH --}}
+
+    <div class="col-md-4">
+
+        <input 
+            type="text"
+            name="search"
+            class="form-control"
+            placeholder="Cari nama item..."
+            value="{{request('search')}}">
+
+    </div>
+
+
+
+    {{-- CATEGORY --}}
+
+    <div class="col-md-3">
+
+        <select 
+            name="category_id"
+            class="form-select">
+
+
+            <option value="">
+                Semua Kategori
+            </option>
+
+
+            @foreach($categories as $category)
+
+            <option value="{{$category->id}}"
+                {{request('category_id')==$category->id?'selected':''}}>
+
+                {{$category->category_name}}
+
+            </option>
+
+
+            @endforeach
+
+
+        </select>
+
+    </div>
+
+
+
+
+    {{-- STATUS --}}
+
+    <div class="col-md-2">
+
+        <select 
+            name="status"
+            class="form-select">
+
+
+            <option value="">
+                Status
+            </option>
+
+
+            <option value="1"
+            {{request('status')==='1'?'selected':''}}>
+                Aktif
+            </option>
+
+
+            <option value="0"
+            {{request('status')==='0'?'selected':''}}>
+                Nonaktif
+            </option>
+
+
+        </select>
+
+    </div>
+
+
+
+
+    {{-- TOP SELLER --}}
+
+    <div class="col-md-2">
+
+        <select 
+            name="top_seller"
+            class="form-select">
+
+
+            <option value="">
+                Semua
+            </option>
+
+
+            <option value="1"
+            {{request('top_seller')==='1'?'selected':''}}>
+
+                Top Seller
+
+            </option>
+
+
+            <option value="0"
+            {{request('top_seller')==='0'?'selected':''}}>
+
+                Biasa
+
+            </option>
+
+
+        </select>
+
+    </div>
+
+
+
+
+    <div class="col-md-1">
+
+        <button class="btn btn-primary w-100">
+
+            <i class="fa-solid fa-search"></i>
+
+        </button>
+
+        
+    </div>
+
+
+</div>
+
+
+</form>
 
 @if(session('success'))
 
@@ -348,7 +490,11 @@ onclick="return confirm('Hapus item ini?')">
 
 </table>
 
+<div class="mt-3">
 
+{{ $items->links() }}
+
+</div>
 </div>
 
 

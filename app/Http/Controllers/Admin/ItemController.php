@@ -12,23 +12,118 @@ use Illuminate\Http\Request;
 class ItemController extends Controller
 {
 
-    public function index(Game $game)
+public function index(Request $request, Game $game)
+{
+
+    $query = Item::with([
+        'category',
+        'game'
+    ])
+    ->where('game_id',$game->id);
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SEARCH ITEM
+    |--------------------------------------------------------------------------
+    */
+
+    if($request->search)
     {
-        $items = Item::where('game_id', $game->id)
-            ->latest()
-            ->get();
 
-        $categories = ItemCategory::orderBy('category_name')->get();
-
-        return view(
-            'admin.item.index',
-            compact(
-                'game',
-                'items',
-                'categories'
-            )
+        $query->where(
+            'item_name',
+            'like',
+            '%'.$request->search.'%'
         );
+
     }
+
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | FILTER CATEGORY
+    |--------------------------------------------------------------------------
+    */
+
+    if($request->category_id)
+    {
+
+        $query->where(
+            'category_id',
+            $request->category_id
+        );
+
+    }
+
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | FILTER STATUS
+    |--------------------------------------------------------------------------
+    */
+
+    if($request->status !== null && $request->status !== '')
+    {
+
+        $query->where(
+            'is_active',
+            $request->status
+        );
+
+    }
+
+
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | FILTER TOP SELLER
+    |--------------------------------------------------------------------------
+    */
+
+    if($request->top_seller !== null && $request->top_seller !== '')
+    {
+
+        $query->where(
+            'top_seller',
+            $request->top_seller
+        );
+
+    }
+
+
+
+    $items = $query
+        ->latest()
+        ->paginate(15)
+        ->withQueryString();
+
+
+
+
+    $categories = ItemCategory::orderBy(
+        'category_name'
+    )->get();
+
+
+
+    return view(
+        'admin.item.index',
+        compact(
+            'game',
+            'items',
+            'categories'
+        )
+    );
+
+}
 
 public function store(    Request $request,
     Game $game)
