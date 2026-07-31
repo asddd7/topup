@@ -44,6 +44,12 @@ return $this->hasMany(
 );
 
 }
-
+public function discounts()
+{
+    return $this->hasMany(
+        Discount::class,
+        'game_id'
+    );
+}
 
 }

@@ -258,7 +258,10 @@ Route::get(
 
 
 
-
+Route::get(
+    '/game/{game}/manage',
+    [GameController::class,'manage']
+)->name('game.manage');
 
 
 /*

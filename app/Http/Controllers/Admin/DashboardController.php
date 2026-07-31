@@ -4,6 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Game;
+use App\Models\Item;
+use App\Models\Order;
+use App\Models\Discount;
 
 class DashboardController extends Controller
 {
@@ -12,7 +16,17 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        return view('admin.dashboard');
+        $games = Game::where(
+            'is_active',
+            1
+        )
+        ->orderBy('sort_order')
+        ->get();
+
+        return view(
+            'admin.dashboard',
+            compact('games')
+        );
     }
 
     /**
