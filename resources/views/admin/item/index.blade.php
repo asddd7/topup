@@ -30,6 +30,16 @@
 
         </a>
 
+
+        <button class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#createCategoryModal">
+
+            <i class="fa-solid fa-plus"></i>
+
+            Tambah Kategori
+
+        </button>
         <button class="btn btn-primary"
                 data-bs-toggle="modal"
                 data-bs-target="#createItemModal">
@@ -507,6 +517,7 @@ onclick="return confirm('Hapus item ini?')">
 </div>
 
 </div>
+@include('admin.item_category.create')
 
 @include('admin.item.create')
 
