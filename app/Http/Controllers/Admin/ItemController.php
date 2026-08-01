@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\BaseAdminController;
 use App\Models\Item;
 use App\Models\Game;
 use App\Models\ItemCategory;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 
 
-class ItemController extends Controller
+class ItemController extends BaseAdminController
 {
 
 public function index(Request $request, Game $game)
@@ -153,7 +154,7 @@ public function store(    Request $request,
 
 
 
-Item::create([
+$item = Item::create([
 
     'game_id' => $game->id,
 
@@ -176,7 +177,14 @@ Item::create([
     'is_active' => $request->has('is_active')
 
 ]);
-
+$this->activity->log(
+    'Item',
+    'Create',
+    'Create item : '.$item->item_name,
+    $item,
+    null,
+    $item->toArray()
+);
 
     return back()
     ->with('success','Item berhasil ditambahkan');
@@ -199,7 +207,7 @@ public function update(
         'image'=>'nullable|image|max:2048'
 
     ]);
-
+    $old = $item->toArray();
 
     $image = $item->image;
 
@@ -238,6 +246,14 @@ public function update(
 
     ]);
 
+$this->activity->log(
+    'Item',
+    'Update',
+    'Update item : '.$item->item_name,
+    $item,
+    $old,
+    $item->fresh()->toArray()
+);
 
 
     return redirect()
@@ -280,7 +296,15 @@ public function destroy(
 
     }
 
-
+$old = $item->toArray();
+$this->activity->log(
+    'Item',
+    'Delete',
+    'Delete item : '.$item->item_name,
+    $item,
+    $old,
+    null
+);
     $item->delete();
 
 

@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\BaseAdminController;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 
-class PaymentController extends Controller
+class PaymentController extends BaseAdminController
 {
 
     public function index()
@@ -69,7 +69,7 @@ class PaymentController extends Controller
 
 
 
-        Payment::create([
+        $payment = Payment::create([
 
 
             'payment_name'=>$request->payment_name,
@@ -86,7 +86,14 @@ class PaymentController extends Controller
 
 
         ]);
-
+$this->activity->log(
+    'Payment',
+    'Create',
+    'Create payment : '.$payment->payment_name,
+    $payment,
+    null,
+    $payment->toArray()
+);
 
 
         return redirect()
@@ -135,7 +142,7 @@ class PaymentController extends Controller
 
 
         ]);
-
+$old = $payment->toArray();
 
 
 
@@ -174,7 +181,14 @@ class PaymentController extends Controller
 
         ]);
 
-
+$this->activity->log(
+    'Payment',
+    'Update',
+    'Update payment : '.$payment->payment_name,
+    $payment,
+    $old,
+    $payment->fresh()->toArray()
+);
 
         return redirect()
         ->route('admin.payment.index')
@@ -193,6 +207,15 @@ class PaymentController extends Controller
     public function destroy(Payment $payment)
     {
 
+$old = $payment->toArray();
+$this->activity->log(
+    'Payment',
+    'Delete',
+    'Delete payment : '.$payment->payment_name,
+    $payment,
+    $payment->toArray(),
+    null
+);
         $payment->delete();
 
 

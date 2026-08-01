@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\BaseAdminController;
 use Illuminate\Http\Request;
 
 use App\Models\Discount;
 use App\Models\Game;
 use App\Models\Item;
 
-class DiscountController extends Controller
+class DiscountController extends BaseAdminController
 {
 
     public function index()
@@ -101,7 +101,7 @@ public function store(Request $request)
 
 
 
-    Discount::create([
+    $discount = Discount::create([
 
         'code' => strtoupper($request->code),
 
@@ -133,7 +133,14 @@ public function store(Request $request)
         'quota_used' => 0,
 
     ]);
-
+$this->activity->log(
+    'Discount',
+    'Create',
+    'Create discount : '.$discount->discount_name,
+    $discount,
+    null,
+    $discount->toArray()
+);
 
 
     return redirect()
@@ -200,7 +207,7 @@ public function update(Request $request, Discount $discount)
         'usage_per_user'=>'nullable|integer',
 
     ]);
-
+    $old = $discount->toArray();
 
     $discount->update([
 
@@ -232,6 +239,14 @@ public function update(Request $request, Discount $discount)
 
     ]);
 
+$this->activity->log(
+    'Discount',
+    'Update',
+    'Update discount : '.$discount->discount_name,
+    $discount,
+    $old,
+    $discount->fresh()->toArray()
+);
 
     return redirect()
         ->route('admin.discount.index')
@@ -244,7 +259,15 @@ public function update(Request $request, Discount $discount)
 
     public function destroy(Discount $discount)
     {
-
+$old = $discount->toArray();
+$this->activity->log(
+    'Discount',
+    'Delete',
+    'Delete discount : '.$discount->discount_name,
+    $discount,
+    $old,
+    null
+);
         $discount->delete();
 
 

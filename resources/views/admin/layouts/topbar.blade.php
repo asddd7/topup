@@ -24,6 +24,7 @@ data-bs-target="#sidebar">
 
 <div class="text-end">
 
+
 <div class="fw-semibold">
 {{ optional(Auth::user())->name }}
 
@@ -34,6 +35,7 @@ data-bs-target="#sidebar">
 {{ optional(Auth::user())->email }}
 
 </small>
+
 
 </div>
 

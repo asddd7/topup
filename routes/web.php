@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\ActivityLogController;
 
 
 // USER
@@ -346,7 +347,13 @@ Route::resource(
 
 
 
-
+Route::resource(
+    'activity-log',
+    ActivityLogController::class
+)->only([
+    'index',
+    'show'
+]);
 
 
 

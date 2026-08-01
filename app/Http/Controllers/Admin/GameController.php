@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\BaseAdminController;
+use App\Models\Item;
 use App\Models\Game;
 use Illuminate\Http\Request;
 
-class GameController extends Controller
+class GameController extends BaseAdminController
 {
 
     public function index()
@@ -46,7 +47,7 @@ class GameController extends Controller
         }
 
 
-        Game::create([
+        $game = Game::create([
 
             'game_name'=>$request->game_name,
 
@@ -59,7 +60,14 @@ class GameController extends Controller
             'is_active'=>true
 
         ]);
-
+$this->activity->log(
+    'Game',
+    'Create',
+    'Create game : '.$game->game_name,
+    $game,
+    null,
+    $game->toArray()
+);
 
         return redirect()
         ->route('admin.game.index')
@@ -91,6 +99,7 @@ class GameController extends Controller
 
         ]);
 
+        $old = $game->toArray();
 
         $logo = $game->game_logo;
 
@@ -118,6 +127,14 @@ class GameController extends Controller
 
         ]);
 
+$this->activity->log(
+    'Game',
+    'Update',
+    'Update game : '.$game->game_name,
+    $game,
+    $old,
+    $game->fresh()->toArray()
+);
 
 
         return redirect()
@@ -130,7 +147,15 @@ class GameController extends Controller
 
     public function destroy(Game $game)
     {
-
+$old = $game->toArray();
+$this->activity->log(
+    'Game',
+    'Delete',
+    'Delete game : '.$game->game_name,
+    $game,
+    $old,
+    null
+);
         $game->delete();
 
 

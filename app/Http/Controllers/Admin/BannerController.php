@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\BaseAdminController;
 use App\Models\Game;
 use App\Models\Banner;
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 
-class BannerController extends Controller
+class BannerController extends BaseAdminController
 {
 
     public function index()
@@ -50,25 +51,24 @@ class BannerController extends Controller
             ->store('banners','public');
 
 
-        Banner::create([
+$banner = Banner::create([
+    'game_id'=>$request->game_id,
+    'title'=>$request->title,
+    'image'=>$image,
+    'link'=>$request->game_id ? null : $request->link,
+    'description'=>$request->description,
+    'is_active'=>$request->has('is_active'),
+    'sort_order'=>$request->sort_order
+]);
 
-        'game_id'=>$request->game_id,
-
-        'title'=>$request->title,
-
-        'image'=>$image,
-
-        'link'=>$request->game_id 
-                ? null 
-                : $request->link,
-
-        'description'=>$request->description,
-
-        'is_active'=>$request->has('is_active'),
-
-        'sort_order'=>$request->sort_order
-
-        ]);
+$this->activity->log(
+    'Banner',
+    'Create',
+    'Create banner : '.$banner->title,
+    $banner,
+    null,
+    $banner->toArray()
+);
 
         return back()
             ->with('success','Banner berhasil ditambahkan');
@@ -87,6 +87,8 @@ class BannerController extends Controller
             'sort_order' => 'nullable|integer',
         ]);
 
+$old = $banner->toArray();
+
         $data = [
             'game_id' => $request->game_id,
             'title' => $request->title,
@@ -101,7 +103,17 @@ class BannerController extends Controller
                 ->store('banners', 'public');
         }
 
-        $banner->update($data);
+
+$banner->update($data);
+
+$this->activity->log(
+    'Banner',
+    'Update',
+    'Update banner : '.$banner->title,
+    $banner,
+    $old,
+    $banner->fresh()->toArray()
+);
 
         return redirect()
             ->route('admin.banner.index')
@@ -111,7 +123,18 @@ class BannerController extends Controller
     public function destroy(Banner $banner)
     {
 
-        $banner->delete();
+$old = $banner->toArray();
+
+$this->activity->log(
+    'Banner',
+    'Delete',
+    'Delete banner : '.$banner->title,
+    $banner,
+    $banner->toArray(),
+    null
+);
+
+$banner->delete();
 
         return back()->with(
             'success',

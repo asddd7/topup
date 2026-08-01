@@ -79,15 +79,6 @@ style="width:260px;">
 
         </a>
 
-<a href="{{ route('admin.setting.index') }}"
-class="list-group-item">
-
-    <i class="fa-solid fa-gears me-2"></i>
-
-    Pengaturan
-
-</a>
-
 <a href="{{ route('admin.payment.index') }}"
 class="list-group-item">
 
@@ -128,6 +119,24 @@ class="list-group-item">
 
 
         </a>
+
+    <a href="{{ route('admin.setting.index') }}"
+class="list-group-item">
+
+    <i class="fa-solid fa-gears me-2"></i>
+
+    Pengaturan
+
+</a>
+
+<a href="{{ route('admin.activity-log.index') }}"
+class="list-group-item">
+
+    <i class="fa-solid fa-clock-rotate-left me-2"></i>
+
+    Activity Log
+
+</a>
 
         @auth
         <form

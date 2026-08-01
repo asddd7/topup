@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Support\Facades\Cache;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\BaseAdminController;
+use App\Models\ActivityLog;
+use App\Models\Payment;
+use App\Models\Order;
+use App\Models\Banner;
 use App\Models\Setting;
 use App\Models\Game;
 use Illuminate\Http\Request;
 
-class SettingController extends Controller
+class SettingController extends BaseAdminController
 {
 
     public function index()
@@ -47,7 +51,7 @@ public function update(Request $request)
         ) as $key=>$value
     ){
 
-        Setting::updateOrCreate(
+        $setting = Setting::updateOrCreate(
 
             [
                 'setting_key'=>$key
@@ -59,7 +63,6 @@ public function update(Request $request)
             ]
 
         );
-
     }
 
 
