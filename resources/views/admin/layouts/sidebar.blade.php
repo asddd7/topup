@@ -96,6 +96,15 @@ class="list-group-item">
 
 </a>
 
+<a href="{{ route('admin.order.index') }}"
+class="list-group-item">
+
+    <i class="fa-solid fa-shopping-cart me-2"></i>
+
+    Pesanan
+
+</a>
+
 <a href="{{ route('admin.payment-confirmation.index') }}"
 class="list-group-item">
 

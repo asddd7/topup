@@ -420,6 +420,65 @@ pre{
 }
 
 /* =====================================================
+   NOTIFICATION DROPDOWN
+===================================================== */
+
+.notification-dropdown{
+
+    width:350px;
+
+    max-width:90vw;
+
+    overflow:hidden;
+
+}
+
+
+.notification-dropdown .dropdown-item{
+
+    white-space:normal;
+
+    overflow:hidden;
+
+    text-overflow:ellipsis;
+
+    padding:12px 15px;
+
+}
+
+
+.notification-dropdown .notification-title{
+
+    font-weight:600;
+
+    color:var(--text);
+
+    margin-bottom:4px;
+
+}
+
+
+.notification-dropdown .notification-message{
+
+    font-size:13px;
+
+    color:var(--muted);
+
+    line-height:1.5;
+
+    display:-webkit-box;
+
+    -webkit-line-clamp:2;
+
+    -webkit-box-orient:vertical;
+
+    overflow:hidden;
+
+    word-break:break-word;
+
+}
+
+/* =====================================================
    RESPONSIVE
 ===================================================== */
 

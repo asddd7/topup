@@ -38,7 +38,92 @@
 
         <div class="d-flex align-items-center gap-3">
 
-            <i class="fa-regular fa-bell fs-5"></i>
+<div class="dropdown">
+
+
+<button
+    class="btn btn-light position-relative"
+    data-bs-toggle="dropdown">
+
+
+<i class="fa-regular fa-bell fs-5"></i>
+
+
+@if(($notificationCount ?? 0) > 0)
+
+<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+
+{{ $notificationCount ?? 0 }}
+
+</span>
+
+@endif
+
+
+</button>
+
+
+<ul class="dropdown-menu dropdown-menu-end shadow notification-dropdown">
+
+
+<li class="dropdown-header fw-bold">
+
+    Notifikasi
+
+</li>
+
+
+
+@forelse($notifications as $notif)
+
+
+<li>
+
+<a href="#"
+class="dropdown-item">
+
+    <div class="notification-title">
+
+        {{ $notif->title }}
+
+    </div>
+
+
+    <div class="notification-message">
+
+        {{ $notif->message }}
+
+    </div>
+
+
+</a>
+
+</li>
+
+
+@endforeach
+
+
+
+@if($notifications->count()==0)
+
+<li>
+
+<div class="text-center text-muted p-3">
+
+Tidak ada notifikasi
+
+</div>
+
+</li>
+
+@endif
+
+
+</ul>
+
+
+</div>
 
             <div class="text-end">
 

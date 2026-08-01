@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\BaseAdminController;
 use App\Models\Order;
 use App\Models\Game;
 use App\Models\Item;
 
 
-class DashboardController extends Controller
+class DashboardController extends BaseAdminController
 {
 
 public function index()

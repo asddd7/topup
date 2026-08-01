@@ -8,7 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Game;
 use App\Models\Item;
-
+use App\Models\Notification;
+use App\Models\User;
 use App\Services\DiscountService;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
@@ -406,6 +407,40 @@ $order = Order::create([
 
 ]);
 
+
+
+/*
+|--------------------------------------------------------------------------
+| Notification Admin - New Order
+|--------------------------------------------------------------------------
+*/
+
+
+$admins = User::where(
+    'role_id',
+    1
+)->get();
+
+
+
+foreach($admins as $admin)
+{
+
+    Notification::create([
+
+        'user_id'=>$admin->id,
+
+        'order_id'=>$order->id,
+
+        'title'=>'Order Baru',
+
+        'message'=>
+        'Order '.$order->invoice_number.
+        ' menunggu proses'
+
+    ]);
+
+}
 /*
 |--------------------------------------------------------------------------
 | Detail Order
@@ -736,7 +771,31 @@ $order->paymentLogs()->create([
 
 ]);
 
+$admins = User::where(
+    'role_id',
+    1
+)->get();
 
+
+
+foreach($admins as $admin)
+{
+
+    Notification::create([
+
+        'user_id'=>$admin->id,
+
+        'order_id'=>$order->id,
+
+        'title'=>'Pembayaran Diterima',
+
+        'message'=>
+        'Order '.$order->invoice_number.
+        ' sudah upload bukti pembayaran'
+
+    ]);
+
+}
 
 return redirect(
 
