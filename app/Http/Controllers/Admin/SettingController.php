@@ -11,6 +11,7 @@ use App\Models\Banner;
 use App\Models\Setting;
 use App\Models\Game;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class SettingController extends BaseAdminController
 {
@@ -42,12 +43,108 @@ public function update(Request $request)
     | WEBSITE SETTINGS
     |--------------------------------------------------------------------------
     */
+        $request->validate([
+
+            'app_logo' => 
+                'nullable|image|mimes:png,jpg,jpeg,svg,webp|max:2048',
+
+            'app_favicon' =>
+                'nullable|image|mimes:png,jpg,jpeg,ico,svg,webp|max:1024',
+
+        ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | UPLOAD FAVICON
+    |--------------------------------------------------------------------------
+    */
+
+    if($request->hasFile('app_favicon')){
+
+
+        $oldFavicon = Setting::where(
+            'setting_key',
+            'app_favicon'
+        )->first();
+
+
+        if(
+            $oldFavicon &&
+            $oldFavicon->setting_value &&
+            Storage::disk('public')
+                ->exists($oldFavicon->setting_value)
+        ){
+
+            Storage::disk('public')
+                ->delete($oldFavicon->setting_value);
+
+        }
+
+
+        $faviconPath = $request
+            ->file('app_favicon')
+            ->store('settings','public');
+
+
+        Setting::updateOrCreate(
+
+            [
+                'setting_key'=>'app_favicon'
+            ],
+
+            [
+                'setting_value'=>$faviconPath,
+                'group'=>'general'
+            ]
+
+        );
+
+
+    }
+    if($request->hasFile('app_logo')){
+
+        //hapus logo lama
+        $oldLogo = Setting::where(
+            'setting_key',
+            'app_logo'
+        )->first();
+
+        if(
+            $oldLogo &&
+            $oldLogo->setting_value &&
+            Storage::disk('public')->exists($oldLogo->setting_value)
+        ){
+            Storage::disk('public')
+                ->delete($oldLogo->setting_value);
+        }
+
+        $logoPath = $request
+            ->file('app_logo')
+            ->store('settings','public');
+
+        Setting::updateOrCreate(
+
+            [
+                'setting_key'=>'app_logo'
+            ],
+
+            [
+                'setting_value'=>$logoPath,
+                'group'=>'general'
+            ]
+
+        );
+
+    }
+
 
     foreach(
         $request->except(
             '_token',
             '_method',
-            'games'
+            'games',
+            'app_logo',
+            'app_favicon'
         ) as $key=>$value
     ){
 

@@ -1,46 +1,59 @@
 <div class="card shadow-sm border-0 mb-4">
 
-<div class="card-body d-flex justify-content-between align-items-center">
+    <div class="card-body d-flex justify-content-between align-items-center">
 
-<div>
+        <div class="d-flex align-items-center gap-3">
 
-<button
+            <button
+                class="btn btn-outline-primary d-lg-none"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#sidebar">
 
-class="btn btn-outline-primary d-lg-none"
+                <i class="fa-solid fa-bars"></i>
 
-data-bs-toggle="offcanvas"
+            </button>
 
-data-bs-target="#sidebar">
+            @if(setting('app_logo'))
 
-<i class="fa-solid fa-bars"></i>
+                <img
+                    src="{{ asset('storage/'.setting('app_logo')) }}"
+                    alt="Logo"
+                    style="height:45px; width:auto;">
 
-</button>
+            @endif
 
-</div>
+            <div>
 
-<div class="d-flex align-items-center gap-3">
+                <div class="fw-bold fs-5">
+                    {{ setting('app_name','TopUp Game') }}
+                </div>
 
-<i class="fa-regular fa-bell fs-5"></i>
+                <small class="text-muted">
+                    Admin Dashboard
+                </small>
 
-<div class="text-end">
+            </div>
 
+        </div>
 
-<div class="fw-semibold">
-{{ optional(Auth::user())->name }}
+        <div class="d-flex align-items-center gap-3">
 
-</div>
+            <i class="fa-regular fa-bell fs-5"></i>
 
-<small class="text-muted">
+            <div class="text-end">
 
-{{ optional(Auth::user())->email }}
+                <div class="fw-semibold">
+                    {{ optional(Auth::user())->name }}
+                </div>
 
-</small>
+                <small class="text-muted">
+                    {{ optional(Auth::user())->email }}
+                </small>
 
+            </div>
 
-</div>
+        </div>
 
-</div>
-
-</div>
+    </div>
 
 </div>

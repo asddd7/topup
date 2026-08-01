@@ -12,7 +12,14 @@ content="width=device-width, initial-scale=1">
 @yield('title','TOPUP | ADMIN')
 </title>
 
+@if(setting('app_favicon'))
 
+<link
+    rel="icon"
+    type="image/png"
+    href="{{ asset('storage/'.setting('app_favicon')) }}">
+
+@endif
 <link
 href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
 rel="stylesheet">

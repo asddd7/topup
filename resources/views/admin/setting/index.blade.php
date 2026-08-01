@@ -69,22 +69,6 @@
                             type="button"
                             class="nav-link"
                             data-bs-toggle="pill"
-                            data-bs-target="#website">
-
-                            <i class="fa-solid fa-globe me-1"></i>
-
-                            Website
-
-                        </button>
-
-                    </li>
-
-                    <li class="nav-item">
-
-                        <button
-                            type="button"
-                            class="nav-link"
-                            data-bs-toggle="pill"
                             data-bs-target="#game">
 
                             <i class="fa-solid fa-gamepad me-1"></i>
@@ -171,60 +155,97 @@
 
                             </div>
 
-                            <div class="col-md-6 mb-3">
+                            <hr>
 
-                                <label class="form-label">
+                                <h5 class="fw-bold mb-3">
+                                    Logo Website
+                                </h5>
 
-                                    Nama Perusahaan
+                                <div class="row align-items-center">
 
-                                </label>
+                                    <div class="col-md-3">
 
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    name="company_name"
-                                    value="{{ $settings['company_name']->setting_value ?? '' }}">
+                                        @if(!empty($settings['app_logo']->setting_value ?? ''))
+                                            <img
+                                                src="{{ asset('storage/'.$settings['app_logo']->setting_value) }}"
+                                                class="img-fluid border rounded p-2"
+                                                style="max-height:120px;">
+                                        @else
+                                            <div class="border rounded p-4 text-center text-muted">
+                                                Belum ada logo
+                                            </div>
+                                        @endif
 
-                            </div>
+                                    </div>
 
-                        </div>
+                                    <div class="col-md-9">
 
-                    </div>
+                                        <label class="form-label">
+                                            Upload Logo
+                                        </label>
 
-                    {{-- WEBSITE --}}
+                                        <input
+                                            type="file"
+                                            class="form-control"
+                                            name="app_logo"
+                                            accept=".png,.jpg,.jpeg,.svg,.webp">
 
-                    <div
-                        class="tab-pane fade"
-                        id="website">
+                                        <small class="text-muted">
+                                            Disarankan PNG transparan ukuran 300x300.
+                                        </small>
 
-                        <div class="mb-3">
+                                    </div>
 
-                            <label class="form-label">
+                                </div>
 
-                                Hero Title
+                                <hr>
 
-                            </label>
+                                    <h5 class="fw-bold mb-3">
+                                        Favicon Website
+                                    </h5>
 
-                            <input
-                                type="text"
-                                class="form-control"
-                                name="hero_title"
-                                value="{{ $settings['hero_title']->setting_value ?? '' }}">
+                                    <div class="row align-items-center">
 
-                        </div>
+                                        <div class="col-md-3">
 
-                        <div class="mb-3">
+                                            @if(!empty($settings['app_favicon']->setting_value ?? ''))
 
-                            <label class="form-label">
+                                                <img
+                                                    src="{{ asset('storage/'.$settings['app_favicon']->setting_value) }}"
+                                                    class="img-fluid border rounded p-2"
+                                                    style="max-height:80px;">
 
-                                Hero Subtitle
+                                            @else
 
-                            </label>
+                                                <div class="border rounded p-4 text-center text-muted">
+                                                    Belum ada favicon
+                                                </div>
 
-                            <textarea
-                                class="form-control"
-                                rows="3"
-                                name="hero_subtitle">{{ $settings['hero_subtitle']->setting_value ?? '' }}</textarea>
+                                            @endif
+
+                                        </div>
+
+
+                                        <div class="col-md-9">
+
+                                            <label class="form-label">
+                                                Upload Favicon
+                                            </label>
+
+                                            <input
+                                                type="file"
+                                                class="form-control"
+                                                name="app_favicon"
+                                                accept=".png,.jpg,.jpeg,.ico,.svg,.webp">
+
+
+                                            <small class="text-muted">
+                                                Ukuran disarankan 32x32 atau 64x64 pixel.
+                                            </small>
+
+                                        </div>
+
+                                    </div>
 
                         </div>
 
@@ -431,8 +452,9 @@
                         class="tab-pane fade"
                         id="system">
 
-                        <div class="form-check form-switch mb-3">
+                        <input type="hidden" name="maintenance" value="0">
 
+                        <div class="form-check form-switch mb-3">
                             <input
                                 class="form-check-input"
                                 type="checkbox"
@@ -441,15 +463,13 @@
                                 {{ (($settings['maintenance']->setting_value ?? 0) == 1) ? 'checked' : '' }}>
 
                             <label class="form-check-label">
-
                                 Maintenance Mode
-
                             </label>
-
                         </div>
 
-                        <div class="form-check form-switch">
+                        <input type="hidden" name="allow_guest_checkout" value="0">
 
+                        <div class="form-check form-switch">
                             <input
                                 class="form-check-input"
                                 type="checkbox"
@@ -458,11 +478,8 @@
                                 {{ (($settings['allow_guest_checkout']->setting_value ?? 1) == 1) ? 'checked' : '' }}>
 
                             <label class="form-check-label">
-
                                 Izinkan Guest Checkout
-
                             </label>
-
                         </div>
 
                     </div>
