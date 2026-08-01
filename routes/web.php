@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\ActivityLogController;
+use App\Http\Controllers\Admin\StockController;
 
 
 // USER
@@ -316,7 +317,15 @@ Route::resource(
 });
 
 
+Route::get(
+    '/stock',
+    [StockController::class,'index']
+)->name('stock.index');
 
+Route::post(
+    '/stock/{item}',
+    [StockController::class,'update']
+)->name('stock.update');
 
 
 

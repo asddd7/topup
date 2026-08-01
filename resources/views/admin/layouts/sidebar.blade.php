@@ -56,7 +56,15 @@ style="width:260px;">
                 Kategori Item
 
             </a>
+            
+<a href="{{ route('admin.stock.index') }}"
+class="list-group-item">
 
+    <i class="fa-solid fa-boxes-stacked me-2"></i>
+
+    Manajemen Stock
+
+</a>
 
 
         <a href="{{route('admin.discount.index')}}"

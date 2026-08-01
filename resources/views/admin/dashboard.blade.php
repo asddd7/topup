@@ -252,7 +252,24 @@ Voucher
 
 </div>
 
+<div class="col-md-2">
 
+<a href="{{ route('admin.stock.index') }}"
+class="text-decoration-none">
+
+<div class="card shadow-sm text-center p-3">
+
+<i class="fa-solid fa-boxes-stacked fa-2x text-primary"></i>
+
+<h6 class="mt-2">
+    Tambah Stock
+</h6>
+
+</div>
+
+</a>
+
+</div>
 
 
 

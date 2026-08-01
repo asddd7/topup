@@ -1,43 +1,72 @@
+/* =====================================================
+   GLOBAL
+===================================================== */
+
+:root{
+
+    --primary:#2563eb;
+    --primary-hover:#1d4ed8;
+
+    --success:#22c55e;
+    --danger:#ef4444;
+    --warning:#facc15;
+
+    --bg:#f4f7fb;
+    --card:#ffffff;
+
+    --text:#1e293b;
+    --muted:#64748b;
+
+    --border:#e5e7eb;
+
+    --radius:14px;
+
+    --shadow-sm:0 2px 6px rgba(0,0,0,.05);
+    --shadow:0 8px 25px rgba(0,0,0,.08);
+
+    --transition:.25s ease;
+
+}
+
+*{
+
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+
+}
+
 body{
 
-    background:#f4f6f9;
-
+    background:var(--bg);
     font-family:'Poppins',sans-serif;
-
+    color:var(--text);
     min-height:100vh;
 
 }
 
-
-
-/* wrapper */
+/* =====================================================
+   LAYOUT
+===================================================== */
 
 .page-wrapper{
 
-    min-height:100vh;
-
     display:flex;
+    min-height:100vh;
 
 }
 
-
-
-/* content kanan */
 .main-content{
 
+    flex:1;
     margin-left:260px;
 
     padding:30px;
 
-    min-height:100vh;
-
     display:flex;
-
     flex-direction:column;
 
 }
-
-
 
 .content-area{
 
@@ -45,150 +74,37 @@ body{
 
 }
 
-
-
-.customer-footer{
-
-    position:sticky;
-
-    bottom:20px;
-
-    margin-top:30px;
-
-}
-
-
-
-/* area isi */
-
 .content-wrapper{
 
     flex:1;
 
 }
 
-.box-name{
-        width:100%;
+.customer-footer{
 
+    margin-top:30px;
+
+}
+
+/* =====================================================
+   IMAGE
+===================================================== */
+
+.box-name,
+.banner-preview{
+
+    width:100%;
     max-width:600px;
 
     height:338px;
 
     object-fit:cover;
 
-    border-radius:12px;
+    border-radius:var(--radius);
 
-    border:1px solid #ddd;
+    border:1px solid var(--border);
 
-    box-shadow:0 4px 12px rgba(0,0,0,.15);
-}
-
-
-@media(max-width:991px){
-
-
-.main-content{
-
-    margin-left:0;
-
-    width:100%;
-
-}
-
-
-
-}
-
-
-/* Background gelap */
-.auth-overlay{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.45);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    z-index:1055;
-}
-
-/* Card Login */
-.auth-card{
-
-    width:100%;
-    max-width:420px;
-
-    background:#fff;
-
-    border-radius:18px;
-
-    border:none;
-
-    box-shadow:0 15px 40px rgba(0,0,0,.18);
-
-    animation:popup .25s ease;
-
-}
-
-@keyframes popup{
-
-    from{
-        opacity:0;
-        transform:scale(.9);
-    }
-
-    to{
-        opacity:1;
-        transform:scale(1);
-    }
-
-}
-
-.logo{
-
-    width:85px;
-    height:85px;
-
-    margin:auto;
-
-    border-radius:50%;
-
-    background:#0d6efd;
-
-    color:white;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    font-size:35px;
-
-}
-
-.auth-close{
-
-    position:absolute;
-
-    top:15px;
-
-    right:15px;
-
-}
-
-.auth-input{
-
-    border-radius:12px;
-
-    height:48px;
-
-}
-
-.auth-btn{
-
-    border-radius:12px;
-
-    height:48px;
+    box-shadow:var(--shadow);
 
 }
 
@@ -202,173 +118,245 @@ body{
 
     border-radius:10px;
 
-    border:1px solid #ddd;
+    border:1px solid var(--border);
+
+    transition:var(--transition);
 
 }
 
-.banner-preview{
+.banner-thumb:hover{
+
+    transform:scale(1.03);
+
+}
+
+/* =====================================================
+   LOGIN MODAL
+===================================================== */
+
+.auth-overlay{
+
+    position:fixed;
+    inset:0;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:rgba(15,23,42,.55);
+
+    backdrop-filter:blur(4px);
+
+    z-index:1055;
+
+}
+
+.auth-card{
 
     width:100%;
-
-    max-width:600px;
-
-    height:338px;
-
-    object-fit:cover;
-
-    border-radius:12px;
-
-    border:1px solid #ddd;
-
-    box-shadow:0 4px 12px rgba(0,0,0,.15);
-
-}
-
-/* ==============================
-   FOOTER TOPUP COMPACT
-================================ */
-
-footer {
-
-    background:
-    linear-gradient(
-        135deg,
-        #111827,
-        #0f172a
-    );
-
-    color:white;
-
-    padding-top:25px;
-
-    padding-bottom:15px;
-
-}
-
-
-
-/* Brand */
-
-footer h5 {
-
-    font-size:18px;
-
-    font-weight:700;
-
-    letter-spacing:.3px;
-
-    margin-bottom:10px;
-
-}
-
-
-
-footer p {
-
-    color:#cbd5e1;
-
-    line-height:1.5;
-
-    font-size:14px;
-
-    margin-bottom:8px;
-
-}
-
-
-
-/* Contact title */
-
-footer .contact-title {
-
-    color:white;
-
-    font-weight:600;
-
-    font-size:15px;
-
-}
-
-
-
-
-
-/* Social Button */
-
-footer a.btn {
-
-
-    border-radius:50px;
-
-    padding:
-
-    6px 14px;
-
-
-    font-size:13px;
-
-
-    transition:.3s;
-
+    max-width:420px;
 
     border:none;
 
+    border-radius:20px;
+
+    background:#fff;
+
+    box-shadow:0 20px 45px rgba(0,0,0,.18);
+
+    animation:popup .25s ease;
 
 }
 
+@keyframes popup{
 
+    from{
 
+        opacity:0;
+        transform:translateY(15px) scale(.96);
 
+    }
 
-/* WhatsApp */
+    to{
 
-footer .btn-success {
+        opacity:1;
+        transform:translateY(0) scale(1);
+
+    }
+
+}
+
+.auth-close{
+
+    position:absolute;
+
+    top:15px;
+    right:15px;
+
+}
+
+.logo{
+
+    width:90px;
+    height:90px;
+
+    border-radius:50%;
+
+    background:linear-gradient(135deg,var(--primary),#4f8dfd);
+
+    color:white;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:34px;
+
+    margin:auto;
+
+    box-shadow:var(--shadow);
+
+}
+
+.auth-input{
+
+    height:50px;
+
+    border-radius:12px;
+
+}
+
+.auth-input:focus{
+
+    border-color:var(--primary);
+
+    box-shadow:0 0 0 .15rem rgba(37,99,235,.2);
+
+}
+
+.auth-btn{
+
+    height:50px;
+
+    border-radius:12px;
+
+    transition:var(--transition);
+
+}
+
+.auth-btn:hover{
+
+    transform:translateY(-2px);
+
+}
+
+/* =====================================================
+   CARD
+===================================================== */
+
+.card{
+
+    border:none;
+
+    border-radius:var(--radius);
+
+    box-shadow:var(--shadow-sm);
+
+    transition:var(--transition);
+
+}
+
+.card:hover{
+
+    box-shadow:var(--shadow);
+
+}
+
+/* =====================================================
+   BUTTON
+===================================================== */
+
+.btn{
+
+    border-radius:10px;
+
+    transition:var(--transition);
+
+}
+
+.btn:hover{
+
+    transform:translateY(-2px);
+
+}
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+footer{
+
+    background:linear-gradient(
+        135deg,
+        #0f172a,
+        #111827
+    );
+
+    color:#fff;
+
+    padding:28px 0 18px;
+
+}
+
+footer h5{
+
+    font-size:18px;
+    font-weight:700;
+
+}
+
+footer p{
+
+    color:#cbd5e1;
+    font-size:14px;
+    line-height:1.6;
+
+}
+
+footer .contact-title{
+
+    color:#fff;
+    font-weight:600;
+
+}
+
+footer a.btn{
+
+    border-radius:50px;
+
+    padding:8px 16px;
+
+    font-size:13px;
+
+    transition:var(--transition);
+
+}
+
+footer .btn-success{
 
     background:#22c55e;
 
 }
 
-
-footer .btn-success:hover {
-
-    background:#16a34a;
-
-    transform:translateY(-2px);
-
-}
-
-
-
-
-
-/* Facebook */
-
-footer .btn-primary {
+footer .btn-primary{
 
     background:#2563eb;
 
 }
 
+footer .btn-danger{
 
-footer .btn-primary:hover {
-
-    background:#1d4ed8;
-
-    transform:translateY(-2px);
-
-}
-
-
-
-
-
-/* Instagram */
-
-footer .btn-danger {
-
-    background:
-
-    linear-gradient(
+    background:linear-gradient(
         45deg,
         #f97316,
         #ec4899
@@ -376,128 +364,102 @@ footer .btn-danger {
 
 }
 
-
-
-footer .btn-danger:hover {
-
-    opacity:.85;
-
-    transform:translateY(-2px);
-
-}
-
-
-
-
-
-/* Youtube */
-
-footer .btn-secondary {
+footer .btn-secondary{
 
     background:#dc2626;
 
 }
 
-
-
-footer .btn-secondary:hover {
-
-    background:#b91c1c;
+footer a.btn:hover{
 
     transform:translateY(-2px);
 
-}
-
-
-
-
-
-/* Icon */
-
-footer i {
-
-    margin-right:4px;
+    opacity:.9;
 
 }
 
+footer hr{
 
-
-
-
-/* Divider */
-
-footer hr {
-
-    border-color:
-
-    rgba(255,255,255,.2);
-
-    margin-top:18px;
-
-    margin-bottom:12px;
+    border-color:rgba(255,255,255,.15);
 
 }
 
-
-
-
-
-/* Copyright */
-
-footer .text-center {
+footer .text-center{
 
     color:#94a3b8;
-
-    font-size:12px;
+    font-size:13px;
 
 }
 
+/* =====================================================
+   PREVIEW CODE
+===================================================== */
 
+pre{
 
+    background:#fff;
 
+    border:1px solid var(--border);
 
-/* Mobile */
+    border-radius:12px;
+
+    padding:16px;
+
+    box-shadow:var(--shadow-sm);
+
+    font-size:.85rem;
+
+    max-height:350px;
+
+    overflow:auto;
+
+    white-space:pre-wrap;
+
+    word-break:break-word;
+
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width:991px){
+
+.main-content{
+
+    margin-left:0;
+
+    padding:20px;
+
+}
+
+}
 
 @media(max-width:768px){
 
-
-footer {
+footer{
 
     text-align:center;
 
-    padding-top:20px;
+}
 
-    padding-bottom:10px;
+footer .col-md-6{
+
+    margin-bottom:18px;
 
 }
 
+footer a.btn{
 
-
-footer .row .col-md-6 {
-
-    margin-bottom:15px;
+    margin-bottom:8px;
 
 }
 
+.banner-thumb{
 
-
-footer a.btn {
-
-    margin-bottom:6px;
-
-}
-
+    width:100%;
+    height:auto;
 
 }
 
-pre{
-    background:#f8f9fa;
-    border:1px solid #dee2e6;
-    border-radius:8px;
-    padding:12px;
-    font-size:.85rem;
-    max-height:350px;
-    overflow:auto;
-    white-space:pre-wrap;
-    word-break:break-word;
 }
