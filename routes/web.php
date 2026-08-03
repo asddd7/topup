@@ -394,13 +394,6 @@ Route::resource(
 */
 
 
-Route::get(
-    '/payment-confirmation',
-    [OrderController::class,'paymentConfirmation']
-)
-->name('payment-confirmation.index');
-
-
 
 
 Route::post(

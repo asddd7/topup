@@ -36,29 +36,19 @@ Semua Status
 </option>
 
 
-<option value="Waiting Payment">
-Waiting Payment
+@foreach($statusList as $itemStatus)
+
+<option value="{{ $itemStatus }}"
+@if($status==$itemStatus)
+selected
+@endif
+>
+
+{{ $itemStatus }}
+
 </option>
 
-
-<option value="Paid">
-Paid
-</option>
-
-
-<option value="Processing">
-Processing
-</option>
-
-
-<option value="Success">
-Success
-</option>
-
-
-<option value="Failed">
-Failed
-</option>
+@endforeach
 
 
 </select>
@@ -163,12 +153,47 @@ Rp {{number_format($order->total_price)}}
 <td>
 
 
-<span class="badge bg-warning">
+@if($order->status=='Waiting Payment')
 
-{{$order->status}}
-
+<span class="badge bg-secondary">
+Waiting Payment
 </span>
 
+@elseif($order->status=='Completed')
+
+<span class="badge bg-success">
+Completed
+</span>
+
+@elseif($order->status=='Paid')
+
+<span class="badge bg-primary">
+Paid
+</span>
+
+
+@elseif($order->status=='Processing')
+
+<span class="badge bg-warning">
+Processing
+</span>
+
+
+@elseif($order->status=='Success')
+
+<span class="badge bg-success">
+Success
+</span>
+
+
+@elseif($order->status=='Cancelled')
+
+<span class="badge bg-danger">
+Canceled
+</span>
+
+
+@endif
 
 </td>
 
@@ -182,11 +207,23 @@ Rp {{number_format($order->total_price)}}
 
 class="btn btn-sm btn-primary">
 
-
 <i class="fa-solid fa-eye"></i>
 
-
 </a>
+
+
+
+@if($order->status=='Paid')
+
+
+<span class="badge bg-danger ms-1">
+
+Menunggu Konfirmasi
+
+</span>
+
+
+@endif
 
 
 

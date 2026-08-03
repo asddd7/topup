@@ -159,24 +159,34 @@ method="POST">
 class="form-select">
 
 
-<option>
-Waiting Payment
+@php
+$statusList = [
+
+    'Pending',
+
+    'Waiting Payment',
+
+    'Paid',
+
+    'Cancelled'
+
+];
+@endphp
+
+
+@foreach($statusList as $status)
+
+<option value="{{ $status }}"
+@if($order->status == $status)
+selected
+@endif
+>
+
+{{ $status }}
+
 </option>
 
-
-<option>
-Processing
-</option>
-
-
-<option>
-Success
-</option>
-
-
-<option>
-Failed
-</option>
+@endforeach
 
 
 </select>
@@ -203,43 +213,41 @@ Update Status
 
 
 
-@if($order->status=='Waiting Payment')
+@if($order->status == 'Paid')
 
+<div class="d-grid gap-2 mt-3">
 
-<form action="{{route('admin.order.confirm',$order)}}"
-method="POST"
-class="mt-2">
+<form action="{{ route('admin.order.confirm',$order) }}"
+      method="POST">
 
-@csrf
+    @csrf
 
+    <button class="btn btn-success">
 
-<button class="btn btn-success w-100">
+        <i class="fa-solid fa-circle-check me-2"></i>
 
-Konfirmasi Pembayaran
+        Konfirmasi Pembayaran
 
-</button>
-
-
-</form>
-
-
-
-<form action="{{route('admin.order.reject',$order)}}"
-method="POST"
-class="mt-2">
-
-@csrf
-
-
-<button class="btn btn-danger w-100">
-
-Tolak Pembayaran
-
-</button>
-
+    </button>
 
 </form>
 
+<form action="{{ route('admin.order.reject',$order) }}"
+      method="POST">
+
+    @csrf
+
+    <button class="btn btn-danger">
+
+        <i class="fa-solid fa-circle-xmark me-2"></i>
+
+        Tolak Pembayaran
+
+    </button>
+
+</form>
+
+</div>
 
 @endif
 

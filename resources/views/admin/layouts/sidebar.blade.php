@@ -99,30 +99,31 @@ class="list-group-item">
 <a href="{{ route('admin.order.index') }}"
 class="list-group-item">
 
-    <i class="fa-solid fa-shopping-cart me-2"></i>
+<i class="fa-solid fa-shopping-cart me-2"></i>
 
-    Pesanan
+Pesanan
 
-</a>
 
-<a href="{{ route('admin.payment-confirmation.index') }}"
-class="list-group-item">
+@php
 
-    <i class="fa-solid fa-money-check-dollar me-2"></i>
+$waitingPayment =
+\App\Models\Order::where('status','Paid')->count();
 
-    Konfirmasi Pembayaran
+@endphp
 
-    @php
-        $waiting = \App\Models\Order::where('status','Paid')->count();
-    @endphp
 
-    @if($waiting)
-        <span class="badge bg-danger float-end">
-            {{ $waiting }}
-        </span>
-    @endif
+@if($waitingPayment)
 
-</a>        
+<span class="badge bg-danger float-end">
+
+{{ $waitingPayment }}
+
+</span>
+
+@endif
+
+
+</a>    
 
 
         <a href="#"

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Http\Controllers\Controller;
-
+use App\Models\Notification;
 use App\Models\Order;
 
 use Illuminate\Http\Request;
@@ -17,47 +17,64 @@ class OrderController extends Controller
 public function index(Request $request)
 {
 
+    $statusList = [
 
-$status = $request->status;
+        'Pending',
+
+        'Waiting Payment',
+
+        'Paid',
+
+        'Processing',
+
+        'Completed',
+
+        'Cancelled'
+
+    ];
 
 
-
-$orders = Order::with([
-
-'user',
-
-'game',
-
-'payment'
-
-])
-
-->when(
-$status,
-function($query) use($status){
-
-$query->where(
-'status',
-$status
-);
-
-}
-
-)
-
-->latest()
-
-->get();
+    $status = $request->status;
 
 
 
-return view(
-'admin.order.index',
-compact(
-'orders',
-'status'
-)
-);
+    $orders = Order::with([
+
+        'user',
+
+        'game',
+
+        'payment'
+
+    ])
+
+    ->when(
+        $status,
+        function($query) use($status){
+
+            $query->where(
+                'status',
+                $status
+            );
+
+        }
+
+    )
+
+    ->latest()
+
+    ->get();
+
+
+
+    return view(
+        'admin.order.index',
+        compact(
+            'orders',
+            'status',
+            'statusList'
+        )
+    );
 
 
 }
@@ -104,37 +121,65 @@ compact(
 
 
 public function update(
-Request $request,
-Order $order
+    Request $request,
+    Order $order
 )
 {
 
 
 $request->validate([
 
-'status'=>'required'
+    'status'=>'required'
 
 ]);
 
 
 
+$oldStatus = $order->status;
+
+
+
 $order->update([
-
-'status'=>$request->status,
-
-'notes'=>$request->notes
-
+    'status' => $request->status,
+    'notes'  => $request->notes
 ]);
 
 
 
 $order->paymentLogs()->create([
 
-'status'=>$request->status,
+    'status'=>$request->status,
 
-'message'=>'Status diperbarui admin'
+    'message'=>'Status diperbarui admin'
 
 ]);
+
+
+
+
+/*
+|--------------------------------------------------------------------------
+| Hapus Notifikasi jika Order Completed
+|--------------------------------------------------------------------------
+*/
+
+if($request->status == 'Completed')
+{
+
+    Notification::where(
+        'order_id',
+        $order->id
+    )
+    ->update([
+
+        'is_read'=>1,
+
+        'read_at'=>now()
+
+    ]);
+
+}
+
 
 
 
@@ -152,101 +197,71 @@ return back()->with(
 
 
 
-
 public function confirm(Order $order)
 {
+    if($order->status != 'Paid'){
 
+        return back()->with(
+            'error',
+            'Order belum berstatus Paid.'
+        );
 
-$order->update([
+    }
 
-'status'=>'Processing'
+    $order->update([
 
-]);
+        'status'=>'Completed'
 
+    ]);
 
+    $order->paymentLogs()->create([
 
-$order->paymentLogs()->create([
+        'status'=>'Completed',
 
-'status'=>'Paid',
+        'message'=>'Pembayaran berhasil dikonfirmasi Admin.'
 
-'message'=>'Pembayaran dikonfirmasi admin'
+    ]);
 
-]);
+    Notification::where(
+        'order_id',
+        $order->id
+    )->update([
 
+        'is_read'=>1,
 
+        'read_at'=>now()
 
-return response()->json([
+    ]);
 
-'success'=>true,
-
-'message'=>'Pembayaran berhasil dikonfirmasi'
-
-]);
-
-
+    return back()->with(
+        'success',
+        'Order berhasil diselesaikan.'
+    );
 }
 
 public function reject(Order $order)
 {
 
+    $order->update([
 
-$order->update([
+        'status'=>'Waiting Payment',
 
-'status'=>'Waiting Payment',
+        'payment_proof'=>null
 
-'payment_proof'=>null
+    ]);
 
-]);
+    $order->paymentLogs()->create([
 
+        'status'=>'Failed',
 
-$order->paymentLogs()->create([
+        'message'=>'Pembayaran ditolak. Silakan upload ulang.'
 
-'status'=>'Failed',
+    ]);
 
-'message'=>'Pembayaran ditolak admin, menunggu upload ulang'
-
-]);
-
-
-return response()->json([
-
-'success'=>true,
-
-'message'=>'Pembayaran ditolak, user dapat upload ulang'
-
-]);
-
-}
-
-public function paymentConfirmation()
-{
-
-
-$orders = Order::with([
-    'user',
-    'game',
-    'payment'
-])
-
-->whereIn(
-    'status',
-    [
-        'Paid',
-        'Waiting Payment'
-    ]
-)
-
-->latest()
-
-->get();
-
-
-
-return view(
-    'admin.order.payment-confirmation',
-    compact('orders')
-);
-
+    return back()->with(
+        'success',
+        'Pembayaran berhasil ditolak.'
+    );
 
 }
 }

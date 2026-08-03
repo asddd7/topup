@@ -155,7 +155,7 @@ Shortcut
 <div class="col-md-2">
 
 
-<a href="{{route('admin.payment-confirmation.index')}}"
+<a href="{{route('admin.order.index')}}"
 class="text-decoration-none">
 
 
@@ -367,12 +367,47 @@ Rp {{number_format($order->total_price)}}
 
 <td>
 
-<span class="badge bg-warning">
+@if($order->status=='Waiting Payment')
 
-{{$order->status}}
-
+<span class="badge bg-secondary">
+Waiting Payment
 </span>
 
+@elseif($order->status=='Completed')
+
+<span class="badge bg-success">
+Completed
+</span>
+
+@elseif($order->status=='Paid')
+
+<span class="badge bg-primary">
+Paid
+</span>
+
+
+@elseif($order->status=='Processing')
+
+<span class="badge bg-warning">
+Processing
+</span>
+
+
+@elseif($order->status=='Success')
+
+<span class="badge bg-success">
+Success
+</span>
+
+
+@elseif($order->status=='Cancelled')
+
+<span class="badge bg-danger">
+Canceled
+</span>
+
+
+@endif
 </td>
 
 
