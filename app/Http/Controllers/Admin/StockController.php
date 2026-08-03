@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Admin\BaseAdminController;
 use App\Models\Game;
+use App\Models\User;
 use App\Models\Item;
+use App\Models\Notification;
 use App\Models\ItemCategory;
 use Illuminate\Http\Request;
 
@@ -71,12 +73,36 @@ class StockController extends BaseAdminController
 
         $old = $item->stock;
 
-        $item->increment(
-            'stock',
-            $request->stock
-        );
+$item->increment('stock', $request->stock);
 
-        $this->activity->log(
+$item->refresh();
+
+if ($item->stock >= 10) {
+
+    Notification::where('item_id', $item->id)
+        ->where('title', 'Stock Rendah')
+        ->delete();
+
+} else {
+
+    foreach (User::where('role_id',1)->get() as $admin) {
+
+        Notification::updateOrCreate(
+            [
+                'user_id'=>$admin->id,
+                'item_id'=>$item->id,
+                'title'=>'Stock Rendah'
+            ],
+            [
+                'message'=>$item->item_name.' tersisa '.$item->stock,
+                'is_read'=>0
+            ]
+        );
+    }
+
+}
+
+$this->activity->log(
 
             'Item',
 

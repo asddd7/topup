@@ -15,14 +15,6 @@ style="width:260px;">
 
     </h4>
 
-    <button
-
-    class="btn-close"
-
-    data-bs-dismiss="offcanvas">
-
-    </button>
-
 </div>
 
 <div class="offcanvas-body p-0">

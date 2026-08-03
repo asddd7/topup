@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Http\Controllers\Admin\BaseAdminController;
+use App\Models\Item;
+use App\Models\User;
 use App\Models\Notification;
 use App\Models\Order;
 
@@ -208,50 +210,109 @@ return back()->with(
 
 public function confirm(Order $order)
 {
-    if($order->status != 'Paid'){
-
+    if ($order->status != 'Paid') {
         return back()->with(
             'error',
             'Order belum berstatus Paid.'
         );
+    }
+
+    // Load detail beserta item
+    $order->load('details.item');
+
+    // ==========================
+    // Cek stok terlebih dahulu
+    // ==========================
+    foreach ($order->details as $detail) {
+
+        if ($detail->item->stock < $detail->qty) {
+
+            return back()->with(
+                'error',
+                'Stock '.$detail->item->item_name.' tidak mencukupi.'
+            );
+
+        }
 
     }
-$old = $order->toArray();
+
+    // ==========================
+    // Kurangi stok
+    // ==========================
+    foreach ($order->details as $detail) {
+
+        $item = $detail->item;
+
+        $item->decrement('stock', $detail->qty);
+
+        $item->refresh();
+
+        // Jika stok dibawah 10 buat notif
+        if ($item->stock < 10) {
+
+            foreach (User::where('role_id',1)->get() as $admin) {
+
+                \App\Models\Notification::updateOrCreate(
+
+                    [
+                        'user_id'=>$admin->id,
+                        'item_id'=>$item->id,
+                        'title'=>'Stock Rendah'
+                    ],
+
+                    [
+                        'message'=>$item->item_name.' tersisa '.$item->stock,
+                        'is_read'=>0
+                    ]
+
+                );
+
+            }
+
+        }
+
+    }
+
+    // ==========================
+    // Update Order
+    // ==========================
+    $old = $order->toArray();
+
     $order->update([
-
         'status'=>'Completed'
-
     ]);
-$this->activity->log(
-    'Order',
-    'Confirm Payment',
-    'Konfirmasi pembayaran order '.$order->invoice_number,
-    $order,
-    $old,
-    $order->fresh()->toArray()
-);
+
+    $this->activity->log(
+        'Order',
+        'Confirm Payment',
+        'Konfirmasi pembayaran '.$order->invoice_number,
+        $order,
+        $old,
+        $order->fresh()->toArray()
+    );
+
+    // ==========================
+    // Payment Log
+    // ==========================
     $order->paymentLogs()->create([
-
         'status'=>'Completed',
-
         'message'=>'Pembayaran berhasil dikonfirmasi Admin.'
-
     ]);
 
+    // ==========================
+    // Notifikasi order selesai
+    // ==========================
     Notification::where(
         'order_id',
         $order->id
     )->update([
-
         'is_read'=>1,
-
         'read_at'=>now()
-
     ]);
 
     return back()->with(
         'success',
-        'Order berhasil diselesaikan.'
+        'Order berhasil dikonfirmasi.'
     );
 }
 

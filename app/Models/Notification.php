@@ -11,6 +11,7 @@ class Notification extends Model
 
         'user_id',
         'order_id',
+        'item_id',
         'title',
         'message',
         'is_read',
@@ -30,4 +31,13 @@ class Notification extends Model
         return $this->belongsTo(Order::class);
     }
 
+    public function item()
+    {
+        return $this->belongsTo(Item::class);
+    }
+
+    public function stock()
+    {
+        return $this->belongsTo(Item::class,'item_id');
+    }
 }
