@@ -36,29 +36,16 @@ class AppServiceProvider extends ServiceProvider
             if(auth()->check()){
 
 
-                $notifications = Notification::where(
-                    'user_id',
-                    auth()->id()
-                )
-                ->where(
-                    'is_read',
-                    0
-                )
-                ->latest()
-                ->limit(5)
-                ->get();
+$notifications = Notification::where(
+        'user_id',
+        auth()->id()
+    )
+    ->where('is_read',0)
+    ->latest()
+    ->take(5)
+    ->get();
 
-
-
-                $notificationCount = Notification::where(
-                    'user_id',
-                    auth()->id()
-                )
-                ->where(
-                    'is_read',
-                    0
-                )
-                ->count();
+$notificationCount = $notifications->count();
 
 
 

@@ -15,27 +15,20 @@ public function updated(Order $order)
 {
 
 
-    if(
-        $order->isDirty('status')
-        &&
-        $order->status == 'Completed'
-    ){
+if(
+    $order->wasChanged('status') &&
+    in_array($order->status,[
+        'Completed',
+        'Cancelled'
+    ])
+){
 
+    Notification::where(
+        'order_id',
+        $order->id
+    )->delete();
 
-        Notification::where(
-            'order_id',
-            $order->id
-        )
-        ->update([
-
-            'is_read'=>1,
-
-            'read_at'=>now()
-
-        ]);
-
-
-    }
+}
 
 
 }

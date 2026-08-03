@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\BaseAdminController;
 use App\Models\Notification;
 use App\Models\Order;
 
 use Illuminate\Http\Request;
 
 
-class OrderController extends Controller
+class OrderController extends BaseAdminController
 {
 
 
@@ -138,12 +138,21 @@ $request->validate([
 $oldStatus = $order->status;
 
 
-
+$old = $order->toArray();
 $order->update([
     'status' => $request->status,
     'notes'  => $request->notes
 ]);
-
+$this->activity->log(
+    'Order',
+    'Update Status',
+    'Update status order '.$order->invoice_number.
+    ' dari '.$old['status'].
+    ' menjadi '.$order->status,
+    $order,
+    $old,
+    $order->fresh()->toArray()
+);
 
 
 $order->paymentLogs()->create([
@@ -207,13 +216,20 @@ public function confirm(Order $order)
         );
 
     }
-
+$old = $order->toArray();
     $order->update([
 
         'status'=>'Completed'
 
     ]);
-
+$this->activity->log(
+    'Order',
+    'Confirm Payment',
+    'Konfirmasi pembayaran order '.$order->invoice_number,
+    $order,
+    $old,
+    $order->fresh()->toArray()
+);
     $order->paymentLogs()->create([
 
         'status'=>'Completed',
@@ -241,7 +257,7 @@ public function confirm(Order $order)
 
 public function reject(Order $order)
 {
-
+$old = $order->toArray();
     $order->update([
 
         'status'=>'Waiting Payment',
@@ -249,7 +265,14 @@ public function reject(Order $order)
         'payment_proof'=>null
 
     ]);
-
+$this->activity->log(
+    'Order',
+    'Reject Payment',
+    'Menolak pembayaran order '.$order->invoice_number,
+    $order,
+    $old,
+    $order->fresh()->toArray()
+);
     $order->paymentLogs()->create([
 
         'status'=>'Failed',
