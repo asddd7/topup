@@ -133,18 +133,31 @@ $item = Item::with('game')
 
 
 
-$subtotal =
-$item->price;
+$subtotal = $item->price;
 
 
-
-$discountAmount=0;
-
-
-$discount=null;
+$discountAmount = (float) $request->discount;
 
 
-$totalPrice=$subtotal;
+$discount = null;
+
+
+$totalPrice = (float) $request->total_price;
+
+
+// safety check
+if($totalPrice <= 0){
+
+    $totalPrice = $subtotal - $discountAmount;
+
+}
+
+
+if($totalPrice < 0){
+
+    $totalPrice = 0;
+
+}
 
 
 
@@ -450,21 +463,13 @@ foreach($admins as $admin)
 
 $order->details()->create([
 
+    'item_id'=>$item->id,
 
-'item_id'=>
-$item->id,
+    'qty'=>1,
 
+    'price'=>$totalPrice,
 
-'qty'=>1,
-
-
-'price'=>
-$item->price,
-
-
-'subtotal'=>
-$item->price
-
+    'subtotal'=>$totalPrice
 
 ]);
 

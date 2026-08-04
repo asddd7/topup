@@ -332,15 +332,23 @@ Masukkan kode voucher
 
 
 </div>
+
+<input
+type="hidden"
+name="voucher"
+id="voucher">
+
 <input type="hidden"
 name="discount_id"
 id="discount_id"
 value="">
 
-
 <input type="hidden"
 name="subtotal"
 id="subtotal">
+
+<input type="hidden"
+id="original_subtotal">
 
 
 <input type="hidden"
@@ -481,6 +489,14 @@ let selectedPrice = 0;
 function selectItem(id,name,price)
 {
 
+document.getElementById('discount_id').value="";
+document.getElementById('discount').value=0;
+document.getElementById('discount_price').innerHTML="0";
+document.getElementById('voucher').value="";
+document.getElementById('voucher_message').innerHTML=
+"Masukkan voucher";
+
+
 document.getElementById('item_id').value=id;
 
 
@@ -500,6 +516,10 @@ document.getElementById('final_price')
 
 
 document.getElementById('subtotal')
+.value=selectedPrice;
+
+
+document.getElementById('original_subtotal')
 .value=selectedPrice;
 
 
@@ -566,6 +586,8 @@ document.getElementById('item_id').value
 if(data.status)
 {
 
+
+document.getElementById('voucher').value=code;
 
 document.getElementById('discount_id')
 .value=data.discount_id;
@@ -657,7 +679,7 @@ payment_id:this.value,
 
 subtotal:
 parseInt(
-document.getElementById('total_price').value
+document.getElementById('original_subtotal').value
 ),
 
 game_id:"{{$game->id}}",

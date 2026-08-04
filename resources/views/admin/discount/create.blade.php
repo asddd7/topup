@@ -162,33 +162,40 @@
                     </div>
 
                     <hr>
-<div class="mb-3"
-     id="paymentArea"
-     style="display:none">
 
-    <label class="form-label">
-        Metode Pembayaran
-    </label>
+                    <div class="mb-3">
 
-    <select
-        name="payment_id"
-        class="form-select">
+                    <label class="form-label">
+                    Metode Pembayaran
+                    </label>
 
-        <option value="">
-            Semua Metode
-        </option>
 
-        @foreach($payments as $payment)
+                    <select
+                    name="payment_id"
+                    class="form-select">
 
-        <option value="{{ $payment->id }}">
-            {{ $payment->payment_name }}
-        </option>
 
-        @endforeach
+                    <option value="">
+                    Semua Pembayaran
+                    </option>
 
-    </select>
 
-</div>
+                    @foreach($payments as $payment)
+
+                    <option value="{{ $payment->id }}">
+
+                    {{ $payment->payment_name }}
+
+                    </option>
+
+                    @endforeach
+
+
+                    </select>
+
+                    </div>
+                    <hr>
+
                     {{-- ========================= --}}
                     {{-- DISKON --}}
                     {{-- ========================= --}}
