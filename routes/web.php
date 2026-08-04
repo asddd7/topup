@@ -122,7 +122,11 @@ Route::post(
 ->name('voucher.check');
 
 
-
+Route::post(
+    '/payment-promo',
+    [VoucherController::class,'paymentPromo']
+)
+->name('payment.promo');
 
 
 /*

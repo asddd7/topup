@@ -57,20 +57,8 @@
                                 User Baru
                             </option>
 
-                            <option value="first_order">
-                                Order Pertama
-                            </option>
-
-                            <option value="birthday">
-                                Ulang Tahun
-                            </option>
-
                             <option value="flash_sale">
                                 Flash Sale
-                            </option>
-
-                            <option value="event">
-                                Event
                             </option>
 
                             <option value="payment_method">
@@ -174,7 +162,33 @@
                     </div>
 
                     <hr>
+<div class="mb-3"
+     id="paymentArea"
+     style="display:none">
 
+    <label class="form-label">
+        Metode Pembayaran
+    </label>
+
+    <select
+        name="payment_id"
+        class="form-select">
+
+        <option value="">
+            Semua Metode
+        </option>
+
+        @foreach($payments as $payment)
+
+        <option value="{{ $payment->id }}">
+            {{ $payment->payment_name }}
+        </option>
+
+        @endforeach
+
+    </select>
+
+</div>
                     {{-- ========================= --}}
                     {{-- DISKON --}}
                     {{-- ========================= --}}
@@ -360,25 +374,27 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     const trigger = document.getElementById('trigger_type');
+
     const voucherArea = document.getElementById('voucherCodeArea');
 
-    function toggleVoucher() {
+    const paymentArea = document.getElementById('paymentArea');
 
-        if (trigger.value === 'voucher') {
+    function toggleForm(){
 
-            voucherArea.style.display = '';
+        voucherArea.style.display =
+            trigger.value === 'voucher'
+            ? ''
+            : 'none';
 
-        } else {
-
-            voucherArea.style.display = 'none';
-
-        }
-
+        paymentArea.style.display =
+            trigger.value === 'payment_method'
+            ? ''
+            : 'none';
     }
 
-    trigger.addEventListener('change', toggleVoucher);
+    trigger.addEventListener('change', toggleForm);
 
-    toggleVoucher();
+    toggleForm();
 
 });
 </script>

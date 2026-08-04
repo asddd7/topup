@@ -408,12 +408,12 @@ Rp <span id="final_price">
 
         <label class="payment-card border rounded-3 p-3 mb-3 d-flex align-items-center">
 
-            <input
-                type="radio"
-                class="form-check-input me-3"
-                name="payment_id"
-                value="{{ $payment->id }}"
-                required>
+        <input
+        type="radio"
+        class="payment-radio"
+        name="payment_id"
+        value="{{ $payment->id }}"
+        required>
 
             @if($payment->image)
 
@@ -554,7 +554,6 @@ item_id:
 document.getElementById('item_id').value
 
 })
-
 }
 
 )
@@ -624,5 +623,153 @@ return new Intl.NumberFormat('id-ID')
 .format(number);
 
 }
+
+document
+.querySelectorAll('.payment-radio')
+.forEach(function(payment){
+
+
+payment.addEventListener(
+'change',
+function(){
+
+
+fetch(
+"{{ route('payment.promo') }}",
+{
+
+method:"POST",
+
+headers:{
+
+"Content-Type":"application/json",
+
+"X-CSRF-TOKEN":
+document
+.querySelector('meta[name="csrf-token"]')
+.content
+
+},
+
+body:JSON.stringify({
+
+payment_id:this.value,
+
+subtotal:
+parseInt(
+document.getElementById('total_price').value
+),
+
+game_id:"{{$game->id}}",
+
+item_id:
+document.getElementById('item_id').value
+
+})
+
+
+}
+
+)
+
+
+.then(res=>res.json())
+
+.then(data=>{
+
+
+if(data.status){
+
+
+document
+.getElementById('discount_id')
+.value=data.discount_id;
+
+
+
+document
+.getElementById('discount')
+.value=data.discount;
+
+
+
+document
+.getElementById('discount_price')
+.innerHTML=
+formatRupiah(data.discount);
+
+
+
+document
+.getElementById('final_price')
+.innerHTML=
+formatRupiah(data.total);
+
+
+
+document
+.getElementById('total_price')
+.value=data.total;
+
+
+
+document
+.getElementById('voucher_message')
+.innerHTML=
+data.message;
+
+
+}
+
+
+});
+
+
+});
+
+
+});
+
+const paymentArea =
+document.getElementById('paymentArea');
+
+
+function togglePromoTarget() {
+
+
+if(trigger.value === 'voucher'){
+
+    voucherArea.style.display='';
+
+
+}else{
+
+    voucherArea.style.display='none';
+
+}
+
+
+
+if(trigger.value === 'payment_method'){
+
+    paymentArea.style.display='';
+
+}else{
+
+    paymentArea.style.display='none';
+
+}
+
+
+}
+
+
+trigger.addEventListener(
+'change',
+togglePromoTarget
+);
+
+
+togglePromoTarget();
 </script>
 @endsection

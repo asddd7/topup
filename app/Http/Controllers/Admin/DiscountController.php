@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Discount;
 use App\Models\Game;
 use App\Models\Item;
+use App\Models\Payment;
 
 class DiscountController extends BaseAdminController
 {
@@ -30,16 +31,19 @@ class DiscountController extends BaseAdminController
         $items = Item::where('is_active',1)
             ->get();
 
+        $payments = Payment::where('is_active',1)
+        ->get();
+
+        $payments = Payment::where('is_active',1)
+        ->get();
 
 
-        return view(
-            'admin.discount.index',
-            compact(
-                'discounts',
-                'games',
-                'items'
-            )
-        );
+    return view('admin.discount.index',[
+        'discounts' => Discount::latest()->get(),
+        'games' => Game::all(),
+        'items' => Item::all(),
+        'payments' => Payment::where('is_active',1)->get(),
+    ]);
 
     }
 
@@ -59,11 +63,14 @@ class DiscountController extends BaseAdminController
             ->get();
 
 
+        $payments = Payment::all();
+
         return view(
             'admin.discount.create',
             compact(
                 'games',
-                'items'
+                'items',
+                'payments'
             )
         );
 
@@ -96,6 +103,8 @@ public function store(Request $request)
         'usage_limit' => 'nullable|integer|min:1',
 
         'usage_per_user' => 'nullable|integer|min:1',
+
+        'payment_id'=>'nullable|exists:payments,id',
 
     ]);
 
@@ -142,6 +151,8 @@ public function store(Request $request)
         'usage_per_user' => $request->usage_per_user ?? 1,
 
         'quota_used' => 0,
+
+        'payment_id'=>$request->payment_id,
 
     ]);
 $this->activity->log(
@@ -217,6 +228,8 @@ public function update(Request $request, Discount $discount)
 
         'usage_per_user'=>'nullable|integer',
 
+        'payment_id'=>'nullable|exists:payments,id',
+
     ]);
     $old = $discount->toArray();
 
@@ -249,6 +262,8 @@ public function update(Request $request, Discount $discount)
         'usage_limit'=>$request->usage_limit,
 
         'usage_per_user'=>$request->usage_per_user ?? 1,
+
+        'payment_id'=>$request->payment_id,
 
     ]);
 

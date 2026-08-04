@@ -7,38 +7,34 @@ use Illuminate\Database\Eloquent\Model;
 class Discount extends Model
 {
 
-protected $fillable=[
+protected $fillable = [
 
+    'code',
+    'game_id',
+    'item_id',
+    'payment_id',
 
-'code',
+    'discount_name',
 
-'game_id',
+    'discount_type',
 
-'item_id',
+    'amount',
 
-'discount_name',
+    'start_date',
 
-'discount_type',
+    'end_date',
 
-'amount',
+    'is_active',
 
-'start_date',
+    'trigger_type',
 
-'end_date',
+    'minimum_purchase',
 
-'is_active',
+    'usage_limit',
 
+    'usage_per_user',
 
-'trigger_type',
-
-'minimum_purchase',
-
-'usage_limit',
-
-'usage_per_user',
-
-'quota_used'
-
+    'quota_used'
 
 ];
 
@@ -56,5 +52,9 @@ public function item()
     return $this->belongsTo(Item::class);
 }
 
+public function payment()
+{
+    return $this->belongsTo(Payment::class);
+}
 
 }

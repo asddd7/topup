@@ -2,173 +2,95 @@
 
 namespace App\Http\Controllers\User;
 
-
 use App\Http\Controllers\Controller;
-use App\Models\Discount;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Services\PromotionService;
 
 
 class VoucherController extends Controller
 {
 
+    public function __construct(
+        protected PromotionService $promotion
+    )
+    {
+    }
 
-public function check(Request $request)
-{
 
 
-$request->validate([
+    public function check(Request $request)
+    {
 
-    'code'=>'required',
+        $request->validate([
 
-    'game_id'=>'required',
+            'code'=>'required',
 
-    'item_id'=>'required',
+            'game_id'=>'required',
 
-    'price'=>'required'
+            'item_id'=>'required',
 
-]);
+            'price'=>'required'
 
+        ]);
 
 
-$discount = Discount::where(
-    'code',
-    $request->code
-)
+        return response()->json(
 
-->where('is_active',1)
+            $this->promotion->calculate(
 
+                subtotal:$request->price,
 
+                gameId:$request->game_id,
 
-->where(function($q) use($request){
+                itemId:$request->item_id,
 
-    $q->whereNull('game_id')
-      ->orWhere(
-          'game_id',
-          $request->game_id
-      );
+                voucherCode:$request->code
 
-})
+            )
 
+        );
 
+    }
 
-->where(function($q) use($request){
 
-    $q->whereNull('item_id')
-      ->orWhere(
-          'item_id',
-          $request->item_id
-      );
 
-})
+    // ============================
+    // PROMO METODE PEMBAYARAN
+    // ============================
 
-->first();
+    public function paymentPromo(Request $request)
+    {
 
+        $request->validate([
 
+            'payment_id'=>'required',
 
-if(!$discount)
-{
+            'game_id'=>'required',
 
-return response()->json([
+            'item_id'=>'required',
 
-    'status'=>false,
+            'subtotal'=>'required'
 
-    'message'=>'Voucher tidak ditemukan'
+        ]);
 
-]);
 
-}
+        return response()->json(
 
+            $this->promotion->calculate(
 
+                subtotal:$request->subtotal,
 
-$today=Carbon::today();
+                gameId:$request->game_id,
 
+                itemId:$request->item_id,
 
+                paymentId:$request->payment_id
 
-if(
-$discount->start_date &&
-$today->lt($discount->start_date)
-)
-{
+            )
 
-return response()->json([
+        );
 
-'status'=>false,
-
-'message'=>'Voucher belum aktif'
-
-]);
-
-}
-
-
-
-
-if(
-$discount->end_date &&
-$today->gt($discount->end_date)
-)
-{
-
-return response()->json([
-
-'status'=>false,
-
-'message'=>'Voucher sudah expired'
-
-]);
-
-}
-
-
-
-
-if($discount->discount_type=="percent")
-{
-
-$discountValue =
-$request->price *
-($discount->amount/100);
-
-}
-else
-{
-
-$discountValue =
-$discount->amount;
-
-}
-
-
-
-$total =
-$request->price-$discountValue;
-
-
-
-return response()->json([
-
-
-'status'=>true,
-
-
-'discount_id'=>$discount->id,
-
-
-'discount'=>$discountValue,
-
-
-'total'=>$total,
-
-
-'message'=>'Voucher berhasil digunakan'
-
-
-]);
-
-
-}
-
+    }
 
 
 }
