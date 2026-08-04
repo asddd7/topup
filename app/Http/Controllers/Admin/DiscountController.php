@@ -77,7 +77,7 @@ public function store(Request $request)
 {
     $request->validate([
 
-        'code' => 'required|max:255',
+        'code' => 'nullable|max:255|unique:discounts,code',
 
         'discount_name' => 'required|max:255',
 
@@ -99,11 +99,22 @@ public function store(Request $request)
 
     ]);
 
+    $code = $request->code;
 
+    if (empty($code)) {
+
+        $code = strtoupper($request->trigger_type)
+            . '-'
+            . strtoupper(\Illuminate\Support\Str::random(6));
+
+    }
+    $code = $request->filled('code')
+    ? strtoupper($request->code)
+    : strtoupper($request->trigger_type).'-'.str()->upper(str()->random(6));
 
     $discount = Discount::create([
 
-        'code' => strtoupper($request->code),
+        'code' => $code,
 
         'game_id' => $request->game_id,
 
@@ -186,7 +197,7 @@ public function update(Request $request, Discount $discount)
 
     $request->validate([
 
-        'code'=>'required',
+        'code' => 'required_if:trigger_type,voucher|nullable|max:255',
 
         'discount_name'=>'required',
 
@@ -211,7 +222,9 @@ public function update(Request $request, Discount $discount)
 
     $discount->update([
 
-        'code'=>strtoupper($request->code),
+        'code' => $request->filled('code')
+        ? strtoupper($request->code)
+        : $discount->code,
 
         'game_id'=>$request->game_id,
 
