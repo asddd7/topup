@@ -14,20 +14,21 @@ protected $fillable = [
     'slug',
     'game_logo',
     'publisher',
-
-    'player_input_type',
-
-    'input_label',
-    'input_label_2',
-
-    'input_placeholder',
-    'input_placeholder_2',
+    'player_fields',
 
     'login_guide',
     'description',
 
     'sort_order',
     'is_active'
+
+];
+
+protected $casts = [
+
+    'player_fields'=>'array',
+
+    'is_active'=>'boolean'
 
 ];
 

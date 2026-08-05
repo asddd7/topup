@@ -87,57 +87,147 @@ Publisher
 
 </div>
 
-<div class="mb-3">
+<hr>
 
-<label class="form-label">
+<h6 class="fw-bold mb-3">
 
-Jenis Input Player
+<i class="fa-solid fa-id-card me-2"></i>
 
-</label>
+Field Input Player
 
+</h6>
 
-<select name="player_input_type"
-class="form-select" value="{{ $game->player_input_type}}">
+<div id="playerFields{{ $game->id }}">
 
+@php
 
-<option value="uid">
+$fields = $game->player_fields ?? [];
 
-UID Saja
+@endphp
 
+@foreach($fields as $i => $field)
+
+<div class="card mb-3 player-field">
+
+<div class="card-body">
+
+<div class="row">
+
+<div class="col-md-3">
+
+<label>Nama Field</label>
+
+<input
+type="text"
+class="form-control"
+name="player_fields[{{ $i }}][name]"
+value="{{ $field['name'] ?? '' }}"
+placeholder="uid">
+
+</div>
+
+<div class="col-md-3">
+
+<label>Label</label>
+
+<input
+type="text"
+class="form-control"
+name="player_fields[{{ $i }}][label]"
+value="{{ $field['label'] ?? '' }}"
+placeholder="UID Player">
+
+</div>
+
+<div class="col-md-3">
+
+<label>Placeholder</label>
+
+<input
+type="text"
+class="form-control"
+name="player_fields[{{ $i }}][placeholder]"
+value="{{ $field['placeholder'] ?? '' }}"
+placeholder="Masukkan UID">
+
+</div>
+
+<div class="col-md-2">
+
+<label>Tipe</label>
+
+<select
+class="form-select"
+name="player_fields[{{ $i }}][type]">
+
+<option value="text"
+{{ ($field['type'] ?? '')=='text'?'selected':'' }}>
+Text
 </option>
 
-
-<option value="uid_server">
-
-UID + Server
-
+<option value="number"
+{{ ($field['type'] ?? '')=='number'?'selected':'' }}>
+Number
 </option>
 
-
-<option value="riot_id">
-
-Riot ID
-
-</option>
-
-
-<option value="email">
-
+<option value="email"
+{{ ($field['type'] ?? '')=='email'?'selected':'' }}>
 Email
-
 </option>
-
-
-<option value="none">
-
-Tidak Ada
-
-</option>
-
 
 </select>
 
 </div>
+
+<div class="col-md-1 d-flex align-items-end">
+
+<button
+type="button"
+class="btn btn-danger remove-field">
+
+<i class="fa fa-trash"></i>
+
+</button>
+
+</div>
+
+</div>
+
+<div class="form-check mt-3">
+
+<input
+type="checkbox"
+class="form-check-input"
+name="player_fields[{{ $i }}][required]"
+value="1"
+{{ !empty($field['required']) ? 'checked' : '' }}>
+
+<label class="form-check-label">
+
+Wajib Diisi
+
+</label>
+
+</div>
+
+</div>
+
+</div>
+
+@endforeach
+
+</div>
+
+<button
+type="button"
+class="btn btn-outline-primary btn-sm"
+onclick="addPlayerField{{ $game->id }}()">
+
+<i class="fa fa-plus"></i>
+
+Tambah Field
+
+</button>
 
 
 <div class="mb-3">
@@ -247,3 +337,127 @@ Update
 </div>
 
 </div>
+<script>
+
+let fieldIndex{{ $game->id }} =
+{{ count($fields) }};
+
+function addPlayerField{{ $game->id }}(){
+
+let i = fieldIndex{{ $game->id }}++;
+
+document
+.getElementById('playerFields{{ $game->id }}')
+.insertAdjacentHTML(
+'beforeend',
+
+`
+<div class="card mb-3 player-field">
+
+<div class="card-body">
+
+<div class="row">
+
+<div class="col-md-3">
+
+<label>Nama Field</label>
+
+<input
+type="text"
+class="form-control"
+name="player_fields[${i}][name]"
+placeholder="uid">
+
+</div>
+
+<div class="col-md-3">
+
+<label>Label</label>
+
+<input
+type="text"
+class="form-control"
+name="player_fields[${i}][label]"
+placeholder="UID">
+
+</div>
+
+<div class="col-md-3">
+
+<label>Placeholder</label>
+
+<input
+type="text"
+class="form-control"
+name="player_fields[${i}][placeholder]"
+placeholder="Masukkan UID">
+
+</div>
+
+<div class="col-md-2">
+
+<label>Tipe</label>
+
+<select
+class="form-select"
+name="player_fields[${i}][type]">
+
+<option value="text">Text</option>
+
+<option value="number">Number</option>
+
+<option value="email">Email</option>
+
+</select>
+
+</div>
+
+<div class="col-md-1 d-flex align-items-end">
+
+<button
+type="button"
+class="btn btn-danger remove-field">
+
+<i class="fa fa-trash"></i>
+
+</button>
+
+</div>
+
+</div>
+
+<div class="form-check mt-3">
+
+<input
+type="checkbox"
+class="form-check-input"
+name="player_fields[${i}][required]"
+value="1">
+
+<label class="form-check-label">
+
+Wajib Diisi
+
+</label>
+
+</div>
+
+</div>
+
+</div>
+`
+);
+
+}
+
+document.addEventListener('click',function(e){
+
+if(e.target.closest('.remove-field')){
+
+e.target.closest('.player-field').remove();
+
+}
+
+});
+
+</script>

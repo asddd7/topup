@@ -69,51 +69,34 @@
 
                     </div>
 
+                    
+                    <hr>
 
-                    {{-- Input Player --}}
-                    <div class="mb-3">
+                    <h6 class="fw-bold mb-3">
 
-                        <label class="form-label fw-semibold">
-                            Jenis Input Player
-                        </label>
+                    <i class="fa-solid fa-id-card me-2"></i>
 
-                        <select
-                            name="player_input_type"
-                            class="form-select">
+                    Field Input Player
 
-                            <option value="uid"
-                                {{ old('player_input_type')=='uid' ? 'selected' : '' }}>
-                                UID
-                            </option>
+                    </h6>
 
-                            <option value="uid_server"
-                                {{ old('player_input_type')=='uid_server' ? 'selected' : '' }}>
-                                UID + Server
-                            </option>
 
-                            <option value="riot_id"
-                                {{ old('player_input_type')=='riot_id' ? 'selected' : '' }}>
-                                Riot ID + Tag
-                            </option>
+                    <div id="playerFieldsCreate">
 
-                            <option value="email"
-                                {{ old('player_input_type')=='email' ? 'selected' : '' }}>
-                                Email
-                            </option>
-
-                            <option value="login"
-                                {{ old('player_input_type')=='login' ? 'selected' : '' }}>
-                                Login ID
-                            </option>
-
-                            <option value="none"
-                                {{ old('player_input_type')=='none' ? 'selected' : '' }}>
-                                Tidak Memerlukan Input
-                            </option>
-
-                        </select>
 
                     </div>
+
+
+                    <button
+                    type="button"
+                    class="btn btn-outline-primary btn-sm"
+                    onclick="addPlayerFieldCreate()">
+
+                    <i class="fa fa-plus"></i>
+
+                    Tambah Field
+
+                    </button>
 
 
                     {{-- Logo --}}
@@ -193,3 +176,236 @@
     </div>
 
 </div>
+
+<script>
+
+let fieldIndexCreate = 0;
+
+
+function addPlayerFieldCreate(){
+
+let i = fieldIndexCreate++;
+
+
+document
+.getElementById('playerFieldsCreate')
+.insertAdjacentHTML(
+'beforeend',
+
+`
+
+<div class="card mb-3 player-field">
+
+<div class="card-body">
+
+
+<div class="row">
+
+
+<div class="col-md-3">
+
+
+<label>
+
+Nama Field
+
+</label>
+
+
+<input
+
+type="text"
+
+class="form-control"
+
+name="player_fields[${i}][name]"
+
+placeholder="uid"
+
+>
+
+</div>
+
+
+
+
+<div class="col-md-3">
+
+
+<label>
+
+Label
+
+</label>
+
+
+<input
+
+type="text"
+
+class="form-control"
+
+name="player_fields[${i}][label]"
+
+placeholder="UID Player"
+
+>
+
+</div>
+
+
+
+
+<div class="col-md-3">
+
+
+<label>
+
+Placeholder
+
+</label>
+
+
+<input
+
+type="text"
+
+class="form-control"
+
+name="player_fields[${i}][placeholder]"
+
+placeholder="Masukkan UID"
+
+>
+
+</div>
+
+
+
+
+
+<div class="col-md-2">
+
+
+<label>
+
+Tipe
+
+</label>
+
+
+<select
+
+class="form-select"
+
+name="player_fields[${i}][type]">
+
+
+<option value="text">
+
+Text
+
+</option>
+
+
+<option value="number">
+
+Number
+
+</option>
+
+
+<option value="email">
+
+Email
+
+</option>
+
+
+</select>
+
+
+</div>
+
+
+
+
+<div class="col-md-1 d-flex align-items-end">
+
+
+<button
+
+type="button"
+
+class="btn btn-danger remove-field">
+
+
+<i class="fa fa-trash"></i>
+
+
+</button>
+
+
+</div>
+
+
+</div>
+
+
+
+
+<div class="form-check mt-3">
+
+
+<input
+
+type="checkbox"
+
+class="form-check-input"
+
+name="player_fields[${i}][required]"
+
+value="1"
+
+checked>
+
+
+<label class="form-check-label">
+
+Wajib Diisi
+
+</label>
+
+
+</div>
+
+
+</div>
+
+</div>
+
+
+`
+
+);
+
+}
+
+
+
+document.addEventListener('click',function(e){
+
+
+if(e.target.closest('.remove-field')){
+
+
+e.target.closest('.player-field').remove();
+
+
+}
+
+
+});
+
+
+</script>

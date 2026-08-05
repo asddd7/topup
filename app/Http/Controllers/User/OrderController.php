@@ -242,120 +242,60 @@ if($request->voucher)
 
 
 
-
-
 /*
 |--------------------------------------------------------------------------
-| Player Data
+| Dynamic Player Data
 |--------------------------------------------------------------------------
 */
 
+$playerData = [];
 
-$playerData=[];
-
-
-
-$playerUid=null;
-
-$serverId=null;
-
-$nickname=null;
+foreach($item->game->player_fields ?? [] as $field){
 
 
-
-switch($item->game->player_input_type)
-{
-
-case 'uid':
-
-    $request->validate([
-        'uid_player'=>'required'
-    ]);
-
-    $playerUid = $request->uid_player;
-
-    $playerData = [
-        'uid'=>$request->uid_player
-    ];
-
-break;
+    $rules=[];
 
 
-case 'uid_server':
+    if(!empty($field['required'])){
 
-    $request->validate([
-        'uid_player'=>'required',
-        'server_id'=>'required'
-    ]);
+        $rules[]='required';
 
-    $playerUid = $request->uid_player;
-    $serverId = $request->server_id;
-
-    $playerData = [
-        'uid'=>$request->uid_player,
-        'server'=>$request->server_id
-    ];
-
-break;
+    }
 
 
-case 'riot_id':
 
-    $request->validate([
-        'riot_id'=>'required',
-        'riot_tag'=>'required'
-    ]);
+    if(($field['type'] ?? '') == 'number'){
 
-    $playerUid = $request->riot_id;
-    $playerData = [
-        'riot_id'=>$request->riot_id,
-        'tag'=>$request->riot_tag
-    ];
+        $rules[]='numeric';
 
-    
-break;
+    }
 
 
-case 'email':
 
-    $request->validate([
-        'player_email'=>'required|email'
-    ]);
+    if(($field['type'] ?? '') == 'email'){
 
-    $playerUid = $request->email;
-    $playerData = [
-        'email'=>$request->player_email
-    ];
+        $rules[]='email';
 
-break;
+    }
 
 
-/* TAMBAHKAN DI SINI */
-case 'login':
 
-    $request->validate([
-        'login_id'=>'required'
-    ]);
+    if(count($rules)){
 
-    $playerUid = $request->login;
-    $playerData = [
-        'login_id'=>$request->login_id
-    ];
+        $request->validate([
 
-break;
+            $field['name'] => implode('|',$rules)
+
+        ]);
+
+    }
 
 
-case 'none':
 
-    $playerData = [];
-
-break;
+    $playerData[$field['name']] =
+        $request->input($field['name']);
 
 }
-
-
-
-
 
 
 /*
@@ -400,11 +340,11 @@ $order = Order::create([
 
     'player_data'=>$playerData,
 
-    'player_uid'=>$playerUid,
+    'player_uid'=>null,
 
-    'server_id'=>$serverId,
+    'server_id'=>null,
 
-    'nickname'=>$nickname,
+    'nickname'=>null,
 
     'subtotal'=>$subtotal,
 

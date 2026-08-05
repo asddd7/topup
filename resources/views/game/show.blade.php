@@ -254,38 +254,36 @@ id="item_id">
 
 
 
-{{-- INPUT PLAYER DINAMIS --}}
+{{-- Dynamic Player Fields --}}
 
+@foreach($game->player_fields ?? [] as $field)
 
 <div class="mb-3">
 
-<label class="form-label">
+    <label class="form-label">
 
-{{ $game->input_label }}
+        {{ $field['label'] }}
 
-</label>
+    </label>
 
-<input
-type="text"
-name="uid_player"
-class="form-control"
-placeholder="{{ $game->input_placeholder }}"
-required>
+    <input
+    type="{{ $field['type'] ?? 'text' }}"
+    name="{{ $field['name'] }}"
+    class="form-control"
+    placeholder="{{ $field['placeholder'] ?? '' }}"
+
+    @if(($field['type'] ?? '') == 'number')
+    oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+    @endif
+
+    @if(!empty($field['required']))
+    required
+    @endif
+    >
 
 </div>
 
-@if($game->input_label_2)
-
-<label>
-{{ $game->input_label_2 }}
-</label>
-
-<input
-name="server_id"
-placeholder="{{ $game->input_placeholder_2 }}"
-class="form-control">
-
-@endif
+@endforeach
 
 
 
@@ -793,5 +791,49 @@ togglePromoTarget
 
 
 togglePromoTarget();
+
+document
+.querySelectorAll('.player-input')
+.forEach(function(input){
+
+
+let type = input.dataset.type;
+
+
+
+if(type === 'number'){
+
+
+input.addEventListener('input',function(){
+
+
+this.value =
+this.value.replace(/[^0-9]/g,'');
+
+
+});
+
+
+}
+
+
+
+if(type === 'email'){
+
+
+input.addEventListener('input',function(){
+
+
+this.value =
+this.value.replace(/\s/g,'');
+
+
+});
+
+
+}
+
+
+});
 </script>
 @endsection

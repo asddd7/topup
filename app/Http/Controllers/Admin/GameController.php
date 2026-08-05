@@ -31,7 +31,8 @@ class GameController extends BaseAdminController
 
             'game_name'=>'required',
             'publisher'=>'nullable',
-            'game_logo'=>'nullable|image|max:2048'
+            'game_logo'=>'nullable|image|max:2048',
+            'player_fields.*.type'=>'nullable|in:text,number,email'
 
         ]);
 
@@ -47,6 +48,34 @@ class GameController extends BaseAdminController
         }
 
 
+        $playerFields = [];
+
+        if($request->filled('player_fields')){
+
+            foreach($request->player_fields as $field){
+
+                if(empty($field['label'])){
+                    continue;
+                }
+
+                $playerFields[] = [
+
+                    'name' => $field['name'] ?? '',
+
+                    'label' => $field['label'] ?? '',
+
+                    'placeholder' => $field['placeholder'] ?? '',
+
+                    'type' => $field['type'] ?? 'text',
+
+                    'required' => isset($field['required'])
+
+                ];
+
+            }
+
+        }
+
         $game = Game::create([
 
             'game_name'=>$request->game_name,
@@ -56,6 +85,8 @@ class GameController extends BaseAdminController
             'player_input_type'=>$request->player_input_type,
 
             'game_logo'=>$logo,
+
+            'player_fields'=>$playerFields,
 
             'is_active'=>true
 
@@ -95,7 +126,9 @@ $this->activity->log(
 
             'player_input_type'=>'nullable',
 
-            'game_logo'=>'nullable|image|max:2048'
+            'game_logo'=>'nullable|image|max:2048',
+
+            'player_fields.*.type'=>'nullable|in:text,number,email'
 
         ]);
 
@@ -111,7 +144,31 @@ $this->activity->log(
 
         }
 
+        $playerFields=[];
 
+        foreach($request->player_fields ?? [] as $field){
+
+            if(empty($field['label'])){
+
+                continue;
+
+            }
+
+            $playerFields[]=[
+
+                'name'=>$field['name'] ?? '',
+
+                'label'=>$field['label'] ?? '',
+
+                'placeholder'=>$field['placeholder'] ?? '',
+
+                'type'=>$field['type'] ?? 'text',
+
+                'required'=>isset($field['required'])
+
+            ];
+
+        }
 
         $game->update([
 
@@ -119,7 +176,7 @@ $this->activity->log(
 
             'publisher'=>$request->publisher,
 
-            'player_input_type'=>$request->player_input_type,
+            'player_fields'=>$playerFields,
 
             'game_logo'=>$logo,
 

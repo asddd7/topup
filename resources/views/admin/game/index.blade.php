@@ -144,7 +144,17 @@ No Logo
 </td>
 
 <td>
-    {{ $game->player_input_type ?? '-' }}
+
+@foreach($game->player_fields ?? [] as $field)
+
+<span class="badge bg-primary">
+
+{{ $field['label'] }}
+
+</span>
+
+@endforeach
+
 </td>
 
 <td>

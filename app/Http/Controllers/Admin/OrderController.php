@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\BaseAdminController;
 use App\Models\Item;
 use App\Models\User;
 use App\Models\Notification;
+use App\Models\Discount;
 use App\Models\Order;
 
 use Illuminate\Http\Request;
@@ -136,9 +137,48 @@ $request->validate([
 ]);
 
 
+// ==========================
+// Kurangi Kuota Discount
+// ==========================
+
+if($order->discount_id)
+{
+
+    $discount = Discount::find(
+        $order->discount_id
+    );
+
+
+    if($discount)
+    {
+
+$discount->increment(
+    'quota_used',
+    1
+);
+
+
+$discount->refresh();
+
+
+if(
+    $discount->usage_limit
+    &&
+    $discount->quota_used >= $discount->usage_limit
+){
+
+    $discount->update([
+        'is_active'=>0
+    ]);
+
+}
+
+    }
+
+}
+
 
 $oldStatus = $order->status;
-
 
 $old = $order->toArray();
 $order->update([
