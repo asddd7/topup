@@ -113,7 +113,7 @@ $fields = $game->player_fields ?? [];
 
 <div class="row">
 
-<div class="col-md-3">
+<div class="col-md-2">
 
 <label>Nama Field</label>
 
@@ -126,7 +126,7 @@ placeholder="uid">
 
 </div>
 
-<div class="col-md-3">
+<div class="col-md-2">
 
 <label>Label</label>
 
@@ -139,7 +139,7 @@ placeholder="UID Player">
 
 </div>
 
-<div class="col-md-3">
+<div class="col-md-2">
 
 <label>Placeholder</label>
 
@@ -151,7 +151,24 @@ value="{{ $field['placeholder'] ?? '' }}"
 placeholder="Masukkan UID">
 
 </div>
+<div class="col-md-3">
 
+<label>Options</label>
+
+<input
+type="text"
+class="form-control"
+name="player_fields[{{ $i }}][options]"
+value="{{ $field['options'] ?? '' }}"
+placeholder="Asia,America,Europe">
+
+<small class="text-muted">
+
+Pisahkan dengan koma
+
+</small>
+
+</div>
 <div class="col-md-2">
 
 <label>Tipe</label>
@@ -173,6 +190,11 @@ Number
 <option value="email"
 {{ ($field['type'] ?? '')=='email'?'selected':'' }}>
 Email
+</option>
+
+<option value="select"
+{{ ($field['type'] ?? '')=='select'?'selected':'' }}>
+Select
 </option>
 
 </select>
@@ -407,6 +429,8 @@ name="player_fields[${i}][type]">
 <option value="number">Number</option>
 
 <option value="email">Email</option>
+
+<option value="select">Select</option>
 
 </select>
 

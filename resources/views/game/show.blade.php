@@ -254,37 +254,50 @@ id="item_id">
 
 
 
-{{-- Dynamic Player Fields --}}
+<input type="hidden"
+name="item_id"
+id="item_id">
 
 @foreach($game->player_fields ?? [] as $field)
 
 <div class="mb-3">
 
-    <label class="form-label">
+<label class="form-label">
+    {{ $field['label'] }}
+</label>
 
-        {{ $field['label'] }}
+@if(($field['type'] ?? '') == 'select')
 
-    </label>
+<select
+    name="{{ $field['name'] }}"
+    class="form-select"
+    @if(!empty($field['required'])) required @endif>
 
-    <input
+    <option value="">Pilih {{ $field['label'] }}</option>
+
+    @foreach(explode(',', $field['options']) as $option)
+
+        <option value="{{ trim($option) }}">
+            {{ trim($option) }}
+        </option>
+
+    @endforeach
+
+</select>
+
+@else
+
+<input
     type="{{ $field['type'] ?? 'text' }}"
     name="{{ $field['name'] }}"
     class="form-control"
-    placeholder="{{ $field['placeholder'] ?? '' }}"
+    placeholder="{{ $field['placeholder'] ?? '' }}">
 
-    @if(($field['type'] ?? '') == 'number')
-    oninput="this.value=this.value.replace(/[^0-9]/g,'')"
-    @endif
-
-    @if(!empty($field['required']))
-    required
-    @endif
-    >
+@endif
 
 </div>
 
 @endforeach
-
 
 
 

@@ -281,7 +281,21 @@ placeholder="Masukkan UID"
 </div>
 
 
+<div class="col-md-3">
 
+<label>Options</label>
+
+<input
+type="text"
+class="form-control"
+name="player_fields[${i}][options]"
+placeholder="Asia,America,Europe">
+
+<small class="text-muted">
+Pisahkan dengan koma
+</small>
+
+</div>
 
 
 <div class="col-md-2">
@@ -321,6 +335,12 @@ Email
 
 </option>
 
+
+<option value="select">
+
+Select
+
+</option>
 
 </select>
 

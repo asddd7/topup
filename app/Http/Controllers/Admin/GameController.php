@@ -32,7 +32,7 @@ class GameController extends BaseAdminController
             'game_name'=>'required',
             'publisher'=>'nullable',
             'game_logo'=>'nullable|image|max:2048',
-            'player_fields.*.type'=>'nullable|in:text,number,email'
+            'player_fields.*.type' => 'nullable|in:text,number,email,select'
 
         ]);
 
@@ -60,15 +60,17 @@ class GameController extends BaseAdminController
 
                 $playerFields[] = [
 
-                    'name' => $field['name'] ?? '',
+                    'name'        => $field['name'] ?? '',
 
-                    'label' => $field['label'] ?? '',
+                    'label'       => $field['label'] ?? '',
 
                     'placeholder' => $field['placeholder'] ?? '',
 
-                    'type' => $field['type'] ?? 'text',
+                    'type'        => $field['type'] ?? 'text',
 
-                    'required' => isset($field['required'])
+                    'options'     => $field['options'] ?? '',
+
+                    'required'    => isset($field['required'])
 
                 ];
 
@@ -128,7 +130,7 @@ $this->activity->log(
 
             'game_logo'=>'nullable|image|max:2048',
 
-            'player_fields.*.type'=>'nullable|in:text,number,email'
+            'player_fields.*.type' => 'nullable|in:text,number,email,select'
 
         ]);
 
@@ -156,15 +158,17 @@ $this->activity->log(
 
             $playerFields[]=[
 
-                'name'=>$field['name'] ?? '',
+                'name'        => $field['name'] ?? '',
 
-                'label'=>$field['label'] ?? '',
+                'label'       => $field['label'] ?? '',
 
-                'placeholder'=>$field['placeholder'] ?? '',
+                'placeholder' => $field['placeholder'] ?? '',
 
-                'type'=>$field['type'] ?? 'text',
+                'type'        => $field['type'] ?? 'text',
 
-                'required'=>isset($field['required'])
+                'options'     => $field['options'] ?? '',
+
+                'required'    => isset($field['required'])
 
             ];
 
