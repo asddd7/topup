@@ -6,7 +6,17 @@
 
 <div class="container">
 
+@auth
+    <div class="d-flex gap-2">
+        <a href="{{ route('admin.order.index') }}"
+           class="btn btn-secondary">
 
+            <i class="fa-solid fa-arrow-left me-1"></i>
+            Kembali
+
+        </a>
+    </div>
+@endauth
 <div class="card shadow">
 
 
@@ -53,22 +63,33 @@ User :
 </p>
 
 
-<p>
+<h5 class="mt-4">
+    Data Player
+</h5>
 
-Player UID :
+<table class="table table-bordered">
 
-{{$order->player_uid}}
+@foreach($order->game->player_fields ?? [] as $field)
 
-</p>
+<tr>
 
+    <th width="220">
 
-<p>
+        {{ $field['label'] }}
 
-Server :
+    </th>
 
-{{$order->server_id}}
+    <td>
 
-</p>
+        {{ $order->player_data[$field['name']] ?? '-' }}
+
+    </td>
+
+</tr>
+
+@endforeach
+
+</table>
 
 
 

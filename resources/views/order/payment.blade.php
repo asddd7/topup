@@ -148,6 +148,37 @@ Rp {{ number_format($order->total_price) }}
 
 </tr>
 
+@if(!empty($order->player_data))
+
+@foreach($order->player_data as $key => $value)
+
+<tr>
+
+    <th>
+
+        @php
+
+            $label = collect($order->game->player_fields ?? [])
+                        ->firstWhere('name', $key)['label'] ?? ucwords(str_replace('_',' ',$key));
+
+        @endphp
+
+        {{ $label }}
+
+    </th>
+
+    <td>
+
+        {{ $value }}
+
+    </td>
+
+</tr>
+
+@endforeach
+
+@endif
+
 </table>
 
 </div>

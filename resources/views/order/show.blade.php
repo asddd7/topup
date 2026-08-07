@@ -49,134 +49,38 @@ Game :
 
 
 
-{{-- ==========================
-     DATA PLAYER
-========================== --}}
-
-<h5>
+<h5 class="mt-4 mb-3">
+    <i class="fa-solid fa-user"></i>
     Data Player
 </h5>
 
+<table class="table table-bordered">
 
-<div class="card bg-light border-0">
+@foreach($order->game->player_fields ?? [] as $field)
 
-<div class="card-body">
+<tr>
 
+    <th width="220">
 
-@if($order->game->player_input_type != 'none')
+        {{ $field['label'] }}
 
+    </th>
 
-<div class="mb-3">
+    <td>
 
-<strong>
+        {{ $order->player_data[$field['name']] ?? '-' }}
 
-{{ $order->game->input_label ?? 'Player ID' }}
+    </td>
 
-</strong>
+</tr>
 
-<br>
+@endforeach
 
-
-@if(
-in_array(
-$order->game->player_input_type,
-[
-'uid',
-'uid_server'
-]
-)
-)
-
-{{ $order->player_uid ?? '-' }}
-
-
-@elseif(
-$order->game->player_input_type == 'riot_id'
-)
-
-{{ $order->player_data['riot_id'] ?? '-' }}
-
-
-@elseif(
-$order->game->player_input_type == 'email'
-)
-
-{{ $order->player_data['email'] ?? '-' }}
-
-
-@elseif(
-$order->game->player_input_type == 'login'
-)
-
-{{ $order->player_data['login_id'] ?? '-' }}
-
-
-@endif
-
-
-</div>
+</table>
 
 
 
 
-@if(
-$order->game->input_label_2
-)
-
-
-<div class="mb-3">
-
-<strong>
-
-{{ $order->game->input_label_2 }}
-
-</strong>
-
-<br>
-
-
-@if(
-$order->game->player_input_type == 'uid_server'
-)
-
-{{ $order->server_id ?? '-' }}
-
-
-@elseif(
-$order->game->player_input_type == 'riot_id'
-)
-
-{{ $order->player_data['tag'] ?? '-' }}
-
-
-@endif
-
-
-</div>
-
-
-@endif
-
-
-
-
-@else
-
-
-<div class="alert alert-secondary">
-
-Game ini tidak membutuhkan data player.
-
-</div>
-
-
-@endif
-
-
-
-</div>
-
-</div>
 
 <hr>
 
@@ -271,7 +175,9 @@ Upload Bukti Pembayaran
 
 </div>
 
+</div>
 
+</div>
 </div>
 
 

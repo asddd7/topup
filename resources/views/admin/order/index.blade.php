@@ -212,7 +212,6 @@ class="btn btn-sm btn-primary">
 </a>
 
 
-
 @if($order->status=='Paid')
 
 
@@ -221,6 +220,7 @@ class="btn btn-sm btn-primary">
 Menunggu Konfirmasi
 
 </span>
+
 
 
 @endif

@@ -784,6 +784,7 @@ abort(403);
 $order->load([
 
 'game',
+'user',
 'details.item',
 'payment'
 

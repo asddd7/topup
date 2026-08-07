@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 
 
@@ -246,13 +247,6 @@ method="POST">
 <input type="hidden"
 name="game_id"
 value="{{$game->id}}">
-
-
-<input type="hidden"
-name="item_id"
-id="item_id">
-
-
 
 <input type="hidden"
 name="item_id"
