@@ -1,10 +1,6 @@
 <?php
-
-
 use Illuminate\Support\Facades\Route;
-
 use App\Http\Controllers\AuthController;
-
 
 // ADMIN
 use App\Http\Controllers\Admin\DashboardController;
@@ -19,17 +15,14 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\StockController;
 
-
 // USER
 use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\User\GameController as UserGameController;
 use App\Http\Controllers\User\OrderController as UserOrderController;
 use App\Http\Controllers\User\VoucherController;
 
+
 use App\Http\Controllers\ProfileController;
-
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -37,23 +30,17 @@ use App\Http\Controllers\ProfileController;
 |--------------------------------------------------------------------------
 */
 
-
 Route::get(
     '/',
     [HomeController::class,'index']
 )
 ->name('dashboard');
 
-
-
-
-
 /*
 |--------------------------------------------------------------------------
 | AUTH
 |--------------------------------------------------------------------------
 */
-
 
 Route::get(
     '/login',
@@ -67,25 +54,16 @@ Route::post(
     [AuthController::class,'login']
 );
 
-
-
 Route::get(
     '/register',
     [AuthController::class,'showRegister']
 )
 ->name('register');
 
-
 Route::post(
     '/register',
     [AuthController::class,'register']
 );
-
-
-
-
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -93,21 +71,17 @@ Route::post(
 |--------------------------------------------------------------------------
 */
 
-
 Route::get(
     '/game',
     [UserGameController::class,'index']
 )
 ->name('game.index');
 
-
-
 Route::get(
     '/game/{game}',
     [UserGameController::class,'show']
 )
 ->name('game.show');
-
 
 /*
 |--------------------------------------------------------------------------
@@ -128,7 +102,6 @@ Route::post(
 )
 ->name('payment.promo');
 
-
 /*
 |--------------------------------------------------------------------------
 | PUBLIC ORDER
@@ -140,8 +113,6 @@ Route::post(
     [UserOrderController::class,'store']
 )
 ->name('order.store');
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -155,8 +126,6 @@ Route::get(
 )
 ->name('order.show');
 
-
-
 /*
 |--------------------------------------------------------------------------
 | PAYMENT
@@ -169,15 +138,11 @@ Route::get(
 )
 ->name('order.payment');
 
-
-
 Route::post(
     '/order/{invoice}/upload-proof',
     [UserOrderController::class,'uploadProof']
 )
 ->name('order.uploadProof');
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -190,12 +155,12 @@ Route::get(
     [UserOrderController::class,'checkOrder']
 )
 ->name('order.check');
+
 /*
 |--------------------------------------------------------------------------
 | USER LOGIN
 |--------------------------------------------------------------------------
 */
-
 
 Route::middleware([
     'auth',
@@ -203,8 +168,6 @@ Route::middleware([
 ])
 ->prefix('user')
 ->group(function(){
-
-
 
 Route::get(
     '/orders',
@@ -218,24 +181,13 @@ Route::get(
 )
 ->name('profile.modal');
 
-
 });
-
-
-
-
-
-
-
-
-
-
+ 
 /*
 |--------------------------------------------------------------------------
 | ADMIN AREA
 |--------------------------------------------------------------------------
 */
-
 
 Route::middleware([
     'auth',
@@ -245,16 +197,11 @@ Route::middleware([
 ->name('admin.')
 ->group(function(){
 
-
-
-
-
 /*
 |--------------------------------------------------------------------------
 | DASHBOARD
 |--------------------------------------------------------------------------
 */
-
 
 Route::get(
     '/dashboard',
@@ -262,13 +209,10 @@ Route::get(
 )
 ->name('dashboard');
 
-
-
 Route::get(
     '/game/{game}/manage',
     [GameController::class,'manage']
 )->name('game.manage');
-
 
 /*
 |--------------------------------------------------------------------------
@@ -276,19 +220,15 @@ Route::get(
 |--------------------------------------------------------------------------
 */
 
-
 Route::resource(
     'game',
     GameController::class
 );
 
-
-
 Route::resource(
     'banner',
     BannerController::class
 );
-
 
 /*
 |--------------------------------------------------------------------------
@@ -296,12 +236,10 @@ Route::resource(
 |--------------------------------------------------------------------------
 */
 
-
 Route::prefix(
     'game/{game}'
 )
 ->group(function(){
-
 
 Route::resource(
     'items',
@@ -316,10 +254,7 @@ Route::resource(
     'destroy'=>'game.items.destroy'
 ]);
 
-
-
 });
-
 
 Route::get(
     '/stock',
@@ -331,34 +266,26 @@ Route::post(
     [StockController::class,'update']
 )->name('stock.update');
 
-
-
 /*
 |--------------------------------------------------------------------------
 | MASTER DATA
 |--------------------------------------------------------------------------
 */
 
-
 Route::resource(
     'item-category',
     ItemCategoryController::class
 );
-
 
 Route::resource(
     'discount',
     DiscountController::class
 );
 
-
-
 Route::resource(
     'payment',
     PaymentController::class
 );
-
-
 
 Route::resource(
     'activity-log',
@@ -368,15 +295,11 @@ Route::resource(
     'show'
 ]);
 
-
-
-
 /*
 |--------------------------------------------------------------------------
 | ORDER MANAGEMENT
 |--------------------------------------------------------------------------
 */
-
 
 Route::resource(
     'order',
@@ -388,17 +311,11 @@ Route::resource(
     'update'
 ]);
 
-
-
-
 /*
 |--------------------------------------------------------------------------
 | PAYMENT CONFIRMATION
 |--------------------------------------------------------------------------
 */
-
-
-
 
 Route::post(
     '/order/{order}/confirm',
@@ -406,27 +323,15 @@ Route::post(
 )
 ->name('order.confirm');
 
-
-
-
 Route::post(
     'order/{order}/reject',
     [OrderController::class,'reject']
 )
 ->name('order.reject');
 
-
-
 Route::get('/setting', [SettingController::class, 'index'])->name('setting.index');
 Route::put('/setting', [SettingController::class, 'update'])->name('setting.update');
 });
-
-
-
-
-
-
-
 
 /*
 |--------------------------------------------------------------------------
@@ -434,16 +339,11 @@ Route::put('/setting', [SettingController::class, 'update'])->name('setting.upda
 |--------------------------------------------------------------------------
 */
 
-
 Route::post(
     '/logout',
     [AuthController::class,'logout']
 )
 ->middleware('auth')
 ->name('logout');
-
-
-
-
 
 require __DIR__.'/auth.php';

@@ -246,81 +246,164 @@ return back()->with(
 }
 
 
-
-
 public function confirm(Order $order)
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Pastikan order harus Paid
+    |--------------------------------------------------------------------------
+    */
+
     if ($order->status != 'Paid') {
+
         return back()->with(
             'error',
             'Order belum berstatus Paid.'
         );
+
     }
 
-    // Load detail beserta item
-    $order->load('details.item');
 
-    // ==========================
-    // Cek stok terlebih dahulu
-    // ==========================
+    /*
+    |--------------------------------------------------------------------------
+    | Load detail + item + game
+    |--------------------------------------------------------------------------
+    */
+
+    $order->load([
+        'details.item.game'
+    ]);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cek stock terlebih dahulu
+    |--------------------------------------------------------------------------
+    */
+
     foreach ($order->details as $detail) {
 
-        if ($detail->item->stock < $detail->qty) {
+        $item = $detail->item;
+
+        if (!$item) {
 
             return back()->with(
                 'error',
-                'Stock '.$detail->item->item_name.' tidak mencukupi.'
+                'Item pada order tidak ditemukan.'
+            );
+
+        }
+
+
+        if ($item->stock < $detail->qty) {
+
+            return back()->with(
+                'error',
+                'Stock '.$item->item_name.' tidak mencukupi.'
             );
 
         }
 
     }
 
-    // ==========================
-    // Kurangi stok
-    // ==========================
+
+    /*
+    |--------------------------------------------------------------------------
+    | Kurangi stock
+    |--------------------------------------------------------------------------
+    */
+
     foreach ($order->details as $detail) {
 
         $item = $detail->item;
 
-        $item->decrement('stock', $detail->qty);
+        $item->decrement(
+            'stock',
+            $detail->qty
+        );
 
         $item->refresh();
 
-        // Jika stok dibawah 10 buat notif
+
+        /*
+        |--------------------------------------------------------------------------
+        | Jika stock rendah
+        |--------------------------------------------------------------------------
+        */
+
         if ($item->stock < 10) {
 
-            foreach (User::where('role_id',1)->get() as $admin) {
+            $gameName = $item->game
+                ? $item->game->game_name
+                : 'Game Tidak Diketahui';
 
-                \App\Models\Notification::updateOrCreate(
 
+            $message =
+                $gameName
+                .' - '
+                .$item->item_name
+                .' tersisa '
+                .$item->stock;
+
+
+            foreach (
+                User::where('role_id', 1)->get()
+                as $admin
+            ) {
+
+                Notification::updateOrCreate(
                     [
-                        'user_id'=>$admin->id,
-                        'item_id'=>$item->id,
-                        'title'=>'Stock Rendah'
+                        'user_id' => $admin->id,
+                        'item_id' => $item->id,
+                        'title'   => 'Stock Rendah'
                     ],
-
                     [
-                        'message'=>$item->item_name.' tersisa '.$item->stock,
-                        'is_read'=>0
+                        'message' => $message,
+                        'is_read' => 0
                     ]
-
                 );
 
             }
 
         }
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | Jika stock sudah normal
+        |--------------------------------------------------------------------------
+        */
+
+        else {
+
+            Notification::where('item_id', $item->id)
+                ->where('title', 'Stock Rendah')
+                ->delete();
+
+        }
+
     }
 
-    // ==========================
-    // Update Order
-    // ==========================
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update Order
+    |--------------------------------------------------------------------------
+    */
+
     $old = $order->toArray();
 
+
     $order->update([
-        'status'=>'Completed'
+        'status' => 'Completed'
     ]);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Activity Log
+    |--------------------------------------------------------------------------
+    */
 
     $this->activity->log(
         'Order',
@@ -331,24 +414,43 @@ public function confirm(Order $order)
         $order->fresh()->toArray()
     );
 
-    // ==========================
-    // Payment Log
-    // ==========================
+
+    /*
+    |--------------------------------------------------------------------------
+    | Payment Log
+    |--------------------------------------------------------------------------
+    |
+    | PENTING:
+    | Gunakan status yang memang tersedia di ENUM payment_logs.
+    |
+    */
+
     $order->paymentLogs()->create([
-        'status'=>'Completed',
-        'message'=>'Pembayaran berhasil dikonfirmasi Admin.'
+        'status'  => 'Paid',
+        'message' => 'Pembayaran berhasil dikonfirmasi Admin.'
     ]);
 
-    // ==========================
-    // Notifikasi order selesai
-    // ==========================
+
+    /*
+    |--------------------------------------------------------------------------
+    | Notifikasi Order selesai
+    |--------------------------------------------------------------------------
+    */
+
     Notification::where(
         'order_id',
         $order->id
     )->update([
-        'is_read'=>1,
-        'read_at'=>now()
+        'is_read' => 1,
+        'read_at' => now()
     ]);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Selesai
+    |--------------------------------------------------------------------------
+    */
 
     return back()->with(
         'success',

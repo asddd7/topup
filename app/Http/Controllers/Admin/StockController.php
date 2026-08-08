@@ -61,79 +61,119 @@ class StockController extends BaseAdminController
 
     }
 
+public function update(Request $request, Item $item)
+{
+    $request->validate([
+        'stock' => 'required|integer|min:1'
+    ]);
 
-    public function update(Request $request, Item $item)
-    {
+    $old = $item->stock;
 
-        $request->validate([
+    /*
+    |--------------------------------------------------------------------------
+    | Tambah stock
+    |--------------------------------------------------------------------------
+    */
 
-            'stock'=>'required|integer|min:1'
+    $item->increment('stock', $request->stock);
 
-        ]);
+    $item->refresh();
 
-        $old = $item->stock;
+    /*
+    |--------------------------------------------------------------------------
+    | Ambil nama game
+    |--------------------------------------------------------------------------
+    */
 
-$item->increment('stock', $request->stock);
+    $item->load('game');
 
-$item->refresh();
+    $gameName = $item->game
+        ? $item->game->game_name
+        : 'Game Tidak Diketahui';
 
-if ($item->stock >= 10) {
 
-    Notification::where('item_id', $item->id)
-        ->where('title', 'Stock Rendah')
-        ->delete();
+    /*
+    |--------------------------------------------------------------------------
+    | Jika stock sudah normal
+    |--------------------------------------------------------------------------
+    */
 
-} else {
+    if ($item->stock >= 10) {
 
-    foreach (User::where('role_id',1)->get() as $admin) {
+        Notification::where('item_id', $item->id)
+            ->where('title', 'Stock Rendah')
+            ->delete();
 
-        Notification::updateOrCreate(
-            [
-                'user_id'=>$admin->id,
-                'item_id'=>$item->id,
-                'title'=>'Stock Rendah'
-            ],
-            [
-                'message'=>$item->item_name.' tersisa '.$item->stock,
-                'is_read'=>0
-            ]
-        );
     }
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Jika stock masih rendah
+    |--------------------------------------------------------------------------
+    */
+
+    else {
+
+        foreach (User::where('role_id', 1)->get() as $admin) {
+
+            Notification::updateOrCreate(
+                [
+                    'user_id' => $admin->id,
+                    'item_id' => $item->id,
+                    'title'   => 'Stock Rendah'
+                ],
+                [
+                    'message' =>
+                        $gameName
+                        .' - '
+                        .$item->item_name
+                        .' tersisa '
+                        .$item->stock,
+
+                    'is_read' => 0
+                ]
+            );
+
+        }
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Activity Log
+    |--------------------------------------------------------------------------
+    */
+
+    $this->activity->log(
+
+        'Item',
+
+        'Stock Update',
+
+        'Menambah stock '.$item->item_name,
+
+        $item,
+
+        [
+            'stock' => $old
+        ],
+
+        [
+            'stock' => $item->fresh()->stock
+        ]
+
+    );
+
+
+    return back()->with(
+
+        'success',
+
+        'Stock berhasil ditambahkan.'
+
+    );
 }
-
-$this->activity->log(
-
-            'Item',
-
-            'Stock Update',
-
-            'Menambah stock '.$item->item_name,
-
-            $item,
-
-            [
-
-                'stock'=>$old
-
-            ],
-
-            [
-
-                'stock'=>$item->fresh()->stock
-
-            ]
-
-        );
-
-        return back()->with(
-
-            'success',
-
-            'Stock berhasil ditambahkan.'
-
-        );
-
-    }
 
 }
