@@ -15,36 +15,30 @@ class DiscountController extends BaseAdminController
 
     public function index()
     {
-
         $discounts = Discount::with([
             'game',
-            'item'
-        ])
-        ->get();
+            'item',
+            'payment'
+        ])->latest()->get();
 
-
-
-        $games = Game::where('is_active',1)
+        $games = Game::where('is_active', 1)
+            ->orderBy('game_name')
             ->get();
 
-
-        $items = Item::where('is_active',1)
+        $items = Item::where('is_active', 1)
+            ->orderBy('item_name')
             ->get();
 
-        $payments = Payment::where('is_active',1)
-        ->get();
+        $payments = Payment::where('is_active', 1)
+            ->orderBy('payment_name')
+            ->get();
 
-        $payments = Payment::where('is_active',1)
-        ->get();
-
-
-    return view('admin.discount.index',[
-        'discounts' => Discount::latest()->get(),
-        'games' => Game::all(),
-        'items' => Item::all(),
-        'payments' => Payment::where('is_active',1)->get(),
-    ]);
-
+        return view('admin.discount.index', compact(
+            'discounts',
+            'games',
+            'items',
+            'payments'
+        ));
     }
 
 
@@ -110,13 +104,6 @@ public function store(Request $request)
 
     $code = $request->code;
 
-    if (empty($code)) {
-
-        $code = strtoupper($request->trigger_type)
-            . '-'
-            . strtoupper(\Illuminate\Support\Str::random(6));
-
-    }
     $code = $request->filled('code')
     ? strtoupper($request->code)
     : strtoupper($request->trigger_type).'-'.str()->upper(str()->random(6));
