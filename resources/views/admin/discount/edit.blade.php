@@ -292,6 +292,42 @@ Semua Item
 
 
 
+<hr>
+
+<h6 class="fw-bold text-primary">
+    Metode Pembayaran
+</h6>
+
+<div class="mb-3">
+
+    <label class="form-label">
+        Metode Pembayaran
+    </label>
+
+    <select
+        name="payment_id"
+        class="form-select">
+
+        <option value="">
+            Semua Pembayaran
+        </option>
+
+        @foreach($payments as $payment)
+
+            <option
+                value="{{ $payment->id }}"
+                {{ $discount->payment_id == $payment->id ? 'selected' : '' }}>
+
+                {{ $payment->payment_name }}
+
+            </option>
+
+        @endforeach
+
+    </select>
+
+</div>
+
 
 <hr>
 

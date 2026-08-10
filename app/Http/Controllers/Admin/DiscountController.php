@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Admin\BaseAdminController;
 use Illuminate\Http\Request;
-
+use Illuminate\Validation\Rule;
 use App\Models\Discount;
 use App\Models\Game;
 use App\Models\Item;
@@ -57,7 +57,9 @@ class DiscountController extends BaseAdminController
             ->get();
 
 
-        $payments = Payment::all();
+        $payments = Payment::where('is_active', 1)
+            ->orderBy('payment_name')
+            ->get();
 
         return view(
             'admin.discount.create',
@@ -78,7 +80,7 @@ public function store(Request $request)
 {
     $request->validate([
 
-        'code' => 'nullable|max:255|unique:discounts,code',
+        'code' =>  'nullable','required_if:trigger_type,voucher','max:255','unique:discounts,code',
 
         'discount_name' => 'required|max:255',
 
@@ -104,9 +106,13 @@ public function store(Request $request)
 
     $code = $request->code;
 
-    $code = $request->filled('code')
-    ? strtoupper($request->code)
-    : strtoupper($request->trigger_type).'-'.str()->upper(str()->random(6));
+    $code = null;
+
+    if ($request->trigger_type === 'voucher') {
+
+        $code = strtoupper($request->code);
+
+    }
 
     $discount = Discount::create([
 
@@ -174,16 +180,21 @@ $this->activity->log(
 
 
 
+        $payments = Payment::where('is_active', 1)
+            ->orderBy('payment_name')
+            ->get();
+
         return view(
             'admin.discount.edit',
             compact(
                 'discount',
                 'games',
-                'items'
+                'items',
+                'payments'
             )
         );
 
-    }
+    }   
 
 
 
@@ -195,7 +206,9 @@ public function update(Request $request, Discount $discount)
 
     $request->validate([
 
-        'code' => 'required_if:trigger_type,voucher|nullable|max:255',
+        'code' => 'nullable','required_if:trigger_type,voucher','max:255',
+        Rule::unique('discounts', 'code')
+        ->ignore($discount->id),
 
         'discount_name'=>'required',
 
@@ -203,9 +216,9 @@ public function update(Request $request, Discount $discount)
 
         'amount'=>'required|numeric',
 
-        'game_id'=>'nullable',
-
-        'item_id'=>'nullable',
+        'game_id' => 'nullable|exists:games,id',
+        'item_id' => 'nullable|exists:items,id',
+        'payment_id' => 'nullable|exists:payments,id',
 
         'trigger_type'=>'required',
 

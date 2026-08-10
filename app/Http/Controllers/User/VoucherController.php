@@ -38,13 +38,15 @@ class VoucherController extends Controller
 
             $this->promotion->calculate(
 
-                subtotal:$request->price,
+                subtotal: $request->price,
 
-                gameId:$request->game_id,
+                gameId: $request->game_id,
 
-                itemId:$request->item_id,
+                itemId: $request->item_id,
 
-                voucherCode:$request->code
+                voucherCode: $request->code,
+
+                user: auth()->user()
 
             )
 
@@ -78,13 +80,15 @@ class VoucherController extends Controller
 
             $this->promotion->calculate(
 
-                subtotal:$request->subtotal,
+                subtotal: $request->subtotal,
 
-                gameId:$request->game_id,
+                gameId: $request->game_id,
 
-                itemId:$request->item_id,
+                itemId: $request->item_id,
 
-                paymentId:$request->payment_id
+                paymentId: $request->payment_id,
+
+                user: auth()->user()
 
             )
 

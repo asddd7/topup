@@ -57,4 +57,10 @@ public function payment()
     return $this->belongsTo(Payment::class);
 }
 
+public function usages()
+{
+    return $this->hasMany(
+        DiscountUsage::class
+    );
+}
 }
