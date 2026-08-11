@@ -85,23 +85,24 @@ Route::get(
 
 /*
 |--------------------------------------------------------------------------
-| VOUCHER CHECK
+| PROMOTION / VOUCHER
 |--------------------------------------------------------------------------
 */
 
 Route::post(
     '/check-voucher',
-    [VoucherController::class,'check']
-)
-->name('voucher.check');
-
+    [VoucherController::class, 'check']
+)->name('voucher.check');
 
 Route::post(
     '/payment-promo',
-    [VoucherController::class,'paymentPromo']
-)
-->name('payment.promo');
+    [VoucherController::class, 'paymentPromo']
+)->name('payment.promo');
 
+Route::post(
+    '/voucher/calculate',
+    [UserOrderController::class, 'calculatePromotion']
+)->name('voucher.calculate');
 /*
 |--------------------------------------------------------------------------
 | PUBLIC ORDER

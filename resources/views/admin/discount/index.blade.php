@@ -55,7 +55,86 @@ Tambah Voucher
 
 @endif
 
+<div class="row g-3 mb-4">
 
+    <div class="col-md-4">
+
+        <div class="card border-0 shadow-sm">
+
+            <div class="card-body">
+
+                <small class="text-muted">
+                    Total Promo
+                </small>
+
+                <h3 class="fw-bold mb-0">
+                    {{ $discounts->count() }}
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-4">
+
+        <div class="card border-0 shadow-sm">
+
+            <div class="card-body">
+
+                <small class="text-muted">
+                    Promo Aktif
+                </small>
+
+                <h3 class="fw-bold text-success mb-0">
+
+                    {{ $discounts->where('is_active', 1)->count() }}
+
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-md-4">
+
+        <div class="card border-0 shadow-sm">
+
+            <div class="card-body">
+
+                <small class="text-muted">
+                    Voucher Habis
+                </small>
+
+                <h3 class="fw-bold text-danger mb-0">
+
+                    {{ $discounts
+                        ->whereNotNull('usage_limit')
+                        ->filter(function ($discount) {
+
+                            return
+                                (int) $discount->quota_used
+                                >=
+                                (int) $discount->usage_limit;
+
+                        })
+                        ->count()
+                    }}
+
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
 <div class="table-responsive">
 
@@ -79,6 +158,8 @@ Tambah Voucher
 
 <th>Diskon</th>
 
+<th>Quota</th>
+
 <th>Periode</th>
 
 <th>Status</th>
@@ -93,221 +174,346 @@ Action
 </thead>
 
 
-
 <tbody>
 
+@forelse($discounts as $discount)
 
-@foreach($discounts as $discount)
+    @php
 
+        /*
+        |--------------------------------------------------------------------------
+        | Quota
+        |--------------------------------------------------------------------------
+        */
 
-<tr>
+        $usageLimit = $discount->usage_limit;
 
+        $quotaUsed = (int) (
+            $discount->quota_used ?? 0
+        );
 
-<td>
-{{$loop->iteration}}
-</td>
+        if ($usageLimit !== null) {
 
+            $remainingQuota = max(
+                (int) $usageLimit - $quotaUsed,
+                0
+            );
 
+        } else {
 
-<td>
+            $remainingQuota = null;
 
-<span class="badge bg-dark">
+        }
 
-{{$discount->code}}
+    @endphp
 
-</span>
 
-</td>
+    <tr>
 
+        {{-- NO --}}
+        <td>
+            {{ $loop->iteration }}
+        </td>
 
 
-<td>
+        {{-- KODE --}}
+        <td>
 
-{{$discount->discount_name}}
+            @if($discount->code)
 
-</td>
+                <span class="badge bg-dark">
+                    {{ $discount->code }}
+                </span>
 
+            @else
 
+                <span class="text-muted">
+                    -
+                </span>
 
-<td>
+            @endif
 
+        </td>
 
-@if($discount->game)
 
-Game :
-{{$discount->game->game_name}}
+        {{-- NAMA --}}
+        <td>
 
+            <div class="fw-semibold">
+                {{ $discount->discount_name }}
+            </div>
 
-@elseif($discount->item)
+            <small class="text-muted">
 
-Item :
-{{$discount->item->item_name}}
+                @switch($discount->trigger_type)
 
+                    @case('voucher')
+                        Voucher
+                        @break
 
-@else
+                    @case('automatic')
+                        Otomatis
+                        @break
 
-<span class="text-success">
+                    @case('new_user')
+                        User Baru
+                        @break
 
-Semua Produk
+                    @case('flash_sale')
+                        Flash Sale
+                        @break
 
-</span>
+                    @case('payment_method')
+                        Metode Pembayaran
+                        @break
 
+                    @default
+                        -
 
-@endif
+                @endswitch
 
+            </small>
 
-</td>
+        </td>
 
 
+        {{-- TARGET --}}
+        <td>
 
+            @if($discount->game)
 
-<td>
+                <span class="badge bg-primary">
+                    {{ $discount->game->game_name }}
+                </span>
 
+            @elseif($discount->item)
 
-@if($discount->discount_type=='percent')
+                <span class="badge bg-info text-dark">
+                    {{ $discount->item->item_name }}
+                </span>
 
+            @else
 
-<span class="badge bg-primary">
+                <span class="badge bg-success">
+                    Semua Produk
+                </span>
 
-Persen
+            @endif
 
-</span>
+        </td>
 
 
-@else
+        {{-- TIPE --}}
+        <td>
 
+            @if($discount->discount_type === 'percent')
 
-<span class="badge bg-warning">
+                <span class="badge bg-primary">
+                    Persen
+                </span>
 
-Nominal
+            @else
 
-</span>
+                <span class="badge bg-warning text-dark">
+                    Nominal
+                </span>
 
+            @endif
 
-@endif
+        </td>
 
 
+        {{-- NILAI DISKON --}}
+        <td>
 
-</td>
+            @if($discount->discount_type === 'percent')
 
+                <strong>
+                    {{ rtrim(rtrim(number_format($discount->amount, 2, '.', ''), '0'), '.') }}%
+                </strong>
 
+            @else
 
-<td>
+                <strong>
+                    Rp {{ number_format($discount->amount, 0, ',', '.') }}
+                </strong>
 
+            @endif
 
-@if($discount->discount_type=='percent')
+        </td>
 
 
-{{$discount->amount}}%
+        {{-- QUOTA --}}
+        <td>
 
+            @if($discount->usage_limit === null)
 
-@else
+                <span class="badge bg-info">
+                    Unlimited
+                </span>
 
+            @else
 
-Rp {{number_format($discount->amount)}}
+                @php
+                    $totalVoucher = (int) $discount->usage_limit;
 
+                    $terpakai = (int) $discount->quota_used;
 
-@endif
+                    $sisaVoucher = max(
+                        $totalVoucher - $terpakai,
+                        0
+                    );
+                @endphp
 
+                <div class="mb-1">
 
+                    <strong>
+                        {{ $sisaVoucher }}
+                    </strong>
 
-</td>
+                    /
+                    {{ $totalVoucher }}
 
+                </div>
 
+                <small class="text-muted">
 
-<td>
+                    Terpakai:
+                    {{ $terpakai }}
 
+                </small>
 
-{{ $discount->start_date ?? '-' }}
+            @endif
 
-s/d
+        </td>
 
-{{ $discount->end_date ?? '-' }}
 
+        {{-- PERIODE --}}
+        <td>
 
-</td>
+            <div>
+                {{ $discount->start_date
+                    ? \Carbon\Carbon::parse($discount->start_date)->format('d/m/Y')
+                    : '-'
+                }}
+            </div>
 
+            <small class="text-muted">
+                s/d
+            </small>
 
+            <div>
+                {{ $discount->end_date
+                    ? \Carbon\Carbon::parse($discount->end_date)->format('d/m/Y')
+                    : '-'
+                }}
+            </div>
 
+        </td>
 
-<td>
 
+        {{-- STATUS --}}
+        <td>
 
-@if($discount->is_active)
+            @if($discount->is_active)
 
-<span class="badge bg-success">
+                @if(
+                    $usageLimit !== null &&
+                    $remainingQuota <= 0
+                )
 
-Aktif
+                    <span class="badge bg-danger">
+                        Habis
+                    </span>
 
-</span>
+                @else
 
-@else
+                    <span class="badge bg-success">
+                        Aktif
+                    </span>
 
-<span class="badge bg-danger">
+                @endif
 
-Nonaktif
+            @else
 
-</span>
+                <span class="badge bg-secondary">
+                    Nonaktif
+                </span>
 
-@endif
+            @endif
 
+        </td>
 
-</td>
 
+        {{-- ACTION --}}
+        <td>
 
+            <button
+                class="btn btn-warning btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#editDiscountModal{{ $discount->id }}"
+                title="Edit"
+            >
 
+                <i class="fa-solid fa-pen"></i>
 
-<td>
+            </button>
 
 
-<button
-class="btn btn-warning btn-sm"
-data-bs-toggle="modal"
-data-bs-target="#editDiscountModal{{$discount->id}}">
+            <form
+                action="{{ route(
+                    'admin.discount.destroy',
+                    $discount->id
+                ) }}"
+                method="POST"
+                class="d-inline"
+            >
 
+                @csrf
 
-<i class="fa-solid fa-pen"></i>
+                @method('DELETE')
 
+                <button
+                    type="submit"
+                    class="btn btn-danger btn-sm"
+                    onclick="return confirm(
+                        'Hapus promo {{ addslashes($discount->discount_name) }}?'
+                    )"
+                    title="Hapus"
+                >
 
-</button>
+                    <i class="fa-solid fa-trash"></i>
 
+                </button>
 
+            </form>
 
-<form
-action="{{route('admin.discount.destroy',$discount->id)}}"
-method="POST"
-class="d-inline">
+        </td>
 
+    </tr>
 
-@csrf
+@empty
 
-@method('DELETE')
+    <tr>
 
+        <td
+            colspan="9"
+            class="text-center py-5"
+        >
 
-<button
-class="btn btn-danger btn-sm"
-onclick="return confirm('Hapus voucher ini?')">
+            <i
+                class="fa-solid fa-ticket fa-2x text-muted mb-3"
+            ></i>
 
+            <div class="text-muted">
+                Belum ada promo.
+            </div>
 
-<i class="fa-solid fa-trash"></i>
+        </td>
 
+    </tr>
 
-</button>
-
-
-</form>
-
-
-
-</td>
-
-
-</tr>
-
-
-
-@endforeach
-
+@endforelse
 
 </tbody>
 

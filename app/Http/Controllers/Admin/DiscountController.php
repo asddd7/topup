@@ -9,6 +9,7 @@ use App\Models\Discount;
 use App\Models\Game;
 use App\Models\Item;
 use App\Models\Payment;
+use App\Models\DiscountUsage;
 
 class DiscountController extends BaseAdminController
 {
@@ -72,101 +73,198 @@ class DiscountController extends BaseAdminController
 
     }
 
-
-
-
-
 public function store(Request $request)
 {
     $request->validate([
 
-        'code' =>  'nullable','required_if:trigger_type,voucher','max:255','unique:discounts,code',
+        'code' => [
+            'nullable',
+            'required_if:trigger_type,voucher',
+            'max:255',
+            'unique:discounts,code',
+        ],
 
-        'discount_name' => 'required|max:255',
+        'discount_name' => [
+            'required',
+            'max:255',
+        ],
 
-        'discount_type' => 'required|in:percent,fixed',
+        'discount_type' => [
+            'required',
+            'in:percent,fixed'
+        ],
 
-        'amount' => 'required|numeric|min:1',
+        'amount' => [
+            'required',
+            'numeric',
+            'min:1'
+        ],
 
-        'game_id' => 'nullable|exists:games,id',
+        'game_id' => [
+            'nullable',
+            'exists:games,id',
+        ],
 
-        'item_id' => 'nullable|exists:items,id',
+        'item_id' => [
+            'nullable',
+            'exists:items,id',
+        ],
 
-        'trigger_type' => 'required',
+        'trigger_type' => [
+            'required',
+            'in:voucher,automatic,new_user,flash_sale,payment_method',
+        ],
 
-        'minimum_purchase' => 'nullable|numeric|min:0',
+        'minimum_purchase' => [
+            'nullable',
+            'numeric',
+            'min:0',
+        ],
 
-        'usage_limit' => 'nullable|integer|min:1',
+        'usage_limit' => [
+            'nullable',
+            'integer',
+            'min:1',
+        ],
 
-        'usage_per_user' => 'nullable|integer|min:1',
+        /*
+        |--------------------------------------------------------------------------
+        | 0 = unlimited
+        |--------------------------------------------------------------------------
+        */
 
-        'payment_id'=>'nullable|exists:payments,id',
+        'usage_per_user' => [
+            'nullable',
+            'integer',
+            'min:0',
+        ],
 
+        'payment_id' => [
+            'nullable',
+            'exists:payments,id',
+        ],
+
+        'start_date' => [
+            'nullable',
+            'date',
+        ],
+
+        'end_date' => [
+            'nullable',
+            'date',
+            'after_or_equal:start_date',
+        ],
     ]);
 
-    $code = $request->code;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Voucher Code
+    |--------------------------------------------------------------------------
+    */
 
     $code = null;
 
     if ($request->trigger_type === 'voucher') {
 
-        $code = strtoupper($request->code);
-
+        $code = strtoupper(
+            trim((string) $request->input('code'))
+        );
     }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Usage Per User
+    |--------------------------------------------------------------------------
+    |
+    | 0 = unlimited
+    |
+    */
+
+    $usagePerUser = $request->has('usage_per_user')
+        ? (int) $request->input('usage_per_user')
+        : 0;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Create Discount
+    |--------------------------------------------------------------------------
+    */
 
     $discount = Discount::create([
 
         'code' => $code,
 
-        'game_id' => $request->game_id,
+        'game_id' =>
+            $request->input('game_id'),
 
-        'item_id' => $request->item_id,
+        'item_id' =>
+            $request->input('item_id'),
 
-        'discount_name' => $request->discount_name,
+        'discount_name' =>
+            $request->input('discount_name'),
 
-        'discount_type' => $request->discount_type,
+        'discount_type' =>
+            $request->input('discount_type'),
 
-        'amount' => $request->amount,
+        'amount' =>
+            $request->input('amount'),
 
-        'start_date' => $request->start_date,
+        'start_date' =>
+            $request->input('start_date'),
 
-        'end_date' => $request->end_date,
+        'end_date' =>
+            $request->input('end_date'),
 
-        'is_active' => $request->has('is_active'),
+        'is_active' =>
+            $request->boolean('is_active'),
 
-        // baru
-        'trigger_type' => $request->trigger_type,
+        'trigger_type' =>
+            $request->input('trigger_type'),
 
-        'minimum_purchase' => $request->minimum_purchase ?? 0,
+        'minimum_purchase' =>
+            $request->input('minimum_purchase', 0),
 
-        'usage_limit' => $request->usage_limit,
+        'usage_limit' =>
+            $request->input('usage_limit'),
 
-        'usage_per_user' => $request->usage_per_user ?? 1,
+        'usage_per_user' =>
+            $usagePerUser,
 
-        'quota_used' => 0,
+        'quota_used' =>
+            0,
 
-        'payment_id'=>$request->payment_id,
+        'payment_id' =>
+            $request->input('payment_id'),
 
     ]);
-$this->activity->log(
-    'Discount',
-    'Create',
-    'Create discount : '.$discount->discount_name,
-    $discount,
-    null,
-    $discount->toArray()
-);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Activity Log
+    |--------------------------------------------------------------------------
+    */
+
+    $this->activity->log(
+        'Discount',
+        'Create',
+        'Create discount : ' . $discount->discount_name,
+        $discount,
+        null,
+        $discount->toArray()
+    );
 
 
     return redirect()
         ->route('admin.discount.index')
-        ->with('success','Discount berhasil dibuat');
+        ->with(
+            'success',
+            'Discount berhasil dibuat'
+        );
 }
-
-
-
-
-
 
     public function edit(Discount $discount)
     {
@@ -196,92 +294,205 @@ $this->activity->log(
 
     }   
 
-
-
-
-
-
-public function update(Request $request, Discount $discount)
-{
-
+public function update(
+    Request $request,
+    Discount $discount
+) {
     $request->validate([
 
-        'code' => 'nullable','required_if:trigger_type,voucher','max:255',
-        Rule::unique('discounts', 'code')
-        ->ignore($discount->id),
+        'code' => [
+            'nullable',
+            'required_if:trigger_type,voucher',
+            'max:255',
+            Rule::unique('discounts', 'code')
+                ->ignore($discount->id),
+        ],
 
-        'discount_name'=>'required',
+        'discount_name' => [
+            'required',
+            'max:255',
+        ],
 
-        'discount_type'=>'required',
+        'discount_type' => [
+            'required',
+            'in:percent,fixed',
+        ],
 
-        'amount'=>'required|numeric',
+        'amount' => [
+            'required',
+            'numeric',
+            'min:1',
+        ],
 
-        'game_id' => 'nullable|exists:games,id',
-        'item_id' => 'nullable|exists:items,id',
-        'payment_id' => 'nullable|exists:payments,id',
+        'game_id' => [
+            'nullable',
+            'exists:games,id',
+        ],
 
-        'trigger_type'=>'required',
+        'item_id' => [
+            'nullable',
+            'exists:items,id',
+        ],
 
-        'minimum_purchase'=>'nullable|numeric',
+        'payment_id' => [
+            'nullable',
+            'exists:payments,id',
+        ],
 
-        'usage_limit'=>'nullable|integer',
+        'trigger_type' => [
+            'required',
+            'in:voucher,automatic,new_user,flash_sale,payment_method',
+        ],
 
-        'usage_per_user'=>'nullable|integer',
+        'minimum_purchase' => [
+            'nullable',
+            'numeric',
+            'min:0',
+        ],
 
-        'payment_id'=>'nullable|exists:payments,id',
+        'usage_limit' => [
+            'nullable',
+            'integer',
+            'min:1',
+        ],
+
+        'usage_per_user' => [
+            'nullable',
+            'integer',
+            'min:0',
+        ],
+
+        'start_date' => [
+            'nullable',
+            'date',
+        ],
+
+        'end_date' => [
+            'nullable',
+            'date',
+            'after_or_equal:start_date',
+        ],
 
     ]);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Old Data
+    |--------------------------------------------------------------------------
+    */
+
     $old = $discount->toArray();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Voucher Code
+    |--------------------------------------------------------------------------
+    */
+
+    $code = null;
+
+    if ($request->trigger_type === 'voucher') {
+
+        $code = strtoupper(
+            trim($request->code)
+        );
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Usage Per User
+    |--------------------------------------------------------------------------
+    |
+    | 0 = unlimited
+    |
+    |--------------------------------------------------------------------------
+    */
+
+    $usagePerUser = $request->has('usage_per_user')
+        ? (int) $request->input('usage_per_user')
+        : 0;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update
+    |--------------------------------------------------------------------------
+    */
 
     $discount->update([
 
-        'code' => $request->filled('code')
-        ? strtoupper($request->code)
-        : $discount->code,
+        'code' =>
+            $code,
 
-        'game_id'=>$request->game_id,
+        'game_id' =>
+            $request->input('game_id'),
 
-        'item_id'=>$request->item_id,
+        'item_id' =>
+            $request->input('item_id'),
 
-        'discount_name'=>$request->discount_name,
+        'discount_name' =>
+            $request->input('discount_name'),
 
-        'discount_type'=>$request->discount_type,
+        'discount_type' =>
+            $request->input('discount_type'),
 
-        'amount'=>$request->amount,
+        'amount' =>
+            $request->input('amount'),
 
-        'start_date'=>$request->start_date,
+        'start_date' =>
+            $request->input('start_date'),
 
-        'end_date'=>$request->end_date,
+        'end_date' =>
+            $request->input('end_date'),
 
-        'is_active'=>$request->has('is_active'),
+        'is_active' =>
+            $request->boolean('is_active'),
 
-        'trigger_type'=>$request->trigger_type,
+        'trigger_type' =>
+            $request->input('trigger_type'),
 
-        'minimum_purchase'=>$request->minimum_purchase ?? 0,
+        'minimum_purchase' =>
+            $request->input('minimum_purchase', 0),
 
-        'usage_limit'=>$request->usage_limit,
+        'usage_limit' =>
+            $request->input('usage_limit'),
 
-        'usage_per_user'=>$request->usage_per_user ?? 1,
+        'usage_per_user' =>
+            $usagePerUser,
 
-        'payment_id'=>$request->payment_id,
+        'payment_id' =>
+            $request->input('payment_id'),
 
     ]);
 
-$this->activity->log(
-    'Discount',
-    'Update',
-    'Update discount : '.$discount->discount_name,
-    $discount,
-    $old,
-    $discount->fresh()->toArray()
-);
+
+    /*
+    |--------------------------------------------------------------------------
+    | Activity Log
+    |--------------------------------------------------------------------------
+    */
+
+    $this->activity->log(
+        'Discount',
+        'Update',
+        'Update discount : ' . $discount->discount_name,
+        $discount,
+        $old,
+        $discount->fresh()->toArray()
+    );
+
 
     return redirect()
         ->route('admin.discount.index')
-        ->with('success','Discount berhasil diupdate');
-
+        ->with(
+            'success',
+            'Discount berhasil diupdate'
+        );
 }
-
 
 
 

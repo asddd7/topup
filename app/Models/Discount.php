@@ -7,36 +7,49 @@ use Illuminate\Database\Eloquent\Model;
 class Discount extends Model
 {
 
-protected $fillable = [
+    protected $fillable = [
 
-    'code',
-    'game_id',
-    'item_id',
-    'payment_id',
+        'discount_name',
+        'code',
+        'trigger_type',
 
-    'discount_name',
+        'discount_type',
+        'amount',
 
-    'discount_type',
+        'minimum_purchase',
 
-    'amount',
+        'game_id',
+        'item_id',
+        'payment_id',
 
-    'start_date',
+        'start_date',
+        'end_date',
 
-    'end_date',
+        'usage_limit',
+        'quota_used',
 
-    'is_active',
+        'is_active',
 
-    'trigger_type',
+    ];
 
-    'minimum_purchase',
+    protected $casts = [
 
-    'usage_limit',
+        'amount' =>
+            'decimal:2',
 
-    'usage_per_user',
+        'minimum_purchase' =>
+            'decimal:2',
 
-    'quota_used'
+        'start_date' =>
+            'date',
 
-];
+        'end_date' =>
+            'date',
+
+        'is_active' =>
+            'boolean',
+
+    ];
 
 
 

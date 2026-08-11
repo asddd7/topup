@@ -248,10 +248,6 @@ method="POST">
 name="game_id"
 value="{{$game->id}}">
 
-<input type="hidden"
-name="item_id"
-id="item_id">
-
 @foreach($game->player_fields ?? [] as $field)
 
 <div class="mb-3">
@@ -339,32 +335,39 @@ Masukkan kode voucher
 </div>
 
 <input
+    type="hidden"
+    name="item_id"
+    id="item_id">
+
+<input
+    type="hidden"
+    name="subtotal"
+    id="original_subtotal"
+    value="0">
+
+<input
+    type="hidden"
+    name="discount_total"
+    id="discount_total"
+    value="0">
+
+<input
+    type="hidden"
+    name="total_price"
+    id="total_price"
+    value="0">
+
+<input
+    type="hidden"
+    name="discount_ids"
+    id="discount_ids"
+    value="">
+
+
+<input
 type="hidden"
 name="voucher"
 id="voucher">
-
-<input type="hidden"
-name="discount_id"
-id="discount_id"
-value="">
-
-<input type="hidden"
-name="subtotal"
-id="subtotal">
-
-<input type="hidden"
-id="original_subtotal">
-
-
-<input type="hidden"
-name="discount"
-id="discount"
-value="0">
-
-
-<input type="hidden"
-name="total_price"
-id="total_price">
 <h6>
 Item :
 <span id="selected_item">
@@ -373,38 +376,76 @@ Belum dipilih
 </h6>
 
 
-<p class="mb-1">
+<div class="mt-3">
 
-Harga :
+    <div class="d-flex justify-content-between">
 
-Rp <span id="original_price">
-0
-</span>
+        <span>Harga</span>
 
-</p>
+        <strong>
+            Rp <span id="original_price">0</span>
+        </strong>
 
-
-<p class="mb-1 text-danger">
-
-Diskon :
-
-Rp <span id="discount_price">
-0
-</span>
-
-</p>
+    </div>
 
 
-<h5 class="fw-bold">
+    <div class="d-flex justify-content-between">
 
-Total :
+        <span>Diskon</span>
 
-Rp <span id="final_price">
-0
-</span>
+        <strong class="text-danger">
 
-</h5>
+            - Rp
+            <span id="discount_price">
+                0
+            </span>
 
+        </strong>
+
+    </div>
+
+
+    <hr>
+
+
+    <div class="d-flex justify-content-between">
+
+        <strong>Total</strong>
+
+        <strong class="text-success fs-5">
+
+            Rp
+            <span id="final_price">
+                0
+            </span>
+
+        </strong>
+
+    </div>
+
+</div>
+
+<div class="card mt-3 shadow-sm">
+
+    <div class="card-body">
+
+        <h6 class="fw-bold mb-3">
+            <i class="fa-solid fa-tags me-2"></i>
+            Promo
+        </h6>
+
+
+        <div id="promoList">
+
+            <div class="text-muted small">
+                Belum ada promo
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
 </div>
 
@@ -488,359 +529,1104 @@ Beli Sekarang
 
 </div>
 <script>
+
 let selectedPrice = 0;
-
-
-function selectItem(id,name,price)
-{
-
-document.getElementById('discount_id').value="";
-document.getElementById('discount').value=0;
-document.getElementById('discount_price').innerHTML="0";
-document.getElementById('voucher').value="";
-document.getElementById('voucher_message').innerHTML=
-"Masukkan voucher";
-
-
-document.getElementById('item_id').value=id;
-
-
-document.getElementById('selected_item')
-.innerHTML=name;
-
-
-selectedPrice=parseInt(price);
-
-
-document.getElementById('original_price')
-.innerHTML=formatRupiah(selectedPrice);
-
-
-document.getElementById('final_price')
-.innerHTML=formatRupiah(selectedPrice);
-
-
-document.getElementById('subtotal')
-.value=selectedPrice;
-
-
-document.getElementById('original_subtotal')
-.value=selectedPrice;
-
-
-document.getElementById('total_price')
-.value=selectedPrice;
-
-
-window.location.href="#checkout";
-
-}
-
-
-
-
-function checkVoucher()
-{
-
-let code=document.getElementById('code').value;
-
-
-if(code=="")
-{
-return;
-}
-
-
-fetch(
-"{{ route('voucher.check') }}",
-{
-method:"POST",
-
-headers:{
-
-"Content-Type":"application/json",
-
-"X-CSRF-TOKEN":
-document
-.querySelector('meta[name="csrf-token"]')
-.content
-
-},
-
-body:JSON.stringify({
-
-code:code,
-
-price:selectedPrice,
-
-game_id:"{{$game->id}}",
-
-item_id:
-document.getElementById('item_id').value
-
-})
-}
-
-)
-
-.then(res=>res.json())
-
-.then(data=>{
-
-
-if(data.status)
-{
-
-
-document.getElementById('voucher').value=code;
-
-document.getElementById('discount_id')
-.value=data.discount_id;
-
-
-
-document.getElementById('discount')
-.value=data.discount;
-
-
-
-document.getElementById('discount_price')
-.innerHTML=
-formatRupiah(data.discount);
-
-
-
-document.getElementById('final_price')
-.innerHTML=
-formatRupiah(data.total);
-
-
-
-document.getElementById('total_price')
-.value=data.total;
-
-
-document.getElementById('voucher_message')
-.innerHTML=
-"Voucher berhasil digunakan";
-
-
-}
-else{
-
-
-document.getElementById('voucher_message')
-.innerHTML=
-"Voucher tidak valid";
-
-
-}
-
-
-});
-
-}
-
-
+let selectedPaymentId = null;
+let selectedVoucher = null;
+let appliedPromos = [];
+
+
+/*
+|--------------------------------------------------------------------------
+| FORMAT RUPIAH
+|--------------------------------------------------------------------------
+*/
 
 function formatRupiah(number)
 {
-
-return new Intl.NumberFormat('id-ID')
-.format(number);
-
+    return new Intl.NumberFormat('id-ID').format(
+        Math.round(parseFloat(number) || 0)
+    );
 }
 
-document
-.querySelectorAll('.payment-radio')
-.forEach(function(payment){
 
+/*
+|--------------------------------------------------------------------------
+| ESCAPE HTML
+|--------------------------------------------------------------------------
+| Mencegah nama promo/kode promo memasukkan HTML ke halaman.
+|--------------------------------------------------------------------------
+*/
 
-payment.addEventListener(
-'change',
-function(){
-
-
-fetch(
-"{{ route('payment.promo') }}",
+function escapeHtml(value)
 {
-
-method:"POST",
-
-headers:{
-
-"Content-Type":"application/json",
-
-"X-CSRF-TOKEN":
-document
-.querySelector('meta[name="csrf-token"]')
-.content
-
-},
-
-body:JSON.stringify({
-
-payment_id:this.value,
-
-subtotal:
-parseInt(
-document.getElementById('original_subtotal').value
-),
-
-game_id:"{{$game->id}}",
-
-item_id:
-document.getElementById('item_id').value
-
-})
-
-
-}
-
-)
-
-
-.then(res=>res.json())
-
-.then(data=>{
-
-
-if(data.status){
-
-
-document
-.getElementById('discount_id')
-.value=data.discount_id;
-
-
-
-document
-.getElementById('discount')
-.value=data.discount;
-
-
-
-document
-.getElementById('discount_price')
-.innerHTML=
-formatRupiah(data.discount);
-
-
-
-document
-.getElementById('final_price')
-.innerHTML=
-formatRupiah(data.total);
-
-
-
-document
-.getElementById('total_price')
-.value=data.total;
-
-
-
-document
-.getElementById('voucher_message')
-.innerHTML=
-data.message;
-
-
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }
 
 
-});
+/*
+|--------------------------------------------------------------------------
+| PILIH ITEM
+|--------------------------------------------------------------------------
+*/
+
+function selectItem(id, name, price)
+{
+    selectedPrice = parseFloat(price) || 0;
+
+    /*
+    |--------------------------------------------------------------------------
+    | Reset promo
+    |--------------------------------------------------------------------------
+    */
+
+    selectedVoucher = null;
+    appliedPromos = [];
 
 
-});
+    /*
+    |--------------------------------------------------------------------------
+    | Reset voucher
+    |--------------------------------------------------------------------------
+    */
+
+    const codeInput =
+        document.getElementById('code');
+
+    const voucherInput =
+        document.getElementById('voucher');
+
+    if (codeInput) {
+        codeInput.value = '';
+    }
+
+    if (voucherInput) {
+        voucherInput.value = '';
+    }
 
 
-});
+    /*
+    |--------------------------------------------------------------------------
+    | Set item
+    |--------------------------------------------------------------------------
+    */
 
-const paymentArea =
-document.getElementById('paymentArea');
+    const itemInput =
+        document.getElementById('item_id');
+
+    if (itemInput) {
+        itemInput.value = id;
+    }
 
 
-function togglePromoTarget() {
+    /*
+    |--------------------------------------------------------------------------
+    | Tampilkan item
+    |--------------------------------------------------------------------------
+    */
+
+    const selectedItem =
+        document.getElementById('selected_item');
+
+    if (selectedItem) {
+        selectedItem.innerText = name;
+    }
 
 
-if(trigger.value === 'voucher'){
+    /*
+    |--------------------------------------------------------------------------
+    | Harga awal
+    |--------------------------------------------------------------------------
+    */
 
-    voucherArea.style.display='';
+    const originalPrice =
+        document.getElementById('original_price');
+
+    if (originalPrice) {
+        originalPrice.innerText =
+            formatRupiah(selectedPrice);
+    }
 
 
-}else{
+    /*
+    |--------------------------------------------------------------------------
+    | Reset discount
+    |--------------------------------------------------------------------------
+    */
 
-    voucherArea.style.display='none';
+    const discountPrice =
+        document.getElementById('discount_price');
+
+    if (discountPrice) {
+        discountPrice.innerText = '0';
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Reset total
+    |--------------------------------------------------------------------------
+    */
+
+    const finalPrice =
+        document.getElementById('final_price');
+
+    if (finalPrice) {
+        finalPrice.innerText =
+            formatRupiah(selectedPrice);
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Hidden input
+    |--------------------------------------------------------------------------
+    */
+
+    const originalSubtotal =
+        document.getElementById('original_subtotal');
+
+    if (originalSubtotal) {
+        originalSubtotal.value =
+            selectedPrice;
+    }
+
+
+    const totalPrice =
+        document.getElementById('total_price');
+
+    if (totalPrice) {
+        totalPrice.value =
+            selectedPrice;
+    }
+
+
+    const discountTotal =
+        document.getElementById('discount_total');
+
+    if (discountTotal) {
+        discountTotal.value = 0;
+    }
+
+
+    const discountIds =
+        document.getElementById('discount_ids');
+
+    if (discountIds) {
+        discountIds.value = '';
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Reset daftar promo
+    |--------------------------------------------------------------------------
+    */
+
+    const promoList =
+        document.getElementById('promoList');
+
+    if (promoList) {
+
+        promoList.innerHTML = `
+            <div class="text-muted small">
+                ${
+                    selectedPaymentId
+                        ? 'Menghitung promo...'
+                        : 'Pilih metode pembayaran untuk melihat promo.'
+                }
+            </div>
+        `;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Scroll ke checkout
+    |--------------------------------------------------------------------------
+    */
+
+    window.location.href = '#checkout';
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Jika payment sudah dipilih,
+    | langsung hitung promo
+    |--------------------------------------------------------------------------
+    */
+
+    if (selectedPaymentId) {
+        calculatePromos();
+    }
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| PAYMENT METHOD
+|--------------------------------------------------------------------------
+*/
+
+document
+    .querySelectorAll('.payment-radio')
+    .forEach(function(payment) {
+
+        payment.addEventListener(
+            'change',
+            function() {
+
+                selectedPaymentId =
+                    parseInt(this.value) || null;
+
+                calculatePromos();
+
+            }
+        );
+
+    });
+
+
+/*
+|--------------------------------------------------------------------------
+| VOUCHER
+|--------------------------------------------------------------------------
+*/
+
+function checkVoucher()
+{
+    const codeInput =
+        document.getElementById('code');
+
+    if (!codeInput) {
+        return;
+    }
+
+
+    const code =
+        codeInput.value.trim();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Jika kosong → hapus voucher
+    |--------------------------------------------------------------------------
+    */
+
+    if (code === '') {
+
+        selectedVoucher = null;
+
+    } else {
+
+        selectedVoucher = code;
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Simpan ke hidden input
+    |--------------------------------------------------------------------------
+    */
+
+    const voucherInput =
+        document.getElementById('voucher');
+
+    if (voucherInput) {
+
+        voucherInput.value =
+            selectedVoucher ?? '';
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Hitung ulang semua promo
+    |--------------------------------------------------------------------------
+    */
+
+    calculatePromos();
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| HAPUS VOUCHER
+|--------------------------------------------------------------------------
+*/
+
+function removeVoucher()
+{
+    selectedVoucher = null;
+
+
+    const codeInput =
+        document.getElementById('code');
+
+    if (codeInput) {
+        codeInput.value = '';
+    }
+
+
+    const voucherInput =
+        document.getElementById('voucher');
+
+    if (voucherInput) {
+        voucherInput.value = '';
+    }
+
+
+    calculatePromos();
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| CALCULATE PROMOS
+|--------------------------------------------------------------------------
+*/
+
+function calculatePromos()
+{
+    /*
+    |--------------------------------------------------------------------------
+    | Belum pilih item
+    |--------------------------------------------------------------------------
+    */
+
+    if (!selectedPrice) {
+        return;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Ambil item ID
+    |--------------------------------------------------------------------------
+    */
+
+    const itemInput =
+        document.getElementById('item_id');
+
+    if (!itemInput) {
+        return;
+    }
+
+
+    const itemId =
+        itemInput.value;
+
+
+    if (!itemId) {
+        return;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Tampilkan loading
+    |--------------------------------------------------------------------------
+    */
+
+    const promoList =
+        document.getElementById('promoList');
+
+    if (promoList) {
+
+        promoList.innerHTML = `
+            <div class="text-muted small">
+                <i class="fa-solid fa-spinner fa-spin me-1"></i>
+                Menghitung promo...
+            </div>
+        `;
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Request ke server
+    |--------------------------------------------------------------------------
+    */
+
+    fetch(
+        "{{ route('voucher.calculate') }}",
+        {
+            method: "POST",
+
+            headers: {
+
+                "Content-Type":
+                    "application/json",
+
+                "Accept":
+                    "application/json",
+
+                "X-CSRF-TOKEN":
+                    document
+                        .querySelector(
+                            'meta[name="csrf-token"]'
+                        )
+                        .content
+
+            },
+
+            body: JSON.stringify({
+
+                subtotal:
+                    selectedPrice,
+
+                game_id:
+                    "{{ $game->id }}",
+
+                item_id:
+                    itemId,
+
+                payment_id:
+                    selectedPaymentId,
+
+                voucher_code:
+                    selectedVoucher
+
+            })
+
+        }
+    )
+    .then(function(response) {
+
+        if (!response.ok) {
+
+            throw new Error(
+                'Gagal menghitung promo'
+            );
+
+        }
+
+        return response.json();
+
+    })
+    .then(function(data) {
+
+        /*
+        |--------------------------------------------------------------------------
+        | Simpan promo yang diterapkan
+        |--------------------------------------------------------------------------
+        */
+
+        appliedPromos =
+            data.discounts || [];
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Render hasil
+        |--------------------------------------------------------------------------
+        */
+
+        renderPromoResult(data);
+
+    })
+    .catch(function(error) {
+
+        console.error(
+            'Promo Error:',
+            error
+        );
+
+
+        appliedPromos = [];
+
+
+        if (promoList) {
+
+            promoList.innerHTML = `
+                <div class="text-danger small">
+                    <i class="fa-solid fa-circle-exclamation me-1"></i>
+                    Gagal memuat promo.
+                </div>
+            `;
+
+        }
+
+    });
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| RENDER PROMO STACKING
+|--------------------------------------------------------------------------
+*/
+
+function renderPromoResult(data)
+{
+    const promoList =
+        document.getElementById('promoList');
+
+
+    if (!promoList) {
+        return;
+    }
+
+
+    let html = '';
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Tidak ada promo
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        !data.discounts ||
+        data.discounts.length === 0
+    ) {
+
+        html = `
+            <div class="text-muted small">
+                <i class="fa-solid fa-tag me-1"></i>
+                Tidak ada promo yang digunakan.
+            </div>
+        `;
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Ada promo
+    |--------------------------------------------------------------------------
+    */
+
+    else {
+
+        data.discounts.forEach(
+            function(promo, index) {
+
+                const promoName =
+                    escapeHtml(
+                        promo.name ||
+                        'Promo'
+                    );
+
+
+                const promoCode =
+                    promo.code
+                        ? escapeHtml(
+                            promo.code
+                        )
+                        : escapeHtml(
+                            promo.trigger_type ||
+                            'Promo'
+                        );
+
+
+                const promoDiscount =
+                    parseFloat(
+                        promo.discount ??
+                        promo.amount ??
+                        0
+                    );
+
+
+                html += `
+
+                    <div
+                        class="
+                            d-flex
+                            justify-content-between
+                            align-items-center
+                            border-bottom
+                            pb-2
+                            mb-2
+                        "
+                    >
+
+                        <div>
+
+                            <div class="fw-semibold">
+
+                                <span
+                                    class="
+                                        badge
+                                        bg-success
+                                        me-1
+                                    "
+                                >
+                                    ${index + 1}
+                                </span>
+
+                                ${promoName}
+
+                            </div>
+
+                            <small
+                                class="text-muted"
+                            >
+
+                                ${promoCode}
+
+                            </small>
+
+                        </div>
+
+
+                        <div
+                            class="
+                                text-danger
+                                fw-semibold
+                            "
+                        >
+
+                            - Rp
+                            ${formatRupiah(
+                                promoDiscount
+                            )}
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Total promo
+        |--------------------------------------------------------------------------
+        */
+
+        html += `
+
+            <div
+                class="
+                    d-flex
+                    justify-content-between
+                    mt-3
+                "
+            >
+
+                <strong>
+                    Total Diskon
+                </strong>
+
+                <strong
+                    class="text-danger"
+                >
+
+                    - Rp
+                    ${formatRupiah(
+                        data.discount_total || 0
+                    )}
+
+                </strong>
+
+            </div>
+
+        `;
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Masukkan HTML
+    |--------------------------------------------------------------------------
+    */
+
+    promoList.innerHTML =
+        html;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Total diskon
+    |--------------------------------------------------------------------------
+    */
+
+    const discountTotal =
+        parseFloat(
+            data.discount_total || 0
+        );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Total akhir
+    |--------------------------------------------------------------------------
+    */
+
+    const total =
+        parseFloat(
+            data.total ?? selectedPrice
+        );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update tampilan diskon
+    |--------------------------------------------------------------------------
+    */
+
+    const discountPrice =
+        document.getElementById(
+            'discount_price'
+        );
+
+    if (discountPrice) {
+
+        discountPrice.innerText =
+            formatRupiah(
+                discountTotal
+            );
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update tampilan total
+    |--------------------------------------------------------------------------
+    */
+
+    const finalPrice =
+        document.getElementById(
+            'final_price'
+        );
+
+    if (finalPrice) {
+
+        finalPrice.innerText =
+            formatRupiah(
+                total
+            );
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Hidden input
+    |--------------------------------------------------------------------------
+    | Catatan:
+    | Nilai ini hanya untuk tampilan/form.
+    | Server tetap menghitung ulang promo.
+    |--------------------------------------------------------------------------
+    */
+
+    const discountInput =
+        document.getElementById(
+            'discount_total'
+        );
+
+    if (discountInput) {
+
+        discountInput.value =
+            discountTotal;
+
+    }
+
+
+    const totalInput =
+        document.getElementById(
+            'total_price'
+        );
+
+    if (totalInput) {
+
+        totalInput.value =
+            total;
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Simpan ID promo untuk kebutuhan frontend
+    |--------------------------------------------------------------------------
+    */
+
+    const discountIds =
+        document.getElementById(
+            'discount_ids'
+        );
+
+    if (discountIds) {
+
+        discountIds.value =
+            (data.discounts || [])
+                .map(function(promo) {
+
+                    return promo.id;
+
+                })
+                .filter(Boolean)
+                .join(',');
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Update pesan voucher
+    |--------------------------------------------------------------------------
+    */
+
+    const voucherMessage =
+        document.getElementById(
+            'voucher_message'
+        );
+
+
+    if (
+        voucherMessage &&
+        selectedVoucher
+    ) {
+
+        const voucherPromo =
+            (data.discounts || [])
+                .find(function(promo) {
+
+                    return (
+                        promo.trigger_type ===
+                        'voucher'
+                    );
+
+                });
+
+
+        if (voucherPromo) {
+
+            voucherMessage.innerHTML = `
+                <span class="text-success">
+                    <i class="fa-solid fa-circle-check me-1"></i>
+                    Voucher berhasil digunakan.
+                </span>
+            `;
+
+        } else {
+
+            voucherMessage.innerHTML = `
+                <span class="text-danger">
+                    <i class="fa-solid fa-circle-xmark me-1"></i>
+                    Voucher tidak berlaku.
+                </span>
+            `;
+
+        }
+
+    }
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| VALIDASI FORM
+|--------------------------------------------------------------------------
+*/
+
+document
+    .querySelectorAll('form')
+    .forEach(function(form) {
+
+        form.addEventListener(
+            'submit',
+            function(event) {
+
+                /*
+                |--------------------------------------------------------------------------
+                | Pastikan item dipilih
+                |--------------------------------------------------------------------------
+                */
+
+                const itemId =
+                    document.getElementById(
+                        'item_id'
+                    )?.value;
+
+
+                if (!itemId) {
+
+                    event.preventDefault();
+
+                    alert(
+                        'Silakan pilih nominal top up terlebih dahulu.'
+                    );
+
+                    return;
+
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Pastikan payment dipilih
+                |--------------------------------------------------------------------------
+                */
+
+                if (!selectedPaymentId) {
+
+                    const paymentSelected =
+                        document.querySelector(
+                            '.payment-radio:checked'
+                        );
+
+
+                    if (!paymentSelected) {
+
+                        event.preventDefault();
+
+                        alert(
+                            'Silakan pilih metode pembayaran.'
+                        );
+
+                        return;
+
+                    }
+
+
+                    selectedPaymentId =
+                        parseInt(
+                            paymentSelected.value
+                        );
+
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Voucher hidden input
+                |--------------------------------------------------------------------------
+                */
+
+                const voucherInput =
+                    document.getElementById(
+                        'voucher'
+                    );
+
+
+                if (voucherInput) {
+
+                    voucherInput.value =
+                        selectedVoucher ?? '';
+
+                }
+
+            }
+        );
+
+    });
+
+
+/*
+|--------------------------------------------------------------------------
+| INPUT PLAYER
+|--------------------------------------------------------------------------
+*/
+
+document
+    .querySelectorAll('.player-input')
+    .forEach(function(input) {
+
+        const type =
+            input.dataset.type;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Number
+        |--------------------------------------------------------------------------
+        */
+
+        if (type === 'number') {
+
+            input.addEventListener(
+                'input',
+                function() {
+
+                    this.value =
+                        this.value.replace(
+                            /[^0-9]/g,
+                            ''
+                        );
+
+                }
+            );
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Email
+        |--------------------------------------------------------------------------
+        */
+
+        if (type === 'email') {
+
+            input.addEventListener(
+                'input',
+                function() {
+
+                    this.value =
+                        this.value.replace(
+                            /\s/g,
+                            ''
+                        );
+
+                }
+            );
+
+        }
+
+    });
+
+
+/*
+|--------------------------------------------------------------------------
+| INITIAL PAYMENT
+|--------------------------------------------------------------------------
+| Jika sebelumnya ada payment yang sudah terpilih,
+| baca dari radio button.
+|--------------------------------------------------------------------------
+*/
+
+const initialPayment =
+    document.querySelector(
+        '.payment-radio:checked'
+    );
+
+
+if (initialPayment) {
+
+    selectedPaymentId =
+        parseInt(
+            initialPayment.value
+        );
 
 }
 
 
+/*
+|--------------------------------------------------------------------------
+| DEBUG OPTIONAL
+|--------------------------------------------------------------------------
+*/
 
-if(trigger.value === 'payment_method'){
-
-    paymentArea.style.display='';
-
-}else{
-
-    paymentArea.style.display='none';
-
-}
-
-
-}
-
-
-trigger.addEventListener(
-'change',
-togglePromoTarget
+console.log(
+    'Promo stacking checkout aktif.'
 );
 
-
-togglePromoTarget();
-
-document
-.querySelectorAll('.player-input')
-.forEach(function(input){
-
-
-let type = input.dataset.type;
-
-
-
-if(type === 'number'){
-
-
-input.addEventListener('input',function(){
-
-
-this.value =
-this.value.replace(/[^0-9]/g,'');
-
-
-});
-
-
-}
-
-
-
-if(type === 'email'){
-
-
-input.addEventListener('input',function(){
-
-
-this.value =
-this.value.replace(/\s/g,'');
-
-
-});
-
-
-}
-
-
-});
 </script>
 @endsection

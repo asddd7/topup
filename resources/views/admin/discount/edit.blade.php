@@ -468,12 +468,15 @@ Maks/User
 
 
 <input
-type="number"
-name="usage_per_user"
-class="form-control"
-value="{{$discount->usage_per_user}}">
+    type="number"
+    name="usage_per_user"
+    value="{{ old('usage_per_user', $discount->usage_per_user ?? 1) }}"
+    min="0"
+    class="form-control">
 
-
+<small class="text-muted">
+    0 = tidak dibatasi
+</small>
 </div>
 
 

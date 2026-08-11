@@ -2,492 +2,800 @@
 
 namespace App\Http\Controllers\Admin;
 
-
 use App\Http\Controllers\Admin\BaseAdminController;
-use App\Models\Item;
-use App\Models\User;
-use App\Models\Notification;
 use App\Models\Discount;
+use App\Models\Item;
+use App\Models\Notification;
 use App\Models\Order;
-
+use App\Models\User;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends BaseAdminController
 {
-
-
-public function index(Request $request)
-{
-
-    $statusList = [
-
-        'Pending',
-
-        'Waiting Payment',
-
-        'Paid',
-
-        'Processing',
-
-        'Completed',
-
-        'Cancelled'
-
-    ];
-
-
-    $status = $request->status;
-
-
-
-    $orders = Order::with([
-
-        'user',
-
-        'game',
-
-        'payment'
-
-    ])
-
-    ->when(
-        $status,
-        function($query) use($status){
-
-            $query->where(
-                'status',
-                $status
-            );
-
-        }
-
-    )
-
-    ->latest()
-
-    ->get();
-
-
-
-    return view(
-        'admin.order.index',
-        compact(
-            'orders',
-            'status',
-            'statusList'
-        )
-    );
-
-
-}
-
-
-
-
-
-public function show(Order $order)
-{
-
-
-$order->load([
-
-'user',
-
-'game',
-
-'payment',
-
-'discount',
-
-'details.item',
-
-'paymentLogs'
-
-]);
-
-
-
-return view(
-'admin.order.show',
-compact(
-'order'
-)
-);
-
-
-}
-
-
-
-
-
-
-public function update(
-    Request $request,
-    Order $order
-)
-{
-
-
-$request->validate([
-
-    'status'=>'required'
-
-]);
-
-
-// ==========================
-// Kurangi Kuota Discount
-// ==========================
-
-if($order->discount_id)
-{
-
-    $discount = Discount::find(
-        $order->discount_id
-    );
-
-
-    if($discount)
+    /**
+     * =========================================================
+     * ORDER INDEX
+     * =========================================================
+     */
+    public function index(Request $request)
     {
+        $statusList = [
+            'Pending',
+            'Waiting Payment',
+            'Paid',
+            'Processing',
+            'Completed',
+            'Cancelled',
+        ];
 
-$discount->increment(
-    'quota_used',
-    1
-);
+        $status = $request->status;
 
+        $orders = Order::with([
+            'user',
+            'game',
+            'payment',
+        ])
+            ->when(
+                $status,
+                function ($query) use ($status) {
+                    $query->where('status', $status);
+                }
+            )
+            ->latest()
+            ->get();
 
-$discount->refresh();
-
-
-if(
-    $discount->usage_limit
-    &&
-    $discount->quota_used >= $discount->usage_limit
-){
-
-    $discount->update([
-        'is_active'=>0
-    ]);
-
-}
-
+        return view(
+            'admin.order.index',
+            compact(
+                'orders',
+                'status',
+                'statusList'
+            )
+        );
     }
 
-}
+
+    /**
+     * =========================================================
+     * ORDER DETAIL
+     * =========================================================
+     */
+    public function show(Order $order)
+    {
+        $order->load([
+            'user',
+            'game',
+            'payment',
+            'discount',
+            'discounts',
+            'orderDiscounts.discount',
+            'details.item',
+            'paymentLogs',
+        ]);
+
+        return view(
+            'admin.order.show',
+            compact('order')
+        );
+    }
 
 
-$oldStatus = $order->status;
+    /**
+     * =========================================================
+     * UPDATE ORDER STATUS
+     * =========================================================
+     */
+    public function update(
+        Request $request,
+        Order $order
+    ) {
+        $request->validate([
+            'status' => [
+                'required',
+                'in:Pending,Waiting Payment,Paid,Processing,Completed,Cancelled',
+            ],
 
-$old = $order->toArray();
-$order->update([
-    'status' => $request->status,
-    'notes'  => $request->notes
-]);
-$this->activity->log(
-    'Order',
-    'Update Status',
-    'Update status order '.$order->invoice_number.
-    ' dari '.$old['status'].
-    ' menjadi '.$order->status,
-    $order,
-    $old,
-    $order->fresh()->toArray()
-);
+            'notes' => [
+                'nullable',
+                'string',
+            ],
+        ]);
 
+        $old = $order->toArray();
 
-$order->paymentLogs()->create([
+        $order->update([
+            'status' => $request->status,
+            'notes'  => $request->notes,
+        ]);
 
-    'status'=>$request->status,
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
 
-    'message'=>'Status diperbarui admin'
+        $this->activity->log(
+            'Order',
+            'Update Status',
+            'Update status order ' .
+                $order->invoice_number .
+                ' dari ' .
+                ($old['status'] ?? '-') .
+                ' menjadi ' .
+                $order->status,
+            $order,
+            $old,
+            $order->fresh()->toArray()
+        );
 
-]);
+        /*
+        |--------------------------------------------------------------------------
+        | Payment Log
+        |--------------------------------------------------------------------------
+        */
 
+        $order->paymentLogs()->create([
+            'status' => $request->status,
+            'message' => 'Status diperbarui admin',
+        ]);
 
+        /*
+        |--------------------------------------------------------------------------
+        | Jika Completed
+        |--------------------------------------------------------------------------
+        */
 
-
-/*
-|--------------------------------------------------------------------------
-| Hapus Notifikasi jika Order Completed
-|--------------------------------------------------------------------------
-*/
-
-if($request->status == 'Completed')
-{
-
-    Notification::where(
-        'order_id',
-        $order->id
-    )
-    ->update([
-
-        'is_read'=>1,
-
-        'read_at'=>now()
-
-    ]);
-
-}
-
-
-
-
-return back()->with(
-
-'success',
-
-'Order berhasil diperbarui'
-
-);
-
-
-}
-
-
-public function confirm(Order $order)
-{
-    /*
-    |--------------------------------------------------------------------------
-    | Pastikan order harus Paid
-    |--------------------------------------------------------------------------
-    */
-
-    if ($order->status != 'Paid') {
+        if ($request->status === 'Completed') {
+            Notification::where(
+                'order_id',
+                $order->id
+            )->update([
+                'is_read' => 1,
+                'read_at' => now(),
+            ]);
+        }
 
         return back()->with(
-            'error',
-            'Order belum berstatus Paid.'
+            'success',
+            'Order berhasil diperbarui'
         );
-
     }
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | Load detail + item + game
-    |--------------------------------------------------------------------------
-    */
-
-    $order->load([
-        'details.item.game'
-    ]);
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Cek stock terlebih dahulu
-    |--------------------------------------------------------------------------
-    */
-
-    foreach ($order->details as $detail) {
-
-        $item = $detail->item;
-
-        if (!$item) {
-
-            return back()->with(
-                'error',
-                'Item pada order tidak ditemukan.'
-            );
-
-        }
-
-
-        if ($item->stock < $detail->qty) {
-
-            return back()->with(
-                'error',
-                'Stock '.$item->item_name.' tidak mencukupi.'
-            );
-
-        }
-
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Kurangi stock
-    |--------------------------------------------------------------------------
-    */
-
-    foreach ($order->details as $detail) {
-
-        $item = $detail->item;
-
-        $item->decrement(
-            'stock',
-            $detail->qty
-        );
-
-        $item->refresh();
-
-
+    /**
+     * =========================================================
+     * CONFIRM PAYMENT
+     *
+     * Alur:
+     *
+     * Paid
+     *   ↓
+     * Lock Order
+     *   ↓
+     * Check Stock
+     *   ↓
+     * Reduce Stock
+     *   ↓
+     * Process Discount
+     *   ↓
+     * quota_used + 1
+     *   ↓
+     * discount_usages
+     *   ↓
+     * Completed
+     * =========================================================
+     */
+    public function confirm(Order $order)
+    {
         /*
         |--------------------------------------------------------------------------
-        | Jika stock rendah
+        | Status awal harus Paid
         |--------------------------------------------------------------------------
         */
 
-        if ($item->stock < 10) {
+        if ($order->status !== 'Paid') {
+            return back()->with(
+                'error',
+                'Order harus berstatus Paid.'
+            );
+        }
 
-            $gameName = $item->game
-                ? $item->game->game_name
-                : 'Game Tidak Diketahui';
+        try {
+            DB::transaction(function () use ($order) {
 
+                /*
+                |--------------------------------------------------------------------------
+                | LOCK ORDER
+                |--------------------------------------------------------------------------
+                */
 
-            $message =
-                $gameName
-                .' - '
-                .$item->item_name
-                .' tersisa '
-                .$item->stock;
+                $lockedOrder = Order::where(
+                    'id',
+                    $order->id
+                )
+                    ->lockForUpdate()
+                    ->first();
 
+                if (!$lockedOrder) {
+                    throw new \RuntimeException(
+                        'Order tidak ditemukan.'
+                    );
+                }
 
-            foreach (
-                User::where('role_id', 1)->get()
-                as $admin
-            ) {
+                /*
+                |--------------------------------------------------------------------------
+                | Pastikan belum diproses
+                |--------------------------------------------------------------------------
+                */
 
-                Notification::updateOrCreate(
-                    [
-                        'user_id' => $admin->id,
-                        'item_id' => $item->id,
-                        'title'   => 'Stock Rendah'
-                    ],
-                    [
-                        'message' => $message,
-                        'is_read' => 0
-                    ]
+                if ($lockedOrder->status !== 'Paid') {
+                    throw new \RuntimeException(
+                        'Order sudah diproses atau status sudah berubah.'
+                    );
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | LOAD RELATIONS
+                |--------------------------------------------------------------------------
+                */
+
+                $lockedOrder->load([
+                    'details.item',
+                    'orderDiscounts.discount',
+                ]);
+
+                /*
+                |--------------------------------------------------------------------------
+                | CEK DETAIL ORDER
+                |--------------------------------------------------------------------------
+                */
+
+                if (
+                    $lockedOrder->details->isEmpty()
+                ) {
+                    throw new \RuntimeException(
+                        'Order tidak memiliki detail item.'
+                    );
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | CEK STOCK
+                |--------------------------------------------------------------------------
+                |
+                | Semua item di-lock terlebih dahulu.
+                |
+                */
+
+                foreach (
+                    $lockedOrder->details as $detail
+                ) {
+                    $item = Item::where(
+                        'id',
+                        $detail->item_id
+                    )
+                        ->lockForUpdate()
+                        ->first();
+
+                    if (!$item) {
+                        throw new \RuntimeException(
+                            'Item ID ' .
+                                $detail->item_id .
+                                ' tidak ditemukan.'
+                        );
+                    }
+
+                    if (
+                        $item->stock <
+                        $detail->qty
+                    ) {
+                        throw new \RuntimeException(
+                            'Stock ' .
+                                $item->item_name .
+                                ' tidak mencukupi. ' .
+                                'Stock tersedia: ' .
+                                $item->stock .
+                                ', kebutuhan: ' .
+                                $detail->qty
+                        );
+                    }
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | KURANGI STOCK
+                |--------------------------------------------------------------------------
+                */
+
+                foreach (
+                    $lockedOrder->details as $detail
+                ) {
+                    $item = Item::where(
+                        'id',
+                        $detail->item_id
+                    )
+                        ->lockForUpdate()
+                        ->first();
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Kurangi stock
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $item->decrement(
+                        'stock',
+                        $detail->qty
+                    );
+
+                    $item->refresh();
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | LOW STOCK NOTIFICATION
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if ($item->stock < 10) {
+
+                        $gameName =
+                            $item->game?->game_name
+                            ?? 'Game Tidak Diketahui';
+
+                        $message =
+                            $gameName .
+                            ' - ' .
+                            $item->item_name .
+                            ' tersisa ' .
+                            $item->stock;
+
+                        $admins = User::where(
+                            'role_id',
+                            1
+                        )->get();
+
+                        foreach ($admins as $admin) {
+
+                            Notification::updateOrCreate(
+
+                                [
+                                    'user_id' =>
+                                        $admin->id,
+
+                                    'item_id' =>
+                                        $item->id,
+
+                                    'title' =>
+                                        'Stock Rendah',
+                                ],
+
+                                [
+                                    'message' =>
+                                        $message,
+
+                                    'is_read' =>
+                                        0,
+
+                                    'read_at' =>
+                                        null,
+                                ]
+
+                            );
+                        }
+
+                    } else {
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Jika stock sudah normal,
+                        | hapus notifikasi low stock.
+                        |--------------------------------------------------------------------------
+                        */
+
+                        Notification::where(
+                            'item_id',
+                            $item->id
+                        )
+                            ->where(
+                                'title',
+                                'Stock Rendah'
+                            )
+                            ->delete();
+                    }
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | PROCESS DISCOUNT
+                |--------------------------------------------------------------------------
+                |
+                | PENTING:
+                |
+                | Kita TIDAK menghitung ulang PromotionService di sini.
+                |
+                | Promo sudah tersimpan ketika order dibuat:
+                |
+                | order_discounts
+                |
+                */
+
+                foreach (
+                    $lockedOrder->orderDiscounts
+                    as $orderDiscount
+                ) {
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Ambil discount dan lock row
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $discount = Discount::where(
+                        'id',
+                        $orderDiscount->discount_id
+                    )
+                        ->lockForUpdate()
+                        ->first();
+
+                    if (!$discount) {
+                        throw new \RuntimeException(
+                            'Promo dengan ID ' .
+                                $orderDiscount->discount_id .
+                                ' tidak ditemukan.'
+                        );
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Promo harus aktif
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (!$discount->is_active) {
+                        throw new \RuntimeException(
+                            'Promo "' .
+                                $discount->discount_name .
+                                '" sudah tidak aktif.'
+                        );
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | CHECK DATE
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $today = now()->startOfDay();
+
+                    if (
+                        $discount->start_date &&
+                        $today->lt(
+                            $discount->start_date
+                        )
+                    ) {
+                        throw new \RuntimeException(
+                            'Promo "' .
+                                $discount->discount_name .
+                                '" belum mulai.'
+                        );
+                    }
+
+                    if (
+                        $discount->end_date &&
+                        $today->gt(
+                            $discount->end_date
+                        )
+                    ) {
+                        throw new \RuntimeException(
+                            'Promo "' .
+                                $discount->discount_name .
+                                '" sudah berakhir.'
+                        );
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | CHECK GLOBAL QUOTA
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (
+                        $discount->usage_limit !== null &&
+                        $discount->quota_used >=
+                        $discount->usage_limit
+                    ) {
+                        throw new \RuntimeException(
+                            'Promo "' .
+                                $discount->discount_name .
+                                '" sudah habis.'
+                        );
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | CHECK USER QUOTA
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $usagePerUser =
+                        (int) (
+                            $discount->usage_per_user
+                            ?? 0
+                        );
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | 0 = unlimited
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (
+                        $usagePerUser > 0 &&
+                        $lockedOrder->user_id
+                    ) {
+
+                        $userUsageCount =
+                            DB::table(
+                                'discount_usages'
+                            )
+                                ->where(
+                                    'discount_id',
+                                    $discount->id
+                                )
+                                ->where(
+                                    'user_id',
+                                    $lockedOrder->user_id
+                                )
+                                ->lockForUpdate()
+                                ->count();
+
+                        if (
+                            $userUsageCount >=
+                            $usagePerUser
+                        ) {
+                            throw new \RuntimeException(
+                                'User sudah mencapai batas penggunaan promo "' .
+                                    $discount->discount_name .
+                                    '".'
+                            );
+                        }
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | INCREMENT QUOTA
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $discount->increment(
+                        'quota_used'
+                    );
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | CATAT DISCOUNT USAGE
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $discount->usages()->create([
+
+                        'order_id' =>
+                            $lockedOrder->id,
+
+                        'user_id' =>
+                            $lockedOrder->user_id,
+
+                        'discount_amount' =>
+                            (float)
+                            $orderDiscount->discount_amount,
+
+                    ]);
+                }
+
+                /*
+                |--------------------------------------------------------------------------
+                | UPDATE ORDER
+                |--------------------------------------------------------------------------
+                */
+
+                $old = $lockedOrder->toArray();
+
+                $lockedOrder->update([
+                    'status' => 'Completed',
+                ]);
+
+                /*
+                |--------------------------------------------------------------------------
+                | ACTIVITY LOG
+                |--------------------------------------------------------------------------
+                */
+
+                $this->activity->log(
+
+                    'Order',
+
+                    'Confirm Payment',
+
+                    'Konfirmasi pembayaran ' .
+                        $lockedOrder->invoice_number,
+
+                    $lockedOrder,
+
+                    $old,
+
+                    $lockedOrder
+                        ->fresh()
+                        ->toArray()
+
                 );
 
-            }
+                /*
+                |--------------------------------------------------------------------------
+                | PAYMENT LOG
+                |--------------------------------------------------------------------------
+                */
 
+                $lockedOrder
+                    ->paymentLogs()
+                    ->create([
+
+                        'status' =>
+                            'Completed',
+
+                        'message' =>
+                            'Pembayaran berhasil dikonfirmasi Admin dan order selesai.',
+
+                    ]);
+
+                /*
+                |--------------------------------------------------------------------------
+                | NOTIFICATION ORDER
+                |--------------------------------------------------------------------------
+                */
+
+                Notification::where(
+                    'order_id',
+                    $lockedOrder->id
+                )
+                    ->update([
+
+                        'is_read' =>
+                            1,
+
+                        'read_at' =>
+                            now(),
+
+                    ]);
+            });
+
+        } catch (\Throwable $e) {
+
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage(),
+        ], 422);
         }
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | Jika stock sudah normal
-        |--------------------------------------------------------------------------
-        */
-
-        else {
-
-            Notification::where('item_id', $item->id)
-                ->where('title', 'Stock Rendah')
-                ->delete();
-
-        }
-
+        return response()->json([
+            'success' => true,
+            'message' => 'Order berhasil dikonfirmasi dan voucher berhasil dicatat.',
+        ]);
     }
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | Update Order
-    |--------------------------------------------------------------------------
-    */
+    /**
+     * =========================================================
+     * REJECT PAYMENT
+     * =========================================================
+     */
+    public function reject(Order $order)
+    {
+        /*
+        |--------------------------------------------------------------------------
+        | Pastikan order memang Paid
+        |--------------------------------------------------------------------------
+        */
 
-    $old = $order->toArray();
+        if ($order->status !== 'Paid') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order tidak sedang menunggu konfirmasi pembayaran.',
+            ], 422);
+        }
 
+        $old = $order->toArray();
 
-    $order->update([
-        'status' => 'Completed'
-    ]);
+        /*
+        |--------------------------------------------------------------------------
+        | Kembalikan ke Waiting Payment
+        |--------------------------------------------------------------------------
+        */
 
+        $order->update([
 
-    /*
-    |--------------------------------------------------------------------------
-    | Activity Log
-    |--------------------------------------------------------------------------
-    */
+            'status' =>
+                'Waiting Payment',
 
-    $this->activity->log(
-        'Order',
-        'Confirm Payment',
-        'Konfirmasi pembayaran '.$order->invoice_number,
-        $order,
-        $old,
-        $order->fresh()->toArray()
-    );
+            'payment_proof' =>
+                null,
 
+        ]);
 
-    /*
-    |--------------------------------------------------------------------------
-    | Payment Log
-    |--------------------------------------------------------------------------
-    |
-    | PENTING:
-    | Gunakan status yang memang tersedia di ENUM payment_logs.
-    |
-    */
+        /*
+        |--------------------------------------------------------------------------
+        | Activity Log
+        |--------------------------------------------------------------------------
+        */
 
-    $order->paymentLogs()->create([
-        'status'  => 'Paid',
-        'message' => 'Pembayaran berhasil dikonfirmasi Admin.'
-    ]);
+        $this->activity->log(
 
+            'Order',
 
-    /*
-    |--------------------------------------------------------------------------
-    | Notifikasi Order selesai
-    |--------------------------------------------------------------------------
-    */
+            'Reject Payment',
 
-    Notification::where(
-        'order_id',
-        $order->id
-    )->update([
-        'is_read' => 1,
-        'read_at' => now()
-    ]);
+            'Menolak pembayaran order ' .
+                $order->invoice_number,
 
+            $order,
 
-    /*
-    |--------------------------------------------------------------------------
-    | Selesai
-    |--------------------------------------------------------------------------
-    */
+            $old,
 
-    return back()->with(
-        'success',
-        'Order berhasil dikonfirmasi.'
-    );
-}
+            $order
+                ->fresh()
+                ->toArray()
 
-public function reject(Order $order)
-{
-$old = $order->toArray();
-    $order->update([
+        );
 
-        'status'=>'Waiting Payment',
+        /*
+        |--------------------------------------------------------------------------
+        | Payment Log
+        |--------------------------------------------------------------------------
+        */
 
-        'payment_proof'=>null
+        $order
+            ->paymentLogs()
+            ->create([
 
-    ]);
-$this->activity->log(
-    'Order',
-    'Reject Payment',
-    'Menolak pembayaran order '.$order->invoice_number,
-    $order,
-    $old,
-    $order->fresh()->toArray()
-);
-    $order->paymentLogs()->create([
+                'status' =>
+                    'Failed',
 
-        'status'=>'Failed',
+                'message' =>
+                    'Pembayaran ditolak. Silakan upload ulang.',
 
-        'message'=>'Pembayaran ditolak. Silakan upload ulang.'
+            ]);
 
-    ]);
+        /*
+        |--------------------------------------------------------------------------
+        | Notification User
+        |--------------------------------------------------------------------------
+        */
 
-    return back()->with(
-        'success',
-        'Pembayaran berhasil ditolak.'
-    );
+        if ($order->user_id) {
 
-}
+            Notification::create([
+
+                'user_id' =>
+                    $order->user_id,
+
+                'order_id' =>
+                    $order->id,
+
+                'title' =>
+                    'Pembayaran Ditolak',
+
+                'message' =>
+                    'Pembayaran untuk order ' .
+                    $order->invoice_number .
+                    ' ditolak. Silakan upload ulang bukti pembayaran.',
+
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pembayaran berhasil ditolak.',
+        ]);
+    }
 }

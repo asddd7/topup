@@ -4,21 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class DiscountUsage extends Model
+class OrderDiscount extends Model
 {
     protected $fillable = [
-        'discount_id',
         'order_id',
-        'user_id',
+        'discount_id',
         'discount_amount',
     ];
 
-    public function discount()
-    {
-        return $this->belongsTo(
-            Discount::class
-        );
-    }
+    protected $casts = [
+        'discount_amount' => 'decimal:2',
+    ];
 
     public function order()
     {
@@ -27,10 +23,10 @@ class DiscountUsage extends Model
         );
     }
 
-    public function user()
+    public function discount()
     {
         return $this->belongsTo(
-            User::class
+            Discount::class
         );
     }
 }

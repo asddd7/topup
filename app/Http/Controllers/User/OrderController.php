@@ -2,801 +2,1025 @@
 
 namespace App\Http\Controllers\User;
 
-
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 use App\Models\Order;
 use App\Models\Game;
 use App\Models\Item;
-use App\Models\Notification;
 use App\Models\User;
-use App\Services\DiscountService;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
+use App\Models\Notification;
+use App\Models\Discount;
 
-
+use App\Services\PromotionService;
 
 class OrderController extends Controller
 {
-
-
-public function index()
-{
-
-    $orders = Order::with([
-        'game',
-        'details.item'
-    ])
-
-    ->where(
-        'user_id',
-        Auth::id()
-    )
-
-    ->latest()
-
-    ->get();
-
-
-
-    return view(
-        'order.index',
-        compact('orders')
-    );
-
-}
-
-
-
-
-public function create(Request $request)
-{
-
-    $game = Game::findOrFail(
-        $request->game_id
-    );
-
-
-    $items = Item::where(
-        'game_id',
-        $game->id
-    )
-
-    ->where(
-        'is_active',
-        1
-    )
-
-    ->get();
-
-
-
-    $selectedItem=null;
-
-
-
-    if($request->item_id)
+    /**
+     * ============================================================
+     * ORDER LIST
+     * ============================================================
+     */
+    public function index()
     {
-
-        $selectedItem =
-        Item::find(
-            $request->item_id
-        );
-
-    }
-
-
-
-    return view(
-        'order.create',
-        compact(
+        $orders = Order::with([
             'game',
-            'items',
-            'selectedItem'
-        )
-    );
+            'details.item',
+        ])
+            ->where('user_id', Auth::id())
+            ->latest()
+            ->get();
 
-}
-
-
-
-
-
-public function store(
-    Request $request,
-    DiscountService $discountService
-)
-{
+        return view(
+            'order.index',
+            compact('orders')
+        );
+    }
 
 
-$request->validate([
-
-    'game_id'=>'required',
-    'item_id'=>'required',
-    'payment_id'=>'required',
-    'subtotal'=>'required',
-    'total_price'=>'required',
-
-]);
-
-
-
-
-
-$item = Item::with('game')
-->findOrFail(
-    $request->item_id
-);
-
-
-
-
-$subtotal = $item->price;
-
-
-$discountAmount = (float) $request->discount;
-
-
-$discount = null;
-
-
-$totalPrice = (float) $request->total_price;
-
-
-// safety check
-if($totalPrice <= 0){
-
-    $totalPrice = $subtotal - $discountAmount;
-
-}
-
-
-if($totalPrice < 0){
-
-    $totalPrice = 0;
-
-}
-
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Voucher
-|--------------------------------------------------------------------------
-*/
-
-
-if($request->voucher)
-{
-
-
-    $discount =
-    $discountService->findVoucher(
-        $request->voucher
-    );
-
-
-
-    if(!$discount)
+    /**
+     * ============================================================
+     * CREATE ORDER
+     * ============================================================
+     */
+    public function create(Request $request)
     {
-
-        return back()
-        ->with(
-            'error',
-            'Voucher tidak ditemukan'
+        $game = Game::findOrFail(
+            $request->game_id
         );
 
-    }
-
-
-
-
-
-    if(
-        !$discountService->validateDiscount(
-
-            $discount,
-
-            $item->game_id,
-
-            $item->id,
-
-            $subtotal
-
+        $items = Item::where(
+            'game_id',
+            $game->id
         )
-    )
-    {
+            ->where(
+                'is_active',
+                1
+            )
+            ->get();
 
+        $selectedItem = null;
 
-        return back()
-        ->with(
-            'error',
-            'Voucher tidak berlaku'
+        if ($request->item_id) {
+
+            $selectedItem = Item::where(
+                'id',
+                $request->item_id
+            )
+                ->where(
+                    'game_id',
+                    $game->id
+                )
+                ->where(
+                    'is_active',
+                    1
+                )
+                ->first();
+        }
+
+        return view(
+            'order.create',
+            compact(
+                'game',
+                'items',
+                'selectedItem'
+            )
         );
-
     }
 
 
-
-
-    $result =
-    $discountService->calculate(
-        $discount,
-        $subtotal
-    );
-
-
-
-    $discountAmount =
-    $result['discount'];
-
-
-
-    $totalPrice =
-    $result['total'];
-
-}
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Dynamic Player Data
-|--------------------------------------------------------------------------
-*/
-
-$playerData = [];
-
-foreach($item->game->player_fields ?? [] as $field){
-
-
-    $rules=[];
-
-
-    if(!empty($field['required'])){
-
-        $rules[]='required';
-
-    }
-
-
-
-    if(($field['type'] ?? '') == 'number'){
-
-        $rules[]='numeric';
-
-    }
-
-
-
-    if(($field['type'] ?? '') == 'email'){
-
-        $rules[]='email';
-
-    }
-
-
-
-    if(count($rules)){
+    /**
+     * ============================================================
+     * STORE ORDER
+     * ============================================================
+     */
+    public function store(
+        Request $request,
+        PromotionService $promotion
+    ) {
+        /*
+        |--------------------------------------------------------------------------
+        | 1. Basic validation
+        |--------------------------------------------------------------------------
+        */
 
         $request->validate([
 
-            $field['name'] => implode('|',$rules)
+            'game_id' =>
+                'required|exists:games,id',
+
+            'item_id' =>
+                'required|exists:items,id',
+
+            'payment_id' =>
+                'required|exists:payments,id',
+
+            'voucher' =>
+                'nullable|string|max:255',
 
         ]);
 
-    }
+
+        /*
+        |--------------------------------------------------------------------------
+        | 2. Get item
+        |--------------------------------------------------------------------------
+        */
+
+        $item = Item::with('game')
+
+            ->where(
+                'id',
+                $request->item_id
+            )
+
+            ->where(
+                'game_id',
+                $request->game_id
+            )
+
+            ->where(
+                'is_active',
+                1
+            )
+
+            ->firstOrFail();
 
 
+        /*
+        |--------------------------------------------------------------------------
+        | 3. Validate player data
+        |--------------------------------------------------------------------------
+        */
 
-    $playerData[$field['name']] =
-        $request->input($field['name']);
+        $playerData = [];
 
-}
+        foreach (
+            $item->game->player_fields ?? []
+            as $field
+        ) {
 
+            $rules = [];
 
-/*
-|--------------------------------------------------------------------------
-| Create Order
-|--------------------------------------------------------------------------
-*/
-$item = Item::findOrFail(
-    $request->item_id
-);
+            if (
+                !empty($field['required'])
+            ) {
 
+                $rules[] = 'required';
+            }
 
-do {
+            if (
+                ($field['type'] ?? '') === 'number'
+            ) {
 
-    $invoice = 'INV-'
-        .date('Ymd')
-        .'-'
-        .strtoupper(Str::random(6));
+                $rules[] = 'numeric';
+            }
 
+            if (
+                ($field['type'] ?? '') === 'email'
+            ) {
 
-} while(
-    Order::where(
-        'invoice_number',
-        $invoice
-    )->exists()
-);
+                $rules[] = 'email';
+            }
 
+            if (
+                count($rules) > 0
+            ) {
 
-$order = Order::create([
+                $request->validate([
 
-    'invoice_number'=>$invoice,
+                    $field['name'] =>
+                        implode(
+                            '|',
+                            $rules
+                        ),
 
-    'user_id'=>Auth::check()
-        ? Auth::id()
-        : null,
+                ]);
+            }
 
-    'game_id'=>$request->game_id,
-
-    'payment_id'=>$request->payment_id,
-
-    'discount_id'=>$request->discount_id,
-
-    'player_data'=>$playerData,
-
-    'player_uid'=>null,
-
-    'server_id'=>null,
-
-    'nickname'=>null,
-
-    'subtotal'=>$subtotal,
-
-    'discount'=>$discountAmount,
-
-    'total_price'=>$totalPrice,
-
-    'status'=>'Waiting Payment',
-
-    'guest_token'=>Auth::check()
-    ? null
-    : Str::uuid(),
-
-]);
+            $playerData[
+                $field['name']
+            ] = $request->input(
+                $field['name']
+            );
+        }
 
 
+        /*
+        |--------------------------------------------------------------------------
+        | 4. Transaction
+        |--------------------------------------------------------------------------
+        */
 
-/*
-|--------------------------------------------------------------------------
-| Notification Admin - New Order
-|--------------------------------------------------------------------------
-*/
+        $order = DB::transaction(
+            function () use (
+                $request,
+                $item,
+                $playerData,
+                $promotion
+            ) {
 
+                /*
+                |--------------------------------------------------------------------------
+                | Harga resmi dari database
+                |--------------------------------------------------------------------------
+                */
 
-$admins = User::where(
-    'role_id',
-    1
-)->get();
-
-
-
-foreach($admins as $admin)
-{
-
-    Notification::create([
-
-        'user_id'=>$admin->id,
-
-        'order_id'=>$order->id,
-
-        'title'=>'Order Baru',
-
-        'message'=>
-        'Order '.$order->invoice_number.
-        ' menunggu proses'
-
-    ]);
-
-}
-/*
-|--------------------------------------------------------------------------
-| Detail Order
-|--------------------------------------------------------------------------
-*/
+                $subtotal = (float) $item->price;
 
 
-$order->details()->create([
+                /*
+                |--------------------------------------------------------------------------
+                | Calculate promotion
+                |--------------------------------------------------------------------------
+                */
 
-    'item_id'=>$item->id,
+                $promo = $promotion->calculate(
 
-    'qty'=>1,
+                    subtotal:
+                        $subtotal,
 
-    'price'=>$totalPrice,
+                    gameId:
+                        (int) $item->game_id,
 
-    'subtotal'=>$totalPrice
+                    itemId:
+                        (int) $item->id,
 
-]);
+                    paymentId:
+                        (int) $request->payment_id,
+
+                    voucherCode:
+                        $request->filled('voucher')
+                            ? $request->voucher
+                            : null,
+
+                    user:
+                        auth()->user(),
+
+                    lockForUpdate:
+                        true
+                );
 
 
+                /*
+                |--------------------------------------------------------------------------
+                | Final price
+                |--------------------------------------------------------------------------
+                */
+
+                $discountTotal = round(
+                    (float) $promo['discount_total'],
+                    2
+                );
+
+                $totalPrice = round(
+                    (float) $promo['total'],
+                    2
+                );
 
 
+                /*
+                |--------------------------------------------------------------------------
+                | Generate invoice
+                |--------------------------------------------------------------------------
+                */
+
+                do {
+
+                    $invoice =
+                        'INV-' .
+                        now()->format('Ymd') .
+                        '-' .
+                        strtoupper(
+                            Str::random(6)
+                        );
+
+                } while (
+                    Order::where(
+                        'invoice_number',
+                        $invoice
+                    )->exists()
+                );
 
 
-if($order->guest_token){
+                /*
+                |--------------------------------------------------------------------------
+                | Legacy discount_id
+                |--------------------------------------------------------------------------
+                */
 
-    return redirect(
-        route(
+                $firstDiscountId =
+                    $promo['discounts'][0]['id']
+                    ?? null;
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Guest token
+                |--------------------------------------------------------------------------
+                */
+
+                $guestToken =
+                    Auth::check()
+                        ? null
+                        : (string) Str::uuid();
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Create order
+                |--------------------------------------------------------------------------
+                */
+
+                $order = Order::create([
+
+                    'invoice_number' =>
+                        $invoice,
+
+                    'user_id' =>
+                        Auth::id(),
+
+                    'game_id' =>
+                        $item->game_id,
+
+                    'payment_id' =>
+                        $request->payment_id,
+
+                    'discount_id' =>
+                        $firstDiscountId,
+
+                    'player_data' =>
+                        $playerData,
+
+                    'player_uid' =>
+                        null,
+
+                    'server_id' =>
+                        null,
+
+                    'nickname' =>
+                        null,
+
+                    'subtotal' =>
+                        $subtotal,
+
+                    'discount' =>
+                        $discountTotal,
+
+                    'total_price' =>
+                        $totalPrice,
+
+                    'status' =>
+                        'Waiting Payment',
+
+                    'guest_token' =>
+                        $guestToken,
+
+                ]);
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Save ALL applied promotions
+                |--------------------------------------------------------------------------
+                */
+
+                foreach (
+                    $promo['discounts']
+                    as $applied
+                ) {
+
+                    $discountId =
+                        (int) $applied['id'];
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Lock discount
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $discount = Discount::where(
+                        'id',
+                        $discountId
+                    )
+                        ->lockForUpdate()
+                        ->first();
+
+
+                    if (!$discount) {
+
+                        throw new \RuntimeException(
+                            'Promo tidak ditemukan.'
+                        );
+                    }
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Check global quota
+                    |--------------------------------------------------------------------------
+                    |
+                    | usage_limit:
+                    | NULL = unlimited
+                    |
+                    */
+
+                    if (
+                        $discount->usage_limit !== null
+                        &&
+                        $discount->quota_used >=
+                        $discount->usage_limit
+                    ) {
+
+                        throw new \RuntimeException(
+
+                            'Promo "' .
+                            $discount->discount_name .
+                            '" sudah habis.'
+
+                        );
+                    }
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Save order discount
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $order
+                        ->orderDiscounts()
+                        ->create([
+
+                            'discount_id' =>
+                                $discountId,
+
+                            'discount_amount' =>
+                                (float)
+                                $applied['discount'],
+
+                        ]);
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Save discount usage
+                    |--------------------------------------------------------------------------
+                    |
+                    | Ini yang mengisi tabel:
+                    |
+                    | discount_usages
+                    |
+                    */
+
+                    $discount->usages()->create([
+
+                        'order_id' =>
+                            $order->id,
+
+                        'user_id' =>
+                            Auth::id(),
+
+                        'discount_amount' =>
+                            (float)
+                            $applied['discount'],
+
+                    ]);
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | PENTING
+                    |--------------------------------------------------------------------------
+                    |
+                    | quota_used TIDAK di-increment di sini.
+                    |
+                    | Controller hanya mencatat:
+                    |
+                    | 1. order_discounts
+                    | 2. discount_usages
+                    |
+                    | Pengelolaan quota global dilakukan oleh
+                    | satu mekanisme saja agar tidak double count.
+                    |
+                    */
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Order detail
+                |--------------------------------------------------------------------------
+                */
+
+                $order
+                    ->details()
+                    ->create([
+
+                        'item_id' =>
+                            $item->id,
+
+                        'qty' =>
+                            1,
+
+                        'price' =>
+                            $totalPrice,
+
+                        'subtotal' =>
+                            $totalPrice,
+
+                    ]);
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Notification admin
+                |--------------------------------------------------------------------------
+                */
+
+                $admins = User::where(
+                    'role_id',
+                    1
+                )->get();
+
+
+                foreach (
+                    $admins
+                    as $admin
+                ) {
+
+                    Notification::create([
+
+                        'user_id' =>
+                            $admin->id,
+
+                        'order_id' =>
+                            $order->id,
+
+                        'title' =>
+                            'Order Baru',
+
+                        'message' =>
+                            'Order ' .
+                            $order->invoice_number .
+                            ' menunggu proses',
+
+                    ]);
+                }
+
+
+                return $order;
+            }
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Redirect
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $order->guest_token
+        ) {
+
+            return redirect(
+
+                route(
+                    'order.payment',
+                    $order->invoice_number
+                )
+                . '?token=' .
+                $order->guest_token
+
+            );
+        }
+
+
+        return redirect()->route(
+
             'order.payment',
+
             $order->invoice_number
-        )
-        .'?token='.$order->guest_token
-    );
 
-}
-
-
-return redirect()->route(
-    'order.payment',
-    $order->invoice_number
-);
-
-}
-
-
-
-
-
-
-public function show(Request $request,$invoice)
-{
-
-    $order = Order::where(
-        'invoice_number',
-        $invoice
-    )
-    ->with([
-        'game',
-        'details.item'
-    ])
-    ->firstOrFail();
-
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Guest Verification
-    |--------------------------------------------------------------------------
-    */
-
-    if(
-        !$order->user_id &&
-        $order->guest_token != $request->token
-    ){
-
-        abort(403,'Token order tidak valid');
-
+        );
     }
 
 
+    /**
+     * ============================================================
+     * SHOW ORDER
+     * ============================================================
+     */
+    public function show(
+        Request $request,
+        $invoice
+    ) {
+
+        $order = Order::where(
+            'invoice_number',
+            $invoice
+        )
+            ->with([
+                'game',
+                'details.item',
+            ])
+            ->firstOrFail();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Guest verification
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            !$order->user_id
+            &&
+            $order->guest_token !=
+            $request->token
+        ) {
+
+            abort(
+                403,
+                'Token order tidak valid'
+            );
+        }
+
+
+        return view(
+            'order.show',
+            compact('order')
+        );
+    }
+
+
+    /**
+     * ============================================================
+     * PAYMENT PAGE
+     * ============================================================
+     */
+    public function payment(
+        Request $request,
+        $invoice
+    ) {
+
+        $order = Order::where(
+            'invoice_number',
+            $invoice
+        )
+            ->with([
+                'payment',
+                'details.item',
+                'discount',
+            ])
+            ->firstOrFail();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Guest verification
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            !$order->user_id
+            &&
+            $order->guest_token !==
+            $request->token
+        ) {
+
+            abort(
+                403,
+                'Token order tidak valid'
+            );
+        }
+
+
+        return view(
+            'order.payment',
+            compact('order')
+        );
+    }
+
+
+    /**
+     * ============================================================
+     * UPLOAD PAYMENT PROOF
+     * ============================================================
+     */
+    public function uploadProof(
+        Request $request,
+        $invoice
+    ) {
 
-    return view(
-        'order.show',
-        compact('order')
-    );
+        $order = Order::where(
+            'invoice_number',
+            $invoice
+        )
+            ->firstOrFail();
 
-}
 
+        /*
+        |--------------------------------------------------------------------------
+        | Guest verification
+        |--------------------------------------------------------------------------
+        */
 
+        if (
+            !$order->user_id
+            &&
+            $order->guest_token !==
+            $request->token
+        ) {
 
+            abort(
+                403,
+                'Token tidak valid'
+            );
+        }
 
 
+        /*
+        |--------------------------------------------------------------------------
+        | Validate payment proof
+        |--------------------------------------------------------------------------
+        */
 
-public function checkVoucher(
-Request $request,
-DiscountService $discountService
-)
-{
+        $request->validate([
 
+            'payment_proof' =>
+                'required|image|max:2048',
 
-$request->validate([
+        ]);
 
 
-'code'=>'required',
+        /*
+        |--------------------------------------------------------------------------
+        | Store file
+        |--------------------------------------------------------------------------
+        */
 
-'game_id'=>'required',
+        $file = $request
+            ->file('payment_proof')
+            ->store(
+                'payment-proof',
+                'public'
+            );
 
-'item_id'=>'required',
 
-'price'=>'required'
+        /*
+        |--------------------------------------------------------------------------
+        | Update order
+        |--------------------------------------------------------------------------
+        */
 
+        $order->update([
 
-]);
+            'payment_proof' =>
+                $file,
 
+            'status' =>
+                'Paid',
 
+        ]);
 
 
+        /*
+        |--------------------------------------------------------------------------
+        | Payment log
+        |--------------------------------------------------------------------------
+        */
 
-$discount =
-$discountService->findVoucher(
-$request->code
-);
+        $order
+            ->paymentLogs()
+            ->create([
 
+                'status' =>
+                    'Paid',
 
+                'message' =>
+                    'User upload bukti pembayaran',
 
+            ]);
 
 
-if(!$discount)
-{
+        /*
+        |--------------------------------------------------------------------------
+        | Notification admin
+        |--------------------------------------------------------------------------
+        */
 
-return response()->json([
+        $admins = User::where(
+            'role_id',
+            1
+        )->get();
 
-'status'=>false,
 
-'message'=>'Voucher tidak ditemukan'
+        foreach (
+            $admins
+            as $admin
+        ) {
 
-]);
+            Notification::create([
 
-}
+                'user_id' =>
+                    $admin->id,
 
+                'order_id' =>
+                    $order->id,
 
+                'title' =>
+                    'Pembayaran Diterima',
 
+                'message' =>
+                    'Order ' .
+                    $order->invoice_number .
+                    ' sudah upload bukti pembayaran',
 
+            ]);
+        }
 
-if(
-!$discountService->validateDiscount(
 
-$discount,
+        /*
+        |--------------------------------------------------------------------------
+        | Redirect
+        |--------------------------------------------------------------------------
+        */
 
-$request->game_id,
+        return redirect(
 
-$request->item_id,
+            route(
+                'order.payment',
+                $order->invoice_number
+            )
+            . '?token=' .
+            $order->guest_token
 
-$request->price
+        )
+            ->with(
+                'success',
+                'Bukti pembayaran berhasil dikirim'
+            );
+    }
 
-)
 
-)
-{
+    /**
+     * ============================================================
+     * CALCULATE PROMOTION
+     * ============================================================
+     */
+    public function calculatePromotion(
+        Request $request,
+        PromotionService $promotion
+    ) {
 
-return response()->json([
+        $request->validate([
 
-'status'=>false,
+            'game_id' =>
+                'required|exists:games,id',
 
-'message'=>'Voucher tidak berlaku'
+            'item_id' =>
+                'required|exists:items,id',
 
-]);
+            'payment_id' =>
+                'nullable|exists:payments,id',
 
-}
+            'voucher_code' =>
+                'nullable|string|max:255',
 
+        ]);
 
 
+        /*
+        |--------------------------------------------------------------------------
+        | Get item
+        |--------------------------------------------------------------------------
+        */
 
+        $item = Item::where(
+            'id',
+            $request->item_id
+        )
+            ->where(
+                'game_id',
+                $request->game_id
+            )
+            ->where(
+                'is_active',
+                1
+            )
+            ->firstOrFail();
 
 
-$result =
-$discountService->calculate(
+        /*
+        |--------------------------------------------------------------------------
+        | Price from database
+        |--------------------------------------------------------------------------
+        */
 
-$discount,
+        $subtotal =
+            (float) $item->price;
 
-$request->price
 
-);
+        /*
+        |--------------------------------------------------------------------------
+        | Calculate promotion
+        |--------------------------------------------------------------------------
+        */
 
+        $result =
+            $promotion->calculate(
 
+                subtotal:
+                    $subtotal,
 
+                gameId:
+                    (int) $item->game_id,
 
+                itemId:
+                    (int) $item->id,
 
-return response()->json([
+                paymentId:
+                    $request->payment_id
+                        ? (int)
+                        $request->payment_id
+                        : null,
 
+                voucherCode:
+                    $request->filled(
+                        'voucher_code'
+                    )
+                        ? $request->voucher_code
+                        : null,
 
-'status'=>true,
+                user:
+                    auth()->user(),
 
+            );
 
-'discount_id'=>$discount->id,
 
+        return response()->json(
+            $result
+        );
+    }
 
-'discount'=>
-$result['discount'],
 
+    /**
+     * ============================================================
+     * CHECK ORDER
+     * ============================================================
+     */
+    public function checkOrder(
+        Request $request,
+        $invoice
+    ) {
 
+        $order = Order::where(
+            'invoice_number',
+            $invoice
+        )
+            ->firstOrFail();
 
-'total'=>
-$result['total'],
 
+        /*
+        |--------------------------------------------------------------------------
+        | Guest verification
+        |--------------------------------------------------------------------------
+        */
 
+        if (
+            $order->guest_token !=
+            $request->token
+        ) {
 
-'message'=>
-'Voucher berhasil digunakan'
+            abort(403);
+        }
 
 
-]);
+        /*
+        |--------------------------------------------------------------------------
+        | Load relationships
+        |--------------------------------------------------------------------------
+        */
 
+        $order->load([
 
-}
+            'game',
+            'user',
+            'details.item',
+            'payment',
 
-public function payment(Request $request,$invoice)
-{
+        ]);
 
 
-$order = Order::where(
-    'invoice_number',
-    $invoice
-)
-->with([
-    'payment',
-    'details.item',
-    'discount'
-])
-->firstOrFail();
-
-
-
-/*
-|--------------------------------------------------------------------------
-| Guest Verification
-|--------------------------------------------------------------------------
-*/
-
-
-if(
-    !$order->user_id
-    &&
-    $order->guest_token !== $request->token
-){
-
-    abort(403,'Token order tidak valid');
-
-}
-
-
-
-return view(
-    'order.payment',
-    compact('order')
-);
-
-
-}
-
-public function uploadProof(
-Request $request,
-$invoice
-)
-{
-
-
-$order = Order::where(
-    'invoice_number',
-    $invoice
-)
-->firstOrFail();
-
-
-
-if(
-    !$order->user_id
-    &&
-    $order->guest_token !== $request->token
-){
-
-abort(403,'Token tidak valid');
-
-}
-
-
-
-$request->validate([
-
-    'payment_proof'=>'required|image|max:2048'
-
-]);
-
-
-
-$file=$request
-->file('payment_proof')
-->store(
-    'payment-proof',
-    'public'
-);
-
-
-
-$order->update([
-
-    'payment_proof'=>$file,
-
-    'status'=>'Paid'
-
-]);
-
-
-
-$order->paymentLogs()->create([
-
-    'status'=>'Paid',
-
-    'message'=>'User upload bukti pembayaran'
-
-]);
-
-$admins = User::where(
-    'role_id',
-    1
-)->get();
-
-
-
-foreach($admins as $admin)
-{
-
-    Notification::create([
-
-        'user_id'=>$admin->id,
-
-        'order_id'=>$order->id,
-
-        'title'=>'Pembayaran Diterima',
-
-        'message'=>
-        'Order '.$order->invoice_number.
-        ' sudah upload bukti pembayaran'
-
-    ]);
-
-}
-
-return redirect(
-
-route(
-'order.payment',
-$order->invoice_number
-)
-.'?token='.$order->guest_token
-
-)
-->with(
-'success',
-'Bukti pembayaran berhasil dikirim'
-);
-
-
-}
-
-public function checkOrder(Request $request,$invoice)
-{
-
-
-$order = Order::where(
-'invoice_number',
-$invoice
-)
-->firstOrFail();
-
-
-
-if(
-$order->guest_token != $request->token
-){
-
-abort(403);
-
-}
-
-
-
-$order->load([
-
-'game',
-'user',
-'details.item',
-'payment'
-
-]);
-
-
-
-return view(
-'order.show',
-compact('order')
-);
-
-
-}
+        return view(
+            'order.show',
+            compact('order')
+        );
+    }
 }

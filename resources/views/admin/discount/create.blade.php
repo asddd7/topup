@@ -163,35 +163,35 @@
 
                     <hr>
 
-                    <div class="mb-3">
+                    <div
+                        class="mb-3"
+                        id="paymentArea"
+                    >
 
-                    <label class="form-label">
-                    Metode Pembayaran
-                    </label>
+                        <label class="form-label">
+                            Metode Pembayaran
+                        </label>
 
+                        <select
+                            name="payment_id"
+                            class="form-select"
+                        >
 
-                    <select
-                    name="payment_id"
-                    class="form-select">
+                            <option value="">
+                                Semua Pembayaran
+                            </option>
 
+                            @foreach($payments as $payment)
 
-                    <option value="">
-                    Semua Pembayaran
-                    </option>
+                                <option value="{{ $payment->id }}">
 
+                                    {{ $payment->payment_name }}
 
-                    @foreach($payments as $payment)
+                                </option>
 
-                    <option value="{{ $payment->id }}">
+                            @endforeach
 
-                    {{ $payment->payment_name }}
-
-                    </option>
-
-                    @endforeach
-
-
-                    </select>
+                        </select>
 
                     </div>
                     <hr>
@@ -280,12 +280,17 @@
                                 Maks/User
                             </label>
 
-                            <input
-                                type="number"
-                                name="usage_per_user"
-                                value="1"
-                                class="form-control">
+                        <input
+                            type="number"
+                            name="usage_per_user"
+                            value="{{ old('usage_per_user', 1) }}"
+                            min="0"
+                            step="1"
+                            class="form-control">
 
+                        <small class="text-muted">
+                            0 = tidak dibatasi
+                        </small>
                         </div>
 
                     </div>
@@ -380,28 +385,62 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    const trigger = document.getElementById('trigger_type');
+    const trigger =
+        document.getElementById('trigger_type');
 
-    const voucherArea = document.getElementById('voucherCodeArea');
+    const voucherArea =
+        document.getElementById('voucherCodeArea');
 
-    const paymentArea = document.getElementById('paymentArea');
+    const paymentArea =
+        document.getElementById('paymentArea');
 
-    function toggleForm(){
 
-        voucherArea.style.display =
-            trigger.value === 'voucher'
-            ? ''
-            : 'none';
+    function toggleForm() {
 
-        paymentArea.style.display =
-            trigger.value === 'payment_method'
-            ? ''
-            : 'none';
+        /*
+        |--------------------------------------------------------------------------
+        | Voucher
+        |--------------------------------------------------------------------------
+        */
+
+        if (voucherArea) {
+
+            voucherArea.style.display =
+                trigger.value === 'voucher'
+                    ? ''
+                    : 'none';
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Payment Method
+        |--------------------------------------------------------------------------
+        */
+
+        if (paymentArea) {
+
+            paymentArea.style.display =
+                trigger.value === 'payment_method'
+                    ? ''
+                    : 'none';
+
+        }
+
     }
 
-    trigger.addEventListener('change', toggleForm);
 
-    toggleForm();
+    if (trigger) {
+
+        trigger.addEventListener(
+            'change',
+            toggleForm
+        );
+
+        toggleForm();
+
+    }
 
 });
 </script>
