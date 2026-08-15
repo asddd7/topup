@@ -1,0 +1,1145 @@
+/* =========================================================
+   GAME SHOW PAGE
+========================================================= */
+
+.game-show-page {
+    min-height: 100vh;
+
+    background:
+        radial-gradient(
+            circle at 5% 5%,
+            rgba(13, 148, 136, 0.08),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 95% 20%,
+            rgba(245, 158, 11, 0.07),
+            transparent 28%
+        ),
+        linear-gradient(
+            180deg,
+            #f8fafc 0%,
+            #f1f5f9 55%,
+            #eaf0f5 100%
+        );
+
+    padding-bottom: 70px;
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.game-hero-section {
+    padding: 35px 0 25px;
+}
+
+.game-hero-card {
+    overflow: hidden;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.95),
+            rgba(255,255,255,.72)
+        );
+
+    border: 1px solid rgba(255,255,255,.9);
+
+    box-shadow:
+        0 15px 40px rgba(15,23,42,.08);
+
+    backdrop-filter: blur(15px);
+}
+
+.game-hero-content {
+    display: flex;
+    align-items: center;
+
+    gap: 30px;
+
+    padding: 30px;
+}
+
+.game-hero-logo {
+    flex: 0 0 160px;
+}
+
+.game-hero-logo img,
+.game-logo-placeholder {
+    width: 160px;
+    height: 160px;
+
+    object-fit: cover;
+
+    border-radius: 22px;
+
+    box-shadow:
+        0 10px 30px rgba(15,23,42,.12);
+}
+
+.game-logo-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0d9488,
+            #14b8a6
+        );
+
+    color: #fff;
+
+    font-size: 55px;
+}
+
+.game-hero-eyebrow {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #0d9488;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: 1.5px;
+}
+
+.game-hero-info h1 {
+    margin: 0;
+
+    color: #111827;
+
+    font-size: 32px;
+    font-weight: 800;
+}
+
+.game-hero-info p {
+    margin: 8px 0 20px;
+
+    color: #64748b;
+
+    font-size: 14px;
+}
+
+.game-hero-info p i {
+    margin-right: 6px;
+
+    color: #0d9488;
+}
+
+.game-topup-btn {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 11px 18px;
+
+    border-radius: 10px;
+
+    background: #0d9488;
+    color: #fff;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    box-shadow:
+        0 8px 20px rgba(13,148,136,.22);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+.game-topup-btn:hover {
+    transform: translateY(-2px);
+
+    color: #fff;
+
+    box-shadow:
+        0 12px 25px rgba(13,148,136,.28);
+}
+
+
+/* =========================================================
+   SECTION
+========================================================= */
+
+.game-items-section {
+    padding: 25px 0 35px;
+}
+
+.game-section-header {
+    margin-bottom: 25px;
+}
+
+.game-section-eyebrow {
+    color: #64748b;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: 1.5px;
+}
+
+.game-section-header h2 {
+    margin: 5px 0 0;
+
+    color: #111827;
+
+    font-size: 26px;
+    font-weight: 800;
+}
+
+.game-section-header p {
+    margin: 6px 0 0;
+
+    color: #64748b;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   ITEMS GRID
+========================================================= */
+
+.game-items-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 20px;
+}
+
+.game-item-card {
+    overflow: hidden;
+
+    border-radius: 17px;
+
+    background: rgba(255,255,255,.92);
+
+    border: 1px solid #e2e8f0;
+
+    box-shadow:
+        0 5px 20px rgba(15,23,42,.055);
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease,
+        border-color .25s ease;
+}
+
+.game-item-card:hover {
+    transform: translateY(-5px);
+
+    border-color:
+        rgba(13,148,136,.25);
+
+    box-shadow:
+        0 15px 35px rgba(15,23,42,.11);
+}
+
+
+/* =========================================================
+   ITEM IMAGE
+========================================================= */
+
+.game-item-image {
+    position: relative;
+
+    width: 100%;
+
+    aspect-ratio: 1 / 1;
+
+    overflow: hidden;
+
+    background: #f1f5f9;
+}
+
+.game-item-image img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    transition:
+        transform .45s ease;
+}
+
+.game-item-card:hover
+.game-item-image img {
+    transform: scale(1.07);
+}
+
+.game-item-placeholder {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #94a3b8;
+
+    font-size: 40px;
+}
+
+
+/* =========================================================
+   ITEM BODY
+========================================================= */
+
+.game-item-body {
+    padding: 14px;
+}
+
+.game-item-qty {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #94a3b8;
+
+    font-size: 10px;
+}
+
+.game-item-body h3 {
+    margin: 0;
+
+    color: #1f2937;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.game-item-price {
+    margin-top: 9px;
+
+    color: #0d9488;
+
+    font-size: 16px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   ITEM BUTTON
+========================================================= */
+
+.game-item-button {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-top: 12px;
+
+    padding: 9px 12px;
+
+    border: 0;
+    border-radius: 9px;
+
+    background: #f0fdfa;
+    color: #0f766e;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        color .2s ease;
+}
+
+.game-item-button:hover {
+    background: #0d9488;
+    color: #fff;
+}
+
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
+.game-empty-state {
+    grid-column: 1 / -1;
+
+    padding: 60px 20px;
+
+    text-align: center;
+
+    color: #94a3b8;
+}
+
+.game-empty-state i {
+    display: block;
+
+    margin-bottom: 12px;
+
+    font-size: 40px;
+}
+
+.game-empty-state h3 {
+    margin: 0;
+
+    color: #475569;
+
+    font-size: 17px;
+}
+
+.game-empty-state p {
+    margin-top: 6px;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   CHECKOUT
+========================================================= */
+
+.game-checkout-section {
+    padding: 25px 0 50px;
+}
+
+.checkout-card {
+    overflow: hidden;
+
+    border-radius: 22px;
+
+    background: #fff;
+
+    box-shadow:
+        0 15px 45px rgba(15,23,42,.08);
+
+    border: 1px solid #e2e8f0;
+}
+
+.checkout-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 22px 25px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #0f766e,
+            #0d9488
+        );
+
+    color: #fff;
+}
+
+.checkout-eyebrow {
+    font-size: 9px;
+    font-weight: 800;
+
+    letter-spacing: 1.5px;
+
+    opacity: .75;
+}
+
+.checkout-header h2 {
+    margin: 3px 0 0;
+
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.checkout-icon {
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: rgba(255,255,255,.15);
+
+    font-size: 18px;
+}
+
+.checkout-body {
+    padding: 30px;
+}
+
+
+/* =========================================================
+   CHECKOUT SECTION TITLE
+========================================================= */
+
+.checkout-section-title {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 18px;
+}
+
+.checkout-section-icon {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 38px;
+
+    border-radius: 10px;
+
+    background: #f0fdfa;
+    color: #0d9488;
+}
+
+.checkout-section-title h3 {
+    margin: 0;
+
+    color: #1f2937;
+
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.checkout-section-title p {
+    margin: 2px 0 0;
+
+    color: #94a3b8;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   PLAYER FIELDS
+========================================================= */
+
+.player-fields {
+    margin-bottom: 30px;
+}
+
+.player-field {
+    margin-bottom: 16px;
+}
+
+.player-field label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #374151;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.player-field label span {
+    color: #ef4444;
+}
+
+.player-field input,
+.player-field select {
+    width: 100%;
+
+    padding: 11px 13px;
+
+    border: 1px solid #dbe3ec;
+    border-radius: 9px;
+
+    background: #fff;
+
+    color: #1f2937;
+
+    font-size: 13px;
+
+    outline: none;
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
+
+.player-field input:focus,
+.player-field select:focus {
+    border-color: #0d9488;
+
+    box-shadow:
+        0 0 0 3px rgba(13,148,136,.10);
+}
+
+
+/* =========================================================
+   VOUCHER
+========================================================= */
+
+.voucher-box,
+.promo-box,
+.payment-box {
+    margin-top: 25px;
+
+    padding: 20px;
+
+    border-radius: 15px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e2e8f0;
+}
+
+.voucher-input-group {
+    display: flex;
+
+    gap: 8px;
+}
+
+.voucher-input {
+    flex: 1;
+
+    min-width: 0;
+
+    padding: 11px 13px;
+
+    border: 1px solid #dbe3ec;
+    border-radius: 9px;
+
+    outline: none;
+}
+
+.voucher-input:focus {
+    border-color: #0d9488;
+
+    box-shadow:
+        0 0 0 3px rgba(13,148,136,.10);
+}
+
+.voucher-button {
+    padding: 0 17px;
+
+    border: 0;
+    border-radius: 9px;
+
+    background: #0d9488;
+    color: #fff;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.voucher-message {
+    margin-top: 7px;
+
+    color: #94a3b8;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   PRICE SUMMARY
+========================================================= */
+
+.price-summary {
+    margin-top: 25px;
+
+    padding: 20px;
+
+    border-radius: 15px;
+
+    background: #fff;
+
+    border: 1px solid #e2e8f0;
+}
+
+.price-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 12px;
+
+    color: #64748b;
+
+    font-size: 13px;
+}
+
+.price-row strong {
+    color: #1f2937;
+}
+
+.discount-value {
+    color: #ef4444 !important;
+}
+
+.price-divider {
+    height: 1px;
+
+    margin: 15px 0;
+
+    background: #e2e8f0;
+}
+
+.price-total {
+    margin-bottom: 0;
+
+    font-size: 15px;
+}
+
+.price-total strong {
+    color: #0d9488;
+
+    font-size: 20px;
+}
+
+
+/* =========================================================
+   PROMO
+========================================================= */
+
+.promo-empty {
+    padding: 15px;
+
+    text-align: center;
+
+    color: #94a3b8;
+
+    font-size: 11px;
+}
+
+.promo-empty i {
+    margin-right: 5px;
+}
+
+
+/* =========================================================
+   PAYMENT
+========================================================= */
+
+.payment-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+.payment-card {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    gap: 13px;
+
+    padding: 14px;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 12px;
+
+    background: #fff;
+
+    cursor: pointer;
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+.payment-card:hover {
+    border-color: #99f6e4;
+}
+
+.payment-card:has(.payment-radio:checked) {
+    border-color: #0d9488;
+
+    background: #f0fdfa;
+
+    box-shadow:
+        0 5px 15px rgba(13,148,136,.08);
+}
+
+.payment-radio {
+    position: absolute;
+
+    opacity: 0;
+
+    pointer-events: none;
+}
+
+.payment-check {
+    width: 18px;
+    height: 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 18px;
+
+    border: 2px solid #cbd5e1;
+    border-radius: 50%;
+
+    color: #fff;
+
+    font-size: 8px;
+}
+
+.payment-card:has(.payment-radio:checked)
+.payment-check {
+    border-color: #0d9488;
+
+    background: #0d9488;
+}
+
+.payment-image {
+    width: 55px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 55px;
+
+    overflow: hidden;
+
+    border-radius: 8px;
+
+    background: #f1f5f9;
+}
+
+.payment-image img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+}
+
+.payment-placeholder {
+    color: #94a3b8;
+}
+
+.payment-info {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.payment-info h4 {
+    margin: 0;
+
+    color: #1f2937;
+
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.payment-info span {
+    margin-top: 2px;
+
+    color: #94a3b8;
+
+    font-size: 10px;
+}
+
+.payment-info strong {
+    margin-top: 3px;
+
+    color: #374151;
+
+    font-size: 11px;
+}
+
+.payment-info small {
+    margin-top: 2px;
+
+    color: #64748b;
+
+    font-size: 10px;
+}
+
+.payment-empty {
+    padding: 30px;
+
+    text-align: center;
+
+    color: #94a3b8;
+}
+
+.payment-empty i {
+    font-size: 30px;
+}
+
+.payment-empty p {
+    margin: 8px 0 0;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   SUBMIT
+========================================================= */
+
+.checkout-submit {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    margin-top: 25px;
+
+    padding: 13px;
+
+    border: 0;
+    border-radius: 11px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #059669,
+            #10b981
+        );
+
+    color: #fff;
+
+    font-size: 13px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 20px rgba(16,185,129,.20);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+.checkout-submit:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 25px rgba(16,185,129,.27);
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .game-items-grid {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .game-show-page {
+        padding-bottom: 40px;
+    }
+
+    .game-hero-section {
+        padding: 20px 0;
+    }
+
+    .game-hero-content {
+        gap: 18px;
+
+        padding: 20px;
+    }
+
+    .game-hero-logo {
+        flex: 0 0 100px;
+    }
+
+    .game-hero-logo img,
+    .game-logo-placeholder {
+        width: 100px;
+        height: 100px;
+
+        border-radius: 15px;
+    }
+
+    .game-logo-placeholder {
+        font-size: 35px;
+    }
+
+    .game-hero-info h1 {
+        font-size: 23px;
+    }
+
+    .game-items-section {
+        padding: 15px 0 25px;
+    }
+
+    .game-section-header h2 {
+        font-size: 21px;
+    }
+
+    .game-items-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 12px;
+    }
+
+    .game-item-body {
+        padding: 10px;
+    }
+
+    .game-item-body h3 {
+        font-size: 12px;
+    }
+
+    .game-item-price {
+        font-size: 13px;
+    }
+
+    .game-checkout-section {
+        padding: 15px 0 30px;
+    }
+
+    .checkout-body {
+        padding: 18px;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 576px) {
+
+    .game-hero-content {
+        align-items: flex-start;
+    }
+
+    .game-hero-logo {
+        flex: 0 0 75px;
+    }
+
+    .game-hero-logo img,
+    .game-logo-placeholder {
+        width: 75px;
+        height: 75px;
+
+        border-radius: 12px;
+    }
+
+    .game-logo-placeholder {
+        font-size: 28px;
+    }
+
+    .game-hero-info h1 {
+        font-size: 19px;
+    }
+
+    .game-hero-info p {
+        margin-bottom: 12px;
+
+        font-size: 11px;
+    }
+
+    .game-topup-btn {
+        padding: 9px 12px;
+
+        font-size: 10px;
+    }
+
+    .game-items-grid {
+        gap: 9px;
+    }
+
+    .game-item-card {
+        border-radius: 11px;
+    }
+
+    .game-item-qty {
+        font-size: 8px;
+    }
+
+    .game-item-body h3 {
+        font-size: 10px;
+    }
+
+    .game-item-price {
+        font-size: 12px;
+    }
+
+    .game-item-button {
+        padding: 7px 9px;
+
+        font-size: 9px;
+    }
+
+    .checkout-header {
+        padding: 17px;
+    }
+
+    .checkout-header h2 {
+        font-size: 18px;
+    }
+
+    .checkout-body {
+        padding: 14px;
+    }
+
+    .voucher-box,
+    .promo-box,
+    .payment-box {
+        padding: 14px;
+    }
+
+    .voucher-input-group {
+        flex-direction: column;
+    }
+
+    .voucher-button {
+        min-height: 40px;
+    }
+
+}

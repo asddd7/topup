@@ -46,6 +46,15 @@ rel="stylesheet">
 
 @stack('scripts')
 
+    {{-- JS GLOBAL --}}
+    @vite([
+        'resources/js/app.js'
+    ])
+
+
+    {{-- JS PER PAGE --}}
+    @stack('scripts')
+
 </body>
 
 </html>
