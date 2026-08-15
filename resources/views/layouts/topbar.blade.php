@@ -12,7 +12,7 @@
     @if(!request()->routeIs('dashboard'))
 
         <a
-            href="{{ url()->previous() }}"
+            href="{{ route('dashboard') }}"
             class="topup-back-button"
             aria-label="Kembali"
             title="Kembali"

@@ -6,23 +6,9 @@
 
     <div class="container-fluid">
 
-        {{-- =====================================================
-             BANNER
-        ====================================================== --}}
-
         @include('components.dashboard.banner')
 
-
-        {{-- =====================================================
-             TOP SELLER
-        ====================================================== --}}
-
         @include('components.dashboard.top-seller')
-
-
-        {{-- =====================================================
-             SEMUA GAME
-        ====================================================== --}}
 
         @include('components.dashboard.games-section')
 
@@ -31,10 +17,3 @@
 </div>
 
 @endsection
-
-
-@push('scripts')
-
-<script src="{{ asset('js/dashboard.js') }}"></script>
-
-@endpush

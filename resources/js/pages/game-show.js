@@ -1,3 +1,10 @@
+const gameShowPage = document.querySelector('#game-show-page');
+
+if (gameShowPage) {
+
+    // seluruh JavaScript game.show
+}
+
 /* =========================================================
    GAME SHOW
 ========================================================= */

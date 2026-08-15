@@ -59,6 +59,7 @@
         src="{{ asset('assets/js/game-show.js') }}"
         defer
     ></script>
+
 @endpush
 
 @endsection

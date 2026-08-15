@@ -41,20 +41,14 @@ rel="stylesheet">
 @auth
     @include('profile.modal')
 @endauth
+
 @include('layouts.footer')
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 
-@stack('scripts')
-
-    {{-- JS GLOBAL --}}
-    @vite([
-        'resources/js/app.js'
-    ])
-
-
-    {{-- JS PER PAGE --}}
-    @stack('scripts')
+@vite([
+    'resources/js/app.js'
+])
 
 </body>
-
 </html>
