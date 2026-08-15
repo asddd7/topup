@@ -1,0 +1,584 @@
+/* =========================================================
+   ALL GAMES
+========================================================= */
+
+.dashboard-games {
+    position: relative;
+
+    width: 100%;
+
+    padding: 55px 0 70px;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 10% 20%,
+            rgba(13, 148, 136, 0.08),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 90% 80%,
+            rgba(245, 158, 11, 0.07),
+            transparent 28%
+        ),
+        linear-gradient(
+            180deg,
+            #f1f5f9 0%,
+            #f8fafc 50%,
+            #eef2f7 100%
+        );
+
+    border-top:
+        1px solid rgba(226, 232, 240, 0.8);
+}
+
+
+/* =========================================================
+   DECORATION
+========================================================= */
+
+.dashboard-games::before {
+    content: "";
+
+    position: absolute;
+
+    width: 500px;
+    height: 500px;
+
+    top: -220px;
+    left: -180px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(13, 148, 136, 0.10),
+            transparent 70%
+        );
+
+    filter: blur(20px);
+
+    pointer-events: none;
+}
+
+
+.dashboard-games::after {
+    content: "";
+
+    position: absolute;
+
+    width: 450px;
+    height: 450px;
+
+    right: -180px;
+    bottom: -220px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(245, 158, 11, 0.08),
+            transparent 70%
+        );
+
+    filter: blur(20px);
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   CONTENT ABOVE DECORATION
+========================================================= */
+
+.dashboard-games > * {
+    position: relative;
+    z-index: 2;
+}
+
+
+/* =========================================================
+   GAME GRID
+========================================================= */
+
+.games-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(6, minmax(0, 1fr));
+
+    gap: 22px;
+
+    width: 100%;
+}
+
+
+/* =========================================================
+   GAME CARD
+========================================================= */
+
+.game-product-card {
+    position: relative;
+
+    min-width: 0;
+}
+
+
+/* =========================================================
+   GAME CARD LINK
+========================================================= */
+
+.game-product-link {
+    display: block;
+
+    overflow: hidden;
+
+    color: inherit;
+    text-decoration: none;
+
+    background:
+        rgba(255, 255, 255, 0.92);
+
+    border:
+        1px solid rgba(226, 232, 240, 0.85);
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 5px 20px rgba(15, 23, 42, 0.055);
+
+    backdrop-filter: blur(10px);
+
+    transition:
+        transform 0.28s ease,
+        box-shadow 0.28s ease,
+        border-color 0.28s ease;
+}
+
+
+.game-product-card:hover .game-product-link {
+    transform: translateY(-7px);
+
+    border-color:
+        rgba(13, 148, 136, 0.30);
+
+    box-shadow:
+        0 18px 40px rgba(15, 23, 42, 0.12);
+}
+
+
+/* =========================================================
+   CARD GLOW
+========================================================= */
+
+.game-product-card::before {
+    content: "";
+
+    position: absolute;
+
+    z-index: -1;
+
+    inset: 15px;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(13, 148, 136, 0.12),
+            rgba(245, 158, 11, 0.08)
+        );
+
+    filter: blur(20px);
+
+    opacity: 0;
+
+    transition:
+        opacity 0.3s ease;
+}
+
+
+.game-product-card:hover::before {
+    opacity: 1;
+}
+
+
+/* =========================================================
+   GAME IMAGE
+========================================================= */
+
+.game-image-wrapper {
+    position: relative;
+
+    width: 100%;
+
+    aspect-ratio: 1 / 1;
+
+    overflow: hidden;
+
+    background: #f1f5f9;
+}
+
+
+.game-product-image {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    transition:
+        transform 0.5s ease;
+}
+
+
+.game-product-card:hover .game-product-image {
+    transform: scale(1.08);
+}
+
+
+/* =========================================================
+   IMAGE GRADIENT
+========================================================= */
+
+.game-image-wrapper::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            to top,
+            rgba(15, 23, 42, 0.55),
+            transparent 55%
+        );
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transition:
+        opacity 0.3s ease;
+}
+
+
+.game-product-card:hover
+.game-image-wrapper::after {
+    opacity: 1;
+}
+
+
+/* =========================================================
+   GAME BADGE
+========================================================= */
+
+.game-badge {
+    position: absolute;
+
+    top: 10px;
+    left: 10px;
+
+    z-index: 3;
+
+    display: inline-flex;
+
+    align-items: center;
+    gap: 5px;
+
+    padding: 6px 9px;
+
+    border-radius: 8px;
+
+    background:
+        rgba(255, 255, 255, 0.94);
+
+    color: #0f766e;
+
+    font-size: 8px;
+    font-weight: 800;
+
+    letter-spacing: 0.5px;
+
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.12);
+
+    backdrop-filter: blur(8px);
+}
+
+
+.game-badge i {
+    color: #f59e0b;
+
+    font-size: 8px;
+}
+
+
+/* =========================================================
+   PLACEHOLDER
+========================================================= */
+
+.game-placeholder {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f1f5f9,
+            #e2e8f0
+        );
+
+    color: #94a3b8;
+
+    font-size: 35px;
+}
+
+
+/* =========================================================
+   HOVER OVERLAY
+========================================================= */
+
+.game-hover-overlay {
+    position: absolute;
+    inset: 0;
+
+    z-index: 2;
+
+    display: flex;
+
+    align-items: flex-end;
+    justify-content: center;
+
+    padding: 14px;
+
+    opacity: 0;
+
+    transition:
+        opacity 0.3s ease;
+}
+
+
+.game-product-card:hover
+.game-hover-overlay {
+    opacity: 1;
+}
+
+
+/* =========================================================
+   TOP UP BUTTON
+========================================================= */
+
+.game-topup-button {
+    width: 100%;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 9px 12px;
+
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    color: #111827;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    box-shadow:
+        0 5px 18px rgba(0, 0, 0, 0.15);
+
+    transform: translateY(5px);
+
+    transition:
+        transform 0.25s ease;
+}
+
+
+.game-product-card:hover
+.game-topup-button {
+    transform: translateY(0);
+}
+
+
+.game-topup-button i {
+    color: #0d9488;
+}
+
+
+/* =========================================================
+   GAME INFO
+========================================================= */
+
+.game-product-info {
+    padding: 13px 14px 14px;
+}
+
+
+.game-product-name {
+    margin: 0;
+
+    color: #1f2937;
+
+    font-size: 13px;
+    line-height: 1.4;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    transition:
+        color 0.2s ease;
+}
+
+
+.game-product-card:hover
+.game-product-name {
+    color: #0d9488;
+}
+
+
+/* =========================================================
+   GAME ACTION
+========================================================= */
+
+.game-product-action {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    margin-top: 9px;
+
+    color: #94a3b8;
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+
+.game-product-action i {
+    font-size: 9px;
+
+    transition:
+        transform 0.2s ease,
+        color 0.2s ease;
+}
+
+
+.game-product-card:hover
+.game-product-action {
+    color: #0d9488;
+}
+
+
+.game-product-card:hover
+.game-product-action i {
+    transform: translateX(3px);
+
+    color: #0d9488;
+}
+
+
+/* =========================================================
+   MARKET DIVIDER
+========================================================= */
+
+.game-market-divider {
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    margin-bottom: 25px;
+
+    color: #94a3b8;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    letter-spacing: 1.5px;
+
+    text-transform: uppercase;
+}
+
+
+.game-market-line {
+    flex: 1;
+
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(148, 163, 184, 0.35),
+            transparent
+        );
+}
+
+
+.game-market-label {
+    white-space: nowrap;
+
+    padding: 7px 14px;
+
+    border-radius: 999px;
+
+    background:
+        rgba(255, 255, 255, 0.65);
+
+    border:
+        1px solid rgba(226, 232, 240, 0.8);
+
+    backdrop-filter: blur(8px);
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.empty-product {
+    grid-column: 1 / -1;
+
+    padding: 50px 20px;
+
+    text-align: center;
+
+    color: #9ca3af;
+}
+
+
+.empty-product i {
+    display: block;
+
+    margin-bottom: 12px;
+
+    font-size: 35px;
+}
+
+
+.empty-product p {
+    margin: 0;
+
+    font-size: 14px;
+}

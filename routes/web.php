@@ -35,7 +35,6 @@ Route::get(
     [HomeController::class,'index']
 )
 ->name('dashboard');
-
 /*
 |--------------------------------------------------------------------------
 | AUTH

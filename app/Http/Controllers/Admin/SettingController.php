@@ -164,45 +164,6 @@ public function update(Request $request)
 
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | GAME SETTINGS
-    |--------------------------------------------------------------------------
-    */
-
-
-    if($request->has('games'))
-    {
-
-        foreach($request->games as $id=>$game)
-        {
-
-            Game::where('id',$id)
-            ->update([
-
-                'input_label'=>
-                    $game['input_label'] ?? null,
-
-
-                'input_placeholder'=>
-                    $game['input_placeholder'] ?? null,
-
-
-                'input_label_2'=>
-                    $game['input_label_2'] ?? null,
-
-
-                'input_placeholder_2'=>
-                    $game['input_placeholder_2'] ?? null,
-
-            ]);
-
-        }
-
-    }
-
-
-
     Cache::forget('website_settings');
 
 

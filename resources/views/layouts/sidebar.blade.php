@@ -45,21 +45,6 @@ Dashboard
 @auth
 
 
-<a href="#"
-class="list-group-item"
-data-bs-toggle="modal"
-data-bs-target="#profileModal">
-
-
-<i class="fa-solid fa-user me-2"></i>
-
-
-Profil
-
-
-</a>
-
-
 
 
 

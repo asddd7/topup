@@ -1,144 +1,393 @@
-<div class="card shadow-sm border-0 mb-4">
+<header class="topup-topbar">
 
-    <div class="card-body d-flex justify-content-between align-items-center">
+    <div class="topup-topbar-container">
 
-        <div class="d-flex align-items-center gap-3">
+        {{-- =====================================================
+             LEFT : LOGO + APP NAME
+        ====================================================== --}}
 
+        <div class="topup-topbar-left">
+
+            {{-- MOBILE SIDEBAR BUTTON --}}
             <button
-                class="btn btn-outline-primary d-lg-none"
+                type="button"
+                class="btn topup-mobile-menu d-lg-none"
                 data-bs-toggle="offcanvas"
-                data-bs-target="#sidebar">
-
+                data-bs-target="#sidebar"
+                aria-label="Toggle sidebar"
+            >
                 <i class="fa-solid fa-bars"></i>
-
             </button>
 
-            @if(setting('app_logo'))
 
-                <img
-                    src="{{ asset('storage/'.setting('app_logo')) }}"
-                    alt="Logo"
-                    style="height:45px; width:auto;">
+            {{-- LOGO --}}
+            <a href="{{ url('/') }}" class="topup-brand">
 
-            @endif
+                @if(setting('app_logo'))
 
-            <div>
+                    <img
+                        src="{{ asset('storage/' . setting('app_logo')) }}"
+                        alt="{{ setting('app_name', 'TopUp Game') }}"
+                        class="topup-brand-logo"
+                    >
 
-                <div class="fw-bold fs-5">
-                    {{ setting('app_name','TopUp Game') }}
+                @else
+
+                    <div class="topup-brand-icon">
+                        <i class="fa-solid fa-gamepad"></i>
+                    </div>
+
+                @endif
+
+
+                <div class="topup-brand-info">
+
+                    <div class="topup-brand-name">
+                        {{ setting('app_name', 'TopUp Game') }}
+                    </div>
+
+                    <small>
+                        Admin Dashboard
+                    </small>
+
                 </div>
 
-                <small class="text-muted">
-                    Admin Dashboard
-                </small>
-
-            </div>
+            </a>
 
         </div>
 
-        <div class="d-flex align-items-center gap-3">
 
-<div class="dropdown">
+        {{-- =====================================================
+             CENTER : NAVIGATION
+        ====================================================== --}}
 
+        <nav class="topup-topbar-nav d-none d-lg-block">
 
-<button
-    class="btn btn-light position-relative"
-    data-bs-toggle="dropdown">
+            <ul>
 
-
-<i class="fa-regular fa-bell fs-5"></i>
-
-
-@if(($notificationCount ?? 0) > 0)
-
-<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-
-{{ $notificationCount ?? 0 }}
-
-</span>
-
-@endif
+                <li>
+                    <a href="{{ url('/') }}">
+                        <i class="fa-solid fa-house"></i>
+                        Dashboard
+                    </a>
+                </li>
 
 
-</button>
+                <li>
+                    <a href="#">
+                        <i class="fa-solid fa-gamepad"></i>
+                        Games
+                    </a>
+                </li>
 
 
-<ul class="dropdown-menu dropdown-menu-end shadow notification-dropdown">
+                <li>
+                    <a href="#">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                        Orders
+                    </a>
+                </li>
 
 
-<li class="dropdown-header fw-bold">
-
-    Notifikasi
-
-</li>
-
-
-
-@forelse($notifications as $notif)
+                <li>
+                    <a href="#">
+                        <i class="fa-solid fa-users"></i>
+                        Users
+                    </a>
+                </li>
 
 
-<li>
+                <li>
+                    <a href="#">
+                        <i class="fa-solid fa-chart-line"></i>
+                        Reports
+                    </a>
+                </li>
 
-<a href="#"
-class="dropdown-item">
+            </ul>
 
-    <div class="notification-title">
-
-        {{ $notif->title }}
-
-    </div>
-
-
-    <div class="notification-message">
-
-        {{ $notif->message }}
-
-    </div>
+        </nav>
 
 
-</a>
+        {{-- =====================================================
+             RIGHT : NOTIFICATION + USER
+        ====================================================== --}}
 
-</li>
-
-
-@endforeach
-
+        <div class="topup-topbar-right">
 
 
-@if($notifications->count()==0)
+            {{-- =================================================
+                 NOTIFICATION
+            ================================================== --}}
 
-<li>
+            <div class="dropdown">
 
-<div class="text-center text-muted p-3">
+                <button
+                    type="button"
+                    class="btn topup-notification-btn position-relative"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    aria-label="Notifikasi"
+                >
 
-Tidak ada notifikasi
-
-</div>
-
-</li>
-
-@endif
-
-
-</ul>
+                    <i class="fa-regular fa-bell"></i>
 
 
-</div>
+                    @if(($notificationCount ?? 0) > 0)
 
-            <div class="text-end">
+                        <span class="topup-notification-badge">
 
-                <div class="fw-semibold">
-                    {{ optional(Auth::user())->name }}
-                </div>
+                            {{ $notificationCount }}
 
-                <small class="text-muted">
-                    {{ optional(Auth::user())->email }}
-                </small>
+                        </span>
+
+                    @endif
+
+                </button>
+
+
+                <ul class="dropdown-menu dropdown-menu-end shadow topup-notification-dropdown">
+
+
+                    {{-- HEADER --}}
+
+                    <li class="topup-notification-header">
+
+                        <div>
+                            <strong>Notifikasi</strong>
+
+                            @if(($notificationCount ?? 0) > 0)
+
+                                <span class="badge bg-danger">
+                                    {{ $notificationCount }}
+                                </span>
+
+                            @endif
+
+                        </div>
+
+                    </li>
+
+
+                    {{-- NOTIFICATION LIST --}}
+
+                    @forelse(($notifications ?? collect()) as $notif)
+
+                        <li>
+
+                            <a
+                                href="#"
+                                class="dropdown-item topup-notification-item"
+                            >
+
+                                <div class="topup-notification-title">
+
+                                    {{ $notif->title }}
+
+                                </div>
+
+
+                                <div class="topup-notification-message">
+
+                                    {{ $notif->message }}
+
+                                </div>
+
+
+                                <small class="topup-notification-time">
+
+                                    {{ $notif->created_at?->diffForHumans() }}
+
+                                </small>
+
+                            </a>
+
+                        </li>
+
+                    @empty
+
+                        <li>
+
+                            <div class="topup-no-notification">
+
+                                <i class="fa-regular fa-bell-slash"></i>
+
+                                <div>
+                                    Tidak ada notifikasi
+                                </div>
+
+                            </div>
+
+                        </li>
+
+                    @endforelse
+
+
+                </ul>
 
             </div>
+
+
+            {{-- =================================================
+                 USER PROFILE
+            ================================================== --}}
+
+            <div class="dropdown">
+
+
+                <button
+                    type="button"
+                    class="topup-user-button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                >
+
+                    {{-- AVATAR --}}
+
+                    <div class="topup-user-avatar">
+
+                        {{ strtoupper(substr(optional(Auth::user())->name ?? 'U', 0, 1)) }}
+
+                    </div>
+
+
+                    {{-- USER INFO --}}
+
+                    <div class="topup-user-info d-none d-xl-block">
+
+                        <strong>
+                            {{ optional(Auth::user())->name }}
+                        </strong>
+
+                        <small>
+                            {{ optional(Auth::user())->email }}
+                        </small>
+
+                    </div>
+
+
+                    <i class="fa-solid fa-chevron-down topup-user-arrow d-none d-xl-block"></i>
+
+                </button>
+
+
+                {{-- USER DROPDOWN --}}
+
+                <ul class="dropdown-menu dropdown-menu-end shadow topup-user-dropdown">
+
+
+                    {{-- USER HEADER --}}
+
+                    <li class="topup-user-dropdown-header">
+
+                        <div class="topup-user-avatar large">
+
+                            {{ strtoupper(substr(optional(Auth::user())->name ?? 'U', 0, 1)) }}
+
+                        </div>
+
+
+                        <div>
+
+                            <strong>
+                                {{ optional(Auth::user())->name }}
+                            </strong>
+
+                            <small>
+                                {{ optional(Auth::user())->email }}
+                            </small>
+
+                        </div>
+
+                    </li>
+
+
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+
+                    {{-- PROFILE --}}
+
+                    <li>
+
+                        <a
+                            href="#"
+                            class="dropdown-item"
+                            data-bs-toggle="modal"
+                            data-bs-target="#profileModal"
+                        >
+
+                            <i class="fa-regular fa-user"></i>
+
+                            My Profile
+
+                        </a>
+
+                    </li>
+
+
+                    {{-- SETTINGS --}}
+
+                    <li>
+
+                        <a
+                            href="#"
+                            class="dropdown-item"
+                        >
+
+                            <i class="fa-solid fa-gear"></i>
+
+                            Settings
+
+                        </a>
+
+                    </li>
+
+
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+
+
+                    {{-- LOGOUT --}}
+
+                    @auth
+
+                        <li>
+
+                            <form
+                                method="POST"
+                                action="{{ route('logout') }}"
+                            >
+
+                                @csrf
+
+                                <button
+                                    type="submit"
+                                    class="dropdown-item topup-logout"
+                                >
+
+                                    <i class="fa-solid fa-right-from-bracket"></i>
+
+                                    Logout
+
+                                </button>
+
+                            </form>
+
+                        </li>
+
+                    @endauth
+
+
+                </ul>
+
+            </div>
+
 
         </div>
 
     </div>
 
-</div>
+</header>

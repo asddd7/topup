@@ -1,0 +1,819 @@
+/* =========================================================
+   TOPUP TOPBAR
+========================================================= */
+
+.topup-topbar {
+    width: 100%;
+
+    background: #c75454;
+    border-bottom: 1px solid #e5e7eb;
+
+    position: sticky;
+    top: 0;
+
+    z-index: 1030;
+}
+
+
+/* =========================================================
+   CONTAINER
+========================================================= */
+
+.topup-topbar-container {
+    width: 100%;
+    min-height: 72px;
+
+    padding: 0 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 25px;
+}
+
+
+/* =========================================================
+   LEFT
+========================================================= */
+
+.topup-topbar-left {
+    display: flex;
+    align-items: center;
+
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   MOBILE MENU
+========================================================= */
+
+.topup-mobile-menu {
+    width: 40px;
+    height: 40px;
+
+    margin-right: 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+
+    background: #ffffff;
+    color: #374151;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.topup-mobile-menu:hover {
+    background: #f0fdfa;
+    color: #0d9488;
+    border-color: #99f6e4;
+}
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.topup-brand {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.topup-brand:hover {
+    color: #ffffff;
+}
+
+
+/* LOGO */
+
+.topup-brand-logo {
+    width: auto;
+    height: 42px;
+
+    max-width: 150px;
+
+    object-fit: contain;
+}
+
+
+/* FALLBACK ICON */
+
+.topup-brand-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background: #0d9488;
+    color: #ffffff;
+
+    font-size: 18px;
+}
+
+
+/* BRAND INFO */
+
+.topup-brand-info {
+    display: flex;
+    flex-direction: column;
+
+    line-height: 1.2;
+}
+
+.topup-brand-name {
+    color: #ffffff;
+
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.topup-brand-info small {
+    margin-top: 3px;
+
+    color: rgba(255, 255, 255, 0.70);
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   CENTER NAVIGATION
+========================================================= */
+
+.topup-topbar-navigation {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    flex: 1;
+    justify-content: center;
+}
+
+
+/* NAV */
+
+.topup-topbar-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.topup-topbar-nav ul {
+    display: flex;
+    align-items: center;
+
+    gap: 5px;
+
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+}
+
+.topup-topbar-nav a {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 9px 12px;
+
+    border-radius: 9px;
+
+    color: rgba(255, 255, 255, 0.78);
+
+    font-size: 13px;
+    font-weight: 500;
+
+    text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.topup-topbar-nav a i {
+    font-size: 13px;
+}
+
+.topup-topbar-nav a:hover {
+    background: rgba(255, 255, 255, 0.14);
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+
+.topup-back-button {
+    width: 40px;
+    height: 40px;
+
+    margin-right: 12px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 10px;
+
+    background: rgba(255, 255, 255, 0.10);
+    color: #ffffff;
+
+    text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.topup-back-button:hover {
+    background: #ffffff;
+    border-color: #ffffff;
+
+    color: #0d9488;
+
+    transform: translateX(-2px);
+
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.topup-back-button i {
+    font-size: 14px;
+
+    transition:
+        transform 0.2s ease;
+}
+
+.topup-back-button:hover i {
+    transform: translateX(-2px);
+}
+
+
+/* =========================================================
+   RIGHT
+========================================================= */
+
+.topup-topbar-right {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   NOTIFICATION BUTTON
+========================================================= */
+
+.topup-notification-btn {
+    width: 42px;
+    height: 42px;
+
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 11px;
+
+    background: #ffffff;
+    color: #4b5563;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.topup-notification-btn:hover {
+    background: #f0fdfa;
+
+    color: #0d9488;
+
+    border-color: #99f6e4;
+}
+
+.topup-notification-btn > i {
+    font-size: 17px;
+}
+
+
+/* =========================================================
+   NOTIFICATION BADGE
+========================================================= */
+
+.topup-notification-badge {
+    position: absolute;
+
+    top: -4px;
+    right: -4px;
+
+    min-width: 18px;
+    height: 18px;
+
+    padding: 0 5px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid #ffffff;
+    border-radius: 50px;
+
+    background: #ef4444;
+    color: #ffffff;
+
+    font-size: 9px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   NOTIFICATION DROPDOWN
+========================================================= */
+
+.topup-notification-dropdown {
+    width: 360px;
+    max-width: calc(100vw - 30px);
+
+    margin-top: 10px !important;
+
+    padding: 0;
+
+    overflow: hidden;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 13px;
+}
+
+
+/* HEADER */
+
+.topup-notification-header {
+    padding: 15px 17px;
+
+    background: #ffffff;
+
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.topup-notification-header > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.topup-notification-header strong {
+    color: #111827;
+
+    font-size: 14px;
+}
+
+.topup-notification-header .badge {
+    font-size: 10px;
+}
+
+
+/* ITEM */
+
+.topup-notification-item {
+    padding: 13px 17px !important;
+
+    white-space: normal;
+
+    border-bottom: 1px solid #f3f4f6;
+
+    transition: background 0.2s ease;
+}
+
+.topup-notification-item:hover {
+    background: #f8fafc;
+}
+
+.topup-notification-title {
+    color: #111827;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.topup-notification-message {
+    margin-top: 3px;
+
+    color: #6b7280;
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.topup-notification-time {
+    display: block;
+
+    margin-top: 5px;
+
+    color: #9ca3af;
+
+    font-size: 10px;
+}
+
+
+/* EMPTY */
+
+.topup-no-notification {
+    padding: 35px 20px;
+
+    text-align: center;
+
+    color: #9ca3af;
+
+    font-size: 12px;
+}
+
+.topup-no-notification i {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 25px;
+}
+
+
+/* =========================================================
+   USER BUTTON
+========================================================= */
+
+.topup-user-button {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 4px;
+
+    border: 0;
+    border-radius: 12px;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    transition: background 0.2s ease;
+}
+
+.topup-user-button:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+
+/* =========================================================
+   USER AVATAR
+========================================================= */
+
+.topup-user-avatar {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #ccfbf1;
+    color: #0f766e;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.topup-user-avatar.large {
+    width: 42px;
+    height: 42px;
+}
+
+
+/* =========================================================
+   USER INFO
+========================================================= */
+
+.topup-user-info {
+    display: flex;
+    flex-direction: column;
+
+    text-align: left;
+
+    line-height: 1.25;
+}
+
+.topup-user-info strong {
+    color: #ffffff;
+
+    font-size: 13px;
+}
+
+.topup-user-info small {
+    margin-top: 3px;
+
+    color: rgba(255, 255, 255, 0.70);
+
+    font-size: 10px;
+}
+
+.topup-user-arrow {
+    margin-left: 2px;
+
+    color: rgba(255, 255, 255, 0.70);
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   USER DROPDOWN
+========================================================= */
+
+.topup-user-dropdown {
+    width: 250px;
+
+    margin-top: 8px !important;
+
+    padding: 8px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 13px;
+}
+
+
+/* HEADER */
+
+.topup-user-dropdown-header {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 10px;
+}
+
+.topup-user-dropdown-header > div:last-child {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+}
+
+.topup-user-dropdown-header strong {
+    color: #111827;
+
+    font-size: 13px;
+}
+
+.topup-user-dropdown-header small {
+    margin-top: 3px;
+
+    overflow: hidden;
+
+    color: #9ca3af;
+
+    font-size: 10px;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* MENU */
+
+.topup-user-dropdown .dropdown-item {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 9px 10px;
+
+    border-radius: 8px;
+
+    color: #4b5563;
+
+    font-size: 13px;
+}
+
+.topup-user-dropdown .dropdown-item i {
+    width: 18px;
+
+    color: #6b7280;
+
+    text-align: center;
+}
+
+.topup-user-dropdown .dropdown-item:hover {
+    background: #f0fdfa;
+
+    color: #0d9488;
+}
+
+.topup-user-dropdown .dropdown-item:hover i {
+    color: #0d9488;
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+.topup-user-dropdown .topup-logout,
+.topup-user-dropdown .topup-logout i {
+    color: #dc2626;
+}
+
+.topup-user-dropdown .topup-logout:hover {
+    background: #fef2f2;
+
+    color: #dc2626;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1199px) {
+
+    .topup-topbar-container {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .topup-topbar-nav a {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .topup-topbar-nav a i {
+        display: none;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 991px) {
+
+    .topup-topbar-navigation {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        flex: 1;
+    }
+
+    .topup-topbar-nav {
+        display: none !important;
+    }
+}
+
+
+@media (max-width: 767px) {
+
+    .topup-topbar-container {
+        min-height: 64px;
+
+        padding: 0 14px;
+
+        gap: 10px;
+    }
+
+    .topup-brand {
+        gap: 8px;
+    }
+
+    .topup-brand-logo {
+        height: 35px;
+
+        max-width: 110px;
+    }
+
+    .topup-brand-icon {
+        width: 35px;
+        height: 35px;
+
+        border-radius: 9px;
+
+        font-size: 15px;
+    }
+
+    .topup-brand-name {
+        font-size: 14px;
+    }
+
+    .topup-brand-info small {
+        display: none;
+    }
+
+    .topup-topbar-right {
+        gap: 5px;
+    }
+
+    .topup-notification-btn {
+        width: 36px;
+        height: 36px;
+
+        border-radius: 9px;
+    }
+
+    .topup-notification-btn > i {
+        font-size: 15px;
+    }
+
+    .topup-user-avatar {
+        width: 36px;
+        height: 36px;
+
+        font-size: 12px;
+    }
+
+    .topup-notification-dropdown {
+        width: 320px;
+    }
+
+    .topup-back-button {
+    width: 36px;
+    height: 36px;
+
+    margin-right: 8px;
+
+    border-radius: 9px;
+}
+
+.topup-back-button i {
+    font-size: 13px;
+}
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .topup-topbar-container {
+        padding: 0 10px;
+    }
+
+    .topup-mobile-menu {
+        width: 36px;
+        height: 36px;
+
+        margin-right: 5px;
+    }
+
+    .topup-brand-name {
+        font-size: 13px;
+    }
+
+    .topup-brand-logo {
+        max-width: 90px;
+    }
+
+    .topup-notification-dropdown {
+        width: calc(100vw - 20px);
+        max-width: calc(100vw - 20px);
+    }
+}

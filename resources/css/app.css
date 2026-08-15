@@ -1,3 +1,9 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import './base/variables.css';
+@import './base/typography.css';
+
+@import './components/dashboard-banner.css';
+@import './components/product-card.css';
+@import './components/game-card.css';
+@import './components/empty-state.css';
+
+@import './pages/dashboard.css';

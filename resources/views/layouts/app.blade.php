@@ -3,8 +3,6 @@
 
 <head>
 
-<head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="csrf-token"
@@ -32,31 +30,22 @@ rel="stylesheet">
 
 <div class="page-wrapper">
 
-    @include('layouts.sidebar')
-
-    <main class="main-content">
-
-
-        <div class="content-wrapper">
-
-            @yield('content')
-
-        </div>
-
-
-
-    </main>
+<main class="main-content">
+    <div class="content-wrapper">
+        @yield('content')
+    </div>
+</main>
 
 </div>
 
 @auth
     @include('profile.modal')
 @endauth
-
+@include('layouts.footer')
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 
 @stack('scripts')
 
 </body>
-        @include('layouts.footer')
+
 </html>
