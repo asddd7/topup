@@ -15,7 +15,6 @@ class GameSeeder extends Seeder
                 'id' => 1,
                 'game_name' => 'Mobile Legends',
                 'publisher' => 'Moonton',
-                'player_input_type' => 'uid_server',
                 'is_active' => true,
             ],
 
@@ -23,7 +22,6 @@ class GameSeeder extends Seeder
                 'id' => 2,
                 'game_name' => 'Free Fire',
                 'publisher' => 'Garena',
-                'player_input_type' => 'uid',
                 'is_active' => true,
             ],
 
@@ -31,7 +29,6 @@ class GameSeeder extends Seeder
                 'id' => 3,
                 'game_name' => 'PUBG Mobile',
                 'publisher' => 'Tencent',
-                'player_input_type' => 'uid',
                 'is_active' => true,
             ],
 
@@ -39,7 +36,6 @@ class GameSeeder extends Seeder
                 'id' => 4,
                 'game_name' => 'Valorant',
                 'publisher' => 'Riot Games',
-                'player_input_type' => 'riot_id',
                 'is_active' => true,
             ],
 
@@ -47,7 +43,6 @@ class GameSeeder extends Seeder
                 'id' => 5,
                 'game_name' => 'Steam Wallet',
                 'publisher' => 'Valve',
-                'player_input_type' => 'email',
                 'is_active' => true,
             ],
 
