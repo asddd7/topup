@@ -1,27 +1,53 @@
-*.log
-.DS_Store
+# Environment
 .env
 .env.backup
 .env.production
-.phpactor.json
-.phpunit.result.cache
-/.codex
-/.cursor/
-/.idea
-/.nova
-/.phpunit.cache
-/.vscode
-/.zed
-/auth.json
+.env.local
+
+# Laravel
+/vendor
 /node_modules
 /public/build
-/public/fonts-manifest.dev.json
 /public/hot
 /public/storage
+
+# Laravel storage
 /storage/*.key
 /storage/pail
-/vendor
+
+# IDE / Editor
+.idea
+.vscode
+.nova
+.zed
+.phpactor.json
+.phpunit.cache
+.phpunit.result.cache
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# PHPUnit
+.phpunit.result.cache
+
+# Composer
+auth.json
+
+# npm
+npm-debug.log
+yarn-error.log
+
+# Codex
+.codex
+
+# Cursor
+.cursor
+
+# Other
 _ide_helper.php
 Homestead.json
 Homestead.yaml
-Thumbs.db

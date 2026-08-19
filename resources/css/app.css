@@ -1,9 +1,13 @@
-@import './base/variables.css';
-@import './base/typography.css';
+body{
+    background:#fff;
+    font-family:'Poppins',sans-serif;
+    min-height:100vh;
+}
 
-@import './components/dashboard-banner.css';
-@import './components/product-card.css';
-@import './components/game-card.css';
-@import './components/empty-state.css';
+a{
+    text-decoration:none;
+}
 
-@import './pages/dashboard.css';
+img{
+    max-width:100%;
+}
