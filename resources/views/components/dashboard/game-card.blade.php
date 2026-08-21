@@ -1,26 +1,20 @@
-<article class="game-product-card">
+<article class="market-game-card">
 
-    <a
-        href="{{ route('game.show', $game->id) }}"
-        class="game-product-link"
-    >
+    <a href="{{ route('game.show', $game->id) }}">
 
-        {{-- IMAGE --}}
-
-        <div class="game-image-wrapper">
+        <div class="market-game-image">
 
             @if($game->game_logo)
 
                 <img
                     src="{{ asset('storage/'.$game->game_logo) }}"
                     alt="{{ $game->game_name }}"
-                    class="game-product-image"
                     loading="lazy"
                 >
 
             @else
 
-                <div class="game-placeholder">
+                <div class="market-product-placeholder">
 
                     <i class="fa-solid fa-gamepad"></i>
 
@@ -29,27 +23,11 @@
             @endif
 
 
-            {{-- BADGE --}}
+            <div class="market-game-overlay">
 
-            <div class="game-badge">
-
-                <i class="fa-solid fa-bolt"></i>
-
-                TOP UP
-
-            </div>
-
-
-            {{-- HOVER --}}
-
-            <div class="game-hover-overlay">
-
-                <span class="game-topup-button">
-
-                    <i class="fa-solid fa-cart-shopping"></i>
-
+                <span class="market-game-action">
+                    <i class="fa-solid fa-bolt me-1"></i>
                     Top Up Sekarang
-
                 </span>
 
             </div>
@@ -57,26 +35,20 @@
         </div>
 
 
-        {{-- GAME INFO --}}
+        <div class="market-game-info">
 
-        <div class="game-product-info">
-
-            <h3 class="game-product-name">
-
+            <h3 class="market-game-title">
                 {{ $game->game_name }}
-
             </h3>
 
 
-            <div class="game-product-action">
+            @if($game->publisher)
 
-                <span>
-                    Top Up
-                </span>
+                <div class="market-game-publisher">
+                    {{ $game->publisher }}
+                </div>
 
-                <i class="fa-solid fa-arrow-right"></i>
-
-            </div>
+            @endif
 
         </div>
 
