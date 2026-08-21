@@ -12,29 +12,25 @@
 
 }
 
-
 /* =========================================================
-   MAIN CONTENT
+   MAIN CONTENT - USER
 ========================================================= */
 
 .main-content {
-
-    margin-left: 260px;
-
-    width: calc(100% - 260px);
-
+    width: 100%;
     min-height: 100vh;
 
     padding: 30px;
 
     display: flex;
-
     flex-direction: column;
 
     background: var(--color-bg);
-
 }
 
+/* =========================================================
+   MAIN CONTENT - ADMIN
+========================================================= */
 
 .content-wrapper {
 

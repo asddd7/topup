@@ -2,19 +2,12 @@
    DASHBOARD BASE
 ========================================================= */
 
-.dashboard-page {
+.dashboard-page > .container-fluid {
     width: 100%;
-    min-height: 100vh;
-    padding: 24px 0 60px;
-    background: #f6f8fc;
-}
-
-.dashboard-page .container-fluid {
-    width: 100%;
-    max-width: 1440px;
-    margin: 0 auto;
-    padding-left: 28px;
-    padding-right: 28px;
+    max-width: none;
+    margin: 0;
+    padding-left: 32px;
+    padding-right: 32px;
 }
 
 

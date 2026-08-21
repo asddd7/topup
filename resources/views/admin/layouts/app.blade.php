@@ -26,7 +26,7 @@ rel="stylesheet">
 @include('admin.layouts.topbar')
 </head>
 
-<body>
+<body class="admin-layout">
 
 <div class="page-wrapper">
 @include('admin.layouts.sidebar')
