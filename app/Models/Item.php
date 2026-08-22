@@ -17,7 +17,15 @@ class Item extends Model
         'description',
         'image',
         'is_active',
-        'top_seller'
+        'top_seller',
+    ];
+
+    protected $casts = [
+        'qty' => 'integer',
+        'price' => 'integer',
+        'stock' => 'integer',
+        'is_active' => 'boolean',
+        'top_seller' => 'boolean',
     ];
 
     public function game()
