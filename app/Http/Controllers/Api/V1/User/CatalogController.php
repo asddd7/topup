@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Api\V1\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CategoryResource;
+use App\Http\Resources\GameResource;
+use App\Http\Resources\ItemResource;
 use App\Models\Game;
 use App\Models\Item;
 use App\Models\ItemCategory;
@@ -12,6 +15,8 @@ class CatalogController extends Controller
 {
     /**
      * GET /api/v1/catalog/categories
+     *
+     * Menampilkan seluruh kategori.
      */
     public function categories(): JsonResponse
     {
@@ -24,14 +29,9 @@ class CatalogController extends Controller
             'success' => true,
             'message' => 'Daftar kategori berhasil diambil.',
             'data' => [
-                'categories' => $categories->map(function ($category) {
-                    return [
-                        'id' => $category->id,
-                        'name' => $category->category_name,
-                        'use_qty' => (bool) $category->use_qty,
-                        'items_count' => $category->items_count,
-                    ];
-                })->values(),
+                'categories' => CategoryResource::collection(
+                    $categories
+                ),
             ],
         ]);
     }
@@ -39,9 +39,31 @@ class CatalogController extends Controller
 
     /**
      * GET /api/v1/catalog/games/{game}/items
+     *
+     * Menampilkan seluruh item aktif dari game tertentu.
      */
     public function items(Game $game): JsonResponse
     {
+        /*
+        |--------------------------------------------------------------------------
+        | Cek game aktif
+        |--------------------------------------------------------------------------
+        */
+
+        if (!$game->is_active) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Game tidak tersedia.',
+            ], 404);
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Ambil item aktif
+        |--------------------------------------------------------------------------
+        */
+
         $items = Item::query()
             ->with('category')
             ->where('game_id', $game->id)
@@ -50,21 +72,22 @@ class CatalogController extends Controller
             ->orderBy('price')
             ->get();
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | Response
+        |--------------------------------------------------------------------------
+        */
+
         return response()->json([
             'success' => true,
             'message' => 'Catalog item berhasil diambil.',
             'data' => [
-                'game' => [
-                    'id' => $game->id,
-                    'name' => $game->game_name,
-                    'image' => $game->image
-                        ? asset('storage/' . $game->image)
-                        : null,
-                ],
+                'game' => new GameResource($game),
 
-                'items' => $items->map(function ($item) {
-                    return $this->formatItem($item);
-                })->values(),
+                'items' => ItemResource::collection(
+                    $items
+                ),
             ],
         ]);
     }
@@ -72,15 +95,39 @@ class CatalogController extends Controller
 
     /**
      * GET /api/v1/catalog/games/{game}/categories
+     *
+     * Menampilkan catalog game berdasarkan kategori.
      */
     public function gameCategories(Game $game): JsonResponse
     {
+        /*
+        |--------------------------------------------------------------------------
+        | Cek game aktif
+        |--------------------------------------------------------------------------
+        */
+
+        if (!$game->is_active) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Game tidak tersedia.',
+            ], 404);
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Ambil kategori yang mempunyai item aktif
+        |--------------------------------------------------------------------------
+        */
+
         $categories = ItemCategory::query()
+
             ->whereHas('items', function ($query) use ($game) {
                 $query
                     ->where('game_id', $game->id)
                     ->where('is_active', 1);
             })
+
             ->with([
                 'items' => function ($query) use ($game) {
                     $query
@@ -88,36 +135,31 @@ class CatalogController extends Controller
                         ->where('is_active', 1)
                         ->orderBy('top_seller', 'desc')
                         ->orderBy('price');
-                }
+                },
+
+                'items.category',
             ])
+
             ->orderBy('category_name')
+
             ->get();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Response
+        |--------------------------------------------------------------------------
+        */
 
         return response()->json([
             'success' => true,
             'message' => 'Catalog berdasarkan kategori berhasil diambil.',
             'data' => [
-                'game' => [
-                    'id' => $game->id,
-                    'name' => $game->game_name,
-                    'image' => $game->image
-                        ? asset('storage/' . $game->image)
-                        : null,
-                ],
+                'game' => new GameResource($game),
 
-                'categories' => $categories->map(function ($category) {
-                    return [
-                        'id' => $category->id,
-                        'name' => $category->category_name,
-                        'use_qty' => (bool) $category->use_qty,
-
-                        'items' => $category->items
-                            ->map(function ($item) {
-                                return $this->formatItem($item);
-                            })
-                            ->values(),
-                    ];
-                })->values(),
+                'categories' => CategoryResource::collection(
+                    $categories
+                ),
             ],
         ]);
     }
@@ -125,9 +167,17 @@ class CatalogController extends Controller
 
     /**
      * GET /api/v1/catalog/items/{item}
+     *
+     * Menampilkan detail item.
      */
     public function item(Item $item): JsonResponse
     {
+        /*
+        |--------------------------------------------------------------------------
+        | Cek item aktif
+        |--------------------------------------------------------------------------
+        */
+
         if (!$item->is_active) {
             return response()->json([
                 'success' => false,
@@ -135,71 +185,31 @@ class CatalogController extends Controller
             ], 404);
         }
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | Load relasi
+        |--------------------------------------------------------------------------
+        */
+
         $item->load([
             'game',
             'category',
         ]);
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | Response
+        |--------------------------------------------------------------------------
+        */
+
         return response()->json([
             'success' => true,
             'message' => 'Detail item berhasil diambil.',
             'data' => [
-                'item' => $this->formatItem($item, true),
+                'item' => new ItemResource($item),
             ],
         ]);
-    }
-
-
-    /**
-     * Format item untuk seluruh response catalog.
-     */
-    private function formatItem(Item $item, bool $detail = false): array
-    {
-        $data = [
-            'id' => $item->id,
-
-            'name' => $item->item_name,
-
-            'qty' => $item->qty,
-
-            'price' => (float) $item->price,
-
-            'formatted_price' => 'Rp ' . number_format(
-                $item->price,
-                0,
-                ',',
-                '.'
-            ),
-
-            'stock' => $item->stock,
-
-            'description' => $item->description,
-
-            'image' => $item->image
-                ? asset('storage/' . $item->image)
-                : null,
-
-            'is_active' => (bool) $item->is_active,
-
-            'top_seller' => (bool) $item->top_seller,
-
-            'category' => $item->category ? [
-                'id' => $item->category->id,
-                'name' => $item->category->category_name,
-                'use_qty' => (bool) $item->category->use_qty,
-            ] : null,
-        ];
-
-        if ($detail && $item->game) {
-            $data['game'] = [
-                'id' => $item->game->id,
-                'name' => $item->game->game_name,
-                'image' => $item->game->image
-                    ? asset('storage/' . $item->game->image)
-                    : null,
-            ];
-        }
-
-        return $data;
     }
 }

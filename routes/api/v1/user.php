@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\V1\Auth\MeController;
 
 use App\Http\Controllers\Api\V1\User\GameController;
 use App\Http\Controllers\Api\V1\User\CatalogController;
+use App\Http\Controllers\Api\V1\User\OrderController;
+use App\Http\Controllers\Api\V1\User\PaymentController;
 
 
 /*
@@ -110,6 +112,50 @@ Route::prefix('catalog')->group(function () {
     Route::get(
         '/items/{item}',
         [CatalogController::class, 'item']
+    );
+
+});
+
+Route::get('/payments', [
+    PaymentController::class,
+    'index'
+]);
+
+/*
+|--------------------------------------------------------------------------
+| USER ORDER API
+|--------------------------------------------------------------------------
+|
+| Semua endpoint order membutuhkan user yang sudah login.
+|
+*/
+
+Route::middleware('auth:user-api')->group(function () {
+
+    Route::post(
+        '/orders',
+        [OrderController::class, 'store']
+    );
+
+    Route::get(
+        '/orders',
+        [OrderController::class, 'index']
+    );
+
+    Route::get(
+        '/orders/{order}',
+        [OrderController::class, 'show']
+    );
+
+    Route::post(
+        '/orders/{order}/payment',
+        [OrderController::class, 'payment']
+    );
+
+
+    Route::post(
+        '/orders/{order}/payment-proof',
+        [OrderController::class, 'paymentProof']
     );
 
 });
