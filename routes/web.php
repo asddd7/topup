@@ -324,6 +324,11 @@ Route::post(
 ->name('order.confirm');
 
 Route::post(
+    '/orders/{order}/approve',
+    [OrderController::class, 'approve']
+)->name('order.approve');
+
+Route::post(
     'order/{order}/reject',
     [OrderController::class,'reject']
 )

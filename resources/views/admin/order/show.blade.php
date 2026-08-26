@@ -1,21 +1,69 @@
 @extends('admin.layouts.app')
 
-
 @section('content')
 
+<div class="container">
+
+    {{-- =====================================================
+         FLASH MESSAGE
+    ====================================================== --}}
+
+    @if(session('success'))
+
+        <div class="alert alert-success alert-dismissible fade show">
+
+            <i class="fa-solid fa-circle-check me-2"></i>
+
+            {{ session('success') }}
+
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+            ></button>
+
+        </div>
+
+    @endif
+
+
+    @if(session('error'))
+
+        <div class="alert alert-danger alert-dismissible fade show">
+
+            <i class="fa-solid fa-circle-exclamation me-2"></i>
+
+            {{ session('error') }}
+
+            <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+            ></button>
+
+        </div>
+
+    @endif
 
 <div class="container">
 
 @auth
-    <div class="d-flex gap-2">
-        <a href="{{ route('admin.order.index') }}"
-           class="btn btn-secondary">
+
+    <div class="d-flex gap-2 mb-3">
+
+        <a
+            href="{{ route('admin.order.index') }}"
+            class="btn btn-secondary"
+        >
 
             <i class="fa-solid fa-arrow-left me-1"></i>
+
             Kembali
 
         </a>
+
     </div>
+
 @endauth
 <div class="card shadow">
 
@@ -230,50 +278,67 @@ Update Status
 
 </form>
 
+{{-- =========================================================
+     PAYMENT VERIFICATION
+========================================================= --}}
 
+@if($order->status === 'Waiting Payment')
 
+    <div class="d-grid gap-2 mt-3">
 
+        <form
+            action="{{ route('admin.order.approve', $order) }}"
+            method="POST"
+        >
 
-@if($order->status == 'Paid')
+            @csrf
 
-<div class="d-grid gap-2 mt-3">
+            <button
+                type="submit"
+                class="btn btn-success"
+            >
 
-<form action="{{ route('admin.order.confirm',$order) }}"
-      method="POST">
+                <i class="fa-solid fa-circle-check me-2"></i>
 
-    @csrf
+                Approve Pembayaran
 
-    <button class="btn btn-success">
+            </button>
 
-        <i class="fa-solid fa-circle-check me-2"></i>
+        </form>
 
-        Konfirmasi Pembayaran
-
-    </button>
-
-</form>
-
-<form action="{{ route('admin.order.reject',$order) }}"
-      method="POST">
-
-    @csrf
-
-    <button class="btn btn-danger">
-
-        <i class="fa-solid fa-circle-xmark me-2"></i>
-
-        Tolak Pembayaran
-
-    </button>
-
-</form>
-
-</div>
+    </div>
 
 @endif
+{{-- =========================================================
+     PROCESS ORDER
+========================================================= --}}
+@if($order->status === 'Paid')
 
+    <div class="d-grid gap-2 mt-3">
 
+        <form
+            action="{{ route('admin.order.confirm', $order) }}"
+            method="POST"
+        >
 
+            @csrf
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+
+                <i class="fa-solid fa-box-open me-2"></i>
+
+                Proses & Selesaikan Order
+
+            </button>
+
+        </form>
+
+    </div>
+
+@endif
 </div>
 
 
