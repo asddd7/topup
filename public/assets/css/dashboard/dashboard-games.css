@@ -175,3 +175,256 @@
 
     text-align: center;
 }
+/* =========================================================
+   GAME SEARCH
+========================================================= */
+
+.dashboard-game-search {
+    max-width: 620px;
+
+    margin: 28px auto 26px;
+}
+
+
+/* =========================================================
+   SEARCH LABEL
+========================================================= */
+
+.dashboard-search-label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    color: #374151;
+}
+
+
+/* =========================================================
+   SEARCH BOX
+========================================================= */
+
+.dashboard-search-box {
+    position: relative;
+
+    width: 100%;
+}
+
+
+/* =========================================================
+   SEARCH INPUT
+========================================================= */
+
+.dashboard-search-input {
+    width: 100%;
+
+    height: 48px;
+
+    margin: 0;
+
+    padding:
+        0
+        52px
+        0
+        14px;
+
+    border:
+        1px
+        solid
+        #d1d5db;
+
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    color: #111827;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+
+    outline: none;
+
+    box-shadow:
+        0 1px 2px
+        rgba(15, 23, 42, 0.04);
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.dashboard-search-input::placeholder {
+    color: #9ca3af;
+}
+
+
+.dashboard-search-input:hover {
+    border-color: #bfc5ce;
+}
+
+
+.dashboard-search-input:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(37, 99, 235, 0.1);
+}
+
+
+/* =========================================================
+   SEARCH BUTTON
+========================================================= */
+
+.dashboard-search-button {
+    position: absolute;
+
+    top: 50%;
+
+    right: 8px;
+
+    transform:
+        translateY(-50%);
+
+    width: 34px;
+
+    height: 34px;
+
+    display: grid;
+
+    place-items: center;
+
+    padding: 0;
+
+    border: 0;
+
+    border-radius: 50%;
+
+    background: transparent;
+
+    color: #374151;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
+}
+
+
+.dashboard-search-button:hover {
+    background: #f3f4f6;
+
+    color: #111827;
+}
+
+
+.dashboard-search-button:focus {
+    outline: none;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(37, 99, 235, 0.08);
+}
+
+
+/* =========================================================
+   SEARCH INFO
+========================================================= */
+
+.dashboard-search-info {
+    margin-top: 9px;
+
+    font-size: 12px;
+
+    color: #6b7280;
+}
+
+
+.dashboard-search-info strong {
+    color: #111827;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   SEARCH ITEM
+========================================================= */
+
+.game-search-item {
+    min-width: 0;
+}
+
+
+/* =========================================================
+   SEARCH EMPTY
+========================================================= */
+
+.game-search-empty {
+    padding: 60px 20px;
+
+    text-align: center;
+}
+
+
+.game-search-empty-icon {
+    margin-bottom: 16px;
+
+    font-size: 42px;
+
+    color: #9ca3af;
+}
+
+
+.game-search-empty h3 {
+    margin:
+        0
+        0
+        8px;
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+    color: #111827;
+}
+
+
+.game-search-empty p {
+    margin:
+        0
+        0
+        20px;
+
+    color: #6b7280;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .dashboard-game-search {
+        margin:
+            20px auto
+            22px;
+    }
+
+
+    .dashboard-search-input {
+        height: 46px;
+
+        border-radius: 8px;
+    }
+
+}
