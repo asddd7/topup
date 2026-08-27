@@ -114,10 +114,11 @@
 
                 @foreach($games as $game)
 
-                    <div
-                        class="game-search-item"
-                        data-game-name="{{ strtolower($game->game_name) }}"
-                    >
+            <div
+                class="game-search-item"
+                data-game-name="{{ $game->game_name }}"
+                data-game-publisher="{{ $game->publisher ?? '' }}"
+            >
 
                         @include(
                             'components.dashboard.game-card',
@@ -246,41 +247,167 @@ document.addEventListener(
         }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | FILTER GAME
-        |--------------------------------------------------------------------------
-        */
+        /* =========================================================
+        NORMALIZE SEARCH
+        ========================================================= */
 
-        function filterGames() {
+        function normalizeSearch(value)
+        {
+            return String(value ?? '')
+                .toLowerCase()
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9\s]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
 
+
+        /* =========================================================
+        CREATE SEARCH DATA
+        ========================================================= */
+
+        function buildSearchData(
+            gameName,
+            publisher
+        ) {
+            const name =
+                normalizeSearch(gameName);
+
+            const publisherName =
+                normalizeSearch(publisher);
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Gabungkan nama + publisher
+            |--------------------------------------------------------------------------
+            */
+
+            const words =
+                name
+                    .split(' ')
+                    .filter(Boolean);
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Inisial kata
+            |
+            | Mobile Legends
+            |        ↓
+            | ML
+            |
+            | Free Fire
+            |        ↓
+            | FF
+            |--------------------------------------------------------------------------
+            */
+
+            const initials =
+                words
+                    .map(function(word) {
+                        return word.charAt(0);
+                    })
+                    .join('');
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Compact text
+            |
+            | Mobile Legends
+            |        ↓
+            | mobilelegends
+            |--------------------------------------------------------------------------
+            */
+
+            const compactName =
+                words.join('');
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Semua alias pencarian
+            |--------------------------------------------------------------------------
+            */
+
+            const searchValues = [
+
+                name,
+
+                publisherName,
+
+                initials,
+
+                compactName
+
+            ];
+
+
+            return searchValues
+                .filter(Boolean)
+                .join(' ');
+        }
+
+
+        /* =========================================================
+        FILTER GAMES
+        ========================================================= */
+
+        function filterGames()
+        {
             const keyword =
-                searchInput.value
-                    .trim()
-                    .toLowerCase();
+                normalizeSearch(
+                    searchInput.value
+                );
 
 
             let visibleCount = 0;
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | LOOP GAME
-            |--------------------------------------------------------------------------
-            */
-
             gameItems.forEach(
-                function (item) {
+                function(item) {
 
                     const gameName =
                         item.dataset.gameName || '';
 
 
+                    const publisher =
+                        item.dataset.gamePublisher || '';
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Generate searchable text
+                    |--------------------------------------------------------------------------
+                    */
+
+                    const searchableText =
+                        buildSearchData(
+                            gameName,
+                            publisher
+                        );
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | QUERY
+                    |--------------------------------------------------------------------------
+                    */
+
                     const matched =
-                        gameName.includes(
+                        keyword === '' ||
+                        searchableText.includes(
                             keyword
                         );
 
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | SHOW / HIDE
+                    |--------------------------------------------------------------------------
+                    */
 
                     if (matched) {
 
@@ -350,7 +477,6 @@ document.addEventListener(
                     keyword === '';
 
             }
-
         }
 
 
