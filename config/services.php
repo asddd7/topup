@@ -35,4 +35,16 @@ return [
         ],
     ],
 
+    'moogold' => [
+
+    'base_url' =>
+        env('MOOGOLD_BASE_URL'),
+
+    'partner_id' =>
+        env('MOOGOLD_PARTNER_ID'),
+
+    'secret_key' =>
+        env('MOOGOLD_SECRET_KEY'),
+
+],
 ];

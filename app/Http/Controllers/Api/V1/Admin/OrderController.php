@@ -6,6 +6,7 @@ use App\Models\Item;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
+use App\Services\MooGold\MooGoldService;
 use App\Models\Order;
 use App\Services\TopUp\TopUpService;
 use Illuminate\Http\JsonResponse;
@@ -283,7 +284,8 @@ public function completeOrder(
 public function processOrder(
     Request $request,
     Order $order,
-    TopUpService $topUpService
+    TopUpService $topUpService,
+    MooGoldService $mooGold
 ): JsonResponse {
 
     if ($order->status !== 'Paid') {
@@ -296,10 +298,11 @@ public function processOrder(
     }
 
 
-    $result =
-        $topUpService->processProvider(
-            $order
-        );
+$result =
+    $topUpService->processProvider(
+        $order,
+        $mooGold
+    );
 
 
     if (!$result['success']) {

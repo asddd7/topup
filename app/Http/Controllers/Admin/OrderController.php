@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Admin\BaseAdminController;
+use App\Services\MooGold\MooGoldService;
 use App\Models\Discount;
 use App\Models\Item;
 use App\Models\Notification;
@@ -391,7 +392,8 @@ public function approve(Order $order)
  */
 public function confirm(
     Order $order,
-    TopUpService $topUpService
+    TopUpService $topUpService,
+    MooGoldService $mooGold
 ) {
 
     /*

@@ -18,6 +18,9 @@ class Item extends Model
         'image',
         'is_active',
         'top_seller',
+        'moogold_product_id',
+        'moogold_offer_id',
+        'moogold_type',       
     ];
 
     protected $casts = [

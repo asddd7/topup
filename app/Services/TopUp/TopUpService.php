@@ -7,6 +7,7 @@ use App\Models\Item;
 use App\Models\Notification;
 use App\Models\Order;
 use App\Models\User;
+use App\Services\MooGold\MooGoldService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -766,9 +767,12 @@ class TopUpService
      *
      * Itu tanggung jawab complete().
      */
-    public function processProvider(
-        Order $order
-    ): array {
+public function processProvider(
+    Order $order,
+    MooGoldService $mooGold
+): array {
+
+    try {
 
         /*
         |--------------------------------------------------------------------------
@@ -791,23 +795,123 @@ class TopUpService
         if (!$order->player_uid) {
 
             return [
-
-                'success' =>
-                    false,
-
-                'message' =>
-                    'Player UID tidak tersedia.',
+                'success' => false,
+                'message' => 'Player UID tidak tersedia.',
             ];
         }
 
 
         /*
         |--------------------------------------------------------------------------
-        | DETAIL
+        | ORDER DETAIL
         |--------------------------------------------------------------------------
         */
 
         if ($order->details->isEmpty()) {
+
+            return [
+                'success' => false,
+                'message' => 'Order tidak memiliki item.',
+            ];
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Untuk tahap awal
+        |--------------------------------------------------------------------------
+        |
+        | Satu order = satu produk MooGold.
+        |
+        */
+
+        $detail =
+            $order->details->first();
+
+        $item =
+            $detail->item;
+
+
+        if (!$item) {
+
+            return [
+                'success' => false,
+                'message' => 'Item order tidak ditemukan.',
+            ];
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | MOO GOLD CONFIG
+        |--------------------------------------------------------------------------
+        */
+
+        if (!$item->moogold_type) {
+
+            return [
+                'success' => false,
+                'message' =>
+                    'MooGold Type belum dikonfigurasi untuk item "' .
+                    $item->item_name .
+                    '".',
+            ];
+        }
+
+
+        if (!$item->moogold_offer_id) {
+
+            return [
+                'success' => false,
+                'message' =>
+                    'MooGold Offer ID belum dikonfigurasi untuk item "' .
+                    $item->item_name .
+                    '".',
+            ];
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CREATE ORDER MOO GOLD
+        |--------------------------------------------------------------------------
+        */
+
+        $result =
+            $mooGold->createOrder(
+
+                (string)
+                $item->moogold_type,
+
+                (string)
+                $item->moogold_offer_id,
+
+                (string)
+                $detail->qty,
+
+                (string)
+                $order->player_uid,
+
+                $order->server_id
+                    ? (string) $order->server_id
+                    : null,
+
+                (string)
+                $order->invoice_number
+
+            );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | MOO GOLD FAILED
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            !isset($result['status']) ||
+            $result['status'] !== true
+        ) {
 
             return [
 
@@ -815,69 +919,63 @@ class TopUpService
                     false,
 
                 'message' =>
-                    'Order tidak memiliki item.',
+                    $result['message']
+                    ??
+                    'MooGold gagal membuat order.',
+
+                'response' =>
+                    $result,
+
             ];
         }
 
 
         /*
         |--------------------------------------------------------------------------
-        | PAYLOAD PROVIDER
+        | MOO GOLD ORDER ID
         |--------------------------------------------------------------------------
         */
 
-        $payload = [
+        $mooGoldOrderId =
+            data_get(
+                $result,
+                'account_details.order_id'
+            );
 
-            'order_id' =>
-                $order->id,
 
-            'invoice' =>
-                $order->invoice_number,
+        if (!$mooGoldOrderId) {
 
-            'game_id' =>
-                $order->game_id,
+            return [
 
-            'game_name' =>
-                $order->game?->game_name,
+                'success' =>
+                    false,
 
-            'player_uid' =>
-                $order->player_uid,
+                'message' =>
+                    'MooGold berhasil merespons tetapi Order ID tidak ditemukan.',
 
-            'server_id' =>
-                $order->server_id,
+                'response' =>
+                    $result,
 
-            'nickname' =>
-                $order->nickname,
+            ];
+        }
 
-            'items' =>
-                $order->details
-                    ->map(function ($detail) {
 
-                        return [
+        /*
+        |--------------------------------------------------------------------------
+        | UPDATE LOCAL ORDER
+        |--------------------------------------------------------------------------
+        */
 
-                            'item_id' =>
-                                $detail->item_id,
+        $order->update([
 
-                            'item_name' =>
-                                $detail->item?->item_name,
+            'status' =>
+                'Processing',
 
-                            'qty' =>
-                                (int)
-                                $detail->qty,
+            'moogold_order_id' =>
+                (string)
+                $mooGoldOrderId,
 
-                            'price' =>
-                                (float)
-                                $detail->price,
-
-                            'subtotal' =>
-                                (float)
-                                $detail->subtotal,
-                        ];
-
-                    })
-                    ->values()
-                    ->toArray(),
-        ];
+        ]);
 
 
         /*
@@ -886,35 +984,66 @@ class TopUpService
         |--------------------------------------------------------------------------
         */
 
-        Log::info(
-            'TopUp provider request',
+        $order->paymentLogs()->create([
+
+            'status' =>
+                'Paid',
+
+            'message' =>
+                'Order berhasil dikirim ke MooGold. ' .
+                'MooGold Order ID: ' .
+                $mooGoldOrderId,
+
+            'logged_at' =>
+                now(),
+
+        ]);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | SUCCESS
+        |--------------------------------------------------------------------------
+        */
+
+        return [
+
+            'success' =>
+                true,
+
+            'message' =>
+                'Order berhasil dikirim ke MooGold dan sedang diproses.',
+
+            'order' =>
+                $order->fresh(),
+
+            'moogold_order_id' =>
+                $mooGoldOrderId,
+
+        ];
+
+
+    } catch (\Throwable $e) {
+
+        Log::error(
+
+            'MooGold process provider failed',
+
             [
+
                 'order_id' =>
                     $order->id,
 
                 'invoice' =>
                     $order->invoice_number,
 
-                'game_id' =>
-                    $order->game_id,
+                'error' =>
+                    $e->getMessage(),
 
-                'player_uid' =>
-                    $order->player_uid,
-
-                'server_id' =>
-                    $order->server_id,
-
-                'items' =>
-                    $payload['items'],
             ]
+
         );
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | PROVIDER BELUM TERHUBUNG
-        |--------------------------------------------------------------------------
-        */
 
         return [
 
@@ -922,10 +1051,10 @@ class TopUpService
                 false,
 
             'message' =>
-                'Provider top-up belum dikonfigurasi.',
+                'Gagal memproses order ke MooGold: ' .
+                $e->getMessage(),
 
-            'payload' =>
-                $payload,
         ];
     }
+}
 }
