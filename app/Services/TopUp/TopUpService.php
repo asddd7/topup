@@ -772,210 +772,161 @@ public function processProvider(
     MooGoldService $mooGold
 ): array {
 
+    /*
+    |--------------------------------------------------------------------------
+    | LOAD ORDER
+    |--------------------------------------------------------------------------
+    */
+
+    $order->load([
+        'game',
+        'details.item',
+    ]);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PLAYER UID
+    |--------------------------------------------------------------------------
+    */
+
+    if (!$order->player_uid) {
+
+        return [
+            'success' => false,
+            'message' =>
+                'Player UID tidak tersedia.',
+        ];
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | DETAIL
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        $order->details->isEmpty()
+    ) {
+
+        return [
+            'success' => false,
+            'message' =>
+                'Order tidak memiliki item.',
+        ];
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SATU ORDER MOO GOLD PER ITEM
+    |--------------------------------------------------------------------------
+    */
+
+    $providerOrders = [];
+
+
     try {
 
-        /*
-        |--------------------------------------------------------------------------
-        | LOAD ORDER
-        |--------------------------------------------------------------------------
-        */
-
-        $order->load([
-            'game',
-            'details.item',
-        ]);
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | PLAYER UID
-        |--------------------------------------------------------------------------
-        */
-
-        if (!$order->player_uid) {
-
-            return [
-                'success' => false,
-                'message' => 'Player UID tidak tersedia.',
-            ];
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | ORDER DETAIL
-        |--------------------------------------------------------------------------
-        */
-
-        if ($order->details->isEmpty()) {
-
-            return [
-                'success' => false,
-                'message' => 'Order tidak memiliki item.',
-            ];
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Untuk tahap awal
-        |--------------------------------------------------------------------------
-        |
-        | Satu order = satu produk MooGold.
-        |
-        */
-
-        $detail =
-            $order->details->first();
-
-        $item =
-            $detail->item;
-
-
-        if (!$item) {
-
-            return [
-                'success' => false,
-                'message' => 'Item order tidak ditemukan.',
-            ];
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | MOO GOLD CONFIG
-        |--------------------------------------------------------------------------
-        */
-
-        if (!$item->moogold_type) {
-
-            return [
-                'success' => false,
-                'message' =>
-                    'MooGold Type belum dikonfigurasi untuk item "' .
-                    $item->item_name .
-                    '".',
-            ];
-        }
-
-
-        if (!$item->moogold_offer_id) {
-
-            return [
-                'success' => false,
-                'message' =>
-                    'MooGold Offer ID belum dikonfigurasi untuk item "' .
-                    $item->item_name .
-                    '".',
-            ];
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | CREATE ORDER MOO GOLD
-        |--------------------------------------------------------------------------
-        */
-
-        $result =
-            $mooGold->createOrder(
-
-                (string)
-                $item->moogold_type,
-
-                (string)
-                $item->moogold_offer_id,
-
-                (string)
-                $detail->qty,
-
-                (string)
-                $order->player_uid,
-
-                $order->server_id
-                    ? (string) $order->server_id
-                    : null,
-
-                (string)
-                $order->invoice_number
-
-            );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | MOO GOLD FAILED
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            !isset($result['status']) ||
-            $result['status'] !== true
+        foreach (
+            $order->details as $detail
         ) {
 
-            return [
+            $item =
+                $detail->item;
 
-                'success' =>
-                    false,
 
-                'message' =>
-                    $result['message']
-                    ??
-                    'MooGold gagal membuat order.',
+            /*
+            |--------------------------------------------------------------------------
+            | MAPPING MOO GOLD
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                !$item->moogold_product_id ||
+                !$item->moogold_offer_id
+            ) {
+
+                throw new \RuntimeException(
+
+                    'Item "' .
+                    $item->item_name .
+                    '" belum memiliki mapping MooGold.'
+
+                );
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | TYPE
+            |--------------------------------------------------------------------------
+            */
+
+            $type =
+                (int) (
+                    $item->moogold_type
+                    ?? 1
+                );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | PARTNER ORDER ID
+            |--------------------------------------------------------------------------
+            |
+            | Harus unik.
+            |--------------------------------------------------------------------------
+            */
+
+            $externalId =
+                $order->invoice_number .
+                '-' .
+                $detail->id;
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | CREATE ORDER
+            |--------------------------------------------------------------------------
+            */
+
+            $response =
+                $mooGold->createOrder(
+
+                    $type,
+
+                    $externalId,
+
+                    (string)
+                    $item->moogold_offer_id,
+
+                    (int)
+                    $detail->qty
+
+                );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | SIMPAN RESPONSE
+            |--------------------------------------------------------------------------
+            */
+
+            $providerOrders[] = [
+
+                'item_id' =>
+                    $item->id,
+
+                'item_name' =>
+                    $item->item_name,
 
                 'response' =>
-                    $result,
+                    $response,
 
             ];
         }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | MOO GOLD ORDER ID
-        |--------------------------------------------------------------------------
-        */
-
-        $mooGoldOrderId =
-            data_get(
-                $result,
-                'account_details.order_id'
-            );
-
-
-        if (!$mooGoldOrderId) {
-
-            return [
-
-                'success' =>
-                    false,
-
-                'message' =>
-                    'MooGold berhasil merespons tetapi Order ID tidak ditemukan.',
-
-                'response' =>
-                    $result,
-
-            ];
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | UPDATE LOCAL ORDER
-        |--------------------------------------------------------------------------
-        */
-
-        $order->update([
-
-            'status' =>
-                'Processing',
-
-            'moogold_order_id' =>
-                (string)
-                $mooGoldOrderId,
-
-        ]);
 
 
         /*
@@ -984,20 +935,19 @@ public function processProvider(
         |--------------------------------------------------------------------------
         */
 
-        $order->paymentLogs()->create([
+        \Log::info(
+            'MooGold order created',
+            [
+                'order_id' =>
+                    $order->id,
 
-            'status' =>
-                'Paid',
+                'invoice' =>
+                    $order->invoice_number,
 
-            'message' =>
-                'Order berhasil dikirim ke MooGold. ' .
-                'MooGold Order ID: ' .
-                $mooGoldOrderId,
-
-            'logged_at' =>
-                now(),
-
-        ]);
+                'provider_orders' =>
+                    $providerOrders,
+            ]
+        );
 
 
         /*
@@ -1012,25 +962,19 @@ public function processProvider(
                 true,
 
             'message' =>
-                'Order berhasil dikirim ke MooGold dan sedang diproses.',
+                'Order berhasil dikirim ke MooGold.',
 
-            'order' =>
-                $order->fresh(),
-
-            'moogold_order_id' =>
-                $mooGoldOrderId,
+            'provider_orders' =>
+                $providerOrders,
 
         ];
 
 
     } catch (\Throwable $e) {
 
-        Log::error(
-
-            'MooGold process provider failed',
-
+        \Log::error(
+            'MooGold order failed',
             [
-
                 'order_id' =>
                     $order->id,
 
@@ -1040,8 +984,9 @@ public function processProvider(
                 'error' =>
                     $e->getMessage(),
 
+                'trace' =>
+                    $e->getTraceAsString(),
             ]
-
         );
 
 
@@ -1051,7 +996,7 @@ public function processProvider(
                 false,
 
             'message' =>
-                'Gagal memproses order ke MooGold: ' .
+                'MooGold: ' .
                 $e->getMessage(),
 
         ];

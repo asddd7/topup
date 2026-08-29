@@ -51,7 +51,7 @@ protected function request(
 
     /*
     |--------------------------------------------------------------------------
-    | PAYLOAD
+    | REQUEST BODY
     |--------------------------------------------------------------------------
     */
 
@@ -60,137 +60,96 @@ protected function request(
         ...$data,
     ];
 
-    $payload = json_encode(
+    $json = json_encode(
         $body,
         JSON_UNESCAPED_SLASHES
     );
 
-    if ($payload === false) {
-
+    if ($json === false) {
         throw new RuntimeException(
-            'Gagal membuat payload MooGold.'
+            'Gagal membuat JSON request MooGold.'
         );
     }
 
 
     /*
     |--------------------------------------------------------------------------
-    | AUTH SIGNATURE
+    | SIGNATURE
     |--------------------------------------------------------------------------
+    |
+    | MooGold:
+    |
+    | HMAC SHA256
+    | body + timestamp + path
+    |
     */
-
-    $stringToSign =
-        $payload .
-        $timestamp .
-        $path;
 
     $auth = hash_hmac(
-        'SHA256',
-        $stringToSign,
+        'sha256',
+        $json . $timestamp . $path,
         $this->secretKey
     );
 
 
     /*
     |--------------------------------------------------------------------------
-    | BASIC AUTH
+    | REQUEST
     |--------------------------------------------------------------------------
     */
 
-    $basicAuth = base64_encode(
-        $this->partnerId .
-        ':' .
+$response = Http::timeout(
+    $this->timeout
+)
+    ->withBasicAuth(
+        $this->partnerId,
         $this->secretKey
+    )
+    ->withHeaders([
+
+        'timestamp' => $timestamp,
+
+        'auth' => $auth,
+
+        'Accept' => 'application/json',
+
+    ])
+    ->withBody(
+        $json,
+        'application/json'
+    )
+    ->post(
+        $this->baseUrl . '/' . $path
     );
 
 
     /*
     |--------------------------------------------------------------------------
-    | URL
-    |--------------------------------------------------------------------------
-    */
-
-    $url =
-        $this->baseUrl .
-        '/' .
-        ltrim($path, '/');
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | DEBUG
+    | DEBUG LOG
     |--------------------------------------------------------------------------
     */
 
     Log::info(
-        'MooGold DEBUG request',
+        'MooGold API request',
         [
             'url' =>
-                $url,
+                $this->baseUrl . '/' . $path,
 
             'path' =>
                 $path,
 
-            'payload' =>
-                $payload,
+            'status' =>
+                $response->status(),
 
-            'timestamp' =>
-                $timestamp,
-
-            'partner_id_length' =>
-                strlen($this->partnerId),
-
-            'secret_key_length' =>
-                strlen($this->secretKey),
-
-            'auth_length' =>
-                strlen($auth),
-
-            'basic_auth_length' =>
-                strlen($basicAuth),
+            'response' =>
+                $response->body(),
         ]
     );
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | HTTP REQUEST
-    |--------------------------------------------------------------------------
-    */
+if ($response->failed()) {
 
-    $response = Http::timeout(
-        $this->timeout
-    )
-        ->withHeaders([
-
-            'timestamp' =>
-                (string) $timestamp,
-
-            'auth' =>
-                $auth,
-
-            'Authorization' =>
-                'Basic ' . $basicAuth,
-
-            'Content-Type' =>
-                'application/json',
-
-        ])
-        ->withBody(
-            $payload,
-            'application/json'
-        )
-        ->post($url);
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | LOG RESPONSE
-    |--------------------------------------------------------------------------
-    */
-
-    Log::info(
-        'MooGold API response',
+    Log::error(
+        'MooGold API HTTP error',
         [
             'path' =>
                 $path,
@@ -203,22 +162,13 @@ protected function request(
         ]
     );
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | ERROR
-    |--------------------------------------------------------------------------
-    */
-
-    if ($response->failed()) {
-
-        throw new RuntimeException(
-            'MooGold API error HTTP ' .
-            $response->status() .
-            ': ' .
-            $response->body()
-        );
-    }
+    throw new RuntimeException(
+        'MooGold API error HTTP ' .
+        $response->status() .
+        ': ' .
+        $response->body()
+    );
+}
 
 
     /*
@@ -228,6 +178,7 @@ protected function request(
     */
 
     $result = $response->json();
+
 
     if (!is_array($result)) {
 
@@ -240,6 +191,7 @@ protected function request(
     return $result;
 }
 
+
     /**
      * =========================================================
      * CHECK BALANCE
@@ -251,6 +203,18 @@ protected function request(
             'user/balance'
         );
     }
+
+/**
+ * =========================================================
+ * CATEGORY LIST
+ * =========================================================
+ */
+public function categories(): array
+{
+    return $this->request(
+        'product/list_category'
+    );
+}
 
 
     /**
@@ -289,54 +253,95 @@ protected function request(
             ]
         );
     }
+/**
+ * =========================================================
+ * SERVER LIST
+ * =========================================================
+ */
+public function serverList(
+    int $productId
+): array {
 
+    return $this->request(
+        'product/server_list',
+        [
+            'product_id' => $productId,
+        ]
+    );
+}
 
 
 /**
  * =========================================================
- * CREATE ORDER
+ * VALIDATE PRODUCT
  * =========================================================
  */
+public function validateProduct(
+    int $productId,
+    array $data
+): array {
+
+    return $this->request(
+        'product/validate',
+        [
+            'data' => [
+                'product-id' => $productId,
+                ...$data,
+            ],
+        ]
+    );
+}
+
 public function createOrder(
-    string $category,
-    string $productId,
-    string $quantity,
+    int $type,
+    string $externalId,
+    string $offerId,
+    int $quantity,
     string $userId,
-    ?string $serverId,
-    string $partnerOrderId
+    ?string $server = null
 ): array {
 
     $data = [
 
         'category' =>
-            $category,
+            (string) $type,
 
         'product-id' =>
-            $productId,
+            (string) $offerId,
 
         'quantity' =>
-            $quantity,
+            (string) $quantity,
 
         'User ID' =>
             $userId,
 
-        'Server' =>
-            $serverId ?? '',
-
     ];
 
 
+    if (
+        $server !== null &&
+        $server !== ''
+    ) {
+
+        $data['Server'] =
+            $server;
+    }
+
+
     return $this->request(
+
         'order/create_order',
+
         [
 
             'data' =>
                 $data,
 
             'partnerOrderId' =>
-                $partnerOrderId,
+                $externalId,
 
         ]
+
     );
 }
 
@@ -358,4 +363,6 @@ public function createOrder(
             ]
         );
     }
+
+
 }

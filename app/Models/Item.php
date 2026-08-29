@@ -8,6 +8,7 @@ use App\Models\Game;
 class Item extends Model
 {
     protected $fillable = [
+
         'game_id',
         'category_id',
         'item_name',
@@ -17,19 +18,37 @@ class Item extends Model
         'description',
         'image',
         'is_active',
-        'top_seller',
+
+        // MooGold
+        'moogold_category_id',
         'moogold_product_id',
-        'moogold_offer_id',
-        'moogold_type',       
+        'moogold_variation_id',
+        'moogold_price',
+        'moogold_stock_status',
+        'moogold_synced_at',
+
     ];
 
-    protected $casts = [
+protected function casts(): array
+{
+    return [
+
         'qty' => 'integer',
-        'price' => 'integer',
+
+        'price' => 'decimal:2',
+
         'stock' => 'integer',
+
+        'moogold_price' => 'decimal:2',
+
         'is_active' => 'boolean',
+
         'top_seller' => 'boolean',
+
+        'moogold_synced_at' => 'datetime',
+
     ];
+}
 
     public function game()
     {
