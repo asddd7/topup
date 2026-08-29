@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\Admin\AuthController;
 use App\Http\Controllers\Api\V1\Admin\CategoryController;
 use App\Http\Controllers\Api\V1\Admin\ItemController;
 use App\Http\Controllers\Api\V1\Admin\OrderController;
+use App\Http\Controllers\Api\V1\Admin\MooGoldProductMappingController;
 
 
 Route::prefix('admin')->group(function () {
@@ -19,7 +20,37 @@ Route::prefix('admin')->group(function () {
     | MOO GOLD CONNECTION TEST
     |--------------------------------------------------------------------------
     */
+Route::prefix('moogold/product-mapping')
+    ->controller(MooGoldProductMappingController::class)
+    ->group(function () {
 
+        Route::get('/', 'index');
+
+        Route::post(
+            '/sync-category',
+            'syncCategory'
+        );
+
+        Route::get(
+            '/games',
+            'games'
+        );
+
+        Route::get(
+            '/categories',
+            'categories'
+        );
+
+        Route::get(
+            '/{mapping}',
+            'show'
+        );
+
+        Route::put(
+            '/{mapping}',
+            'update'
+        );
+    });
     Route::get('/moogold/config-test', function () {
 
         return response()->json([

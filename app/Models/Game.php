@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 
 class Game extends Model
@@ -49,6 +50,14 @@ public function discounts()
 {
     return $this->hasMany(
         Discount::class,
+        'game_id'
+    );
+}
+
+public function moogoldProductMappings(): HasMany
+{
+    return $this->hasMany(
+        MooGoldProductMapping::class,
         'game_id'
     );
 }

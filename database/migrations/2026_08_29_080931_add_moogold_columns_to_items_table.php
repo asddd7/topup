@@ -10,6 +10,14 @@ return new class extends Migration
     {
         Schema::table('items', function (Blueprint $table) {
 
+            $table->unsignedBigInteger('moogold_category_id')
+                ->nullable()
+                ->after('id');
+
+            $table->unsignedBigInteger('moogold_product_id')
+                ->nullable()
+                ->after('moogold_category_id');
+
             $table->unsignedBigInteger('moogold_variation_id')
                 ->nullable()
                 ->after('moogold_product_id');

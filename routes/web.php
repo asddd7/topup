@@ -202,7 +202,16 @@ Route::middleware([
 | DASHBOARD
 |--------------------------------------------------------------------------
 */
-
+        Route::get(
+            '/moogold/product-mapping',
+            function () {
+                return view(
+                    'admin.moogold.product-mapping.index'
+                );
+            }
+        )->name(
+            'admin.moogold.product-mapping'
+        );
 Route::get(
     '/dashboard',
     [DashboardController::class,'index']
