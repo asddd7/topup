@@ -238,6 +238,13 @@ Route::prefix('moogold/product-mapping')
             'update'
         )->name('moogold.product-mapping.update');
 
+        Route::post(
+            '/sync-category',
+            'syncCategory'
+        )->name(
+            'moogold.product-mapping.sync'
+        );
+
     });
 Route::get(
     '/dashboard',

@@ -448,6 +448,7 @@ document.addEventListener('DOMContentLoaded', function () {
         data: @json(route('admin.moogold.product-mapping.data')),
         games: @json(route('admin.moogold.product-mapping.games')),
         categories: @json(route('admin.moogold.product-mapping.categories')),
+        sync: @json(route('admin.moogold.product-mapping.sync')),
         update: @json(url('/admin/moogold/product-mapping')),
     };
 
@@ -2052,32 +2053,37 @@ const response =
 
             try {
 
-                const response =
-                    await fetch(
-                        `${API_BASE}/sync-category`,
-                        {
-                            method: 'POST',
+            const response =
+                await fetch(
+                    URLs.sync,
+                    {
+                        method: 'POST',
 
-                            headers: {
+                        credentials: 'same-origin',
 
-                                'Content-Type':
-                                    'application/json',
+                        headers: {
 
-                                'Accept':
-                                    'application/json',
+                            'Content-Type':
+                                'application/json',
 
-                                'X-CSRF-TOKEN':
-                                    '{{ csrf_token() }}'
-                            },
+                            'Accept':
+                                'application/json',
 
-                            body: JSON.stringify({
+                            'X-Requested-With':
+                                'XMLHttpRequest',
 
-                                category_id:
-                                    categoryId
+                            'X-CSRF-TOKEN':
+                                '{{ csrf_token() }}'
+                        },
 
-                            })
-                        }
-                    );
+                        body: JSON.stringify({
+
+                            category_id:
+                                categoryId
+
+                        })
+                    }
+                );
 
 
                 const result =
