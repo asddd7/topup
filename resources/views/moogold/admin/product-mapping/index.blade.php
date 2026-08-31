@@ -445,11 +445,11 @@ document.addEventListener('DOMContentLoaded', function () {
     */
 
     const URLs = {
-        data: @json(route('admin.moogold.product-mapping.data')),
-        games: @json(route('admin.moogold.product-mapping.games')),
-        categories: @json(route('admin.moogold.product-mapping.categories')),
-        sync: @json(route('admin.moogold.product-mapping.sync')),
-        update: @json(url('/admin/moogold/product-mapping')),
+        data: @json(route('admin.moogold.product-mapping.data', [], false)),
+        games: @json(route('admin.moogold.product-mapping.games', [], false)),
+        categories: @json(route('admin.moogold.product-mapping.categories', [], false)),
+        sync: @json(route('admin.moogold.product-mapping.sync', [], false)),
+        update: @json(url('/admin/moogold/product-mapping', [], false)),
     };
 
     console.log('URLs:', URLs);
@@ -2053,37 +2053,30 @@ const response =
 
             try {
 
-            const response =
-                await fetch(
-                    URLs.sync,
-                    {
-                        method: 'POST',
+console.log('SYNC URL:', URLs.sync);
+console.log('CURRENT URL:', window.location.href);
+console.log('CSRF:', '{{ csrf_token() }}');
 
-                        credentials: 'same-origin',
+const response =
+    await fetch(
+        URLs.sync,
+        {
+            method: 'POST',
 
-                        headers: {
+            credentials: 'same-origin',
 
-                            'Content-Type':
-                                'application/json',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
 
-                            'Accept':
-                                'application/json',
-
-                            'X-Requested-With':
-                                'XMLHttpRequest',
-
-                            'X-CSRF-TOKEN':
-                                '{{ csrf_token() }}'
-                        },
-
-                        body: JSON.stringify({
-
-                            category_id:
-                                categoryId
-
-                        })
-                    }
-                );
+            body: JSON.stringify({
+                category_id: categoryId
+            })
+        }
+    );
 
 
                 const result =
