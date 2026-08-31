@@ -35,7 +35,10 @@ protected $casts = [
 
 public function items()
 {
-    return $this->hasMany(Item::class, 'game_id');
+    return $this->hasMany(
+        Item::class,
+        'game_id'
+    );
 }
 
 public function banners()

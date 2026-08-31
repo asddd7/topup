@@ -734,7 +734,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                         selected
                                     >
                                         ${escapeHtml(
-                                            mapping.category.name
+                                            mapping.category.category_name
                                         )}
                                     </option>
                                 `
@@ -847,9 +847,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         <option
                             value="${category.id}"
                         >
-                            ${escapeHtml(
-                                category.name
-                            )}
+                        ${escapeHtml(
+                            category.category_name
+                        )}
                         </option>
                     `).join('')
                 }

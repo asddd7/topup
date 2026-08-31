@@ -29,34 +29,40 @@ class Item extends Model
 
     ];
 
-protected function casts(): array
-{
-    return [
+    protected function casts(): array
+    {
+        return [
 
-        'qty' => 'integer',
+            'qty' => 'integer',
 
-        'price' => 'decimal:2',
+            'price' => 'decimal:2',
 
-        'stock' => 'integer',
+            'stock' => 'integer',
 
-        'moogold_price' => 'decimal:2',
+            'moogold_price' => 'decimal:2',
 
-        'is_active' => 'boolean',
+            'is_active' => 'boolean',
 
-        'top_seller' => 'boolean',
+            'top_seller' => 'boolean',
 
-        'moogold_synced_at' => 'datetime',
+            'moogold_synced_at' => 'datetime',
 
-    ];
-}
+        ];
+    }
 
     public function game()
     {
-        return $this->belongsTo(Game::class, 'game_id');
+        return $this->belongsTo(
+            Game::class,
+            'game_id'
+        );
     }
 
     public function category()
     {
-        return $this->belongsTo(ItemCategory::class, 'category_id');
+        return $this->belongsTo(
+            ItemCategory::class,
+            'category_id'
+        );
     }
 }
