@@ -440,21 +440,37 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /*
     |--------------------------------------------------------------------------
-    | API
+    | API URLs
     |--------------------------------------------------------------------------
     */
 
-    const URLs = {
-        data: @json(route('admin.moogold.product-mapping.data')),
-        games: @json(route('admin.moogold.product-mapping.games')),
-        categories: @json(route('admin.moogold.product-mapping.categories')),
-        update: @json(url('/admin/moogold/product-mapping')),
-    };
+const URLs = {
 
-    console.log('URLs:', URLs);
-    console.log('Games URL:', URLs.games);
-    console.log('Data URL:', URLs.data);
-    console.log('Categories URL:', URLs.categories);
+    data: @json(
+        route('admin.moogold.product-mapping.data')
+    ),
+
+    games: @json(
+        route('admin.moogold.product-mapping.games')
+    ),
+
+    categories: @json(
+        route('admin.moogold.product-mapping.categories')
+    ),
+
+    update: @json(
+        url('/admin/moogold/product-mapping')
+    ),
+
+    sync: @json(
+        route('admin.moogold.product-mapping.sync-category')
+    ),
+
+    syncItems: @json(
+        url('/admin/moogold/product-mapping')
+    ),
+
+};
 
 
     /*
@@ -465,16 +481,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let games = [];
 
-    /*
-     * Cache category berdasarkan game_id.
-     *
-     * Contoh:
-     *
-     * categoryCache = {
-     *     1: [...],
-     *     2: [...]
-     * }
-     */
     const categoryCache = {};
 
     let currentPage = 1;
@@ -489,40 +495,75 @@ document.addEventListener('DOMContentLoaded', function () {
     */
 
     const categoryInput =
-        document.getElementById('moogoldCategoryId');
+        document.getElementById(
+            'moogoldCategoryId'
+        );
+
 
     const searchInput =
-        document.getElementById('searchProduct');
+        document.getElementById(
+            'searchProduct'
+        );
+
 
     const mappingFilter =
-        document.getElementById('mappingFilter');
+        document.getElementById(
+            'mappingFilter'
+        );
+
 
     const mappingTable =
-        document.getElementById('mappingTable');
+        document.getElementById(
+            'mappingTable'
+        );
+
 
     const totalProducts =
-        document.getElementById('totalProducts');
+        document.getElementById(
+            'totalProducts'
+        );
+
 
     const mappedProducts =
-        document.getElementById('mappedProducts');
+        document.getElementById(
+            'mappedProducts'
+        );
+
 
     const unmappedProducts =
-        document.getElementById('unmappedProducts');
+        document.getElementById(
+            'unmappedProducts'
+        );
+
 
     const pagination =
-        document.getElementById('pagination');
+        document.getElementById(
+            'pagination'
+        );
+
 
     const paginationInfo =
-        document.getElementById('paginationInfo');
+        document.getElementById(
+            'paginationInfo'
+        );
+
 
     const pageInfo =
-        document.getElementById('pageInfo');
+        document.getElementById(
+            'pageInfo'
+        );
+
 
     const btnRefresh =
-        document.getElementById('btnRefresh');
+        document.getElementById(
+            'btnRefresh'
+        );
+
 
     const btnSync =
-        document.getElementById('btnSync');
+        document.getElementById(
+            'btnSync'
+        );
 
 
     /*
@@ -1119,7 +1160,215 @@ const response =
         );
     }
 
+async function syncMappingItems(mapping)
+{
+    const confirmation = await Swal.fire({
 
+        icon: 'question',
+
+        title: 'Sync Variation MooGold?',
+
+        html: `
+            <div class="text-start">
+
+                <p>Product:</p>
+
+                <strong>
+                    ${escapeHtml(mapping.product_name)}
+                </strong>
+
+                <br><br>
+
+                Semua variation dari MooGold
+                akan dibuat atau diperbarui
+                sebagai Item lokal.
+
+            </div>
+        `,
+
+        showCancelButton: true,
+
+        confirmButtonText: 'Ya, Sync Item',
+
+        cancelButtonText: 'Batal'
+
+    });
+
+
+    if (!confirmation.isConfirmed) {
+        return;
+    }
+
+
+    const itemSyncButton =
+        document.getElementById(
+            `sync-${mapping.id}`
+        );
+
+
+    if (!itemSyncButton) {
+        return;
+    }
+
+
+    const originalHtml =
+        itemSyncButton.innerHTML;
+
+
+    itemSyncButton.disabled = true;
+
+
+    itemSyncButton.innerHTML = `
+        <span
+            class="spinner-border spinner-border-sm"
+        ></span>
+    `;
+
+
+    try {
+
+        const response = await fetch(
+
+            `${URLs.update}/${mapping.id}/sync-items`,
+
+            {
+                method: 'POST',
+
+                credentials: 'same-origin',
+
+                headers: {
+
+                    'Accept':
+                        'application/json',
+
+                    'X-Requested-With':
+                        'XMLHttpRequest',
+
+                    'X-CSRF-TOKEN':
+                        '{{ csrf_token() }}'
+
+                }
+            }
+
+        );
+
+
+const responseText =
+    await response.text();
+
+
+let result = null;
+
+
+try {
+
+    result =
+        JSON.parse(
+            responseText
+        );
+
+} catch (error) {
+
+    console.error(
+        'Sync Items Non-JSON Response:',
+        responseText
+    );
+
+    throw new Error(
+        `Server mengembalikan response non-JSON. HTTP ${response.status}. ` +
+        'Buka Console Browser untuk melihat detail error.'
+    );
+
+}
+
+
+if (
+    !response.ok ||
+    !result.success
+) {
+
+    throw new Error(
+
+        result.message ||
+        'Gagal sync Item.'
+
+    );
+
+}
+
+
+        const data =
+            result.data || {};
+
+
+        await Swal.fire({
+
+            icon: 'success',
+
+            title: 'Sync Item Berhasil',
+
+            html: `
+                <div class="text-start">
+
+                    <div class="mb-2">
+                        <strong>Total Variation:</strong>
+                        ${Number(
+                            data.total_variations || 0
+                        )}
+                    </div>
+
+                    <div class="mb-2 text-success">
+                        <strong>Created:</strong>
+                        ${Number(
+                            data.created || 0
+                        )}
+                    </div>
+
+                    <div>
+                        <strong>Updated:</strong>
+                        ${Number(
+                            data.updated || 0
+                        )}
+                    </div>
+
+                </div>
+            `
+
+        });
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Refresh mapping
+        |--------------------------------------------------------------------------
+        */
+
+        await loadMappings(
+            currentPage
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            'syncMappingItems:',
+            error
+        );
+
+        showError(
+            error.message
+        );
+
+
+    } finally {
+
+        itemSyncButton.disabled =
+            false;
+
+        itemSyncButton.innerHTML =
+            originalHtml;
+    }
+}
     /*
     |--------------------------------------------------------------------------
     | Render Row
@@ -1297,16 +1546,41 @@ const response =
 
                 <td class="text-center">
 
-                    <button
-                        type="button"
-                        id="save-${mapping.id}"
-                        class="btn btn-sm btn-primary"
-                        title="Simpan Mapping"
+                    <div
+                        class="btn-group btn-group-sm"
+                        role="group"
                     >
 
-                        <i class="fas fa-save"></i>
+                        <button
+                            type="button"
+                            id="save-${mapping.id}"
+                            class="btn btn-primary"
+                            title="Simpan Mapping"
+                        >
 
-                    </button>
+                            <i class="fas fa-save"></i>
+
+                        </button>
+
+
+                        <button
+                            type="button"
+                            id="sync-${mapping.id}"
+                            class="btn btn-success"
+                            title="Sync Variation ke Item"
+                            ${
+                                !mapping.game_id ||
+                                !mapping.category_id
+                                    ? 'disabled'
+                                    : ''
+                            }
+                        >
+
+                            <i class="fas fa-sync-alt"></i>
+
+                        </button>
+
+                    </div>
 
                 </td>
 
@@ -1343,6 +1617,26 @@ const response =
                 document.getElementById(
                     `save-${mapping.id}`
                 );
+
+
+             const syncButton =
+                document.getElementById(
+                    `sync-${mapping.id}`
+                );
+
+            if (syncButton) {
+
+                    syncButton.addEventListener(
+                        'click',
+                        function ()
+                        {
+                            syncMappingItems(
+                                mapping
+                            );
+                        }
+                    );
+
+                }                
 
 
             /*
@@ -2052,32 +2346,37 @@ const response =
 
             try {
 
-                const response =
-                    await fetch(
-                        `${API_BASE}/sync-category`,
-                        {
-                            method: 'POST',
+            const response =
+                await fetch(
+                    URLs.sync,
+                    {
+                        method: 'POST',
 
-                            headers: {
+                        credentials: 'same-origin',
 
-                                'Content-Type':
-                                    'application/json',
+                        headers: {
 
-                                'Accept':
-                                    'application/json',
+                            'Content-Type':
+                                'application/json',
 
-                                'X-CSRF-TOKEN':
-                                    '{{ csrf_token() }}'
-                            },
+                            'Accept':
+                                'application/json',
 
-                            body: JSON.stringify({
+                            'X-Requested-With':
+                                'XMLHttpRequest',
 
-                                category_id:
-                                    categoryId
+                            'X-CSRF-TOKEN':
+                                '{{ csrf_token() }}'
+                        },
 
-                            })
-                        }
-                    );
+                        body: JSON.stringify({
+
+                            category_id:
+                                categoryId
+
+                        })
+                    }
+                );
 
 
                 const result =

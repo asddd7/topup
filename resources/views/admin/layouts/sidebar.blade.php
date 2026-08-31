@@ -45,8 +45,8 @@ style="width:260px;">
 
         {{-- MOO GOLD PRODUCT MAPPING --}}
 
-        <a href="{{ route('admin.moogold.product-mapping') }}"
-           class="list-group-item">
+        <a href="{{ route('admin.moogold.product-mapping.index') }}"
+        class="list-group-item">
 
             <i class="fa-solid fa-link me-2"></i>
 

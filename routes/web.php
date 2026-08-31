@@ -203,42 +203,54 @@ Route::middleware([
 | DASHBOARD
 |--------------------------------------------------------------------------
 */
-/*
-|--------------------------------------------------------------------------
-| MOO GOLD PRODUCT MAPPING
-|--------------------------------------------------------------------------
-*/
-
 Route::prefix('moogold/product-mapping')
-    ->controller(MooGoldProductMappingController::class)
+    ->name('moogold.product-mapping.')
     ->group(function () {
 
         Route::get(
             '/',
-            'index'
-        )->name('moogold.product-mapping');
+            [MooGoldProductMappingController::class, 'index']
+        )->name('index');
+
 
         Route::get(
             '/data',
-            'data'
-        )->name('moogold.product-mapping.data');
+            [MooGoldProductMappingController::class, 'data']
+        )->name('data');
+
 
         Route::get(
             '/games',
-            'games'
-        )->name('moogold.product-mapping.games');
+            [MooGoldProductMappingController::class, 'games']
+        )->name('games');
+
 
         Route::get(
             '/categories',
-            'categories'
-        )->name('moogold.product-mapping.categories');
+            [MooGoldProductMappingController::class, 'categories']
+        )->name('categories');
+
+
+        Route::post(
+            '/sync-category',
+            [MooGoldProductMappingController::class, 'syncCategory']
+        )->name('sync-category');
+
 
         Route::put(
             '/{mapping}',
-            'update'
-        )->name('moogold.product-mapping.update');
+            [MooGoldProductMappingController::class, 'update']
+        )->name('update');
+
+
+        Route::post(
+            '/{mapping}/sync-items',
+            [MooGoldProductMappingController::class, 'syncItems']
+        )->name('sync-items');
 
     });
+
+    
 Route::get(
     '/dashboard',
     [DashboardController::class,'index']
