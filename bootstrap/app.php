@@ -27,7 +27,21 @@ return Application::configure(basePath: dirname(__DIR__))
             },
     )
     ->withMiddleware(function ($middleware) {
-                
+
+        /*
+        |--------------------------------------------------------------------------
+        | Sanctum SPA / Stateful Authentication
+        |--------------------------------------------------------------------------
+        */
+
+        $middleware->statefulApi();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Custom Middleware Alias
+        |--------------------------------------------------------------------------
+        */
+
         $middleware->alias([
             'admin' => AdminMiddleware::class,
             'role'  => RoleMiddleware::class,

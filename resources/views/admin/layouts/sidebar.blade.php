@@ -30,125 +30,167 @@ style="width:260px;">
 
         </a>
 
-        <a href="{{route('admin.game.index')}}"
-        class="list-group-item">
 
-        <i class="fa-solid fa-store me-2"></i>
+        {{-- GAME --}}
 
-        Game
+        <a href="{{ route('admin.game.index') }}"
+           class="list-group-item">
+
+            <i class="fa-solid fa-store me-2"></i>
+
+            Game
+
+        </a>
+
+
+        {{-- MOO GOLD PRODUCT MAPPING --}}
+
+        <a href="{{ route('admin.moogold.product-mapping') }}"
+           class="list-group-item">
+
+            <i class="fa-solid fa-link me-2"></i>
+
+            MooGold Product Mapping
+
         </a>
 
 
+        {{-- KATEGORI ITEM --}}
 
-            <a href="{{ route('admin.item-category.index') }}"
-            class="list-group-item">
+        <a href="{{ route('admin.item-category.index') }}"
+           class="list-group-item">
 
-                <i class="fa-solid fa-layer-group me-2"></i>
+            <i class="fa-solid fa-layer-group me-2"></i>
 
-                Kategori Item
-
-            </a>
-            
-<a href="{{ route('admin.stock.index') }}"
-class="list-group-item">
-
-    <i class="fa-solid fa-boxes-stacked me-2"></i>
-
-    Manajemen Stock
-
-</a>
-
-
-        <a href="{{route('admin.discount.index')}}"
-        class="list-group-item">
-
-
-        <i class="fa-solid fa-ticket me-2"></i>
-
-        Voucher Diskon
-
+            Kategori Item
 
         </a>
+
+
+        {{-- STOCK --}}
+
+        <a href="{{ route('admin.stock.index') }}"
+           class="list-group-item">
+
+            <i class="fa-solid fa-boxes-stacked me-2"></i>
+
+            Manajemen Stock
+
+        </a>
+
+
+        {{-- DISKON --}}
+
+        <a href="{{ route('admin.discount.index') }}"
+           class="list-group-item">
+
+            <i class="fa-solid fa-ticket me-2"></i>
+
+            Voucher Diskon
+
+        </a>
+
+
+        {{-- BANNER --}}
 
         <a href="{{ route('admin.banner.index') }}"
-        class="list-group-item">
+           class="list-group-item">
 
-        <i class="fa-solid fa-images me-2"></i>
+            <i class="fa-solid fa-images me-2"></i>
 
-        Banner
+            Banner
 
         </a>
 
-<a href="{{ route('admin.payment.index') }}"
-class="list-group-item">
 
-    <i class="fa-solid fa-credit-card me-2"></i>
+        {{-- PAYMENT --}}
 
-    Metode Pembayaran
+        <a href="{{ route('admin.payment.index') }}"
+           class="list-group-item">
 
-</a>
+            <i class="fa-solid fa-credit-card me-2"></i>
 
-<a href="{{ route('admin.order.index') }}"
-class="list-group-item">
+            Metode Pembayaran
 
-<i class="fa-solid fa-shopping-cart me-2"></i>
-
-Pesanan
+        </a>
 
 
-@php
+        {{-- ORDER --}}
 
-$waitingPayment =
-\App\Models\Order::where('status','Paid')->count();
+        <a href="{{ route('admin.order.index') }}"
+           class="list-group-item">
 
-@endphp
+            <i class="fa-solid fa-shopping-cart me-2"></i>
 
-
-@if($waitingPayment)
-
-<span class="badge bg-danger float-end">
-
-{{ $waitingPayment }}
-
-</span>
-
-@endif
+            Pesanan
 
 
-</a>    
+            @php
 
+                $waitingPayment =
+                    \App\Models\Order::where(
+                        'status',
+                        'Paid'
+                    )->count();
+
+            @endphp
+
+
+            @if($waitingPayment)
+
+                <span class="badge bg-danger float-end">
+
+                    {{ $waitingPayment }}
+
+                </span>
+
+            @endif
+
+        </a>
+
+
+        {{-- PROFILE --}}
 
         <a href="#"
-        class="list-group-item"
-        data-bs-toggle="modal"
-        data-bs-target="#adminProfileModal">
+           class="list-group-item"
+           data-bs-toggle="modal"
+           data-bs-target="#adminProfileModal">
 
-        <i class="fa-solid fa-user-shield me-2"></i>
+            <i class="fa-solid fa-user-shield me-2"></i>
 
             Profil Admin
 
+        </a>
+
+
+        {{-- SETTING --}}
+
+        <a href="{{ route('admin.setting.index') }}"
+           class="list-group-item">
+
+            <i class="fa-solid fa-gears me-2"></i>
+
+            Pengaturan
 
         </a>
 
-    <a href="{{ route('admin.setting.index') }}"
-class="list-group-item">
 
-    <i class="fa-solid fa-gears me-2"></i>
+        {{-- ACTIVITY LOG --}}
 
-    Pengaturan
+        <a href="{{ route('admin.activity-log.index') }}"
+           class="list-group-item">
 
-</a>
+            <i class="fa-solid fa-clock-rotate-left me-2"></i>
 
-<a href="{{ route('admin.activity-log.index') }}"
-class="list-group-item">
+            Activity Log
 
-    <i class="fa-solid fa-clock-rotate-left me-2"></i>
+        </a>
 
-    Activity Log
 
-</a>
+        {{-- LOGOUT --}}
 
         @auth
+
         <form
             action="{{ route('logout') }}"
             method="POST">
@@ -156,7 +198,12 @@ class="list-group-item">
             @csrf
 
             <button
-                class="list-group-item list-group-item-action text-danger border-0 w-100 text-start">
+                class="list-group-item
+                       list-group-item-action
+                       text-danger
+                       border-0
+                       w-100
+                       text-start">
 
                 <i class="fa-solid fa-right-from-bracket me-2"></i>
 
@@ -165,7 +212,9 @@ class="list-group-item">
             </button>
 
         </form>
+
         @endauth
+
     </div>
 
 </div>

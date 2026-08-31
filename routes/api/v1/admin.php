@@ -20,37 +20,6 @@ Route::prefix('admin')->group(function () {
     | MOO GOLD CONNECTION TEST
     |--------------------------------------------------------------------------
     */
-Route::prefix('moogold/product-mapping')
-    ->controller(MooGoldProductMappingController::class)
-    ->group(function () {
-
-        Route::get('/', 'index');
-
-        Route::post(
-            '/sync-category',
-            'syncCategory'
-        );
-
-        Route::get(
-            '/games',
-            'games'
-        );
-
-        Route::get(
-            '/categories',
-            'categories'
-        );
-
-        Route::get(
-            '/{mapping}',
-            'show'
-        );
-
-        Route::put(
-            '/{mapping}',
-            'update'
-        );
-    });
     Route::get('/moogold/config-test', function () {
 
         return response()->json([
@@ -217,42 +186,84 @@ Route::prefix('moogold/product-mapping')
     |--------------------------------------------------------------------------
     */
 
-    Route::middleware([
-        'auth:sanctum',
-        'admin',
-    ])->group(function () {
+Route::middleware([
+    'auth:sanctum',
+    'admin',
+])->group(function () {
 
-        /*
-        |--------------------------------------------------------------------------
-        | MOO GOLD
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | MOO GOLD PRODUCT MAPPING
+    |--------------------------------------------------------------------------
+    */
 
-        Route::get(
-            '/moogold/balance',
-            [MooGoldController::class, 'balance']
-        );
+    Route::prefix('moogold/product-mapping')
+        ->controller(MooGoldProductMappingController::class)
+        ->group(function () {
 
-        Route::get(
-    '/moogold/categories',
-    [MooGoldController::class, 'categories']
-);
+            Route::get(
+                '/',
+                'index'
+            );
 
-Route::post(
-    '/moogold/sync/{productId}',
-    [MooGoldController::class, 'syncProduct']
-);
+            Route::post(
+                '/sync-category',
+                'syncCategory'
+            );
 
-        Route::get(
-            '/moogold/products/{categoryId}',
-            [MooGoldController::class, 'products']
-        );
+            Route::get(
+                '/games',
+                'games'
+            );
+
+            Route::get(
+                '/categories',
+                'categories'
+            );
+
+            Route::get(
+                '/{mapping}',
+                'show'
+            );
+
+            Route::put(
+                '/{mapping}',
+                'update'
+            );
+
+        });
 
 
-        Route::get(
-            '/moogold/product/{productId}',
-            [MooGoldController::class, 'product']
-        );
+    /*
+    |--------------------------------------------------------------------------
+    | MOO GOLD
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/moogold/balance',
+        [MooGoldController::class, 'balance']
+    );
+
+    Route::get(
+        '/moogold/categories',
+        [MooGoldController::class, 'categories']
+    );
+
+    Route::post(
+        '/moogold/sync/{productId}',
+        [MooGoldController::class, 'syncProduct']
+    );
+
+    Route::get(
+        '/moogold/products/{categoryId}',
+        [MooGoldController::class, 'products']
+    );
+
+    Route::get(
+        '/moogold/product/{productId}',
+        [MooGoldController::class, 'product']
+    );
 
         /*
         |--------------------------------------------------------------------------

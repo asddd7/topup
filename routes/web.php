@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\StockController;
+use App\Http\Controllers\Admin\MooGoldProductMappingController;
 
 // USER
 use App\Http\Controllers\User\HomeController;
@@ -202,16 +203,42 @@ Route::middleware([
 | DASHBOARD
 |--------------------------------------------------------------------------
 */
+/*
+|--------------------------------------------------------------------------
+| MOO GOLD PRODUCT MAPPING
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('moogold/product-mapping')
+    ->controller(MooGoldProductMappingController::class)
+    ->group(function () {
+
         Route::get(
-            '/moogold/product-mapping',
-            function () {
-                return view(
-                    'admin.moogold.product-mapping.index'
-                );
-            }
-        )->name(
-            'admin.moogold.product-mapping'
-        );
+            '/',
+            'index'
+        )->name('moogold.product-mapping');
+
+        Route::get(
+            '/data',
+            'data'
+        )->name('moogold.product-mapping.data');
+
+        Route::get(
+            '/games',
+            'games'
+        )->name('moogold.product-mapping.games');
+
+        Route::get(
+            '/categories',
+            'categories'
+        )->name('moogold.product-mapping.categories');
+
+        Route::put(
+            '/{mapping}',
+            'update'
+        )->name('moogold.product-mapping.update');
+
+    });
 Route::get(
     '/dashboard',
     [DashboardController::class,'index']
