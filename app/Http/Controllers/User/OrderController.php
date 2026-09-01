@@ -632,24 +632,50 @@ class OrderController extends Controller
             ->firstOrFail();
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Guest verification
-        |--------------------------------------------------------------------------
-        */
+/*
+|--------------------------------------------------------------------------
+| Authorization
+|--------------------------------------------------------------------------
+*/
 
-        if (
-            !$order->user_id
-            &&
-            $order->guest_token !=
-            $request->token
-        ) {
+if ($order->user_id) {
 
-            abort(
-                403,
-                'Token order tidak valid'
-            );
-        }
+    if (!Auth::check()) {
+
+        abort(
+            403,
+            'Silakan login untuk melihat order ini.'
+        );
+    }
+
+    if (
+        (int) $order->user_id !==
+        (int) Auth::id()
+    ) {
+
+        abort(
+            403,
+            'Anda tidak memiliki akses ke order ini.'
+        );
+    }
+
+} else {
+
+    if (
+        !$request->filled('token')
+        ||
+        !hash_equals(
+            (string) $order->guest_token,
+            (string) $request->token
+        )
+    ) {
+
+        abort(
+            403,
+            'Token order tidak valid.'
+        );
+    }
+}
 
 
         return view(
@@ -681,24 +707,50 @@ class OrderController extends Controller
             ->firstOrFail();
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Guest verification
-        |--------------------------------------------------------------------------
-        */
+/*
+|--------------------------------------------------------------------------
+| Authorization
+|--------------------------------------------------------------------------
+*/
 
-        if (
-            !$order->user_id
-            &&
-            $order->guest_token !==
-            $request->token
-        ) {
+if ($order->user_id) {
 
-            abort(
-                403,
-                'Token order tidak valid'
-            );
-        }
+    if (!Auth::check()) {
+
+        abort(
+            403,
+            'Silakan login untuk melihat pembayaran.'
+        );
+    }
+
+    if (
+        (int) $order->user_id !==
+        (int) Auth::id()
+    ) {
+
+        abort(
+            403,
+            'Anda tidak memiliki akses ke order ini.'
+        );
+    }
+
+} else {
+
+    if (
+        !$request->filled('token')
+        ||
+        !hash_equals(
+            (string) $order->guest_token,
+            (string) $request->token
+        )
+    ) {
+
+        abort(
+            403,
+            'Token order tidak valid.'
+        );
+    }
+}
 
 
         return view(
@@ -707,63 +759,139 @@ class OrderController extends Controller
         );
     }
 
+/**
+ * ============================================================
+ * UPLOAD PAYMENT PROOF
+ * ============================================================
+ */
+public function uploadProof(
+    Request $request,
+    $invoice
+) {
+    /*
+    |--------------------------------------------------------------------------
+    | 1. Cari order
+    |--------------------------------------------------------------------------
+    */
 
-    /**
-     * ============================================================
-     * UPLOAD PAYMENT PROOF
-     * ============================================================
-     */
-    public function uploadProof(
-        Request $request,
+    $order = Order::where(
+        'invoice_number',
         $invoice
-    ) {
-
-        $order = Order::where(
-            'invoice_number',
-            $invoice
-        )
-            ->firstOrFail();
+    )->firstOrFail();
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Guest verification
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | 2. AUTHORIZATION
+    |--------------------------------------------------------------------------
+    */
 
-        if (
-            !$order->user_id
-            &&
-            $order->guest_token !==
-            $request->token
-        ) {
+    if ($order->user_id) {
 
+        // USER LOGIN
+
+        if (!Auth::check()) {
             abort(
                 403,
-                'Token tidak valid'
+                'Silakan login untuk mengakses order ini.'
             );
         }
 
+        if (
+            (int) $order->user_id !==
+            (int) Auth::id()
+        ) {
+            abort(
+                403,
+                'Anda tidak memiliki akses ke order ini.'
+            );
+        }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Validate payment proof
-        |--------------------------------------------------------------------------
-        */
+    } else {
 
-        $request->validate([
+        // GUEST
 
-            'payment_proof' =>
-                'required|image|max:2048',
+        if (
+            !$request->filled('token')
+            ||
+            !hash_equals(
+                (string) $order->guest_token,
+                (string) $request->token
+            )
+        ) {
+            abort(
+                403,
+                'Token order tidak valid.'
+            );
+        }
+    }
 
-        ]);
+
+    /*
+    |--------------------------------------------------------------------------
+    | 3. STATUS
+    |--------------------------------------------------------------------------
+    */
+
+    if ($order->status !== 'Waiting Payment') {
+
+        return back()->with(
+            'error',
+            'Order tidak dapat menerima bukti pembayaran pada status ' .
+            $order->status .
+            '.'
+        );
+    }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Store file
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | 4. VALIDASI FILE
+    |--------------------------------------------------------------------------
+    */
+
+    $request->validate([
+        'payment_proof' => [
+            'required',
+            'file',
+            'image',
+            'mimes:jpg,jpeg,png,webp',
+            'max:2048',
+        ],
+    ]);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | 5. FILE HARUS BENAR-BENAR ADA
+    |--------------------------------------------------------------------------
+    */
+
+    if (!$request->hasFile('payment_proof')) {
+
+        return back()->with(
+            'error',
+            'File bukti pembayaran tidak ditemukan.'
+        );
+    }
+
+
+    if (!$request->file('payment_proof')->isValid()) {
+
+        return back()->with(
+            'error',
+            'File gagal diupload. Silakan coba gambar lain.'
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | 6. SIMPAN FILE
+    |--------------------------------------------------------------------------
+    */
+
+    try {
 
         $file = $request
             ->file('payment_proof')
@@ -772,101 +900,121 @@ class OrderController extends Controller
                 'public'
             );
 
+    } catch (\Throwable $e) {
 
-        /*
-        |--------------------------------------------------------------------------
-        | Update order
-        |--------------------------------------------------------------------------
-        */
+        report($e);
 
-        $order->update([
+        return back()->with(
+            'error',
+            'Gagal menyimpan bukti pembayaran: ' .
+            $e->getMessage()
+        );
+    }
 
-            'payment_proof' =>
-                $file,
 
-            'status' =>
-                'Paid',
+    /*
+    |--------------------------------------------------------------------------
+    | 7. PASTIKAN FILE TERISI
+    |--------------------------------------------------------------------------
+    */
 
+    if (!$file) {
+
+        return back()->with(
+            'error',
+            'File bukti pembayaran gagal disimpan.'
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | 8. UPDATE ORDER
+    |--------------------------------------------------------------------------
+    */
+
+    $order->update([
+        'payment_proof' => $file,
+        'status' => 'Waiting Payment',
+    ]);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | 9. PAYMENT LOG
+    |--------------------------------------------------------------------------
+    */
+
+    $order
+        ->paymentLogs()
+        ->create([
+            'status' => 'Pending',
+
+            'message' =>
+                'Bukti pembayaran diunggah. Menunggu verifikasi admin.',
+
+            'logged_at' => now(),
         ]);
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Payment log
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | 10. NOTIFICATION ADMIN
+    |--------------------------------------------------------------------------
+    */
 
-        $order
-            ->paymentLogs()
-            ->create([
+    $admins = User::where(
+        'role_id',
+        1
+    )->get();
 
-                'status' =>
-                    'Paid',
+    foreach ($admins as $admin) {
 
-                'message' =>
-                    'User upload bukti pembayaran',
+        Notification::create([
+            'user_id' => $admin->id,
 
-            ]);
+            'order_id' => $order->id,
 
+            'title' =>
+                'Pembayaran Diterima',
 
-        /*
-        |--------------------------------------------------------------------------
-        | Notification admin
-        |--------------------------------------------------------------------------
-        */
-
-        $admins = User::where(
-            'role_id',
-            1
-        )->get();
+            'message' =>
+                'Order ' .
+                $order->invoice_number .
+                ' sudah upload bukti pembayaran.',
+        ]);
+    }
 
 
-        foreach (
-            $admins
-            as $admin
-        ) {
+    /*
+    |--------------------------------------------------------------------------
+    | 11. REDIRECT
+    |--------------------------------------------------------------------------
+    */
 
-            Notification::create([
+    $redirect = redirect()->route(
+        'order.payment',
+        $order->invoice_number
+    );
 
-                'user_id' =>
-                    $admin->id,
+    if (!$order->user_id) {
 
-                'order_id' =>
-                    $order->id,
-
-                'title' =>
-                    'Pembayaran Diterima',
-
-                'message' =>
-                    'Order ' .
-                    $order->invoice_number .
-                    ' sudah upload bukti pembayaran',
-
-            ]);
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Redirect
-        |--------------------------------------------------------------------------
-        */
-
-        return redirect(
-
+        $redirect = redirect(
             route(
                 'order.payment',
                 $order->invoice_number
             )
             . '?token=' .
-            $order->guest_token
-
-        )
-            ->with(
-                'success',
-                'Bukti pembayaran berhasil dikirim'
-            );
+            urlencode($order->guest_token)
+        );
     }
+
+
+    return $redirect->with(
+        'success',
+        'Bukti pembayaran berhasil dikirim. Menunggu verifikasi admin.'
+    );
+}
 
 
     /**

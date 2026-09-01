@@ -189,7 +189,28 @@ Route::get(
 | ADMIN AREA
 |--------------------------------------------------------------------------
 */
+Route::post(
+    '/admin/order/{order}/moogold/send',
+    function (
+        \App\Models\Order $order,
+        \App\Services\MooGold\MooGoldOrderService $service
+    ) {
 
+        return response()->json(
+            $service->createOrder(
+                $order
+            )
+        );
+
+    }
+)
+->middleware([
+    'auth',
+    'role:1'
+])
+->name(
+    'admin.order.moogold.send'
+);
 Route::middleware([
     'auth',
     'role:1'

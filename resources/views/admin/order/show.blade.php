@@ -312,7 +312,16 @@ Update Status
 {{-- =========================================================
      PROCESS ORDER
 ========================================================= --}}
+{{-- =========================================================
+     PAID
+========================================================= --}}
 @if($order->status === 'Paid')
+
+    <div class="alert alert-warning mt-3">
+        <i class="fa-solid fa-clock me-2"></i>
+        Pembayaran sudah diterima.
+        Order siap diproses ke MooGold.
+    </div>
 
     <div class="d-grid gap-2 mt-3">
 
@@ -328,13 +337,75 @@ Update Status
                 class="btn btn-primary"
             >
 
-                <i class="fa-solid fa-box-open me-2"></i>
+                <i class="fa-solid fa-paper-plane me-2"></i>
 
-                Proses & Selesaikan Order
+                Kirim ke MooGold
 
             </button>
 
         </form>
+
+    </div>
+
+@endif
+
+
+{{-- =========================================================
+     PROCESSING
+========================================================= --}}
+@if($order->status === 'Processing')
+
+    <div class="alert alert-info mt-3">
+
+        <i class="fa-solid fa-spinner fa-spin me-2"></i>
+
+        Order sedang diproses oleh MooGold.
+
+    </div>
+
+    @if($order->moogold_order_id)
+
+        <div class="card mt-3">
+
+            <div class="card-body">
+
+                <h6 class="fw-bold mb-3">
+                    Status MooGold
+                </h6>
+
+                <div class="mb-2">
+                    <strong>MooGold Order ID:</strong>
+                    {{ $order->moogold_order_id }}
+                </div>
+
+                <div>
+                    <strong>Status:</strong>
+
+                    <span class="badge bg-info">
+                        {{ $order->moogold_status }}
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    @endif
+
+@endif
+
+
+{{-- =========================================================
+     COMPLETED
+========================================================= --}}
+@if($order->status === 'Completed')
+
+    <div class="alert alert-success mt-3">
+
+        <i class="fa-solid fa-circle-check me-2"></i>
+
+        Order berhasil diselesaikan.
 
     </div>
 

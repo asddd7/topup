@@ -46,6 +46,66 @@ Kembali ke Detail Pesanan
 
 </div>
 
+@if(session('success'))
+
+<div class="alert alert-success alert-dismissible fade show">
+
+    <i class="fa-solid fa-circle-check me-2"></i>
+
+    {{ session('success') }}
+
+    <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert">
+    </button>
+
+</div>
+
+@endif
+
+
+@if(session('error'))
+
+<div class="alert alert-danger alert-dismissible fade show">
+
+    <i class="fa-solid fa-circle-exclamation me-2"></i>
+
+    {{ session('error') }}
+
+    <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert">
+    </button>
+
+</div>
+
+@endif
+
+
+@if($errors->any())
+
+<div class="alert alert-danger">
+
+    <strong>
+        Upload gagal:
+    </strong>
+
+    <ul class="mb-0 mt-2">
+
+        @foreach($errors->all() as $error)
+
+            <li>{{ $error }}</li>
+
+        @endforeach
+
+    </ul>
+
+</div>
+
+@endif
+
 <div class="row">
 
 <div class="col-lg-8">
@@ -207,43 +267,37 @@ $order->status == 'Waiting Payment'
 
 
 <form
-action="{{ route('order.uploadProof',$order->invoice_number) }}"
-method="POST"
-enctype="multipart/form-data">
+    action="{{ route('order.uploadProof', $order->invoice_number) }}"
+    method="POST"
+    enctype="multipart/form-data">
 
-@csrf
+    @csrf
 
-@if($order->guest_token)
+    @if(!$order->user_id && $order->guest_token)
 
-<input
-type="hidden"
-name="token"
-value="{{ $order->guest_token }}">
+        <input
+            type="hidden"
+            name="token"
+            value="{{ $order->guest_token }}">
 
-@endif
+    @endif
 
-@csrf
+    <input
+        type="file"
+        name="payment_proof"
+        class="form-control mb-3"
+        accept="image/jpeg,image/png,image/webp"
+        required>
 
+    <button
+        type="submit"
+        class="btn btn-success w-100">
 
-<input
-type="file"
-name="payment_proof"
-class="form-control mb-3"
-required>
+        <i class="fa-solid fa-upload me-1"></i>
 
+        Upload Bukti Pembayaran
 
-
-<button
-class="btn btn-success w-100">
-
-
-<i class="fa-solid fa-upload"></i>
-
-Upload Bukti Pembayaran
-
-
-</button>
-
+    </button>
 
 </form>
 

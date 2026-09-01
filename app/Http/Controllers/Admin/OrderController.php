@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Admin\BaseAdminController;
 use App\Services\MooGold\MooGoldService;
+use App\Jobs\ProcessMooGoldOrder;
 use App\Models\Discount;
 use App\Models\Item;
 use App\Models\Notification;
 use App\Models\Order;
 use App\Models\User;
+use App\Services\MooGold\MooGoldOrderService;
 use Illuminate\Http\Request;
 use App\Services\TopUp\TopUpService;
 use Illuminate\Support\Facades\DB;
@@ -73,6 +75,8 @@ class OrderController extends BaseAdminController
             'discounts',
             'orderDiscounts.discount',
             'details.item',
+            'details.mooGoldOrder',
+            'mooGoldOrders',
             'paymentLogs',
         ]);
 
@@ -181,7 +185,7 @@ public function approve(Order $order)
 {
     /*
     |--------------------------------------------------------------------------
-    | Status harus Waiting Payment
+    | STATUS HARUS WAITING PAYMENT
     |--------------------------------------------------------------------------
     */
 
@@ -196,7 +200,7 @@ public function approve(Order $order)
 
     /*
     |--------------------------------------------------------------------------
-    | Bukti pembayaran wajib ada
+    | BUKTI PEMBAYARAN WAJIB ADA
     |--------------------------------------------------------------------------
     */
 
@@ -211,7 +215,7 @@ public function approve(Order $order)
 
     try {
 
-        DB::transaction(function () use ($order) {
+         DB::transaction(function () use ($order) {
 
             /*
             |--------------------------------------------------------------------------
@@ -250,7 +254,7 @@ public function approve(Order $order)
 
             /*
             |--------------------------------------------------------------------------
-            | UPDATE STATUS
+            | UPDATE STATUS → PAID
             |--------------------------------------------------------------------------
             */
 
@@ -291,15 +295,6 @@ public function approve(Order $order)
             |--------------------------------------------------------------------------
             | PAYMENT LOG
             |--------------------------------------------------------------------------
-            |
-            | PaymentLog hanya boleh menggunakan enum:
-            |
-            | Pending
-            | Paid
-            | Failed
-            | Expired
-            | Refund
-            |
             */
 
             $lockedOrder
@@ -354,51 +349,62 @@ public function approve(Order $order)
         });
 
 
+        /*
+        |--------------------------------------------------------------------------
+        | DISPATCH MOOGOLD JOB
+        |--------------------------------------------------------------------------
+        |
+        | Transaction pembayaran sudah COMMIT.
+        | Sekarang aman mengirim order ke Queue.
+        |
+        */
+
+        $order->load('details');
+
+        foreach ($order->details as $detail) {
+
+            ProcessMooGoldOrder::dispatch(
+                $detail->id
+            );
+        }
+
+
         return back()->with(
             'success',
-            'Pembayaran berhasil disetujui. Order sekarang berstatus Paid.'
+            'Pembayaran berhasil disetujui. Order sekarang Paid dan sedang diproses ke MooGold.'
         );
 
 
     } catch (\Throwable $e) {
 
         return back()->with(
+
             'error',
+
             $e->getMessage()
+
         );
     }
 }
 
 /**
  * =========================================================
- * CONFIRM / COMPLETE ORDER
+ * PROCESS / RETRY MOOGOLD ORDER
  * =========================================================
  *
  * Paid
  *   ↓
- * TopUpService::complete()
+ * ProcessMooGoldOrder
  *   ↓
- * Lock Order
+ * MooGoldOrderService
  *   ↓
- * Check Item
- *   ↓
- * Check Stock
- *   ↓
- * Reduce Stock
- *   ↓
- * Process Discount
- *   ↓
- * Completed
+ * MooGold
  */
-public function confirm(
-    Order $order,
-    TopUpService $topUpService,
-    MooGoldService $mooGold
-) {
-
+public function confirm(Order $order)
+{
     /*
     |--------------------------------------------------------------------------
-    | STATUS
+    | STATUS HARUS PAID
     |--------------------------------------------------------------------------
     */
 
@@ -406,47 +412,74 @@ public function confirm(
 
         return back()->with(
             'error',
-            'Order harus berstatus Paid.'
+            'Order harus berstatus Paid untuk diproses ke MooGold.'
         );
     }
 
 
     /*
     |--------------------------------------------------------------------------
-    | COMPLETE
+    | LOAD ORDER DETAILS
     |--------------------------------------------------------------------------
     */
 
-    $result = $topUpService->complete($order);
+    $order->load('details');
 
 
     /*
     |--------------------------------------------------------------------------
-    | FAILED
+    | DISPATCH JOB
     |--------------------------------------------------------------------------
     */
 
-    if (!$result['success']) {
+    foreach ($order->details as $detail) {
 
-        return back()->with(
-            'error',
-            $result['message']
+        ProcessMooGoldOrder::dispatch(
+            $detail->id
         );
     }
 
 
     /*
     |--------------------------------------------------------------------------
-    | SUCCESS
+    | ACTIVITY LOG
     |--------------------------------------------------------------------------
     */
 
-    return redirect()
-        ->route('admin.order.show', $order)
-        ->with(
-            'success',
-            $result['message']
-        );
+    $this->activity->log(
+
+        'Order',
+
+        'Process MooGold Order',
+
+        'Mengirim ulang order ' .
+            $order->invoice_number .
+            ' ke queue MooGold.',
+
+        $order,
+
+        null,
+
+        $order
+            ->fresh()
+            ->toArray()
+
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | RESPONSE
+    |--------------------------------------------------------------------------
+    */
+
+    return back()->with(
+
+        'success',
+
+        'Order berhasil dimasukkan ke queue MooGold.'
+
+    );
 }
 
     /**

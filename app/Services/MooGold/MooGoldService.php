@@ -4,6 +4,7 @@ namespace App\Services\MooGold;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+
 use RuntimeException;
 
 class MooGoldService
@@ -293,9 +294,9 @@ public function validateProduct(
 }
 
 public function createOrder(
-    int $type,
+    int $categoryId,
     string $externalId,
-    string $offerId,
+    string $variationId,
     int $quantity,
     string $userId,
     ?string $server = null
@@ -304,10 +305,10 @@ public function createOrder(
     $data = [
 
         'category' =>
-            (string) $type,
+            (string) $categoryId,
 
         'product-id' =>
-            (string) $offerId,
+            (string) $variationId,
 
         'quantity' =>
             (string) $quantity,
@@ -317,16 +318,13 @@ public function createOrder(
 
     ];
 
-
     if (
         $server !== null &&
         $server !== ''
     ) {
 
-        $data['Server'] =
-            $server;
+        $data['Server ID'] = $server;
     }
-
 
     return $this->request(
 

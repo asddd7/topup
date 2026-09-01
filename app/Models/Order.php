@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Models\MooGoldOrder;
 
 class Order extends Model
 {
@@ -29,6 +30,10 @@ class Order extends Model
         'guest_email',
         'guest_phone',
         'guest_token',
+        'moogold_order_id',
+        'moogold_status',
+        'moogold_response',
+        'moogold_ordered_at',       
     ];
 
     protected $casts = [
@@ -36,6 +41,11 @@ class Order extends Model
         'subtotal' => 'decimal:2',
         'discount' => 'decimal:2',
         'total_price' => 'decimal:2',
+        'moogold_response' =>
+            'array',
+
+        'moogold_ordered_at' =>
+            'datetime',
     ];
 
     public function user(): BelongsTo
@@ -99,5 +109,12 @@ class Order extends Model
     public function paymentLogs(): HasMany
     {
         return $this->hasMany(PaymentLog::class);
+    }
+
+    public function mooGoldOrders(): HasMany
+    {
+        return $this->hasMany(
+            MooGoldOrder::class
+        );
     }
 }
