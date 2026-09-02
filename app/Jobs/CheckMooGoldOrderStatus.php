@@ -24,44 +24,46 @@ class CheckMooGoldOrderStatus implements ShouldQueue
      * RETRY CONFIGURATION
      * =========================================================
      */
-
     public int $tries = 5;
 
-    public int $backoff = 60;
-
+    public array $backoff = [
+        60,
+        120,
+        300,
+        600,
+    ];
 
     /**
      * =========================================================
      * CONSTRUCTOR
      * =========================================================
      */
-
     public function __construct(
         public int $mooGoldOrderId
     ) {
     }
-
 
     /**
      * =========================================================
      * HANDLE
      * =========================================================
      */
-
     public function handle(
         MooGoldOrderService $service
     ): void {
 
         /*
         |--------------------------------------------------------------------------
-        | LOAD MOOGOLD ORDER
+        | LOAD
         |--------------------------------------------------------------------------
         */
 
-        $mooGoldOrder = MooGoldOrder::find(
-            $this->mooGoldOrderId
-        );
-
+        $mooGoldOrder =
+            MooGoldOrder::with([
+                'order',
+            ])->find(
+                $this->mooGoldOrderId
+            );
 
         if (!$mooGoldOrder) {
 
@@ -76,20 +78,54 @@ class CheckMooGoldOrderStatus implements ShouldQueue
             return;
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | ORDER ID BELUM TERSEDIA
+        |--------------------------------------------------------------------------
+        |
+        | Jangan mencoba status endpoint.
+        |
+        | Ini bisa berarti create masih UNKNOWN.
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            empty(
+                $mooGoldOrder->moogold_order_id
+            )
+        ) {
+
+            Log::warning(
+                'CheckMooGoldOrderStatus dilewati karena '
+                . 'MooGold Order ID belum tersedia.',
+                [
+                    'moo_gold_order_id' =>
+                        $mooGoldOrder->id,
+
+                    'partner_order_id' =>
+                        $mooGoldOrder->external_order_id,
+
+                    'status' =>
+                        $mooGoldOrder->moogold_status,
+                ]
+            );
+
+            return;
+        }
 
         /*
         |--------------------------------------------------------------------------
-        | JIKA SUDAH FINAL
+        | FINAL STATUS
         |--------------------------------------------------------------------------
-        |
-        | Tidak perlu request lagi ke MooGold.
-        |
         */
 
-        $currentStatus = strtolower(
-            (string) $mooGoldOrder->moogold_status
-        );
-
+        $currentStatus =
+            strtolower(
+                trim(
+                    (string)
+                    $mooGoldOrder->moogold_status
+                )
+            );
 
         if (
             in_array(
@@ -108,13 +144,17 @@ class CheckMooGoldOrderStatus implements ShouldQueue
         ) {
 
             Log::info(
-                'MooGold order sudah final. Tidak perlu dicek ulang.',
+                'MooGold order sudah final. '
+                . 'Tidak perlu dicek ulang.',
                 [
                     'moo_gold_order_id' =>
                         $mooGoldOrder->id,
 
                     'moogold_order_id' =>
                         $mooGoldOrder->moogold_order_id,
+
+                    'partner_order_id' =>
+                        $mooGoldOrder->external_order_id,
 
                     'status' =>
                         $currentStatus,
@@ -124,69 +164,55 @@ class CheckMooGoldOrderStatus implements ShouldQueue
             return;
         }
 
-
         /*
         |--------------------------------------------------------------------------
-        | CHECK STATUS KE MOOGOLD
+        | CHECK STATUS
         |--------------------------------------------------------------------------
         */
 
-        $result = $service->checkStatus(
-            $mooGoldOrder
-        );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | AMBIL STATUS TERBARU
-        |--------------------------------------------------------------------------
-        */
-
-        $status = strtolower(
-            (string) $result->moogold_status
-        );
-
-        Log::info(
-            'DEBUG MooGold status result.',
-            [
-                'moo_gold_order_id' => $result->id,
-                'moogold_order_id' => $result->moogold_order_id,
-                'status' => $status,
-                'result_class' => get_class($result),
-            ]
-        );
-
+        $result =
+            $service->checkStatus(
+                $mooGoldOrder
+            );
 
         /*
         |--------------------------------------------------------------------------
-        | LOG
+        | STATUS TERBARU
         |--------------------------------------------------------------------------
         */
+
+        $status =
+            strtolower(
+                trim(
+                    (string)
+                    $result->moogold_status
+                )
+            );
 
         Log::info(
             'MooGold order status checked.',
             [
-
                 'moo_gold_order_id' =>
                     $result->id,
 
                 'moogold_order_id' =>
                     $result->moogold_order_id,
 
+                'partner_order_id' =>
+                    $result->external_order_id,
+
                 'status' =>
                     $status,
-
             ]
         );
 
-
         /*
         |--------------------------------------------------------------------------
-        | JIKA MASIH PROCESSING / PENDING
+        | PROCESSING
         |--------------------------------------------------------------------------
         |
-        | Jadwalkan pengecekan berikutnya.
-        |
+        | Jadwalkan check berikutnya.
+        |--------------------------------------------------------------------------
         */
 
         if (
@@ -201,27 +227,41 @@ class CheckMooGoldOrderStatus implements ShouldQueue
             )
         ) {
 
-            $nextCheck = now()->addMinutes(2);
+            $nextCheck =
+                now()->addMinutes(2);
 
-            CheckMooGoldOrderStatus::dispatch(
+            self::dispatch(
                 $result->id
-            )->delay($nextCheck);
+            )->delay(
+                $nextCheck
+            );
 
             Log::info(
                 'MooGold order akan dicek kembali.',
                 [
-                    'moo_gold_order_id' => $result->id,
-                    'moogold_order_id' => $result->moogold_order_id,
-                    'status' => $status,
-                    'next_check' => $nextCheck,
+                    'moo_gold_order_id' =>
+                        $result->id,
+
+                    'moogold_order_id' =>
+                        $result->moogold_order_id,
+
+                    'partner_order_id' =>
+                        $result->external_order_id,
+
+                    'status' =>
+                        $status,
+
+                    'next_check' =>
+                        $nextCheck,
                 ]
             );
-        }
 
+            return;
+        }
 
         /*
         |--------------------------------------------------------------------------
-        | FINAL STATUS
+        | SUCCESS
         |--------------------------------------------------------------------------
         */
 
@@ -242,20 +282,22 @@ class CheckMooGoldOrderStatus implements ShouldQueue
             Log::info(
                 'MooGold order COMPLETED.',
                 [
-
                     'moo_gold_order_id' =>
                         $result->id,
 
                     'moogold_order_id' =>
                         $result->moogold_order_id,
 
+                    'partner_order_id' =>
+                        $result->external_order_id,
+
                     'status' =>
                         $status,
-
                 ]
             );
-        }
 
+            return;
+        }
 
         /*
         |--------------------------------------------------------------------------
@@ -277,44 +319,66 @@ class CheckMooGoldOrderStatus implements ShouldQueue
             Log::warning(
                 'MooGold order berakhir gagal/refund.',
                 [
-
                     'moo_gold_order_id' =>
                         $result->id,
 
                     'moogold_order_id' =>
                         $result->moogold_order_id,
 
+                    'partner_order_id' =>
+                        $result->external_order_id,
+
                     'status' =>
                         $status,
-
                 ]
             );
-        }
-    }
 
+            return;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | UNKNOWN STATUS
+        |--------------------------------------------------------------------------
+        */
+
+        Log::warning(
+            'CheckMooGoldOrderStatus mendapatkan status '
+            . 'yang belum dikenali.',
+            [
+                'moo_gold_order_id' =>
+                    $result->id,
+
+                'moogold_order_id' =>
+                    $result->moogold_order_id,
+
+                'partner_order_id' =>
+                    $result->external_order_id,
+
+                'status' =>
+                    $status,
+            ]
+        );
+    }
 
     /**
      * =========================================================
      * FAILED
      * =========================================================
      */
-
     public function failed(
         ?Throwable $exception
     ): void {
 
         Log::error(
-            'CheckMooGoldOrderStatus gagal setelah retry.',
+            'CheckMooGoldOrderStatus gagal setelah seluruh retry.',
             [
-
                 'moo_gold_order_id' =>
                     $this->mooGoldOrderId,
 
                 'error' =>
                     $exception?->getMessage(),
-
             ]
         );
     }
 }
-

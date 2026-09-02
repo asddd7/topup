@@ -26,64 +26,90 @@ class ProcessMooGoldOrder implements
      * =========================================================
      * RETRY
      * =========================================================
+     *
+     * Memberikan kesempatan recovery beberapa kali.
+     *
+     * Penting:
+     * retry TIDAK membuat Partner Order ID baru.
      */
+    public int $tries = 6;
 
-    public int $tries = 3;
-
-    public int $backoff = 30;
-
+    /**
+     * Backoff bertahap.
+     *
+     * Retry:
+     *
+     * 30 detik
+     * 60 detik
+     * 120 detik
+     * 300 detik
+     * 600 detik
+     */
+    public array $backoff = [
+        30,
+        60,
+        120,
+        300,
+        600,
+    ];
 
     /**
      * =========================================================
      * UNIQUE LOCK
      * =========================================================
+     *
+     * Jangan terlalu pendek.
+     *
+     * Tujuannya mencegah job identik masuk bersamaan.
+     *
+     * Ini bukan satu-satunya idempotency mechanism.
+     * Partner Order ID + DB UNIQUE tetap menjadi proteksi utama.
      */
-
-    public int $uniqueFor = 600;
-
+    public int $uniqueFor = 1800;
 
     /**
      * =========================================================
      * CONSTRUCTOR
      * =========================================================
      */
-
     public function __construct(
         public int $orderDetailId
     ) {
     }
-
 
     /**
      * =========================================================
      * UNIQUE ID
      * =========================================================
      */
-
     public function uniqueId(): string
     {
         return 'process-moogold-order-' .
             $this->orderDetailId;
     }
 
-
     /**
      * =========================================================
      * HANDLE
      * =========================================================
      */
-
     public function handle(
         MooGoldOrderService $service
     ): void {
 
-        $detail = OrderDetail::with([
-            'order',
-            'item',
-        ])->find(
-            $this->orderDetailId
-        );
+        /*
+        |--------------------------------------------------------------------------
+        | LOAD ORDER DETAIL
+        |--------------------------------------------------------------------------
+        */
 
+        $detail =
+            OrderDetail::with([
+                'order',
+                'item',
+            ])->find(
+                $this->orderDetailId
+            );
 
         if (!$detail) {
 
@@ -98,7 +124,6 @@ class ProcessMooGoldOrder implements
             return;
         }
 
-
         if (!$detail->order) {
 
             Log::warning(
@@ -112,9 +137,8 @@ class ProcessMooGoldOrder implements
             return;
         }
 
-
-        $order = $detail->order;
-
+        $order =
+            $detail->order;
 
         /*
         |--------------------------------------------------------------------------
@@ -141,7 +165,6 @@ class ProcessMooGoldOrder implements
             return;
         }
 
-
         /*
         |--------------------------------------------------------------------------
         | PROCESS
@@ -153,6 +176,11 @@ class ProcessMooGoldOrder implements
                 $detail
             );
 
+        /*
+        |--------------------------------------------------------------------------
+        | SUCCESS LOG
+        |--------------------------------------------------------------------------
+        */
 
         Log::info(
             'ProcessMooGoldOrder selesai.',
@@ -169,25 +197,29 @@ class ProcessMooGoldOrder implements
                 'moogold_order_id' =>
                     $mooGoldOrder->moogold_order_id,
 
+                'partner_order_id' =>
+                    $mooGoldOrder->external_order_id,
+
                 'moogold_status' =>
                     $mooGoldOrder->moogold_status,
+
+                'attempts' =>
+                    $mooGoldOrder->attempts,
             ]
         );
     }
-
 
     /**
      * =========================================================
      * FAILED
      * =========================================================
      */
-
     public function failed(
         ?Throwable $exception
     ): void {
 
         Log::error(
-            'ProcessMooGoldOrder gagal setelah retry.',
+            'ProcessMooGoldOrder gagal setelah seluruh retry.',
             [
                 'order_detail_id' =>
                     $this->orderDetailId,

@@ -361,6 +361,28 @@ public function createOrder(
             ]
         );
     }
+/**
+ * =========================================================
+ * ORDER DETAIL BY PARTNER ORDER ID
+ * =========================================================
+ *
+ * Digunakan untuk:
+ *
+ * - Recovery setelah timeout
+ * - Recovery setelah server restart
+ * - Mencegah double create_order
+ * - Mencari transaksi berdasarkan partnerOrderId
+ */
+public function orderByPartnerOrderId(
+    string $partnerOrderId
+): array {
 
-
+    return $this->request(
+        'order/order_detail_partner_id',
+        [
+            'partner_order_id' =>
+                $partnerOrderId,
+        ]
+    );
+}
 }
