@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 
 class Game extends Model
@@ -38,6 +39,16 @@ public function items()
     return $this->hasMany(
         Item::class,
         'game_id'
+    );
+}
+
+public function itemCategories(): BelongsToMany
+{
+    return $this->belongsToMany(
+        ItemCategory::class,
+        'game_item_category',
+        'game_id',
+        'item_category_id'
     );
 }
 

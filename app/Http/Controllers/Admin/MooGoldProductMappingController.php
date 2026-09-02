@@ -7,6 +7,7 @@ use App\Models\Game;
 use App\Models\ItemCategory;
 use App\Models\Item;
 use App\Models\MooGoldProductMapping;
+use App\Models\MooGoldProductVariation;
 use App\Services\MooGold\MooGoldService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -165,18 +166,18 @@ class MooGoldProductMappingController extends Controller
 public function categories(Request $request)
 {
     $request->validate([
-        'game_id' => ['required', 'integer'],
+        'game_id' => ['required', 'integer', 'exists:games,id'],
     ]);
 
-    $categories = ItemCategory::query()
-        ->select(
+    $game = Game::query()
+        ->findOrFail($request->game_id);
+
+    $categories = $game->itemCategories()
+        ->select([
             'item_categories.id',
             'item_categories.category_name',
-            'item_categories.use_qty'
-        )
-        ->whereHas('items', function ($query) use ($request) {
-            $query->where('game_id', $request->game_id);
-        })
+            'item_categories.use_qty',
+        ])
         ->orderBy('item_categories.category_name')
         ->get();
 
@@ -224,16 +225,17 @@ public function categories(Request $request)
             !empty($validated['category_id'])
         ) {
 
-            $validCategory = ItemCategory::query()
-                ->where(
-                    'id',
+        $validCategory = Game::query()
+            ->whereKey($validated['game_id'])
+            ->whereHas('itemCategories', function ($query) use ($validated) {
+
+                $query->where(
+                    'item_categories.id',
                     $validated['category_id']
-                )
-                ->where(
-                    'game_id',
-                    $validated['game_id']
-                )
-                ->exists();
+                );
+
+            })
+            ->exists();
 
             if (!$validCategory) {
 
@@ -561,327 +563,175 @@ public function syncCategory(
     ]);
 }
 
+public function variations(
+    MooGoldProductMapping $mapping
+): JsonResponse {
 
+    $variations = $mapping->variations()
+        ->with([
+            'category:id,category_name',
+        ])
+        ->orderBy('variation_name')
+        ->get();
 
-public function syncItems(
+    return response()->json([
+        'success' => true,
+        'data' => $variations,
+    ]);
+}
+
+/**
+ * =========================================================
+ * SYNC PRODUCT VARIATIONS
+ * =========================================================
+ */
+public function syncVariations(
     MooGoldProductMapping $mapping,
     MooGoldService $mooGold
 ): JsonResponse {
 
-    /*
-    |--------------------------------------------------------------------------
-    | Validasi Mapping
-    |--------------------------------------------------------------------------
-    */
-
-    if (
-        !$mapping->game_id ||
-        !$mapping->category_id
-    ) {
-
-        return response()->json([
-
-            'success' => false,
-
-            'message' =>
-                'Product belum dihubungkan ke Game dan Category lokal.'
-
-        ], 422);
-
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Validasi Mapping Active
-    |--------------------------------------------------------------------------
-    */
-
     if (!$mapping->is_active) {
 
         return response()->json([
-
             'success' => false,
-
-            'message' =>
-                'Product mapping tidak aktif.'
-
+            'message' => 'Product mapping tidak aktif.',
         ], 422);
-
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Ambil Detail Product MooGold
-    |--------------------------------------------------------------------------
-    */
 
     try {
 
-        $result =
-            $mooGold->product(
-                $mapping->moogold_product_id
-            );
+        $result = $mooGold->product(
+            $mapping->moogold_product_id
+        );
 
     } catch (\Throwable $e) {
 
         return response()->json([
-
             'success' => false,
-
             'message' =>
                 'Gagal mengambil product dari MooGold: ' .
                 $e->getMessage(),
-
         ], 500);
-
     }
 
+    $product = $result['data'] ?? $result;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Ambil Data Product
-    |--------------------------------------------------------------------------
-    */
-
-    $product =
-        $result['data'] ??
-        $result;
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | Validasi Variation
-    |--------------------------------------------------------------------------
-    */
-
-    $variations =
-        $product['Variation'] ??
-        [];
-
+    $variations = $product['Variation'] ?? [];
 
     if (empty($variations)) {
 
         return response()->json([
-
             'success' => false,
-
             'message' =>
-                'Product MooGold tidak memiliki variation.'
-
+                'Product MooGold tidak memiliki variation.',
         ], 422);
-
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Statistics
-    |--------------------------------------------------------------------------
-    */
-
     $created = 0;
-
     $updated = 0;
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Sync Variations
-    |--------------------------------------------------------------------------
-    */
-
-    foreach (
-        $variations as $variation
-    ) {
+    foreach ($variations as $variation) {
 
         $variationId =
-            $variation['variation_id'] ??
-            null;
-
+            $variation['variation_id']
+            ?? null;
 
         if (!$variationId) {
-
             continue;
-
         }
 
+        $variationName =
+            $variation['variation_name']
+            ?? 'Variation #' . $variationId;
 
-        /*
-        |--------------------------------------------------------------------------
-        | Data
-        |--------------------------------------------------------------------------
-        */
+        $variationPrice =
+            $variation['variation_price']
+            ?? null;
 
-        $itemData = [
+        $stockStatus =
+            $variation['stock_status']
+            ?? null;
 
-            /*
-            |--------------------------------------------------------------------------
-            | Local
-            |--------------------------------------------------------------------------
-            */
+        $variationData = $variation;
 
-            'game_id' =>
-                $mapping->game_id,
+        $existing = $mapping->variations()
+            ->where(
+                'moogold_variation_id',
+                (string) $variationId
+            )
+            ->first();
 
-            'category_id' =>
-                $mapping->category_id,
+        if (!$existing) {
 
+            $mapping->variations()->create([
 
-            /*
-            |--------------------------------------------------------------------------
-            | Item
-            |--------------------------------------------------------------------------
-            */
+                'moogold_variation_id' =>
+                    (string) $variationId,
 
-            'item_name' =>
-                $variation['variation_name']
-                ?? $mapping->product_name,
+                'variation_name' =>
+                    $variationName,
 
-            'qty' =>
-                1,
+                'variation_price' =>
+                    $variationPrice,
 
-            /*
-            |--------------------------------------------------------------------------
-            | Price
-            |--------------------------------------------------------------------------
-            */
+                'stock_status' =>
+                    $stockStatus,
 
-            'price' =>
-                $variation['variation_price']
-                ?? 0,
+                /*
+                 * PENTING:
+                 * category_id tetap NULL saat pertama sync.
+                 */
+                'category_id' =>
+                    null,
 
+                'is_active' =>
+                    $stockStatus === 'instock',
 
-            /*
-            |--------------------------------------------------------------------------
-            | Stock
-            |--------------------------------------------------------------------------
-            */
+                'variation_data' =>
+                    $variationData,
 
-            'stock' =>
-                (
-                    ($variation['stock_status'] ?? '')
-                    === 'instock'
-                )
-                    ? 999999
-                    : 0,
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Image
-            |--------------------------------------------------------------------------
-            */
-
-            'image' =>
-                $product['Image_URL']
-                ?? null,
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Status
-            |--------------------------------------------------------------------------
-            */
-
-            'is_active' =>
-                (
-                    ($variation['stock_status'] ?? '')
-                    === 'instock'
-                ),
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | MooGold
-            |--------------------------------------------------------------------------
-            */
-
-            'moogold_category_id' =>
-                $mapping->moogold_category_id,
-
-            'moogold_product_id' =>
-                $mapping->moogold_product_id,
-
-            'moogold_variation_id' =>
-                $variationId,
-
-            'moogold_price' =>
-                $variation['variation_price']
-                ?? null,
-
-            'moogold_stock_status' =>
-                $variation['stock_status']
-                ?? null,
-
-            'moogold_synced_at' =>
-                now(),
-
-        ];
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Cari Item Berdasarkan Variation ID
-        |--------------------------------------------------------------------------
-        */
-
-        $item =
-            Item::query()
-                ->where(
-                    'moogold_variation_id',
-                    $variationId
-                )
-                ->first();
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Create
-        |--------------------------------------------------------------------------
-        */
-
-        if (!$item) {
-
-            Item::create(
-                $itemData
-            );
+                'synced_at' =>
+                    now(),
+            ]);
 
             $created++;
 
             continue;
-
         }
 
-
         /*
-        |--------------------------------------------------------------------------
-        | Update
-        |--------------------------------------------------------------------------
-        */
+         * Jangan pernah mengubah category_id di sini.
+         *
+         * Admin mungkin sudah melakukan mapping.
+         */
+        $existing->update([
 
-        $item->update(
-            $itemData
-        );
+            'variation_name' =>
+                $variationName,
+
+            'variation_price' =>
+                $variationPrice,
+
+            'stock_status' =>
+                $stockStatus,
+
+            'is_active' =>
+                $stockStatus === 'instock',
+
+            'variation_data' =>
+                $variationData,
+
+            'synced_at' =>
+                now(),
+        ]);
 
         $updated++;
-
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | Response
-    |--------------------------------------------------------------------------
-    */
-
     return response()->json([
-
         'success' => true,
-
         'message' =>
-            'Variation MooGold berhasil disinkronkan ke Item.',
+            'Variation MooGold berhasil disinkronkan.',
 
         'data' => [
 
@@ -899,10 +749,275 @@ public function syncItems(
 
             'updated' =>
                 $updated,
+        ],
+    ]);
+}
 
+public function syncItems(
+    MooGoldProductMapping $mapping
+): JsonResponse {
+
+    if (!$mapping->game_id) {
+
+        return response()->json([
+            'success' => false,
+            'message' =>
+                'Product belum dihubungkan ke Game lokal.',
+        ], 422);
+    }
+
+    if (!$mapping->is_active) {
+
+        return response()->json([
+            'success' => false,
+            'message' =>
+                'Product mapping tidak aktif.',
+        ], 422);
+    }
+
+    $variations = $mapping->variations()
+        ->whereNotNull('category_id')
+        ->where('is_active', true)
+        ->with('category')
+        ->get();
+
+    if ($variations->isEmpty()) {
+
+        return response()->json([
+            'success' => false,
+            'message' =>
+                'Belum ada variation yang memiliki Category lokal.',
+        ], 422);
+    }
+
+    $created = 0;
+    $updated = 0;
+
+    foreach ($variations as $variation) {
+
+        /*
+         * Pastikan category variation memang
+         * termasuk category yang boleh digunakan Game.
+         */
+        $validCategory = $mapping->game
+            ->itemCategories()
+            ->where(
+                'item_categories.id',
+                $variation->category_id
+            )
+            ->exists();
+
+        if (!$validCategory) {
+            continue;
+        }
+
+        $itemData = [
+
+            'game_id' =>
+                $mapping->game_id,
+
+            'category_id' =>
+                $variation->category_id,
+
+            'item_name' =>
+                $variation->variation_name,
+
+            'qty' =>
+                1,
+
+            'price' =>
+                $variation->variation_price ?? 0,
+
+            'stock' =>
+                $variation->stock_status === 'instock'
+                    ? 999999
+                    : 0,
+
+            'image' =>
+                data_get(
+                    $mapping->product_data,
+                    'Image_URL'
+                ),
+
+            'is_active' =>
+                $variation->stock_status === 'instock',
+
+            'moogold_category_id' =>
+                $mapping->moogold_category_id,
+
+            'moogold_product_id' =>
+                $mapping->moogold_product_id,
+
+            'moogold_variation_id' =>
+                $variation->moogold_variation_id,
+
+            'moogold_price' =>
+                $variation->variation_price,
+
+            'moogold_stock_status' =>
+                $variation->stock_status,
+
+            'moogold_synced_at' =>
+                now(),
+        ];
+
+        $item = Item::query()
+            ->where(
+                'moogold_variation_id',
+                $variation->moogold_variation_id
+            )
+            ->first();
+
+        if (!$item) {
+
+            Item::create($itemData);
+
+            $created++;
+
+            continue;
+        }
+
+        $item->update($itemData);
+
+        $updated++;
+    }
+
+    return response()->json([
+        'success' => true,
+
+        'message' =>
+            'Variation yang sudah dimapping berhasil disinkronkan ke Item.',
+
+        'data' => [
+
+            'mapping_id' =>
+                $mapping->id,
+
+            'product_id' =>
+                $mapping->moogold_product_id,
+
+            'total_mapped_variations' =>
+                $variations->count(),
+
+            'created' =>
+                $created,
+
+            'updated' =>
+                $updated,
+        ],
+    ]);
+}
+
+public function updateVariation(
+    Request $request,
+    MooGoldProductMapping $mapping,
+    int $variation
+): JsonResponse {
+
+    $validated = $request->validate([
+        'category_id' => [
+            'nullable',
+            'integer',
+            'exists:item_categories,id',
         ],
 
+        'is_active' => [
+            'sometimes',
+            'boolean',
+        ],
     ]);
 
+    /*
+    |--------------------------------------------------------------------------
+    | Cari variation milik Product Mapping
+    |--------------------------------------------------------------------------
+    */
+
+    $variationModel = $mapping->variations()
+        ->whereKey($variation)
+        ->first();
+
+    if (!$variationModel) {
+
+        return response()->json([
+            'success' => false,
+            'message' =>
+                'Variation tidak ditemukan pada Product Mapping ini.',
+        ], 404);
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Product harus memiliki Game
+    |--------------------------------------------------------------------------
+    */
+
+    if (!$mapping->game_id) {
+
+        return response()->json([
+            'success' => false,
+            'message' =>
+                'Pilih dan simpan Game lokal pada Product terlebih dahulu.',
+        ], 422);
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Validasi Category terhadap Game
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        array_key_exists('category_id', $validated)
+        && !empty($validated['category_id'])
+    ) {
+
+        $validCategory = $mapping->game
+            ->itemCategories()
+            ->where(
+                'item_categories.id',
+                $validated['category_id']
+            )
+            ->exists();
+
+        if (!$validCategory) {
+
+            return response()->json([
+                'success' => false,
+                'message' =>
+                    'Kategori tidak tersedia untuk Game yang dipilih.',
+            ], 422);
+        }
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Simpan
+    |--------------------------------------------------------------------------
+    */
+
+    $variationModel->update($validated);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Reload
+    |--------------------------------------------------------------------------
+    */
+
+    $variationModel->load([
+        'category:id,category_name',
+    ]);
+
+
+    return response()->json([
+        'success' => true,
+        'message' =>
+            'Mapping variation berhasil disimpan.',
+        'data' => $variationModel,
+    ]);
 }
 }

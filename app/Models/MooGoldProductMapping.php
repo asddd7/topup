@@ -2,7 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Game;
+use App\Models\ItemCategory;
+use App\Models\Item;
+use App\Models\MooGoldProductMapping;
+use App\Models\MooGoldProductVariation;
+use App\Services\MooGold\MooGoldService;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MooGoldProductMapping extends Model
@@ -43,6 +50,14 @@ class MooGoldProductMapping extends Model
         return $this->belongsTo(
             ItemCategory::class,
             'category_id'
+        );
+    }
+
+    public function variations(): HasMany
+    {
+        return $this->hasMany(
+            MooGoldProductVariation::class,
+            'moogold_product_mapping_id'
         );
     }
 }

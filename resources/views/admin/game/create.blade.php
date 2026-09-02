@@ -69,6 +69,67 @@
 
                     </div>
 
+                    {{-- =========================================================
+                        ITEM CATEGORIES
+                    ========================================================= --}}
+
+                    <div class="mb-4">
+
+                        <label class="form-label fw-bold">
+                            <i class="fa-solid fa-layer-group me-1"></i>
+                            Kategori Item
+                        </label>
+
+                        <div class="border rounded p-3 bg-light">
+
+                                @forelse($categories as $category)
+
+                                    <div class="form-check mb-2">
+
+                                        <input
+                                            class="form-check-input"
+                                            type="checkbox"
+                                            name="category_ids[]"
+                                            value="{{ $category->id }}"
+                                            id="category_create_{{ $category->id }}"
+                                            {{ in_array(
+                                                $category->id,
+                                                old('category_ids', [])
+                                            ) ? 'checked' : '' }}
+                                        >
+
+                                        <label
+                                            class="form-check-label"
+                                            for="category_create_{{ $category->id }}"
+                                        >
+
+                                            {{ $category->category_name }}
+
+                                            @if($category->use_qty)
+                                                <small class="text-muted">
+                                                    (Qty)
+                                                </small>
+                                            @endif
+
+                                        </label>
+
+                                    </div>
+
+                                @empty
+
+                                <div class="text-muted">
+                                    Belum ada kategori item.
+                                </div>
+
+                            @endforelse
+
+                        </div>
+
+                        <small class="text-muted">
+                            Pilih kategori yang dapat digunakan oleh game ini.
+                        </small>
+
+                    </div>
                     
                     <hr>
 

@@ -269,9 +269,26 @@ Route::prefix('moogold/product-mapping')
             [MooGoldProductMappingController::class, 'syncItems']
         )->name('sync-items');
 
+        Route::get(
+            '/{mapping}/variations',
+            [MooGoldProductMappingController::class, 'variations']
+        )->name('variations');  
+        
+        Route::post(
+            '/{mapping}/sync-variations',
+                [MooGoldProductMappingController::class, 'syncVariations']
+            )->name('sync-variations');
+
+        Route::put(
+            '/{mapping}/variation/{variation}',
+            [MooGoldProductMappingController::class, 'updateVariation']
+        )->name('variation.update');
     });
 
-    
+
+
+
+
 Route::get(
     '/dashboard',
     [DashboardController::class,'index']

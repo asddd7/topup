@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Admin\BaseAdminController;
 use App\Models\Item;
 use App\Models\Game;
+use App\Models\ItemCategory;
 use Illuminate\Http\Request;
 
 class GameController extends BaseAdminController
@@ -12,15 +13,34 @@ class GameController extends BaseAdminController
 
     public function index()
     {
-        $games = Game::latest()->get();
+        $games = Game::with('itemCategories')
+        ->latest()
+        ->get();
 
-        return view('admin.game.index', compact('games'));
+        $categories = ItemCategory::query()
+            ->orderBy('category_name')
+            ->get();
+
+        return view(
+            'admin.game.index',
+            compact(
+                'games',
+                'categories'
+            )
+        );
     }
 
 
     public function create()
     {
-        return view('admin.game.create');
+        $categories = ItemCategory::query()
+            ->orderBy('category_name')
+            ->get();
+
+        return view(
+            'admin.game.create',
+            compact('categories')
+        );
     }
 
 
@@ -32,7 +52,9 @@ class GameController extends BaseAdminController
             'game_name'=>'required',
             'publisher'=>'nullable',
             'game_logo'=>'nullable|image|max:2048',
-            'player_fields.*.type' => 'nullable|in:text,number,email,select'
+            'player_fields.*.type' => 'nullable|in:text,number,email,select',
+            'category_ids' => ['nullable', 'array'],
+            'category_ids.*' => ['integer', 'exists:item_categories,id'],
 
         ]);
 
@@ -93,14 +115,19 @@ class GameController extends BaseAdminController
             'is_active'=>true
 
         ]);
-$this->activity->log(
-    'Game',
-    'Create',
-    'Create game : '.$game->game_name,
-    $game,
-    null,
-    $game->toArray()
-);
+
+        $game->itemCategories()->sync(
+            $request->input('category_ids', [])
+        );
+
+        $this->activity->log(
+            'Game',
+            'Create',
+            'Create game : '.$game->game_name,
+            $game,
+            null,
+            $game->toArray()
+        );
 
         return redirect()
         ->route('admin.game.index')
@@ -112,7 +139,16 @@ $this->activity->log(
 
     public function edit(Game $game)
     {
-        return view('admin.game.edit',compact('game'));
+        $categories = ItemCategory::query()
+            ->orderBy('category_name')
+            ->get();
+
+        $game->load('itemCategories');
+
+        return view(
+            'admin.game.edit',
+            compact('game', 'categories')
+        );
     }
 
 
@@ -130,7 +166,10 @@ $this->activity->log(
 
             'game_logo'=>'nullable|image|max:2048',
 
-            'player_fields.*.type' => 'nullable|in:text,number,email,select'
+            'player_fields.*.type' => 'nullable|in:text,number,email,select',
+
+            'category_ids' => ['nullable', 'array'],
+            'category_ids.*' => ['integer', 'exists:item_categories,id'],
 
         ]);
 
@@ -188,14 +227,18 @@ $this->activity->log(
 
         ]);
 
-$this->activity->log(
-    'Game',
-    'Update',
-    'Update game : '.$game->game_name,
-    $game,
-    $old,
-    $game->fresh()->toArray()
-);
+        $game->itemCategories()->sync(
+            $request->input('category_ids', [])
+        );
+
+        $this->activity->log(
+            'Game',
+            'Update',
+            'Update game : '.$game->game_name,
+            $game,
+            $old,
+            $game->fresh()->toArray()
+        );
 
 
         return redirect()
