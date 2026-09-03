@@ -21,22 +21,48 @@ class GameController extends Controller
 
     public function show(Game $game)
     {
-        $items = Item::where('game_id', $game->id)
+        $itemsQuery = Item::query()
+            ->where('game_id', $game->id)
             ->where('is_active', 1)
-            ->with('category')
+            ->with('category');
+
+        /*
+        |--------------------------------------------------------------------------
+        | MOBILE LEGENDS INDONESIA
+        |--------------------------------------------------------------------------
+        |
+        | Untuk sementara Railway hanya menampilkan produk
+        | MooGold Mobile Legends Indonesia.
+        |
+        */
+
+        if ($game->id === 1) {
+
+            $itemsQuery
+                ->where('moogold_product_id', 2362359);
+
+        }
+
+        $items = $itemsQuery
             ->orderBy('category_id')
             ->orderBy('price')
             ->get();
 
-        $payments = Payment::where('is_active', 1)
+
+        $payments = Payment::query()
+            ->where('is_active', 1)
             ->orderBy('payment_type')
             ->get();
 
-        return view('game.show', compact(
-            'game',
-            'items',
-            'payments'
-        ));
+
+        return view(
+            'game.show',
+            compact(
+                'game',
+                'items',
+                'payments'
+            )
+        );
     }
 
 

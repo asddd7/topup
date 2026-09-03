@@ -60,16 +60,21 @@ class GameController extends Controller
         */
 
         $game->load([
-            'items' => function ($query) {
-                $query
-                    ->where('is_active', 1)
-                    ->whereNotNull('moogold_product_id')
-                    ->where('moogold_product_id', '!=', '')
-                    ->whereNotNull('moogold_variation_id')
-                    ->where('moogold_variation_id', '!=', '')
-                    ->orderBy('top_seller', 'desc')
-                    ->orderBy('price');
-            },
+        'items' => function ($query) use ($game) {
+
+            $query
+                ->where('is_active', 1)
+                ->whereNotNull('moogold_product_id')
+                ->where('moogold_product_id', '!=', '')
+                ->whereNotNull('moogold_variation_id')
+                ->where('moogold_variation_id', '!=', '');
+
+
+            $query
+                ->orderBy('top_seller', 'desc')
+                ->orderBy('price');
+
+        },
 
             'items.category',
         ]);
