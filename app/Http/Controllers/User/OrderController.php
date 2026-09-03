@@ -97,518 +97,536 @@ class OrderController extends Controller
      * STORE ORDER
      * ============================================================
      */
-    public function store(
-        Request $request,
-        PromotionService $promotion
-    ) {
+/**
+ * ============================================================
+ * STORE ORDER
+ * ============================================================
+ */
+public function store(
+    Request $request,
+    PromotionService $promotion
+) {
+    /*
+    |--------------------------------------------------------------------------
+    | 1. Basic validation
+    |--------------------------------------------------------------------------
+    */
+
+    $request->validate([
+        'game_id' => [
+            'required',
+            'integer',
+            'exists:games,id',
+        ],
+
+        'item_id' => [
+            'required',
+            'integer',
+            'exists:items,id',
+        ],
+
+        'payment_id' => [
+            'required',
+            'integer',
+            'exists:payments,id',
+        ],
+
+        'voucher' => [
+            'nullable',
+            'string',
+            'max:255',
+        ],
+    ]);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | 2. Get item
+    |--------------------------------------------------------------------------
+    */
+
+    $item = Item::with('game')
+        ->where('id', $request->item_id)
+        ->where('game_id', $request->game_id)
+        ->where('is_active', 1)
+        ->firstOrFail();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | 3. Validate dynamic player fields
+    |--------------------------------------------------------------------------
+    */
+
+    $playerData = [];
+
+    $gamePlayerFields = $item->game->player_fields ?? [];
+
+    foreach ($gamePlayerFields as $field) {
+
+        $fieldName = trim(
+            (string) ($field['name'] ?? '')
+        );
+
+        if ($fieldName === '') {
+            continue;
+        }
+
+
         /*
         |--------------------------------------------------------------------------
-        | 1. Basic validation
+        | Validation rules
+        |--------------------------------------------------------------------------
+        */
+
+        $rules = [];
+
+
+        if (!empty($field['required'])) {
+            $rules[] = 'required';
+        } else {
+            $rules[] = 'nullable';
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Type validation
+        |--------------------------------------------------------------------------
+        */
+
+        $type = strtolower(
+            (string) ($field['type'] ?? 'text')
+        );
+
+
+        if ($type === 'number') {
+            $rules[] = 'numeric';
+        }
+
+
+        if ($type === 'email') {
+            $rules[] = 'email';
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Max length
+        |--------------------------------------------------------------------------
+        */
+
+        $rules[] = 'max:255';
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Validate field
         |--------------------------------------------------------------------------
         */
 
         $request->validate([
-
-            'game_id' =>
-                'required|exists:games,id',
-
-            'item_id' =>
-                'required|exists:items,id',
-
-            'payment_id' =>
-                'required|exists:payments,id',
-
-            'voucher' =>
-                'nullable|string|max:255',
-
+            $fieldName => $rules,
         ]);
 
 
         /*
         |--------------------------------------------------------------------------
-        | 2. Get item
+        | Simpan player data
         |--------------------------------------------------------------------------
+        |
+        | Nama field dipertahankan sesuai konfigurasi game.
+        |
+        | Contoh:
+        |
+        | User ID  => 1963315211
+        | Server ID => 19248
+        |
+        | atau:
+        |
+        | Player ID => 123456
+        |
         */
 
-        $item = Item::with('game')
-
-            ->where(
-                'id',
-                $request->item_id
-            )
-
-            ->where(
-                'game_id',
-                $request->game_id
-            )
-
-            ->where(
-                'is_active',
-                1
-            )
-
-            ->firstOrFail();
+        $value = $request->input($fieldName);
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | 3. Validate player data
-        |--------------------------------------------------------------------------
-        */
+        if (
+            $value !== null &&
+            $value !== ''
+        ) {
+            $playerData[$fieldName] = $value;
+        }
+    }
 
-        $playerData = [];
 
-        foreach (
-            $item->game->player_fields ?? []
-            as $field
+    /*
+    |--------------------------------------------------------------------------
+    | 4. Transaction
+    |--------------------------------------------------------------------------
+    */
+
+    $order = DB::transaction(
+        function () use (
+            $request,
+            $item,
+            $playerData,
+            $promotion
         ) {
 
-            $rules = [];
+            /*
+            |--------------------------------------------------------------------------
+            | Harga resmi dari database
+            |--------------------------------------------------------------------------
+            */
 
-            if (
-                !empty($field['required'])
-            ) {
+            $subtotal = (float) $item->price;
 
-                $rules[] = 'required';
-            }
 
-            if (
-                ($field['type'] ?? '') === 'number'
-            ) {
+            /*
+            |--------------------------------------------------------------------------
+            | Calculate promotion
+            |--------------------------------------------------------------------------
+            */
 
-                $rules[] = 'numeric';
-            }
+            $promo = $promotion->calculate(
+                subtotal: $subtotal,
 
-            if (
-                ($field['type'] ?? '') === 'email'
-            ) {
+                gameId: (int) $item->game_id,
 
-                $rules[] = 'email';
-            }
+                itemId: (int) $item->id,
 
-            if (
-                count($rules) > 0
-            ) {
+                paymentId: (int) $request->payment_id,
 
-                $request->validate([
+                voucherCode:
+                    $request->filled('voucher')
+                        ? $request->voucher
+                        : null,
 
-                    $field['name'] =>
-                        implode(
-                            '|',
-                            $rules
-                        ),
+                user: auth()->user(),
 
-                ]);
-            }
-
-            $playerData[
-                $field['name']
-            ] = $request->input(
-                $field['name']
+                lockForUpdate: true
             );
-        }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | 4. Transaction
-        |--------------------------------------------------------------------------
-        */
+            /*
+            |--------------------------------------------------------------------------
+            | Final price
+            |--------------------------------------------------------------------------
+            */
 
-        $order = DB::transaction(
-            function () use (
-                $request,
-                $item,
-                $playerData,
-                $promotion
+            $discountTotal = round(
+                (float) $promo['discount_total'],
+                2
+            );
+
+            $totalPrice = round(
+                (float) $promo['total'],
+                2
+            );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Generate invoice
+            |--------------------------------------------------------------------------
+            */
+
+            do {
+
+                $invoice =
+                    'INV-' .
+                    now()->format('Ymd') .
+                    '-' .
+                    strtoupper(
+                        Str::random(6)
+                    );
+
+            } while (
+                Order::where(
+                    'invoice_number',
+                    $invoice
+                )->exists()
+            );
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Legacy discount_id
+            |--------------------------------------------------------------------------
+            */
+
+            $firstDiscountId =
+                $promo['discounts'][0]['id']
+                ?? null;
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Guest token
+            |--------------------------------------------------------------------------
+            */
+
+            $guestToken =
+                Auth::check()
+                    ? null
+                    : (string) Str::uuid();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Create order
+            |--------------------------------------------------------------------------
+            */
+
+            $order = Order::create([
+
+                'invoice_number' =>
+                    $invoice,
+
+                'user_id' =>
+                    Auth::id(),
+
+                'game_id' =>
+                    $item->game_id,
+
+                'payment_id' =>
+                    $request->payment_id,
+
+                'discount_id' =>
+                    $firstDiscountId,
+
+                /*
+                |--------------------------------------------------------------------------
+                | GENERIC PLAYER DATA
+                |--------------------------------------------------------------------------
+                */
+
+                'player_data' =>
+                    $playerData,
+
+                /*
+                |--------------------------------------------------------------------------
+                | Legacy fields
+                |--------------------------------------------------------------------------
+                |
+                | Tetap disimpan untuk kompatibilitas dengan sistem lama.
+                |
+                */
+
+                'player_uid' =>
+                    null,
+
+                'server_id' =>
+                    null,
+
+                'nickname' =>
+                    null,
+
+                'subtotal' =>
+                    $subtotal,
+
+                'discount' =>
+                    $discountTotal,
+
+                'total_price' =>
+                    $totalPrice,
+
+                'status' =>
+                    'Waiting Payment',
+
+                'guest_token' =>
+                    $guestToken,
+            ]);
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Save ALL applied promotions
+            |--------------------------------------------------------------------------
+            */
+
+            foreach (
+                $promo['discounts']
+                as $applied
             ) {
 
-                /*
-                |--------------------------------------------------------------------------
-                | Harga resmi dari database
-                |--------------------------------------------------------------------------
-                */
-
-                $subtotal = (float) $item->price;
+                $discountId =
+                    (int) $applied['id'];
 
 
                 /*
                 |--------------------------------------------------------------------------
-                | Calculate promotion
+                | Lock discount
                 |--------------------------------------------------------------------------
                 */
 
-                $promo = $promotion->calculate(
-
-                    subtotal:
-                        $subtotal,
-
-                    gameId:
-                        (int) $item->game_id,
-
-                    itemId:
-                        (int) $item->id,
-
-                    paymentId:
-                        (int) $request->payment_id,
-
-                    voucherCode:
-                        $request->filled('voucher')
-                            ? $request->voucher
-                            : null,
-
-                    user:
-                        auth()->user(),
-
-                    lockForUpdate:
-                        true
-                );
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | Final price
-                |--------------------------------------------------------------------------
-                */
-
-                $discountTotal = round(
-                    (float) $promo['discount_total'],
-                    2
-                );
-
-                $totalPrice = round(
-                    (float) $promo['total'],
-                    2
-                );
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | Generate invoice
-                |--------------------------------------------------------------------------
-                */
-
-                do {
-
-                    $invoice =
-                        'INV-' .
-                        now()->format('Ymd') .
-                        '-' .
-                        strtoupper(
-                            Str::random(6)
-                        );
-
-                } while (
-                    Order::where(
-                        'invoice_number',
-                        $invoice
-                    )->exists()
-                );
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | Legacy discount_id
-                |--------------------------------------------------------------------------
-                */
-
-                $firstDiscountId =
-                    $promo['discounts'][0]['id']
-                    ?? null;
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | Guest token
-                |--------------------------------------------------------------------------
-                */
-
-                $guestToken =
-                    Auth::check()
-                        ? null
-                        : (string) Str::uuid();
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | Create order
-                |--------------------------------------------------------------------------
-                */
-
-                $order = Order::create([
-
-                    'invoice_number' =>
-                        $invoice,
-
-                    'user_id' =>
-                        Auth::id(),
-
-                    'game_id' =>
-                        $item->game_id,
-
-                    'payment_id' =>
-                        $request->payment_id,
-
-                    'discount_id' =>
-                        $firstDiscountId,
-
-                    'player_data' =>
-                        $playerData,
-
-                    'player_uid' =>
-                        null,
-
-                    'server_id' =>
-                        null,
-
-                    'nickname' =>
-                        null,
-
-                    'subtotal' =>
-                        $subtotal,
-
-                    'discount' =>
-                        $discountTotal,
-
-                    'total_price' =>
-                        $totalPrice,
-
-                    'status' =>
-                        'Waiting Payment',
-
-                    'guest_token' =>
-                        $guestToken,
-
-                ]);
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | Save ALL applied promotions
-                |--------------------------------------------------------------------------
-                */
-
-                foreach (
-                    $promo['discounts']
-                    as $applied
-                ) {
-
-                    $discountId =
-                        (int) $applied['id'];
-
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Lock discount
-                    |--------------------------------------------------------------------------
-                    */
-
-                    $discount = Discount::where(
-                        'id',
-                        $discountId
-                    )
-                        ->lockForUpdate()
-                        ->first();
-
-
-                    if (!$discount) {
-
-                        throw new \RuntimeException(
-                            'Promo tidak ditemukan.'
-                        );
-                    }
-
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Check global quota
-                    |--------------------------------------------------------------------------
-                    |
-                    | usage_limit:
-                    | NULL = unlimited
-                    |
-                    */
-
-                    if (
-                        $discount->usage_limit !== null
-                        &&
-                        $discount->quota_used >=
-                        $discount->usage_limit
-                    ) {
-
-                        throw new \RuntimeException(
-
-                            'Promo "' .
-                            $discount->discount_name .
-                            '" sudah habis.'
-
-                        );
-                    }
-
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Save order discount
-                    |--------------------------------------------------------------------------
-                    */
-
-                    $order
-                        ->orderDiscounts()
-                        ->create([
-
-                            'discount_id' =>
-                                $discountId,
-
-                            'discount_amount' =>
-                                (float)
-                                $applied['discount'],
-
-                        ]);
-
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Save discount usage
-                    |--------------------------------------------------------------------------
-                    |
-                    | Ini yang mengisi tabel:
-                    |
-                    | discount_usages
-                    |
-                    */
-
-                    $discount->usages()->create([
-
-                        'order_id' =>
-                            $order->id,
-
-                        'user_id' =>
-                            Auth::id(),
-
-                        'discount_amount' =>
-                            (float)
-                            $applied['discount'],
-
-                    ]);
-
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | PENTING
-                    |--------------------------------------------------------------------------
-                    |
-                    | quota_used TIDAK di-increment di sini.
-                    |
-                    | Controller hanya mencatat:
-                    |
-                    | 1. order_discounts
-                    | 2. discount_usages
-                    |
-                    | Pengelolaan quota global dilakukan oleh
-                    | satu mekanisme saja agar tidak double count.
-                    |
-                    */
+                $discount = Discount::where(
+                    'id',
+                    $discountId
+                )
+                    ->lockForUpdate()
+                    ->first();
+
+
+                if (!$discount) {
+
+                    throw new \RuntimeException(
+                        'Promo tidak ditemukan.'
+                    );
                 }
 
 
                 /*
                 |--------------------------------------------------------------------------
-                | Order detail
+                | Check global quota
+                |--------------------------------------------------------------------------
+                */
+
+                if (
+                    $discount->usage_limit !== null
+                    &&
+                    $discount->quota_used >=
+                    $discount->usage_limit
+                ) {
+
+                    throw new \RuntimeException(
+                        'Promo "' .
+                        $discount->discount_name .
+                        '" sudah habis.'
+                    );
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Save order discount
                 |--------------------------------------------------------------------------
                 */
 
                 $order
-                    ->details()
+                    ->orderDiscounts()
                     ->create([
 
-                        'item_id' =>
-                            $item->id,
+                        'discount_id' =>
+                            $discountId,
 
-                        'qty' =>
-                            1,
-
-                        'price' =>
-                            $totalPrice,
-
-                        'subtotal' =>
-                            $totalPrice,
-
+                        'discount_amount' =>
+                            (float)
+                            $applied['discount'],
                     ]);
 
 
                 /*
                 |--------------------------------------------------------------------------
-                | Notification admin
+                | Save discount usage
                 |--------------------------------------------------------------------------
                 */
 
-                $admins = User::where(
-                    'role_id',
-                    1
-                )->get();
+                $discount->usages()->create([
 
+                    'order_id' =>
+                        $order->id,
 
-                foreach (
-                    $admins
-                    as $admin
-                ) {
+                    'user_id' =>
+                        Auth::id(),
 
-                    Notification::create([
-
-                        'user_id' =>
-                            $admin->id,
-
-                        'order_id' =>
-                            $order->id,
-
-                        'title' =>
-                            'Order Baru',
-
-                        'message' =>
-                            'Order ' .
-                            $order->invoice_number .
-                            ' menunggu proses',
-
-                    ]);
-                }
-
-
-                return $order;
+                    'discount_amount' =>
+                        (float)
+                        $applied['discount'],
+                ]);
             }
-        );
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Redirect
-        |--------------------------------------------------------------------------
-        */
+            /*
+            |--------------------------------------------------------------------------
+            | Order detail
+            |--------------------------------------------------------------------------
+            */
 
-        if (
-            $order->guest_token
-        ) {
+            $order
+                ->details()
+                ->create([
 
-            return redirect(
+                    'item_id' =>
+                        $item->id,
 
-                route(
-                    'order.payment',
-                    $order->invoice_number
-                )
-                . '?token=' .
-                $order->guest_token
+                    'qty' =>
+                        1,
 
-            );
+                    'price' =>
+                        $totalPrice,
+
+                    'subtotal' =>
+                        $totalPrice,
+                ]);
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Notification admin
+            |--------------------------------------------------------------------------
+            */
+
+            $admins = User::where(
+                'role_id',
+                1
+            )->get();
+
+
+            foreach (
+                $admins
+                as $admin
+            ) {
+
+                Notification::create([
+
+                    'user_id' =>
+                        $admin->id,
+
+                    'order_id' =>
+                        $order->id,
+
+                    'title' =>
+                        'Order Baru',
+
+                    'message' =>
+                        'Order ' .
+                        $order->invoice_number .
+                        ' menunggu proses',
+                ]);
+            }
+
+
+            return $order;
         }
+    );
 
 
-        return redirect()->route(
+    /*
+    |--------------------------------------------------------------------------
+    | Redirect
+    |--------------------------------------------------------------------------
+    */
 
-            'order.payment',
+    if ($order->guest_token) {
 
-            $order->invoice_number
-
+        return redirect(
+            route(
+                'order.payment',
+                $order->invoice_number
+            )
+            . '?token=' .
+            $order->guest_token
         );
     }
+
+
+    return redirect()->route(
+        'order.payment',
+        $order->invoice_number
+    );
+}
 
 
     /**

@@ -1,21 +1,32 @@
-const gameShowPage = document.querySelector('#game-show-page');
-
-if (gameShowPage) {
-
-    // seluruh JavaScript game.show
-}
-
 /* =========================================================
    GAME SHOW
 ========================================================= */
 
+const gameShowPage =
+    document.querySelector('#game-show-page');
+
+
 let selectedPrice = 0;
+
+
+let playerValidation = {
+    valid: false,
+    validationAvailable: false,
+    nickname: null,
+    userId: null,
+    serverId: null,
+    itemId: null,
+    requiresValidation: false
+};
+
 
 let selectedPaymentId = null;
 
 let selectedVoucher = null;
 
 let appliedPromos = [];
+
+let checkoutProcessing = false;
 
 
 /* =========================================================
@@ -54,13 +65,845 @@ function escapeHtml(value)
 
 
 /* =========================================================
+   RESET PLAYER VALIDATION
+========================================================= */
+
+function resetPlayerValidation()
+{
+    playerValidation = {
+        valid: false,
+        validationAvailable: false,
+        nickname: null,
+        userId: null,
+        serverId: null,
+        itemId: null,
+        requiresValidation: false
+    };
+
+
+    const nicknameInput =
+        document.getElementById(
+            'player_nickname'
+        );
+
+
+    if (nicknameInput) {
+
+        nicknameInput.value = '';
+
+    }
+
+
+    const result =
+        document.getElementById(
+            'player_validation_result'
+        );
+
+
+    if (result) {
+
+        result.innerHTML = '';
+
+    }
+}
+
+
+/* =========================================================
+   RENDER PLAYER VALIDATION
+========================================================= */
+
+function renderPlayerValidation(
+    type,
+    message
+)
+{
+    const result =
+        document.getElementById(
+            'player_validation_result'
+        );
+
+
+    if (!result) {
+        return;
+    }
+
+
+    /* -----------------------------------------------------
+       LOADING
+    ----------------------------------------------------- */
+
+    if (type === 'loading') {
+
+        result.innerHTML = `
+
+            <div class="small text-muted">
+
+                <i
+                    class="
+                        fa-solid
+                        fa-spinner
+                        fa-spin
+                        me-1
+                    "
+                ></i>
+
+                Memeriksa ID Player...
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    /* -----------------------------------------------------
+       SUCCESS
+    ----------------------------------------------------- */
+
+    if (type === 'success') {
+
+        result.innerHTML = `
+
+            <div
+                class="
+                    alert
+                    alert-success
+                    py-2
+                    mb-0
+                "
+            >
+
+                <i
+                    class="
+                        fa-solid
+                        fa-circle-check
+                        me-1
+                    "
+                ></i>
+
+                <strong>
+                    ID Player berhasil diverifikasi.
+                </strong>
+
+                <div class="mt-1">
+
+                    ${escapeHtml(message)}
+
+                </div>
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    /* -----------------------------------------------------
+       WARNING
+    ----------------------------------------------------- */
+
+    if (type === 'warning') {
+
+        result.innerHTML = `
+
+            <div
+                class="
+                    alert
+                    alert-warning
+                    py-2
+                    mb-0
+                "
+            >
+
+                <i
+                    class="
+                        fa-solid
+                        fa-triangle-exclamation
+                        me-1
+                    "
+                ></i>
+
+                <strong>
+                    Validasi Player Tidak Tersedia
+                </strong>
+
+                <div class="mt-1">
+
+                    ${escapeHtml(message)}
+
+                </div>
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    /* -----------------------------------------------------
+       ERROR
+    ----------------------------------------------------- */
+
+    result.innerHTML = `
+
+        <div
+            class="
+                alert
+                alert-danger
+                py-2
+                mb-0
+            "
+        >
+
+            <i
+                class="
+                    fa-solid
+                    fa-circle-xmark
+                    me-1
+                "
+            ></i>
+
+            ${escapeHtml(message)}
+
+        </div>
+
+    `;
+}
+
+
+/* =========================================================
+   PLAYER FIELD CHANGE
+========================================================= */
+
+document
+    .querySelectorAll(
+        '[data-moogold-field]'
+    )
+    .forEach(function(input) {
+
+
+        input.addEventListener(
+            'input',
+            function() {
+
+                resetPlayerValidation();
+
+            }
+        );
+
+
+        input.addEventListener(
+            'change',
+            function() {
+
+                resetPlayerValidation();
+
+            }
+        );
+
+    });
+
+
+/* =========================================================
+   VALIDATE PLAYER FOR CHECKOUT
+========================================================= */
+
+async function validatePlayerForCheckout(
+    itemId,
+    userId,
+    serverId
+)
+{
+    renderPlayerValidation(
+        'loading'
+    );
+
+
+    const csrf =
+        document.querySelector(
+            'meta[name="csrf-token"]'
+        );
+
+
+    if (!csrf) {
+
+        renderPlayerValidation(
+            'error',
+            'CSRF token tidak ditemukan.'
+        );
+
+
+        return {
+            status: 'error',
+            message: 'CSRF token tidak ditemukan.'
+        };
+
+    }
+
+
+    if (
+        !gameConfig.validatePlayerUrl
+    ) {
+
+        renderPlayerValidation(
+            'error',
+            'URL validasi player tidak tersedia.'
+        );
+
+
+        return {
+            status: 'error',
+            message:
+                'URL validasi player tidak tersedia.'
+        };
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                gameConfig.validatePlayerUrl,
+                {
+                    method: 'POST',
+
+                    headers: {
+
+                        'Content-Type':
+                            'application/json',
+
+                        'Accept':
+                            'application/json',
+
+                        'X-CSRF-TOKEN':
+                            csrf.content
+
+                    },
+
+                    body: JSON.stringify({
+
+                        item_id:
+                            itemId,
+
+                        user_id:
+                            userId,
+
+                        server_id:
+                            serverId
+
+                    })
+
+                }
+            );
+
+
+        let data = {};
+
+        try {
+
+            data =
+                await response.json();
+
+        } catch (jsonError) {
+
+            data = {};
+
+        }
+
+
+        /* =================================================
+           VALIDATION UNAVAILABLE
+        ================================================= */
+
+        if (
+            response.ok &&
+            data.data &&
+            data.data.validation_available === false
+        ) {
+
+            playerValidation = {
+
+                valid: true,
+
+                validationAvailable: false,
+
+                nickname:
+                    data.data.nickname ||
+                    null,
+
+                userId:
+                    userId,
+
+                serverId:
+                    serverId,
+
+                itemId:
+                    itemId,
+
+                requiresValidation: true
+
+            };
+
+
+            renderPlayerValidation(
+                'warning',
+                data.message ||
+                'Validasi player tidak tersedia untuk produk ini.'
+            );
+
+
+            return {
+
+                status: 'unavailable',
+
+                message:
+                    data.message ||
+                    'Validasi player tidak tersedia untuk produk ini.',
+
+                nickname:
+                    data.data.nickname ||
+                    null
+
+            };
+
+        }
+
+
+        /* =================================================
+           INVALID
+        ================================================= */
+
+        if (
+            !response.ok ||
+            !data.data ||
+            data.data.valid !== true
+        ) {
+
+            const message =
+                data.message ||
+                'User ID atau Server ID tidak valid.';
+
+
+            playerValidation = {
+
+                valid: false,
+
+                validationAvailable: true,
+
+                nickname: null,
+
+                userId:
+                    userId,
+
+                serverId:
+                    serverId,
+
+                itemId:
+                    itemId,
+
+                requiresValidation: true
+
+            };
+
+
+            renderPlayerValidation(
+                'error',
+                message
+            );
+
+
+            return {
+
+                status: 'invalid',
+
+                message:
+                    message
+
+            };
+
+        }
+
+
+        /* =================================================
+           VALID
+        ================================================= */
+
+        const nickname =
+            data.data.nickname ||
+            'Player ditemukan';
+
+
+        playerValidation = {
+
+            valid: true,
+
+            validationAvailable: true,
+
+            nickname:
+                nickname,
+
+            userId:
+                userId,
+
+            serverId:
+                serverId,
+
+            itemId:
+                itemId,
+
+            requiresValidation: true
+
+        };
+
+
+        const nicknameInput =
+            document.getElementById(
+                'player_nickname'
+            );
+
+
+        if (nicknameInput) {
+
+            nicknameInput.value =
+                nickname;
+
+        }
+
+
+        renderPlayerValidation(
+            'success',
+            nickname
+        );
+
+
+        return {
+
+            status: 'valid',
+
+            nickname:
+                nickname
+
+        };
+
+    } catch (error) {
+
+        console.error(
+            'Player validation error:',
+            error
+        );
+
+
+        const message =
+            error.message ||
+            'Gagal melakukan validasi player.';
+
+
+        renderPlayerValidation(
+            'error',
+            message
+        );
+
+
+        return {
+
+            status: 'error',
+
+            message:
+                message
+
+        };
+
+    }
+}
+
+
+/* =========================================================
+   PLAYER CONFIRMATION MODAL
+========================================================= */
+
+async function showPlayerConfirmation()
+{
+    const userId =
+        playerValidation.userId ||
+        '';
+
+
+    const serverId =
+        playerValidation.serverId ||
+        '';
+
+
+    const nickname =
+        playerValidation.nickname ||
+        'Tidak tersedia';
+
+
+    /* =====================================================
+       SWEETALERT2
+    ===================================================== */
+
+    if (
+        typeof Swal !== 'undefined'
+    ) {
+
+        /* -------------------------------------------------
+           VALIDATION AVAILABLE
+        ------------------------------------------------- */
+
+        if (
+            playerValidation.validationAvailable
+        ) {
+
+            const result =
+                await Swal.fire({
+
+                    icon: 'success',
+
+                    title:
+                        'Data Player Ditemukan',
+
+                    html: `
+
+                        <div
+                            class="
+                                text-start
+                                mt-3
+                            "
+                        >
+
+                            <div class="mb-2">
+
+                                <strong>
+                                    User ID
+                                </strong>
+
+                                <div>
+                                    ${escapeHtml(userId)}
+                                </div>
+
+                            </div>
+
+
+                            ${
+                                serverId
+                                    ? `
+                                        <div class="mb-2">
+
+                                            <strong>
+                                                Server ID
+                                            </strong>
+
+                                            <div>
+                                                ${escapeHtml(serverId)}
+                                            </div>
+
+                                        </div>
+                                    `
+                                    : ''
+                            }
+
+
+                            <div class="mb-2">
+
+                                <strong>
+                                    Nickname
+                                </strong>
+
+                                <div
+                                    class="
+                                        text-success
+                                        fw-bold
+                                    "
+                                >
+
+                                    ${escapeHtml(nickname)}
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="
+                                alert
+                                alert-info
+                                text-start
+                                small
+                                mt-3
+                                mb-0
+                            "
+                        >
+
+                            Pastikan data player sudah benar
+                            sebelum melanjutkan pembelian.
+
+                        </div>
+
+                    `,
+
+                    showCancelButton: true,
+
+                    confirmButtonText:
+                        'Lanjutkan',
+
+                    cancelButtonText:
+                        'Batal',
+
+                    reverseButtons: true
+
+                });
+
+
+            return result.isConfirmed;
+
+        }
+
+
+        /* -------------------------------------------------
+           VALIDATION UNAVAILABLE
+        ------------------------------------------------- */
+
+        const result =
+            await Swal.fire({
+
+                icon: 'warning',
+
+                title:
+                    'Validasi Player Tidak Tersedia',
+
+                html: `
+
+                    <div
+                        class="
+                            text-start
+                            mt-3
+                        "
+                    >
+
+                        <div class="mb-2">
+
+                            <strong>
+                                User ID
+                            </strong>
+
+                            <div>
+                                ${escapeHtml(userId)}
+                            </div>
+
+                        </div>
+
+
+                        ${
+                            serverId
+                                ? `
+                                    <div class="mb-2">
+
+                                        <strong>
+                                            Server ID
+                                        </strong>
+
+                                        <div>
+                                            ${escapeHtml(serverId)}
+                                        </div>
+
+                                    </div>
+                                `
+                                : ''
+                        }
+
+
+                        <div
+                            class="
+                                alert
+                                alert-warning
+                                small
+                                mt-3
+                                mb-0
+                            "
+                        >
+
+                            MooGold tidak menyediakan
+                            validasi untuk produk ini.
+
+                            <br><br>
+
+                            Pastikan User ID dan Server ID
+                            sudah benar.
+
+                            <br><br>
+
+                            Apakah Anda tetap ingin
+                            melanjutkan pembelian?
+
+                        </div>
+
+                    </div>
+
+                `,
+
+                showCancelButton: true,
+
+                confirmButtonText:
+                    'Tetap Lanjutkan',
+
+                cancelButtonText:
+                    'Batal',
+
+                reverseButtons: true
+
+            });
+
+
+        return result.isConfirmed;
+
+    }
+
+
+    /* =====================================================
+       FALLBACK JIKA SWEETALERT2 TIDAK TERSEDIA
+    ===================================================== */
+
+    return window.confirm(
+        playerValidation.validationAvailable
+            ? `Data Player:\n\n` +
+              `User ID: ${userId}\n` +
+              `Server ID: ${serverId}\n` +
+              `Nickname: ${nickname}\n\n` +
+              `Lanjutkan pembelian?`
+            : `Validasi player tidak tersedia untuk produk ini.\n\n` +
+              `User ID: ${userId}\n` +
+              `Server ID: ${serverId}\n\n` +
+              `Tetap lanjutkan pembelian?`
+    );
+}
+
+
+/* =========================================================
    SELECT ITEM
 ========================================================= */
 
-window.selectItem = function(id, name, price)
+window.selectItem = function(
+    id,
+    name,
+    price,
+    requiresPlayerValidation = false
+)
 {
     selectedPrice =
         parseFloat(price) || 0;
+
+
+    /* -----------------------------------------------------
+       RESET PLAYER VALIDATION
+    ----------------------------------------------------- */
+
+    resetPlayerValidation();
 
 
     /* -----------------------------------------------------
@@ -79,16 +922,22 @@ window.selectItem = function(id, name, price)
     const codeInput =
         document.getElementById('code');
 
+
     if (codeInput) {
+
         codeInput.value = '';
+
     }
 
 
     const voucherInput =
         document.getElementById('voucher');
 
+
     if (voucherInput) {
+
         voucherInput.value = '';
+
     }
 
 
@@ -99,8 +948,11 @@ window.selectItem = function(id, name, price)
     const itemInput =
         document.getElementById('item_id');
 
+
     if (itemInput) {
+
         itemInput.value = id;
+
     }
 
 
@@ -111,6 +963,7 @@ window.selectItem = function(id, name, price)
     const selectedItem =
         document.getElementById('selected_item');
 
+
     if (selectedItem) {
 
         selectedItem.innerText =
@@ -120,16 +973,51 @@ window.selectItem = function(id, name, price)
 
 
     /* -----------------------------------------------------
+       PLAYER VALIDATION STATE
+    ----------------------------------------------------- */
+
+    playerValidation.requiresValidation =
+        Boolean(
+            requiresPlayerValidation
+        );
+
+
+    /* -----------------------------------------------------
+       TAMPILKAN / SEMBUNYIKAN VALIDASI
+    ----------------------------------------------------- */
+
+    const playerValidationBox =
+        document.querySelector(
+            '.player-validation'
+        );
+
+
+    if (playerValidationBox) {
+
+        playerValidationBox.style.display =
+            requiresPlayerValidation
+                ? ''
+                : 'none';
+
+    }
+
+
+    /* -----------------------------------------------------
        ORIGINAL PRICE
     ----------------------------------------------------- */
 
     const originalPrice =
-        document.getElementById('original_price');
+        document.getElementById(
+            'original_price'
+        );
+
 
     if (originalPrice) {
 
         originalPrice.innerText =
-            formatRupiah(selectedPrice);
+            formatRupiah(
+                selectedPrice
+            );
 
     }
 
@@ -139,7 +1027,10 @@ window.selectItem = function(id, name, price)
     ----------------------------------------------------- */
 
     const discountPrice =
-        document.getElementById('discount_price');
+        document.getElementById(
+            'discount_price'
+        );
+
 
     if (discountPrice) {
 
@@ -154,12 +1045,17 @@ window.selectItem = function(id, name, price)
     ----------------------------------------------------- */
 
     const finalPrice =
-        document.getElementById('final_price');
+        document.getElementById(
+            'final_price'
+        );
+
 
     if (finalPrice) {
 
         finalPrice.innerText =
-            formatRupiah(selectedPrice);
+            formatRupiah(
+                selectedPrice
+            );
 
     }
 
@@ -172,6 +1068,7 @@ window.selectItem = function(id, name, price)
         document.getElementById(
             'original_subtotal'
         );
+
 
     if (subtotal) {
 
@@ -190,6 +1087,7 @@ window.selectItem = function(id, name, price)
             'total_price'
         );
 
+
     if (total) {
 
         total.value =
@@ -206,6 +1104,7 @@ window.selectItem = function(id, name, price)
         document.getElementById(
             'discount_total'
         );
+
 
     if (discount) {
 
@@ -224,6 +1123,7 @@ window.selectItem = function(id, name, price)
             'discount_ids'
         );
 
+
     if (discountIds) {
 
         discountIds.value =
@@ -240,6 +1140,7 @@ window.selectItem = function(id, name, price)
         document.getElementById(
             'promoList'
         );
+
 
     if (promoList) {
 
@@ -269,11 +1170,15 @@ window.selectItem = function(id, name, price)
             'checkout'
         );
 
+
     if (checkout) {
 
         checkout.scrollIntoView({
+
             behavior: 'smooth',
+
             block: 'start'
+
         });
 
     }
@@ -288,7 +1193,8 @@ window.selectItem = function(id, name, price)
         calculatePromos();
 
     }
-}
+
+};
 
 
 /* =========================================================
@@ -296,7 +1202,9 @@ window.selectItem = function(id, name, price)
 ========================================================= */
 
 document
-    .querySelectorAll('.payment-radio')
+    .querySelectorAll(
+        '.payment-radio'
+    )
     .forEach(function(payment) {
 
         payment.addEventListener(
@@ -304,7 +1212,10 @@ document
             function() {
 
                 selectedPaymentId =
-                    parseInt(this.value) || null;
+                    parseInt(
+                        this.value
+                    ) || null;
+
 
                 calculatePromos();
 
@@ -321,7 +1232,9 @@ document
 function checkVoucher()
 {
     const codeInput =
-        document.getElementById('code');
+        document.getElementById(
+            'code'
+        );
 
 
     if (!codeInput) {
@@ -339,13 +1252,16 @@ function checkVoucher()
 
     } else {
 
-        selectedVoucher = code;
+        selectedVoucher =
+            code;
 
     }
 
 
     const voucherInput =
-        document.getElementById('voucher');
+        document.getElementById(
+            'voucher'
+        );
 
 
     if (voucherInput) {
@@ -370,7 +1286,10 @@ function removeVoucher()
 
 
     const codeInput =
-        document.getElementById('code');
+        document.getElementById(
+            'code'
+        );
+
 
     if (codeInput) {
 
@@ -381,7 +1300,10 @@ function removeVoucher()
 
 
     const voucherInput =
-        document.getElementById('voucher');
+        document.getElementById(
+            'voucher'
+        );
+
 
     if (voucherInput) {
 
@@ -407,7 +1329,9 @@ function calculatePromos()
 
 
     const itemInput =
-        document.getElementById('item_id');
+        document.getElementById(
+            'item_id'
+        );
 
 
     if (!itemInput) {
@@ -425,7 +1349,9 @@ function calculatePromos()
 
 
     const promoList =
-        document.getElementById('promoList');
+        document.getElementById(
+            'promoList'
+        );
 
 
     if (promoList) {
@@ -434,7 +1360,13 @@ function calculatePromos()
 
             <div class="promo-empty">
 
-                <i class="fa-solid fa-spinner fa-spin"></i>
+                <i
+                    class="
+                        fa-solid
+                        fa-spinner
+                        fa-spin
+                    "
+                ></i>
 
                 Menghitung promo...
 
@@ -530,7 +1462,9 @@ function calculatePromos()
             data.discounts || [];
 
 
-        renderPromoResult(data);
+        renderPromoResult(
+            data
+        );
 
     })
 
@@ -604,7 +1538,13 @@ function renderPromoResult(data)
 
             <div class="promo-empty">
 
-                <i class="fa-solid fa-tag me-1"></i>
+                <i
+                    class="
+                        fa-solid
+                        fa-tag
+                        me-1
+                    "
+                ></i>
 
                 Tidak ada promo yang digunakan.
 
@@ -780,6 +1720,7 @@ function renderPromoResult(data)
             'discount_price'
         );
 
+
     if (discountPrice) {
 
         discountPrice.innerText =
@@ -798,6 +1739,7 @@ function renderPromoResult(data)
         document.getElementById(
             'final_price'
         );
+
 
     if (finalPrice) {
 
@@ -818,6 +1760,7 @@ function renderPromoResult(data)
             'discount_total'
         );
 
+
     if (discountInput) {
 
         discountInput.value =
@@ -835,6 +1778,7 @@ function renderPromoResult(data)
             'total_price'
         );
 
+
     if (totalInput) {
 
         totalInput.value =
@@ -851,6 +1795,7 @@ function renderPromoResult(data)
         document.getElementById(
             'discount_ids'
         );
+
 
     if (discountIds) {
 
@@ -941,7 +1886,7 @@ function renderPromoResult(data)
 
 
 /* =========================================================
-   FORM VALIDATION
+   FORM VALIDATION + PLAYER CONFIRMATION
 ========================================================= */
 
 const checkoutForm =
@@ -954,74 +1899,305 @@ if (checkoutForm) {
 
     checkoutForm.addEventListener(
         'submit',
-        function(event) {
+        async function (event) {
 
-            /* ---------------------------------------------
-               ITEM
-            --------------------------------------------- */
-
-            const itemId =
-                document.getElementById(
-                    'item_id'
-                )?.value;
+            event.preventDefault();
 
 
-            if (!itemId) {
+            /* =================================================
+               ANTI DOUBLE SUBMIT
+            ================================================= */
 
-                event.preventDefault();
+            if (checkoutProcessing) {
+                return;
+            }
 
-                alert(
-                    'Silakan pilih nominal top up terlebih dahulu.'
+
+            /*
+             * LOCK SEJAK AWAL.
+             *
+             * Ini penting agar ketika user klik tombol
+             * Beli Sekarang dua kali dengan cepat,
+             * SweetAlert tidak muncul dua kali.
+             */
+
+            checkoutProcessing = true;
+
+
+            const submitButton =
+                checkoutForm.querySelector(
+                    '.checkout-submit'
                 );
 
-                return;
+
+            if (submitButton) {
+
+                submitButton.disabled = true;
+
+                submitButton.dataset.originalText =
+                    submitButton.innerHTML;
+
+                submitButton.innerHTML =
+                    '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
 
             }
 
 
-            /* ---------------------------------------------
-               PAYMENT
-            --------------------------------------------- */
+            try {
 
-            const paymentSelected =
-                document.querySelector(
-                    '.payment-radio:checked'
+                /* =============================================
+                   1. CEK PRODUK
+                ============================================= */
+
+                const itemId =
+                    document.querySelector(
+                        '#item_id'
+                    )?.value?.trim() || '';
+
+
+                if (!itemId) {
+
+                    await Swal.fire({
+
+                        icon: 'warning',
+
+                        title:
+                            'Pilih Produk',
+
+                        text:
+                            'Silakan pilih produk terlebih dahulu.',
+
+                        confirmButtonText:
+                            'OK'
+
+                    });
+
+                    return;
+
+                }
+
+
+                /* =============================================
+                   2. CEK PAYMENT
+                ============================================= */
+
+                if (!selectedPaymentId) {
+
+                    await Swal.fire({
+
+                        icon: 'warning',
+
+                        title:
+                            'Pilih Pembayaran',
+
+                        text:
+                            'Silakan pilih metode pembayaran terlebih dahulu.',
+
+                        confirmButtonText:
+                            'OK'
+
+                    });
+
+                    return;
+
+                }
+
+
+                /* =============================================
+                   3. AMBIL PLAYER FIELD
+                ============================================= */
+
+                const userIdInput =
+                    document.querySelector(
+                        '[data-moogold-field="user-id"]'
+                    );
+
+
+                const serverIdInput =
+                    document.querySelector(
+                        '[data-moogold-field="server-id"]'
+                    );
+
+
+                const userId =
+                    userIdInput?.value?.trim() || '';
+
+
+                const serverId =
+                    serverIdInput?.value?.trim() || '';
+
+
+                /* =============================================
+                   4. CEK USER ID
+                ============================================= */
+
+                if (
+                    userIdInput &&
+                    !userId
+                ) {
+
+                    await Swal.fire({
+
+                        icon: 'warning',
+
+                        title:
+                            'User ID Belum Diisi',
+
+                        text:
+                            'Silakan masukkan User ID terlebih dahulu.',
+
+                        confirmButtonText:
+                            'OK'
+
+                    });
+
+                    return;
+
+                }
+
+
+                /* =============================================
+                   5. CEK SERVER ID
+                ============================================= */
+
+                if (
+                    serverIdInput &&
+                    serverIdInput.required &&
+                    !serverId
+                ) {
+
+                    await Swal.fire({
+
+                        icon: 'warning',
+
+                        title:
+                            'Server ID Belum Diisi',
+
+                        text:
+                            'Silakan masukkan Server ID terlebih dahulu.',
+
+                        confirmButtonText:
+                            'OK'
+
+                    });
+
+                    return;
+
+                }
+
+
+                /* =============================================
+                   6. VALIDASI PLAYER MOO GOLD
+                ============================================= */
+
+                /*
+                 * HANYA jalankan validasi jika produk
+                 * memang membutuhkan validasi MooGold.
+                 */
+
+                if (
+                    userIdInput &&
+                    playerValidation.requiresValidation
+                ) {
+
+                    const validationResult =
+                        await validatePlayerForCheckout(
+                            itemId,
+                            userId,
+                            serverId
+                        );
+
+
+                    /* -----------------------------------------
+                       INVALID / ERROR
+                    ----------------------------------------- */
+
+                    if (
+                        validationResult.status ===
+                            'invalid' ||
+
+                        validationResult.status ===
+                            'error'
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    /* -----------------------------------------
+                       VALID / UNAVAILABLE
+                    ----------------------------------------- */
+
+                    const confirmed =
+                        await showPlayerConfirmation();
+
+
+                    if (!confirmed) {
+
+                        return;
+
+                    }
+
+                }
+
+
+                /* =============================================
+                   7. SET VOUCHER
+                ============================================= */
+
+                const voucherInput =
+                    document.querySelector(
+                        '#voucher'
+                    );
+
+
+                if (voucherInput) {
+
+                    voucherInput.value =
+                        selectedVoucher || '';
+
+                }
+
+
+                /* =============================================
+                   8. SUBMIT FORM ASLI
+                ============================================= */
+
+                HTMLFormElement.prototype.submit.call(
+                    checkoutForm
                 );
-
-
-            if (!paymentSelected) {
-
-                event.preventDefault();
-
-                alert(
-                    'Silakan pilih metode pembayaran.'
-                );
-
-                return;
 
             }
 
+            finally {
 
-            selectedPaymentId =
-                parseInt(
-                    paymentSelected.value
-                );
+                /*
+                 * Kalau masih berada di halaman ini,
+                 * unlock kembali tombol.
+                 *
+                 * Kalau form berhasil submit,
+                 * browser akan berpindah halaman.
+                 */
 
-
-            /* ---------------------------------------------
-               VOUCHER
-            --------------------------------------------- */
-
-            const voucherInput =
-                document.getElementById(
-                    'voucher'
-                );
+                checkoutProcessing = false;
 
 
-            if (voucherInput) {
+                if (submitButton) {
 
-                voucherInput.value =
-                    selectedVoucher ?? '';
+                    submitButton.disabled = false;
+
+
+                    if (
+                        submitButton.dataset.originalText
+                    ) {
+
+                        submitButton.innerHTML =
+                            submitButton.dataset.originalText;
+
+                    }
+
+                }
 
             }
 
@@ -1036,7 +2212,9 @@ if (checkoutForm) {
 ========================================================= */
 
 document
-    .querySelectorAll('.player-input')
+    .querySelectorAll(
+        '.player-input'
+    )
     .forEach(function(input) {
 
         const type =

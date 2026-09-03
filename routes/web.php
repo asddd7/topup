@@ -83,6 +83,11 @@ Route::get(
 )
 ->name('game.show');
 
+Route::post(
+    '/games/validate-player',
+    [UserGameController::class, 'validatePlayer']
+)->name('game.validate-player');
+
 /*
 |--------------------------------------------------------------------------
 | PROMOTION / VOUCHER

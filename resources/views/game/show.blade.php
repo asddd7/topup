@@ -7,6 +7,7 @@
 @section('content')
 
 <div
+    id="game-show-page"
     class="game-show-page"
     data-game-id="{{ $game->id }}"
 >
@@ -47,12 +48,15 @@
 ========================================================= --}}
 @push('scripts')
     <script>
-        window.gameShowConfig = {
-            gameId: @json($game->id),
+    window.gameShowConfig = {
+        gameId: @json($game->id),
 
-            voucherCalculateUrl:
-                @json(route('voucher.calculate'))
-        };
+        voucherCalculateUrl:
+            @json(route('voucher.calculate')),
+
+        validatePlayerUrl:
+            @json(route('game.validate-player'))
+    };
     </script>
 
     <script

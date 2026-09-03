@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Admin;
 
+use App\Jobs\ProcessMooGoldOrder;
 use App\Models\Item;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -14,76 +15,155 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    /**
-     * POST /api/v1/admin/orders/{order}/payment/approve
-     *
-     * Admin menyetujui pembayaran.
-     */
-    public function approvePayment(
-        Request $request,
-        Order $order
-    ): JsonResponse {
+/**
+ * POST /api/v1/admin/orders/{order}/payment/approve
+ *
+ * Admin menyetujui pembayaran.
+ *
+ * Waiting Payment
+ *       ↓
+ *      Paid
+ *       ↓
+ * ProcessMooGoldOrder
+ *       ↓
+ *     MooGold
+ */
+public function approvePayment(
+    Request $request,
+    Order $order
+): JsonResponse {
+
+    try {
+
+        $details = [];
+
+        DB::transaction(function () use (
+            $order,
+            &$details
+        ) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | LOCK ORDER
+            |--------------------------------------------------------------------------
+            */
+
+            $lockedOrder = Order::where(
+                'id',
+                $order->id
+            )
+                ->lockForUpdate()
+                ->first();
+
+            if (!$lockedOrder) {
+
+                throw new \RuntimeException(
+                    'Order tidak ditemukan.'
+                );
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | STATUS HARUS WAITING PAYMENT
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                $lockedOrder->status !==
+                'Waiting Payment'
+            ) {
+
+                throw new \RuntimeException(
+                    'Order tidak dapat diverifikasi pada status saat ini.'
+                );
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | BUKTI PEMBAYARAN WAJIB ADA
+            |--------------------------------------------------------------------------
+            */
+
+            if (!$lockedOrder->payment_proof) {
+
+                throw new \RuntimeException(
+                    'Bukti pembayaran belum tersedia.'
+                );
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | UPDATE → PAID
+            |--------------------------------------------------------------------------
+            */
+
+            $lockedOrder->update([
+                'status' => 'Paid',
+            ]);
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | PAYMENT LOG
+            |--------------------------------------------------------------------------
+            */
+
+            $lockedOrder
+                ->paymentLogs()
+                ->create([
+                    'status' =>
+                        'Paid',
+
+                    'message' =>
+                        'Pembayaran telah diverifikasi dan diterima.',
+
+                    'logged_at' =>
+                        now(),
+                ]);
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | AMBIL DETAIL ORDER
+            |--------------------------------------------------------------------------
+            */
+
+            $lockedOrder->load('details');
+
+            $details =
+                $lockedOrder
+                    ->details
+                    ->pluck('id')
+                    ->values()
+                    ->all();
+
+        });
+
 
         /*
         |--------------------------------------------------------------------------
-        | Pastikan order masih menunggu pembayaran
+        | DISPATCH SETELAH TRANSACTION COMMIT
         |--------------------------------------------------------------------------
         */
 
-        if ($order->status !== 'Waiting Payment') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Order tidak dapat diverifikasi pada status saat ini.',
-            ], 422);
+        foreach ($details as $detailId) {
+
+            ProcessMooGoldOrder::dispatch(
+                $detailId
+            );
         }
 
 
         /*
         |--------------------------------------------------------------------------
-        | Pastikan bukti pembayaran tersedia
+        | LOAD RESPONSE
         |--------------------------------------------------------------------------
         */
 
-        if (!$order->payment_proof) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Bukti pembayaran belum tersedia.',
-            ], 422);
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Update order
-        |--------------------------------------------------------------------------
-        */
-
-        $order->update([
-            'status' => 'Paid',
-        ]);
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Payment Log
-        |--------------------------------------------------------------------------
-        */
-
-        $order->paymentLogs()->create([
-            'status' => 'Paid',
-
-            'message' =>
-                'Pembayaran telah diverifikasi dan diterima.',
-
-            'logged_at' => now(),
-        ]);
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Load relationship
-        |--------------------------------------------------------------------------
-        */
+        $order->refresh();
 
         $order->load([
             'game',
@@ -95,18 +175,42 @@ class OrderController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | Response
+        | RESPONSE
         |--------------------------------------------------------------------------
         */
 
         return response()->json([
-            'success' => true,
-            'message' => 'Pembayaran berhasil diverifikasi.',
+
+            'success' =>
+                true,
+
+            'message' =>
+                'Pembayaran berhasil diverifikasi. Order telah dimasukkan ke queue MooGold.',
+
             'data' => [
-                'order' => new OrderResource($order),
+
+                'order' =>
+                    new OrderResource(
+                        $order
+                    ),
+
             ],
+
         ]);
+
+    } catch (\Throwable $e) {
+
+        return response()->json([
+
+            'success' =>
+                false,
+
+            'message' =>
+                $e->getMessage(),
+
+        ], 422);
     }
+}
 
 
     /**

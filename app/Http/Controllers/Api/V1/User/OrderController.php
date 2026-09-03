@@ -199,24 +199,15 @@ class OrderController extends Controller
 
             $order = Order::create([
                 'invoice_number' => $invoice,
-
                 'user_id' => $userId,
-
                 'game_id' => $game->id,
-
                 'player_uid' => $validated['player_uid'],
-
                 'server_id' => $validated['server_id'] ?? null,
-
                 'nickname' => $validated['nickname'] ?? null,
-
                 'subtotal' => $subtotal,
-
                 'discount' => 0,
-
                 'total_price' => $subtotal,
-
-                'status' => 'pending',
+                'status' => 'Pending',
             ]);
 
 
