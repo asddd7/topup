@@ -11,7 +11,19 @@
     class="game-show-page"
     data-game-id="{{ $game->id }}"
 >
+@if ($errors->any())
+    <div class="container mt-3">
+        <div class="alert alert-danger">
+            <strong>Order gagal:</strong>
 
+            <ul class="mb-0 mt-2">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+@endif
     {{-- =====================================================
          GAME HERO
     ====================================================== --}}

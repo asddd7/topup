@@ -152,113 +152,139 @@ public function store(
         ->firstOrFail();
 
 
+/*
+|--------------------------------------------------------------------------
+| 3. Validate dynamic player fields
+|--------------------------------------------------------------------------
+*/
+
+$playerData = [];
+
+$gamePlayerFields = $item->game->player_fields ?? [];
+
+$playerRules = [];
+
+
+/*
+|--------------------------------------------------------------------------
+| Build validation rules
+|--------------------------------------------------------------------------
+*/
+
+foreach ($gamePlayerFields as $field) {
+
+    $fieldName = trim(
+        (string) ($field['name'] ?? '')
+    );
+
+    if ($fieldName === '') {
+        continue;
+    }
+
+    $rules = [];
+
     /*
     |--------------------------------------------------------------------------
-    | 3. Validate dynamic player fields
+    | Required / nullable
     |--------------------------------------------------------------------------
     */
 
-    $playerData = [];
+    if (!empty($field['required'])) {
 
-    $gamePlayerFields = $item->game->player_fields ?? [];
+        $rules[] = 'required';
 
-    foreach ($gamePlayerFields as $field) {
+    } else {
 
-        $fieldName = trim(
-            (string) ($field['name'] ?? '')
-        );
-
-        if ($fieldName === '') {
-            continue;
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Validation rules
-        |--------------------------------------------------------------------------
-        */
-
-        $rules = [];
-
-
-        if (!empty($field['required'])) {
-            $rules[] = 'required';
-        } else {
-            $rules[] = 'nullable';
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Type validation
-        |--------------------------------------------------------------------------
-        */
-
-        $type = strtolower(
-            (string) ($field['type'] ?? 'text')
-        );
-
-
-        if ($type === 'number') {
-            $rules[] = 'numeric';
-        }
-
-
-        if ($type === 'email') {
-            $rules[] = 'email';
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Max length
-        |--------------------------------------------------------------------------
-        */
-
-        $rules[] = 'max:255';
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Validate field
-        |--------------------------------------------------------------------------
-        */
-
-        $request->validate([
-            $fieldName => $rules,
-        ]);
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Simpan player data
-        |--------------------------------------------------------------------------
-        |
-        | Nama field dipertahankan sesuai konfigurasi game.
-        |
-        | Contoh:
-        |
-        | User ID  => 1963315211
-        | Server ID => 19248
-        |
-        | atau:
-        |
-        | Player ID => 123456
-        |
-        */
-
-        $value = $request->input($fieldName);
-
-
-        if (
-            $value !== null &&
-            $value !== ''
-        ) {
-            $playerData[$fieldName] = $value;
-        }
+        $rules[] = 'nullable';
     }
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | Type
+    |--------------------------------------------------------------------------
+    */
+
+    $type = strtolower(
+        (string) ($field['type'] ?? 'text')
+    );
+
+    if ($type === 'number') {
+
+        $rules[] = 'numeric';
+
+    } elseif ($type === 'email') {
+
+        $rules[] = 'email';
+        $rules[] = 'max:255';
+
+    } else {
+
+        $rules[] = 'max:255';
+    }
+
+
+    $playerRules[$fieldName] = $rules;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Validate player fields
+|--------------------------------------------------------------------------
+*/
+
+$validatedPlayerData = [];
+
+if (!empty($playerRules)) {
+
+    $validatedPlayerData = $request->validate(
+        $playerRules
+    );
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Build player_data
+|--------------------------------------------------------------------------
+*/
+
+foreach ($gamePlayerFields as $field) {
+
+    $fieldName = trim(
+        (string) ($field['name'] ?? '')
+    );
+
+    if ($fieldName === '') {
+        continue;
+    }
+
+    $value = $validatedPlayerData[$fieldName]
+        ?? $request->input($fieldName);
+
+
+    if (
+        $value !== null &&
+        $value !== ''
+    ) {
+        $playerData[$fieldName] = (string) $value;
+    }
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| Safety check
+|--------------------------------------------------------------------------
+*/
+
+if (empty($playerData) && !empty($gamePlayerFields)) {
+
+    throw new \RuntimeException(
+        'Data player tidak berhasil diproses.'
+    );
+}
 
     /*
     |--------------------------------------------------------------------------
