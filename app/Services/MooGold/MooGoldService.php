@@ -40,6 +40,26 @@ class MooGoldService
                 'moogold.timeout',
                 30
             );
+
+        Log::info(
+            'MooGold API configuration check',
+            [
+                'base_url' =>
+                    $this->baseUrl,
+
+                'partner_id_present' =>
+                    $this->partnerId !== '',
+
+                'partner_id_length' =>
+                    strlen($this->partnerId),
+
+                'secret_key_present' =>
+                    $this->secretKey !== '',
+
+                'secret_key_length' =>
+                    strlen($this->secretKey),
+            ]
+        );
     }
 
 
@@ -98,29 +118,33 @@ protected function request(
     |--------------------------------------------------------------------------
     */
 
-$response = Http::timeout(
-    $this->timeout
-)
-    ->withBasicAuth(
-        $this->partnerId,
-        $this->secretKey
+    $response = Http::timeout(
+        $this->timeout
     )
-    ->withHeaders([
+        ->withOptions([
+            CURLOPT_IPRESOLVE =>
+                CURL_IPRESOLVE_V4,
+        ])
+        ->withBasicAuth(
+            $this->partnerId,
+            $this->secretKey
+        )
+        ->withHeaders([
 
-        'timestamp' => $timestamp,
+            'timestamp' => $timestamp,
 
-        'auth' => $auth,
+            'auth' => $auth,
 
-        'Accept' => 'application/json',
+            'Accept' => 'application/json',
 
-    ])
-    ->withBody(
-        $json,
-        'application/json'
-    )
-    ->post(
-        $this->baseUrl . '/' . $path
-    );
+        ])
+        ->withBody(
+            $json,
+            'application/json'
+        )
+        ->post(
+            $this->baseUrl . '/' . $path
+        );
 
 
     /*
