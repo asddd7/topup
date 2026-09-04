@@ -38,6 +38,8 @@ protected $fillable = [
 
     'moogold_product_id',
 
+    'moogold_validation_product_id',
+
     'moogold_variation_id',
 
     'moogold_offer_id',

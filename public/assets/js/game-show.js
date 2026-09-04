@@ -11,6 +11,7 @@ let selectedPrice = 0;
 
 let playerValidation = {
     valid: false,
+    confirmed: false,
     validationAvailable: false,
     nickname: null,
     userId: null,
@@ -27,6 +28,8 @@ let selectedVoucher = null;
 let appliedPromos = [];
 
 let checkoutProcessing = false;
+
+let playerValidationTimer = null;
 
 
 /* =========================================================
@@ -70,14 +73,27 @@ function escapeHtml(value)
 
 function resetPlayerValidation()
 {
+    /*
+    |--------------------------------------------------------------------------
+    | Simpan status apakah item membutuhkan validasi
+    |--------------------------------------------------------------------------
+    */
+
+    const requiresValidation =
+        playerValidation.requiresValidation;
+
+
     playerValidation = {
         valid: false,
+        confirmed: false,
         validationAvailable: false,
         nickname: null,
         userId: null,
         serverId: null,
         itemId: null,
-        requiresValidation: false
+
+        requiresValidation:
+            requiresValidation
     };
 
 
@@ -275,7 +291,7 @@ function renderPlayerValidation(
 
 
 /* =========================================================
-   PLAYER FIELD CHANGE
+   PLAYER FIELD CHANGE + AUTO VALIDATION
 ========================================================= */
 
 document
@@ -289,7 +305,211 @@ document
             'input',
             function() {
 
+                /*
+                |--------------------------------------------------------------------------
+                | Reset validation sebelumnya
+                |--------------------------------------------------------------------------
+                */
+
                 resetPlayerValidation();
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Cancel timer sebelumnya
+                |--------------------------------------------------------------------------
+                */
+
+                if (playerValidationTimer) {
+
+                    clearTimeout(
+                        playerValidationTimer
+                    );
+
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Ambil item
+                |--------------------------------------------------------------------------
+                */
+
+                const itemId =
+                    document.querySelector(
+                        '#item_id'
+                    )?.value?.trim() || '';
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Ambil User ID
+                |--------------------------------------------------------------------------
+                */
+
+                const userIdInput =
+                    document.querySelector(
+                        '[data-moogold-field="user-id"]'
+                    );
+
+
+                const userId =
+                    userIdInput?.value?.trim() || '';
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Ambil Server ID
+                |--------------------------------------------------------------------------
+                */
+
+                const serverIdInput =
+                    document.querySelector(
+                        '[data-moogold-field="server-id"]'
+                    );
+
+
+                const serverId =
+                    serverIdInput?.value?.trim() || '';
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Belum pilih produk
+                |--------------------------------------------------------------------------
+                */
+
+                if (!itemId) {
+                    return;
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Produk tidak membutuhkan validasi
+                |--------------------------------------------------------------------------
+                */
+
+                if (
+                    !playerValidation.requiresValidation
+                ) {
+                    return;
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | User ID belum lengkap
+                |--------------------------------------------------------------------------
+                */
+
+                if (!userId) {
+                    return;
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Server ID wajib tetapi belum lengkap
+                |--------------------------------------------------------------------------
+                */
+
+                if (
+                    serverIdInput &&
+                    serverIdInput.required &&
+                    !serverId
+                ) {
+                    return;
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Debounce
+                |--------------------------------------------------------------------------
+                |
+                | Tunggu 700ms setelah user berhenti mengetik.
+                |
+                */
+
+                playerValidationTimer =
+                    setTimeout(
+                        async function() {
+
+                            const result =
+                                await validatePlayerForCheckout(
+                                    itemId,
+                                    userId,
+                                    serverId
+                                );
+
+
+                            /*
+                            |--------------------------------------------------------------------------
+                            | Jangan lakukan apa-apa jika invalid/error
+                            |--------------------------------------------------------------------------
+                            */
+
+                            if (
+                                result.status !== 'valid'
+                                &&
+                                result.status !== 'unavailable'
+                            ) {
+                                return;
+                            }
+
+
+                            /*
+                            |--------------------------------------------------------------------------
+                            | Pastikan input tidak berubah
+                            |--------------------------------------------------------------------------
+                            */
+
+                            const currentUserId =
+                                document
+                                    .querySelector(
+                                        '[data-moogold-field="user-id"]'
+                                    )
+                                    ?.value
+                                    ?.trim() || '';
+
+
+                            const currentServerId =
+                                document
+                                    .querySelector(
+                                        '[data-moogold-field="server-id"]'
+                                    )
+                                    ?.value
+                                    ?.trim() || '';
+
+
+                            if (
+                                currentUserId !== userId
+                            ) {
+                                return;
+                            }
+
+
+                            if (
+                                currentServerId !== serverId
+                            ) {
+                                return;
+                            }
+
+
+                            /*
+                            |--------------------------------------------------------------------------
+                            | Validasi berhasil.
+                            | Popup TIDAK ditampilkan di sini.
+                            |
+                            | Popup hanya muncul saat user klik
+                            | tombol Beli Sekarang.
+                            |--------------------------------------------------------------------------
+                            */
+
+                        },
+                        700
+                    );
 
             }
         );
@@ -299,7 +519,27 @@ document
             'change',
             function() {
 
-                resetPlayerValidation();
+                /*
+                |--------------------------------------------------------------------------
+                | Trigger sama seperti input
+                |--------------------------------------------------------------------------
+                */
+
+                if (
+                    typeof input.dispatchEvent ===
+                    'function'
+                ) {
+
+                    input.dispatchEvent(
+                        new Event(
+                            'input',
+                            {
+                                bubbles: true
+                            }
+                        )
+                    );
+
+                }
 
             }
         );
@@ -429,6 +669,8 @@ async function validatePlayerForCheckout(
 
                 valid: true,
 
+                confirmed: false,
+
                 validationAvailable: false,
 
                 nickname:
@@ -492,6 +734,8 @@ async function validatePlayerForCheckout(
 
                 valid: false,
 
+                confirmed: false,
+
                 validationAvailable: true,
 
                 nickname: null,
@@ -540,6 +784,8 @@ async function validatePlayerForCheckout(
         playerValidation = {
 
             valid: true,
+
+            confirmed: false,
 
             validationAvailable: true,
 
@@ -2087,55 +2333,121 @@ if (checkoutForm) {
 
 
                 /* =============================================
-                   6. VALIDASI PLAYER MOO GOLD
+                6. VALIDASI + KONFIRMASI PLAYER MOO GOLD
                 ============================================= */
-
-                /*
-                 * HANYA jalankan validasi jika produk
-                 * memang membutuhkan validasi MooGold.
-                 */
 
                 if (
                     userIdInput &&
                     playerValidation.requiresValidation
                 ) {
 
-                    const validationResult =
-                        await validatePlayerForCheckout(
-                            itemId,
-                            userId,
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Cek apakah UID + Server + Item yang sekarang
+                    | sudah berhasil divalidasi
+                    |--------------------------------------------------------------------------
+                    */
+
+                    const alreadyValidated =
+                        playerValidation.valid === true
+                        &&
+                        String(
+                            playerValidation.userId
+                        ) === String(
+                            userId
+                        )
+                        &&
+                        String(
+                            playerValidation.serverId || ''
+                        ) === String(
                             serverId
+                        )
+                        &&
+                        String(
+                            playerValidation.itemId
+                        ) === String(
+                            itemId
                         );
 
 
-                    /* -----------------------------------------
-                       INVALID / ERROR
-                    ----------------------------------------- */
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Jika belum tervalidasi, validasi sekarang
+                    |--------------------------------------------------------------------------
+                    */
 
-                    if (
-                        validationResult.status ===
-                            'invalid' ||
+                    if (!alreadyValidated) {
 
-                        validationResult.status ===
-                            'error'
-                    ) {
+                        const validationResult =
+                            await validatePlayerForCheckout(
+                                itemId,
+                                userId,
+                                serverId
+                            );
 
-                        return;
+
+                        if (
+                            validationResult.status ===
+                                'invalid'
+                            ||
+                            validationResult.status ===
+                                'error'
+                        ) {
+
+                            return;
+
+                        }
 
                     }
 
 
-                    /* -----------------------------------------
-                       VALID / UNAVAILABLE
-                    ----------------------------------------- */
+                    /*
+                    |--------------------------------------------------------------------------
+                    | WAJIB KONFIRMASI USER
+                    |
+                    | Validasi berhasil BUKAN berarti user sudah
+                    | mengonfirmasi data player.
+                    |--------------------------------------------------------------------------
+                    */
 
-                    const confirmed =
-                        await showPlayerConfirmation();
+                    if (
+                        !playerValidation.confirmed
+                    ) {
+
+                        const confirmed =
+                            await showPlayerConfirmation();
 
 
-                    if (!confirmed) {
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Jika klik BATAL:
+                        |
+                        | Jangan submit.
+                        | confirmed tetap false.
+                        |
+                        | Jika user klik Beli Sekarang lagi,
+                        | popup akan muncul lagi.
+                        |--------------------------------------------------------------------------
+                        */
 
-                        return;
+                        if (!confirmed) {
+
+                            playerValidation.confirmed =
+                                false;
+
+                            return;
+
+                        }
+
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | User klik LANJUTKAN
+                        |--------------------------------------------------------------------------
+                        */
+
+                        playerValidation.confirmed =
+                            true;
 
                     }
 

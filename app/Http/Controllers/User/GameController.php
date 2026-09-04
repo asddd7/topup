@@ -178,6 +178,66 @@ class GameController extends Controller
         ]);
     }
 
+/*
+|--------------------------------------------------------------------------
+| MOO GOLD VALIDATION PRODUCT ID
+|--------------------------------------------------------------------------
+|
+| Product yang dipakai untuk ORDER bisa berbeda dengan product
+| yang dipakai untuk VALIDATION.
+|
+| Contoh:
+|
+| Mobile Legends Indonesia
+| Order Product:
+| 2362359
+|
+| Validation Product:
+| 15145
+|
+*/
+
+protected function getValidationProductId(
+    Item $item
+): ?int
+{
+    /*
+    |--------------------------------------------------------------------------
+    | MOBILE LEGENDS INDONESIA
+    |--------------------------------------------------------------------------
+    |
+    | Order:
+    | Product ID 2362359
+    |
+    | Validation:
+    | Global Product ID 15145
+    |
+    */
+
+    if (
+        (int) $item->moogold_product_id === 2362359
+    ) {
+        return 15145;
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | DEFAULT
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        !empty($item->moogold_variation_id)
+    ) {
+        return (int)
+            $item->moogold_variation_id;
+    }
+
+
+    return null;
+}
+
 public function validatePlayer(
     Request $request,
     MooGoldService $mooGold
@@ -228,8 +288,7 @@ public function validatePlayer(
     */
 
     if (
-        empty($item->moogold_product_id) ||
-        empty($item->moogold_variation_id)
+        empty($item->moogold_product_id)
     ) {
         return response()->json([
             'success' => true,
@@ -242,13 +301,36 @@ public function validatePlayer(
         ]);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | PRODUCT ID
-    |--------------------------------------------------------------------------
-    */
+/*
+|--------------------------------------------------------------------------
+| PRODUCT ID UNTUK VALIDATION
+|--------------------------------------------------------------------------
+|
+| Product ID untuk validation dapat berbeda dengan
+| product / variation yang digunakan saat create order.
+|
+*/
 
-    $productId = (int) $item->moogold_variation_id;
+$productId =
+    $this->getValidationProductId(
+        $item
+    );
+
+    if (!$productId) {
+
+    return response()->json([
+        'success' => true,
+
+        'message' =>
+            'Validasi player tidak tersedia untuk produk ini.',
+
+        'data' => [
+            'valid' => null,
+            'validation_available' => false,
+            'nickname' => null,
+        ],
+    ]);
+}
 
     /*
     |--------------------------------------------------------------------------
@@ -278,11 +360,26 @@ public function validatePlayer(
                 'item_id' =>
                     $item->id,
 
-                'moogold_product_id' =>
+                /*
+                |--------------------------------------------------------------------------
+                | Product asli item
+                |--------------------------------------------------------------------------
+                */
+
+                'order_product_id' =>
                     $item->moogold_product_id,
 
-                'moogold_variation_id' =>
+                'order_variation_id' =>
                     $item->moogold_variation_id,
+
+                /*
+                |--------------------------------------------------------------------------
+                | Product yang dipakai khusus validation
+                |--------------------------------------------------------------------------
+                */
+
+                'validation_product_id' =>
+                    $productId,
 
                 'user_id' =>
                     $validated['user_id'],
@@ -301,14 +398,16 @@ public function validatePlayer(
         |--------------------------------------------------------------------------
         */
 
-        $status = data_get(
-            $result,
-            'status'
-        );
+        $status =
+            data_get($result, 'status')
+            ??
+            data_get($result, 'success');
 
-        $message = (string) data_get(
-            $result,
-            'message',
+        $message = (string) (
+            data_get($result, 'message')
+            ??
+            data_get($result, 'data.message')
+            ??
             ''
         );
 
@@ -390,11 +489,9 @@ public function validatePlayer(
         | NICKNAME
         |--------------------------------------------------------------------------
         */
-
+                
         $nickname =
             data_get($result, 'nickname')
-            ??
-            data_get($result, 'Nickname')
             ??
             data_get($result, 'username')
             ??
@@ -402,11 +499,13 @@ public function validatePlayer(
             ??
             data_get($result, 'data.nickname')
             ??
-            data_get($result, 'data.Nickname')
-            ??
             data_get($result, 'data.username')
             ??
-            data_get($result, 'data.Username');
+            data_get($result, 'data.Username')
+            ??
+            data_get($result, 'data.account_name')
+            ??
+            null;
 
         /*
         |--------------------------------------------------------------------------
