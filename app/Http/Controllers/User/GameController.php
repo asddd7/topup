@@ -211,13 +211,19 @@ protected function getValidationProductId(
     |
     | Validation:
     | Global Product ID 15145
-    |
+    | dll.
     */
 
     if (
         (int) $item->moogold_product_id === 2362359
     ) {
         return 15145;
+    }
+
+    if (
+        (int) $item->moogold_product_id === 36926589
+    ) {
+        return 4233885;
     }
 
 
