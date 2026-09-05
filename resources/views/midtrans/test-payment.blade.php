@@ -1,257 +1,201 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
+@extends('layouts.app')
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+@section('title', 'Pembayaran')
 
-    <title>
-        Midtrans Sandbox Payment
-    </title>
+@section('content')
 
-    <style>
-        body {
-            margin: 0;
-            padding: 40px 20px;
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
-        }
+<div class="container py-5">
 
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-        }
+<div class="row justify-content-center">
 
-        .card {
-            background: #ffffff;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow:
-                0 4px 20px rgba(0, 0, 0, 0.08);
-        }
+    <div class="col-lg-7">
 
-        h1 {
-            margin-top: 0;
-        }
+        <div class="card shadow-sm border-0">
 
-        .row {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
-        }
+            <div class="card-body p-4">
 
-        .label {
-            color: #666;
-        }
+                <h4 class="mb-4">
+                    Pembayaran Order
+                </h4>
 
-        .value {
-            font-weight: 600;
-            text-align: right;
-        }
 
-        .amount {
-            font-size: 24px;
-            margin: 20px 0;
-        }
+                {{-- =====================================================
+                     ORDER INFO
+                ====================================================== --}}
 
-        button {
-            width: 100%;
-            border: 0;
-            padding: 14px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-        }
+                <div class="mb-3">
 
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
+                    <div class="text-muted small">
+                        Invoice
+                    </div>
 
-        .info {
-            margin-top: 20px;
-            padding: 12px;
-            border-radius: 8px;
-            background: #f0f7ff;
-            font-size: 14px;
-            color: #345;
-        }
-    </style>
+                    <div class="fw-semibold">
+                        {{ $order->invoice_number }}
+                    </div>
 
-    @if (!$isProduction)
-        <script
-            src="https://app.sandbox.midtrans.com/snap/snap.js"
-            data-client-key="{{ $clientKey }}"
-        ></script>
-    @else
-        <script
-            src="https://app.midtrans.com/snap/snap.js"
-            data-client-key="{{ $clientKey }}"
-        ></script>
-    @endif
-</head>
+                </div>
 
-<body>
 
-<div class="container">
+                <div class="mb-3">
 
-    <div class="card">
+                    <div class="text-muted small">
+                        Game
+                    </div>
 
-        <h1>
-            Midtrans Sandbox
-        </h1>
+                    <div class="fw-semibold">
+                        {{ $order->game?->game_name }}
+                    </div>
 
-        <div class="row">
-            <span class="label">
-                Order ID
-            </span>
+                </div>
 
-            <span class="value">
-                {{ $order->id }}
-            </span>
-        </div>
 
-        <div class="row">
-            <span class="label">
-                Invoice
-            </span>
+                <div class="mb-3">
 
-            <span class="value">
-                {{ $order->invoice_number }}
-            </span>
-        </div>
+                    <div class="text-muted small">
+                        Total Pembayaran
+                    </div>
 
-        <div class="row">
-            <span class="label">
-                Status
-            </span>
+                    <div class="fs-4 fw-bold">
+                        Rp {{ number_format($order->total_price, 0, ',', '.') }}
+                    </div>
 
-            <span class="value">
-                {{ $order->status }}
-            </span>
-        </div>
+                </div>
 
-        <div class="row">
-            <span class="label">
-                Midtrans Order ID
-            </span>
 
-            <span class="value">
-                {{ $transaction->midtrans_order_id }}
-            </span>
-        </div>
+                <hr>
 
-        <div class="amount">
-            Rp {{ number_format(
-                (float) $transaction->gross_amount,
-                2,
-                ',',
-                '.'
-            ) }}
-        </div>
 
-        <button
-            type="button"
-            id="pay-button"
-        >
-            Bayar dengan Midtrans Sandbox
-        </button>
+                {{-- =====================================================
+                     PAYMENT BUTTON
+                ====================================================== --}}
 
-        <div class="info">
-            Ini adalah halaman testing.
-            Jangan gunakan data pembayaran nyata.
+                <button
+                    id="pay-button"
+                    type="button"
+                    class="btn btn-primary w-100"
+                >
+                    Bayar Sekarang
+                </button>
+
+
+                <div
+                    class="text-center text-muted small mt-3"
+                >
+                    Pembayaran diproses dengan aman melalui Midtrans.
+                </div>
+
+            </div>
+
         </div>
 
     </div>
 
 </div>
+```
+
+</div>
+
+@endsection
+
+@push('scripts')
+
+```
+@if ($isProduction)
+
+    <script
+        src="https://app.midtrans.com/snap/snap.js"
+        data-client-key="{{ $clientKey }}"
+    ></script>
+
+@else
+
+    <script
+        src="https://app.sandbox.midtrans.com/snap/snap.js"
+        data-client-key="{{ $clientKey }}"
+    ></script>
+
+@endif
+
 
 <script>
-    const snapToken = @json(
-        $transaction->snap_token
-    );
 
-    const payButton =
-        document.getElementById('pay-button');
-
-    payButton.addEventListener(
+document
+    .getElementById(
+        'pay-button'
+    )
+    .addEventListener(
         'click',
         function () {
 
-            if (!snapToken) {
-                alert(
-                    'Snap Token tidak tersedia.'
-                );
-
-                return;
-            }
-
-            payButton.disabled = true;
-
             window.snap.pay(
-                snapToken,
+                @json($transaction->snap_token),
                 {
-                    onSuccess: function (result) {
 
-                        console.log(
-                            'Midtrans success:',
-                            result
-                        );
+                    onSuccess: function () {
 
-                        alert(
-                            'Pembayaran Sandbox berhasil.'
-                        );
-
-                        window.location.reload();
+                        window.location.href =
+                            @json(
+                                route(
+                                    'midtrans.result',
+                                    [
+                                        'order' =>
+                                            $order->id,
+                                    ]
+                                )
+                            );
                     },
 
-                    onPending: function (result) {
 
-                        console.log(
-                            'Midtrans pending:',
-                            result
-                        );
+                    onPending: function () {
 
-                        alert(
-                            'Pembayaran masih pending.'
-                        );
-
-                        payButton.disabled = false;
+                        window.location.href =
+                            @json(
+                                route(
+                                    'midtrans.result',
+                                    [
+                                        'order' =>
+                                            $order->id,
+                                    ]
+                                )
+                            );
                     },
 
-                    onError: function (result) {
 
-                        console.error(
-                            'Midtrans error:',
-                            result
-                        );
+                    onError: function () {
 
-                        alert(
-                            'Pembayaran gagal.'
-                        );
-
-                        payButton.disabled = false;
+                        window.location.href =
+                            @json(
+                                route(
+                                    'midtrans.result',
+                                    [
+                                        'order' =>
+                                            $order->id,
+                                    ]
+                                )
+                            );
                     },
+
 
                     onClose: function () {
 
-                        console.log(
-                            'Popup Midtrans ditutup.'
-                        );
+                        /*
+                        |--------------------------------------------------------------------------
+                        | Customer menutup Snap.
+                        |
+                        | Tidak mengubah status order.
+                        | Order tetap Waiting Payment.
+                        |--------------------------------------------------------------------------
+                        */
 
-                        payButton.disabled = false;
                     }
+
                 }
             );
+
         }
     );
+
 </script>
 
-</body>
-</html>
+
+@endpush

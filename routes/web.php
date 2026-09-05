@@ -41,6 +41,21 @@ Route::get(
 )->name('midtrans.test.payment');
 
 Route::get(
+    '/midtrans/payment/finish',
+    [MidtransTestController::class, 'finish']
+)->name('midtrans.payment.finish');
+
+Route::get(
+    '/midtrans/payment/{order}',
+    [MidtransTestController::class, 'payment']
+)->name('midtrans.payment');
+
+Route::get(
+    '/midtrans/result/{order}',
+    [MidtransTestController::class, 'result']
+)->name('midtrans.result');
+
+Route::get(
     '/',
     [HomeController::class,'index']
 )

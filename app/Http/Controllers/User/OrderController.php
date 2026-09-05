@@ -631,27 +631,17 @@ if (empty($playerData) && !empty($gamePlayerFields)) {
 
     /*
     |--------------------------------------------------------------------------
-    | Redirect
+    | Redirect to Midtrans Snap
     |--------------------------------------------------------------------------
     */
 
-    if ($order->guest_token) {
-
-        return redirect(
-            route(
-                'order.payment',
-                $order->invoice_number
-            )
-            . '?token=' .
-            $order->guest_token
-        );
-    }
-
-
     return redirect()->route(
-        'order.payment',
-        $order->invoice_number
+        'midtrans.payment',
+        [
+            'order' => $order->id,
+        ]
     );
+
 }
 
 

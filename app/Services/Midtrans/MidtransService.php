@@ -189,32 +189,19 @@ class MidtransService
      * GET TRANSACTION STATUS
      * =========================================================
      *
-     * Digunakan untuk:
+     * Return:
      *
-     * - verifikasi notification
-     * - reconciliation
-     * - recovery jika notification terlambat
-     * - memastikan status aktual di Midtrans
+     * - array  => transaksi ditemukan
+     * - null   => transaksi belum ditemukan di Midtrans
+     *
+     * Exception selain transaction not found akan tetap dilempar.
      *
      */
     public function getTransactionStatus(
         string $orderId
-    ): array {
+    ): ?array {
 
-        if (
-            empty(
-                config(
-                    'midtrans.server_key'
-                )
-            )
-        ) {
-
-            throw new RuntimeException(
-                'MIDTRANS_SERVER_KEY belum dikonfigurasi.'
-            );
-
-        }
-
+        $this->ensureConfigured();
 
         try {
 
@@ -223,11 +210,9 @@ class MidtransService
                     $orderId
                 );
 
-
             Log::info(
                 'Midtrans transaction status berhasil diambil.',
                 [
-
                     'order_id' =>
                         $orderId,
 
@@ -235,35 +220,106 @@ class MidtransService
                         $response
                             ->transaction_status
                         ?? null,
-
                 ]
             );
 
-
             return (array) $response;
 
-
         } catch (Throwable $e) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | EXTRACT ORIGINAL ERROR
+            |--------------------------------------------------------------------------
+            */
+
+            $message =
+                $e->getMessage();
+
+            $code =
+                (int) $e->getCode();
+
+            /*
+            |--------------------------------------------------------------------------
+            | MIDTRANS SDK ERROR
+            |--------------------------------------------------------------------------
+            |
+            | Midtrans SDK dapat menyimpan HTTP status code
+            | pada exception.
+            |
+            */
+
+            $isNotFound =
+                $code === 404
+                ||
+                str_contains(
+                    strtolower($message),
+                    '404'
+                )
+                ||
+                str_contains(
+                    strtolower($message),
+                    'transaction not found'
+                )
+                ||
+                str_contains(
+                    strtolower($message),
+                    'not found'
+                );
+
+            /*
+            |--------------------------------------------------------------------------
+            | TRANSACTION NOT FOUND
+            |--------------------------------------------------------------------------
+            */
+
+            if ($isNotFound) {
+
+                Log::info(
+                    'Midtrans transaction belum ditemukan.',
+                    [
+                        'order_id' =>
+                            $orderId,
+
+                        'http_code' =>
+                            $code,
+
+                        'error' =>
+                            $message,
+                    ]
+                );
+
+                return null;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | REAL ERROR
+            |--------------------------------------------------------------------------
+            */
 
             Log::error(
                 'Gagal mengambil Midtrans transaction status.',
                 [
-
                     'order_id' =>
                         $orderId,
 
-                    'error' =>
-                        $e->getMessage(),
+                    'error_code' =>
+                        $code,
 
+                    'error' =>
+                        $message,
+
+                    'exception' =>
+                        get_class($e),
                 ]
             );
 
-
             throw new RuntimeException(
-                'Gagal mengambil status transaksi Midtrans.',
+                'Gagal mengambil status transaksi Midtrans: '
+                . $message,
                 previous: $e
             );
-
         }
     }
 

@@ -119,10 +119,10 @@ class Order extends Model
         );
     }
 
-    public function midtransTransaction(): HasOne
+    public function midtransTransactions(): HasMany
     {
-        return $this->hasOne(
+        return $this->hasMany(
             MidtransTransaction::class
-        );
+        )->orderByDesc('attempt_number');
     }
 }
