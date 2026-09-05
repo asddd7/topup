@@ -199,18 +199,20 @@ class MidtransService
      */
     public function getTransactionStatus(
         string $orderId
-    ): object {
-
-        $this->ensureConfigured();
-
+    ): array {
 
         if (
-            trim($orderId) === ''
+            empty(
+                config(
+                    'midtrans.server_key'
+                )
+            )
         ) {
 
             throw new RuntimeException(
-                'Midtrans Order ID tidak boleh kosong.'
+                'MIDTRANS_SERVER_KEY belum dikonfigurasi.'
             );
+
         }
 
 
@@ -223,34 +225,28 @@ class MidtransService
 
 
             Log::info(
-                'Status transaksi Midtrans berhasil diperiksa.',
+                'Midtrans transaction status berhasil diambil.',
                 [
 
                     'order_id' =>
                         $orderId,
 
                     'transaction_status' =>
-                        data_get(
-                            $response,
-                            'transaction_status'
-                        ),
-
-                    'status_code' =>
-                        data_get(
-                            $response,
-                            'status_code'
-                        ),
+                        $response
+                            ->transaction_status
+                        ?? null,
 
                 ]
             );
 
 
-            return $response;
+            return (array) $response;
+
 
         } catch (Throwable $e) {
 
             Log::error(
-                'Gagal mengambil status transaksi Midtrans.',
+                'Gagal mengambil Midtrans transaction status.',
                 [
 
                     'order_id' =>
@@ -267,6 +263,7 @@ class MidtransService
                 'Gagal mengambil status transaksi Midtrans.',
                 previous: $e
             );
+
         }
     }
 

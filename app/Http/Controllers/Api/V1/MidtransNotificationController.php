@@ -5,14 +5,15 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Jobs\ProcessMooGoldOrder;
 use App\Models\MidtransTransaction;
+use App\Models\Order;
 use App\Models\PaymentLog;
+use App\Services\Midtrans\MidtransService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
 use Throwable;
-use App\Services\Midtrans\MidtransService;
 
 class MidtransNotificationController extends Controller
 {
@@ -20,7 +21,6 @@ class MidtransNotificationController extends Controller
         protected MidtransService $midtrans
     ) {
     }
-
 
     /**
      * =========================================================
@@ -30,10 +30,7 @@ class MidtransNotificationController extends Controller
     public function handle(
         Request $request
     ): JsonResponse {
-
-        $notification =
-            $request->all();
-
+        $notification = $request->all();
 
         Log::info(
             'Midtrans notification diterima.',
@@ -56,7 +53,6 @@ class MidtransNotificationController extends Controller
             ]
         );
 
-
         /*
         |--------------------------------------------------------------------------
         | BASIC VALIDATION
@@ -71,15 +67,12 @@ class MidtransNotificationController extends Controller
                 )
             );
 
-
         if (
             $midtransOrderId === ''
         ) {
-
             Log::warning(
                 'Midtrans notification ditolak: order_id kosong.'
             );
-
 
             return response()->json([
                 'success' => false,
@@ -87,11 +80,15 @@ class MidtransNotificationController extends Controller
             ], 400);
         }
 
-
         /*
         |--------------------------------------------------------------------------
         | VERIFY SIGNATURE
         |--------------------------------------------------------------------------
+        |
+        | SHA512:
+        |
+        | order_id + status_code + gross_amount + server_key
+        |
         */
 
         if (
@@ -99,7 +96,6 @@ class MidtransNotificationController extends Controller
                 $notification
             )
         ) {
-
             Log::warning(
                 'Midtrans notification ditolak: signature tidak valid.',
                 [
@@ -108,13 +104,11 @@ class MidtransNotificationController extends Controller
                 ]
             );
 
-
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid signature.',
             ], 403);
         }
-
 
         /*
         |--------------------------------------------------------------------------
@@ -131,11 +125,9 @@ class MidtransNotificationController extends Controller
                 )
                 ->first();
 
-
         if (
             !$transaction
         ) {
-
             Log::warning(
                 'Midtrans notification untuk transaksi yang tidak ditemukan.',
                 [
@@ -144,44 +136,40 @@ class MidtransNotificationController extends Controller
                 ]
             );
 
-
             /*
             |--------------------------------------------------------------------------
-            | Return 200
+            | RETURN 200
             |--------------------------------------------------------------------------
             |
-            | Jangan membuat Midtrans terus-menerus mengirim ulang
-            | notification hanya karena order lokal tidak ditemukan.
+            | Notification valid, tetapi transaksi lokal belum ditemukan.
+            | Jangan membuat Midtrans retry tanpa akhir.
             |
             */
 
             return response()->json([
                 'success' => true,
-                'message' => 'Notification diterima, transaksi lokal tidak ditemukan.',
+                'message' =>
+                    'Notification diterima, transaksi lokal tidak ditemukan.',
             ]);
         }
-
 
         /*
         |--------------------------------------------------------------------------
         | SERVER-SIDE STATUS CHECK
         |--------------------------------------------------------------------------
         |
-        | Jangan mempercayai transaction_status dari notification
-        | sebagai satu-satunya sumber kebenaran.
+        | Jangan menjadikan payload webhook sebagai satu-satunya
+        | sumber kebenaran.
         |
         */
 
         try {
-
             $statusResponse =
                 $this->midtrans
                     ->getTransactionStatus(
                         $midtransOrderId
                     );
-
         } catch (Throwable $e) {
-
             Log::error(
                 'Gagal melakukan verifikasi status transaksi Midtrans.',
                 [
@@ -196,33 +184,118 @@ class MidtransNotificationController extends Controller
                 ]
             );
 
-
-            /*
-            |--------------------------------------------------------------------------
-            | RETURN 500
-            |--------------------------------------------------------------------------
-            |
-            | Midtrans dapat retry notification.
-            | Kita tidak boleh menganggap pembayaran berhasil
-            | jika status server belum berhasil diverifikasi.
-            |
-            */
-
             return response()->json([
                 'success' => false,
-                'message' => 'Status transaksi belum dapat diverifikasi.',
+                'message' =>
+                    'Status transaksi belum dapat diverifikasi.',
             ], 500);
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | VALIDATE MIDTRANS RESPONSE
+        |--------------------------------------------------------------------------
+        */
+
+        $statusOrderId =
+            trim(
+                (string) data_get(
+                    $statusResponse,
+                    'order_id',
+                    ''
+                )
+            );
+
+        if (
+            $statusOrderId === ''
+            ||
+            $statusOrderId !== $midtransOrderId
+        ) {
+            Log::error(
+                'Midtrans status response memiliki order_id yang tidak sesuai.',
+                [
+                    'expected_order_id' =>
+                        $midtransOrderId,
+
+                    'response_order_id' =>
+                        $statusOrderId,
+
+                    'midtrans_transaction_id' =>
+                        $transaction->id,
+                ]
+            );
+
+            return response()->json([
+                'success' => false,
+                'message' =>
+                    'Data transaksi Midtrans tidak sesuai.',
+            ], 422);
+        }
 
         /*
         |--------------------------------------------------------------------------
-        | PROCESS
+        | VALIDATE GROSS AMOUNT
+        |--------------------------------------------------------------------------
+        |
+        | Nominal Midtrans harus sama dengan total order lokal.
+        |
+        */
+
+        $midtransGrossAmount =
+            $this->normalizeAmount(
+                data_get(
+                    $statusResponse,
+                    'gross_amount'
+                )
+            );
+
+        $localGrossAmount =
+            $this->normalizeAmount(
+                $transaction->gross_amount
+            );
+
+        if (
+            $midtransGrossAmount === null
+            ||
+            $localGrossAmount === null
+            ||
+            bccomp(
+                $midtransGrossAmount,
+                $localGrossAmount,
+                2
+            ) !== 0
+        ) {
+            Log::error(
+                'Midtrans gross amount tidak sesuai dengan transaksi lokal.',
+                [
+                    'midtrans_order_id' =>
+                        $midtransOrderId,
+
+                    'local_gross_amount' =>
+                        $localGrossAmount,
+
+                    'midtrans_gross_amount' =>
+                        $midtransGrossAmount,
+
+                    'midtrans_transaction_id' =>
+                        $transaction->id,
+                ]
+            );
+
+            return response()->json([
+                'success' => false,
+                'message' =>
+                    'Nominal transaksi Midtrans tidak sesuai.',
+            ], 422);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | PROCESS TRANSACTION
         |--------------------------------------------------------------------------
         */
 
         try {
-
             $result =
                 DB::transaction(
                     function () use (
@@ -230,29 +303,39 @@ class MidtransNotificationController extends Controller
                         $notification,
                         $statusResponse
                     ) {
+                        /*
+                        |--------------------------------------------------------------------------
+                        | LOCK MIDTRANS TRANSACTION
+                        |--------------------------------------------------------------------------
+                        */
 
                         $lockedTransaction =
                             MidtransTransaction::query()
                                 ->lockForUpdate()
-                                ->with('order')
                                 ->findOrFail(
                                     $transaction->id
                                 );
 
+                        /*
+                        |--------------------------------------------------------------------------
+                        | LOAD + LOCK ORDER
+                        |--------------------------------------------------------------------------
+                        */
 
                         $order =
-                            $lockedTransaction->order;
-
+                            Order::query()
+                                ->lockForUpdate()
+                                ->find(
+                                    $lockedTransaction->order_id
+                                );
 
                         if (
                             !$order
                         ) {
-
                             throw new RuntimeException(
                                 'Order untuk transaksi Midtrans tidak ditemukan.'
                             );
                         }
-
 
                         /*
                         |--------------------------------------------------------------------------
@@ -278,7 +361,6 @@ class MidtransNotificationController extends Controller
                                 )
                             );
 
-
                         $paymentType =
                             data_get(
                                 $statusResponse,
@@ -292,7 +374,6 @@ class MidtransNotificationController extends Controller
                                 ??
                                 null
                             );
-
 
                         $fraudStatus =
                             data_get(
@@ -308,7 +389,6 @@ class MidtransNotificationController extends Controller
                                 null
                             );
 
-
                         $transactionId =
                             data_get(
                                 $statusResponse,
@@ -323,7 +403,6 @@ class MidtransNotificationController extends Controller
                                 null
                             );
 
-
                         /*
                         |--------------------------------------------------------------------------
                         | UPDATE MIDTRANS TRANSACTION
@@ -331,7 +410,6 @@ class MidtransNotificationController extends Controller
                         */
 
                         $lockedTransaction->update([
-
                             'transaction_id' =>
                                 $transactionId,
 
@@ -345,14 +423,11 @@ class MidtransNotificationController extends Controller
                                 $fraudStatus,
 
                             'response_payload' =>
-                                (array)
-                                $statusResponse,
+                                (array) $statusResponse,
 
                             'notification_payload' =>
                                 $notification,
-
                         ]);
-
 
                         /*
                         |--------------------------------------------------------------------------
@@ -366,6 +441,14 @@ class MidtransNotificationController extends Controller
                                 $fraudStatus
                             );
 
+                        /*
+                        |--------------------------------------------------------------------------
+                        | ORDER STATUS BEFORE UPDATE
+                        |--------------------------------------------------------------------------
+                        */
+
+                        $previousOrderStatus =
+                            $order->status;
 
                         /*
                         |--------------------------------------------------------------------------
@@ -383,49 +466,52 @@ class MidtransNotificationController extends Controller
                                 ->lockForUpdate()
                                 ->first();
 
+                        $paymentMessage =
+                            $this->paymentMessage(
+                                $paymentStatus,
+                                $transactionStatus,
+                                $fraudStatus
+                            );
 
                         if (
                             !$paymentLog
                         ) {
-
                             $paymentLog =
                                 PaymentLog::create([
-
                                     'order_id' =>
                                         $order->id,
 
                                     'status' =>
                                         $paymentStatus,
 
+                                    'message' =>
+                                        $paymentMessage,
+
+                                    'logged_at' =>
+                                        now(),
                                 ]);
-
                         } else {
-
                             /*
                             |--------------------------------------------------------------------------
-                            | DO NOT MOVE PAID BACKWARD
+                            | IDEMPOTENT PAYMENT LOG
                             |--------------------------------------------------------------------------
                             |
-                            | Notification bisa datang berulang
-                            | atau dalam urutan berbeda.
+                            | Jika status sama, cukup update informasi
+                            | terakhir tanpa membuat row baru.
                             |
                             */
 
-                            if (
-                                $paymentLog->status !== 'Paid'
-                                ||
-                                $paymentStatus === 'Paid'
-                            ) {
+                            $paymentLog->update([
+                                'status' =>
+                                    $paymentStatus,
 
-                                $paymentLog->update([
+                                'message' =>
+                                    $paymentMessage,
 
-                                    'status' =>
-                                        $paymentStatus,
-
-                                ]);
-                            }
+                                'logged_at' =>
+                                    now(),
+                            ]);
                         }
-
 
                         /*
                         |--------------------------------------------------------------------------
@@ -434,28 +520,23 @@ class MidtransNotificationController extends Controller
                         */
 
                         $isPaid =
-                            $paymentStatus ===
-                            'Paid';
-
+                            $paymentStatus === 'Paid';
 
                         if (
                             $isPaid
                         ) {
-
                             /*
                             |--------------------------------------------------------------------------
-                            | UPDATE PAID TIME
+                            | PAID TIME
                             |--------------------------------------------------------------------------
                             */
 
                             if (
                                 !$lockedTransaction->paid_at
                             ) {
-
                                 $lockedTransaction->paid_at =
                                     now();
                             }
-
 
                             /*
                             |--------------------------------------------------------------------------
@@ -473,33 +554,32 @@ class MidtransNotificationController extends Controller
                                     true
                                 )
                             ) {
-
                                 $order->status =
                                     'Paid';
                             }
 
-
                             $lockedTransaction->save();
                             $order->save();
+                        }
 
+                        /*
+                        |--------------------------------------------------------------------------
+                        | EXPIRED
+                        |--------------------------------------------------------------------------
+                        */
 
-                        } elseif (
-                            $paymentStatus ===
-                            'Expired'
+                        elseif (
+                            $paymentStatus === 'Expired'
                         ) {
-
                             if (
                                 !$lockedTransaction->expired_at
                             ) {
-
                                 $lockedTransaction->expired_at =
                                     now();
                             }
 
-
                             $lockedTransaction->save();
 
-
                             if (
                                 in_array(
                                     $order->status,
@@ -510,36 +590,6 @@ class MidtransNotificationController extends Controller
                                     true
                                 )
                             ) {
-
-                                $order->status =
-                                    'Cancelled';
-
-                                $order->save();
-                            }
-
-
-                        } elseif (
-                            in_array(
-                                $paymentStatus,
-                                [
-                                    'Failed',
-                                    'Refund',
-                                ],
-                                true
-                            )
-                        ) {
-
-                            if (
-                                in_array(
-                                    $order->status,
-                                    [
-                                        'Pending',
-                                        'Waiting Payment',
-                                    ],
-                                    true
-                                )
-                            ) {
-
                                 $order->status =
                                     'Cancelled';
 
@@ -547,47 +597,111 @@ class MidtransNotificationController extends Controller
                             }
                         }
 
+                        /*
+                        |--------------------------------------------------------------------------
+                        | FAILED
+                        |--------------------------------------------------------------------------
+                        */
+
+                        elseif (
+                            $paymentStatus === 'Failed'
+                        ) {
+                            if (
+                                in_array(
+                                    $order->status,
+                                    [
+                                        'Pending',
+                                        'Waiting Payment',
+                                    ],
+                                    true
+                                )
+                            ) {
+                                $order->status =
+                                    'Cancelled';
+
+                                $order->save();
+                            }
+                        }
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | REFUND
+                        |--------------------------------------------------------------------------
+                        */
+
+                        elseif (
+                            $paymentStatus === 'Refund'
+                        ) {
+                            /*
+                            |--------------------------------------------------------------------------
+                            | Jangan membatalkan order yang sedang
+                            | diproses/completed hanya karena webhook
+                            | refund masuk.
+                            |
+                            | Status order untuk refund akan kita
+                            | tangani terpisah jika diperlukan.
+                            |--------------------------------------------------------------------------
+                            */
+                        }
+
+                        /*
+                        |--------------------------------------------------------------------------
+                        | SHOULD DISPATCH MOOGOLD
+                        |--------------------------------------------------------------------------
+                        |
+                        | Bukan hanya berdasarkan "baru saja Paid".
+                        |
+                        | Jika order sudah Paid tetapi dispatch sebelumnya
+                        | gagal, webhook berikutnya tetap bisa melakukan
+                        | recovery.
+                        |
+                        */
 
                         return [
-
                             'order_id' =>
                                 $order->id,
 
                             'payment_status' =>
                                 $paymentStatus,
 
+                            'previous_order_status' =>
+                                $previousOrderStatus,
+
+                            'current_order_status' =>
+                                $order->status,
+
                             'is_paid' =>
                                 $isPaid,
-
                         ];
                     }
                 );
 
-
             /*
             |--------------------------------------------------------------------------
-            | DISPATCH MOOGOLD
+            | DISPATCH MOOGOLD AFTER COMMIT
             |--------------------------------------------------------------------------
-            |
-            | HANYA setelah DB commit berhasil dan payment
-            | benar-benar Paid.
-            |
             */
+
+            $moogoldDispatched = false;
 
             if (
                 $result['is_paid']
             ) {
-
-                $this->dispatchMooGold(
-                    $result['order_id']
-                );
+                $moogoldDispatched =
+                    $this->dispatchMooGold(
+                        $result['order_id']
+                    );
             }
 
+            /*
+            |--------------------------------------------------------------------------
+            | LOG RESULT
+            |--------------------------------------------------------------------------
+            */
 
             Log::info(
                 'Midtrans notification berhasil diproses.',
                 [
-
                     'midtrans_order_id' =>
                         $midtransOrderId,
 
@@ -597,25 +711,26 @@ class MidtransNotificationController extends Controller
                     'payment_status' =>
                         $result['payment_status'],
 
-                    'moogold_dispatched' =>
-                        $result['is_paid'],
+                    'previous_order_status' =>
+                        $result['previous_order_status'],
 
+                    'current_order_status' =>
+                        $result['current_order_status'],
+
+                    'moogold_dispatched' =>
+                        $moogoldDispatched,
                 ]
             );
 
-
             return response()->json([
                 'success' => true,
-                'message' => 'Notification berhasil diproses.',
+                'message' =>
+                    'Notification berhasil diproses.',
             ]);
-
-
         } catch (Throwable $e) {
-
             Log::error(
                 'Gagal memproses Midtrans notification.',
                 [
-
                     'midtrans_order_id' =>
                         $midtransOrderId,
 
@@ -624,18 +739,16 @@ class MidtransNotificationController extends Controller
 
                     'error' =>
                         $e->getMessage(),
-
                 ]
             );
 
-
             return response()->json([
                 'success' => false,
-                'message' => 'Notification gagal diproses.',
+                'message' =>
+                    'Notification gagal diproses.',
             ], 500);
         }
     }
-
 
     /**
      * =========================================================
@@ -645,53 +758,40 @@ class MidtransNotificationController extends Controller
     protected function verifySignature(
         array $notification
     ): bool {
-
         $serverKey =
-            (string)
-            config(
+            (string) config(
                 'midtrans.server_key'
             );
-
 
         if (
             $serverKey === ''
         ) {
-
             return false;
         }
 
-
         $orderId =
-            (string)
-            (
+            (string) (
                 $notification['order_id']
                 ?? ''
             );
 
-
         $statusCode =
-            (string)
-            (
+            (string) (
                 $notification['status_code']
                 ?? ''
             );
 
-
         $grossAmount =
-            (string)
-            (
+            (string) (
                 $notification['gross_amount']
                 ?? ''
             );
 
-
         $signatureKey =
-            (string)
-            (
+            (string) (
                 $notification['signature_key']
                 ?? ''
             );
-
 
         if (
             $orderId === ''
@@ -702,10 +802,8 @@ class MidtransNotificationController extends Controller
             ||
             $signatureKey === ''
         ) {
-
             return false;
         }
-
 
         $expectedSignature =
             hash(
@@ -719,13 +817,11 @@ class MidtransNotificationController extends Controller
                 $serverKey
             );
 
-
         return hash_equals(
             $expectedSignature,
             $signatureKey
         );
     }
-
 
     /**
      * =========================================================
@@ -736,7 +832,6 @@ class MidtransNotificationController extends Controller
         string $transactionStatus,
         ?string $fraudStatus = null
     ): string {
-
         $transactionStatus =
             strtolower(
                 trim(
@@ -744,15 +839,12 @@ class MidtransNotificationController extends Controller
                 )
             );
 
-
         $fraudStatus =
             strtolower(
                 trim(
-                    (string)
-                    $fraudStatus
+                    (string) $fraudStatus
                 )
             );
-
 
         /*
         |--------------------------------------------------------------------------
@@ -761,13 +853,10 @@ class MidtransNotificationController extends Controller
         */
 
         if (
-            $transactionStatus ===
-            'settlement'
+            $transactionStatus === 'settlement'
         ) {
-
             return 'Paid';
         }
-
 
         /*
         |--------------------------------------------------------------------------
@@ -776,31 +865,22 @@ class MidtransNotificationController extends Controller
         */
 
         if (
-            $transactionStatus ===
-            'capture'
+            $transactionStatus === 'capture'
         ) {
-
-            /*
-            |--------------------------------------------------------------------------
-            | Credit Card Fraud
-            |--------------------------------------------------------------------------
-            |
-            | Capture dengan fraud_status deny jangan dianggap Paid.
-            |
-            */
-
             if (
-                $fraudStatus ===
-                'deny'
+                $fraudStatus === 'deny'
             ) {
-
                 return 'Failed';
             }
 
+            if (
+                $fraudStatus === 'challenge'
+            ) {
+                return 'Pending';
+            }
 
             return 'Paid';
         }
-
 
         /*
         |--------------------------------------------------------------------------
@@ -809,13 +889,10 @@ class MidtransNotificationController extends Controller
         */
 
         if (
-            $transactionStatus ===
-            'pending'
+            $transactionStatus === 'pending'
         ) {
-
             return 'Pending';
         }
-
 
         /*
         |--------------------------------------------------------------------------
@@ -824,13 +901,10 @@ class MidtransNotificationController extends Controller
         */
 
         if (
-            $transactionStatus ===
-            'expire'
+            $transactionStatus === 'expire'
         ) {
-
             return 'Expired';
         }
-
 
         /*
         |--------------------------------------------------------------------------
@@ -848,10 +922,8 @@ class MidtransNotificationController extends Controller
                 true
             )
         ) {
-
             return 'Failed';
         }
-
 
         /*
         |--------------------------------------------------------------------------
@@ -869,10 +941,8 @@ class MidtransNotificationController extends Controller
                 true
             )
         ) {
-
             return 'Refund';
         }
-
 
         /*
         |--------------------------------------------------------------------------
@@ -883,6 +953,80 @@ class MidtransNotificationController extends Controller
         return 'Pending';
     }
 
+    /**
+     * =========================================================
+     * PAYMENT LOG MESSAGE
+     * =========================================================
+     */
+    protected function paymentMessage(
+        string $paymentStatus,
+        string $transactionStatus,
+        ?string $fraudStatus = null
+    ): string {
+        $transactionStatus =
+            strtolower(
+                trim(
+                    $transactionStatus
+                )
+            );
+
+        $fraudStatus =
+            strtolower(
+                trim(
+                    (string) $fraudStatus
+                )
+            );
+
+        return match ($paymentStatus) {
+            'Paid' =>
+                'Pembayaran Midtrans berhasil dikonfirmasi.',
+
+            'Pending' =>
+                $fraudStatus === 'challenge'
+                    ? 'Pembayaran Midtrans sedang dalam proses verifikasi.'
+                    : 'Pembayaran Midtrans masih menunggu penyelesaian.',
+
+            'Expired' =>
+                'Pembayaran Midtrans telah kedaluwarsa.',
+
+            'Failed' =>
+                'Pembayaran Midtrans gagal atau dibatalkan.',
+
+            'Refund' =>
+                'Pembayaran Midtrans telah direfund.',
+
+            default =>
+                'Status pembayaran Midtrans: '
+                . $transactionStatus . '.',
+        };
+    }
+
+    /**
+     * =========================================================
+     * NORMALIZE AMOUNT
+     * =========================================================
+     */
+    protected function normalizeAmount(
+        mixed $amount
+    ): ?string {
+        if (
+            $amount === null
+            ||
+            $amount === ''
+        ) {
+            return null;
+        }
+
+        $normalized =
+            number_format(
+                (float) $amount,
+                2,
+                '.',
+                ''
+            );
+
+        return $normalized;
+    }
 
     /**
      * =========================================================
@@ -891,26 +1035,28 @@ class MidtransNotificationController extends Controller
      */
     protected function dispatchMooGold(
         int $orderId
-    ): void {
-
+    ): bool {
         /*
         |--------------------------------------------------------------------------
-        | LOAD ORDER DETAILS
+        | LOAD ORDER + DETAILS
         |--------------------------------------------------------------------------
+        |
+        | Order memakai relasi "details()", bukan "orderDetails()".
+        |
         */
 
         $order =
-            \App\Models\Order::query()
-                ->with('orderDetails')
+            Order::query()
+                ->with([
+                    'details.mooGoldOrder',
+                ])
                 ->find(
                     $orderId
                 );
 
-
         if (
             !$order
         ) {
-
             Log::error(
                 'Order tidak ditemukan saat dispatch MooGold.',
                 [
@@ -919,9 +1065,8 @@ class MidtransNotificationController extends Controller
                 ]
             );
 
-            return;
+            return false;
         }
-
 
         /*
         |--------------------------------------------------------------------------
@@ -930,26 +1075,23 @@ class MidtransNotificationController extends Controller
         */
 
         if (
-            $order->status !==
-            'Paid'
+            $order->status !== 'Paid'
         ) {
-
             Log::warning(
                 'Dispatch MooGold dibatalkan karena order belum Paid.',
                 [
-
                     'order_id' =>
                         $order->id,
 
                     'status' =>
                         $order->status,
-
                 ]
             );
 
-            return;
+            return false;
         }
 
+        $dispatched = false;
 
         /*
         |--------------------------------------------------------------------------
@@ -958,27 +1100,70 @@ class MidtransNotificationController extends Controller
         */
 
         foreach (
-            $order->orderDetails as
+            $order->details as
             $detail
         ) {
+            /*
+            |--------------------------------------------------------------------------
+            | CHECK EXISTING MOOGOLD ORDER
+            |--------------------------------------------------------------------------
+            |
+            | Jika detail sudah mempunyai MooGold Order ID,
+            | jangan dispatch ulang.
+            |
+            */
+
+            $mooGoldOrder =
+                $detail->mooGoldOrder;
+
+            if (
+                $mooGoldOrder
+                &&
+                !empty(
+                    $mooGoldOrder->moogold_order_id
+                )
+            ) {
+                Log::info(
+                    'MooGold fulfillment dilewati karena order sudah dibuat.',
+                    [
+                        'order_id' =>
+                            $order->id,
+
+                        'order_detail_id' =>
+                            $detail->id,
+
+                        'moogold_order_id' =>
+                            $mooGoldOrder->moogold_order_id,
+                    ]
+                );
+
+                continue;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | DISPATCH JOB
+            |--------------------------------------------------------------------------
+            */
 
             ProcessMooGoldOrder::dispatch(
                 $detail->id
             );
 
+            $dispatched = true;
 
             Log::info(
                 'ProcessMooGoldOrder berhasil di-dispatch setelah pembayaran Paid.',
                 [
-
                     'order_id' =>
                         $order->id,
 
                     'order_detail_id' =>
                         $detail->id,
-
                 ]
             );
         }
+
+        return $dispatched;
     }
 }

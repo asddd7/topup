@@ -1,6 +1,7 @@
 <?php
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MidtransTestController;
 
 // ADMIN
 use App\Http\Controllers\Admin\DashboardController;
@@ -30,6 +31,14 @@ use App\Http\Controllers\ProfileController;
 | HOME
 |--------------------------------------------------------------------------
 */
+
+Route::get(
+    '/midtrans/test/orders/{order}',
+    [
+        MidtransTestController::class,
+        'payment',
+    ]
+)->name('midtrans.test.payment');
 
 Route::get(
     '/',

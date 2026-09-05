@@ -34,15 +34,10 @@ class MidtransOrderService
         */
 
         $order->loadMissing([
-
-            'orderDetails.item',
-
+            'details.item',
             'game',
-
             'user',
-
             'midtransTransaction',
-
         ]);
 
 
@@ -158,7 +153,7 @@ class MidtransOrderService
                             Order::query()
                                 ->lockForUpdate()
                                 ->with([
-                                    'orderDetails.item',
+                                    'details.item',
                                     'game',
                                     'user',
                                 ])
@@ -310,7 +305,7 @@ class MidtransOrderService
             $transactionOrder =
                 Order::query()
                     ->with([
-                        'orderDetails.item',
+                        'details.item',
                         'game',
                         'user',
                     ])
@@ -527,7 +522,7 @@ class MidtransOrderService
 
 
         foreach (
-            $order->orderDetails as
+            $order->details as
             $detail
         ) {
 
