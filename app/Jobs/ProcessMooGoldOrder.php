@@ -146,19 +146,13 @@ class ProcessMooGoldOrder implements
         |--------------------------------------------------------------------------
         */
 
-        if ($order->status !== 'Paid') {
-
+        if (!in_array($order->status, ['Paid', 'Processing'], true)) {
             Log::info(
-                'ProcessMooGoldOrder dilewati karena Order tidak Paid.',
+                'ProcessMooGoldOrder dilewati karena Order tidak dalam status fulfillment.',
                 [
-                    'order_id' =>
-                        $order->id,
-
-                    'order_detail_id' =>
-                        $detail->id,
-
-                    'status' =>
-                        $order->status,
+                    'order_id' => $order->id,
+                    'order_detail_id' => $detail->id,
+                    'status' => $order->status,
                 ]
             );
 

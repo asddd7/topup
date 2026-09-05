@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\MooGoldOrder;
 use App\Services\MooGold\MooGoldOrderService;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -12,7 +13,9 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class CheckMooGoldOrderStatus implements ShouldQueue
+class CheckMooGoldOrderStatus implements
+    ShouldQueue,
+    ShouldBeUnique
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -35,12 +38,41 @@ class CheckMooGoldOrderStatus implements ShouldQueue
 
     /**
      * =========================================================
+     * UNIQUE LOCK
+     * =========================================================
+     *
+     * Satu MooGoldOrder hanya boleh mempunyai satu
+     * CheckMooGoldOrderStatus aktif.
+     *
+     * Ini mencegah:
+     *
+     * Check #1
+     * Check #2
+     * Check #3
+     *
+     * berjalan bersamaan untuk transaksi yang sama.
+     */
+    public int $uniqueFor = 1800;
+
+    /**
+     * =========================================================
      * CONSTRUCTOR
      * =========================================================
      */
     public function __construct(
         public int $mooGoldOrderId
     ) {
+    }
+
+    /**
+     * =========================================================
+     * UNIQUE ID
+     * =========================================================
+     */
+    public function uniqueId(): string
+    {
+        return 'check-moogold-order-status-' .
+            $this->mooGoldOrderId;
     }
 
     /**
@@ -81,11 +113,6 @@ class CheckMooGoldOrderStatus implements ShouldQueue
         /*
         |--------------------------------------------------------------------------
         | ORDER ID BELUM TERSEDIA
-        |--------------------------------------------------------------------------
-        |
-        | Jangan mencoba status endpoint.
-        |
-        | Ini bisa berarti create masih UNKNOWN.
         |--------------------------------------------------------------------------
         */
 
@@ -144,8 +171,7 @@ class CheckMooGoldOrderStatus implements ShouldQueue
         ) {
 
             Log::info(
-                'MooGold order sudah final. '
-                . 'Tidak perlu dicek ulang.',
+                'MooGold order sudah final. Tidak perlu dicek ulang.',
                 [
                     'moo_gold_order_id' =>
                         $mooGoldOrder->id,
@@ -210,9 +236,6 @@ class CheckMooGoldOrderStatus implements ShouldQueue
         |--------------------------------------------------------------------------
         | PROCESSING
         |--------------------------------------------------------------------------
-        |
-        | Jadwalkan check berikutnya.
-        |--------------------------------------------------------------------------
         */
 
         if (
@@ -222,6 +245,8 @@ class CheckMooGoldOrderStatus implements ShouldQueue
                     'pending',
                     'processing',
                     'sending',
+                    'creating',
+                    'unknown',
                 ],
                 true
             )

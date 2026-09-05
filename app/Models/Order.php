@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\MooGoldOrder;
 
@@ -115,6 +116,13 @@ class Order extends Model
     {
         return $this->hasMany(
             MooGoldOrder::class
+        );
+    }
+
+    public function midtransTransaction(): HasOne
+    {
+        return $this->hasOne(
+            MidtransTransaction::class
         );
     }
 }

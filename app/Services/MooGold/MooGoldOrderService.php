@@ -95,9 +95,9 @@ class MooGoldOrderService
             );
         }
 
-        if ($order->status !== 'Paid') {
+        if (!in_array($order->status, ['Paid', 'Processing'], true)) {
             throw new RuntimeException(
-                'Order belum berstatus Paid. MooGold tidak boleh diproses.'
+                'Order belum berada dalam status fulfillment yang valid.'
             );
         }
 
@@ -782,13 +782,11 @@ class MooGoldOrderService
             'moogold_ordered_at' =>
                 $order->moogold_ordered_at
                 ?? now(),
-
-            'status' =>
-                $this->mapOrderStatus(
-                    $moogoldStatus
-                ),
         ]);
 
+        $this->syncMainOrderStatus(
+            $order->fresh()
+        );
         /*
         |--------------------------------------------------------------------------
         | STATUS CHECK
@@ -1038,12 +1036,11 @@ class MooGoldOrderService
                 'moogold_ordered_at' =>
                     $order->moogold_ordered_at
                     ?? now(),
-
-                'status' =>
-                    $this->mapOrderStatus(
-                        $status
-                    ),
             ]);
+
+            $this->syncMainOrderStatus(
+                $order->fresh()
+            );
         }
 
         /*
@@ -1222,11 +1219,6 @@ class MooGoldOrderService
             case 'processing':
             case 'sending':
 
-                if ($order) {
-                    $order->status =
-                        'Processing';
-                }
-
                 break;
 
             case 'success':
@@ -1234,11 +1226,6 @@ class MooGoldOrderService
             case 'completed':
             case 'complete':
             case 'successfully':
-
-                if ($order) {
-                    $order->status =
-                        'Completed';
-                }
 
                 if (
                     !$mooGoldOrder->completed_at
@@ -1254,22 +1241,12 @@ class MooGoldOrderService
 
             case 'refunded':
 
-                if ($order) {
-                    $order->status =
-                        'Cancelled';
-                }
-
                 $mooGoldOrder->error_message =
                     'MooGold order refunded.';
 
                 break;
 
             case 'failed':
-
-                if ($order) {
-                    $order->status =
-                        'Cancelled';
-                }
 
                 $mooGoldOrder->error_message =
                     'MooGold order failed.';
@@ -1327,11 +1304,254 @@ class MooGoldOrderService
                 $response;
 
             $order->save();
+
+            /*
+            |--------------------------------------------------------------------------
+            | AGGREGATE SEMUA MOO GOLD ORDER
+            |--------------------------------------------------------------------------
+            */
+
+            $this->syncMainOrderStatus(
+                $order->fresh()
+            );
         }
 
         return $mooGoldOrder->fresh();
     }
 
+    /**
+     * =========================================================
+     * SYNC MAIN ORDER STATUS
+     * =========================================================
+     *
+     * Status Order ditentukan berdasarkan SELURUH
+     * MooGoldOrder milik Order.
+     *
+     * Rule:
+     *
+     * Ada failed/refunded
+     *      -> Cancelled
+     *
+     * Ada pending/processing/sending/creating/unknown
+     *      -> Processing
+     *
+     * Semua detail sudah ada MooGoldOrder
+     * dan semuanya success
+     *      -> Completed
+     *
+     * Jika belum semua detail mempunyai MooGoldOrder
+     *      -> Processing jika sudah ada fulfillment aktif
+     *      -> Paid jika belum ada fulfillment aktif
+     */
+    protected function syncMainOrderStatus(
+        \App\Models\Order $order
+    ): void {
+
+        /*
+        |--------------------------------------------------------------------------
+        | LOAD SEMUA FULFILLMENT
+        |--------------------------------------------------------------------------
+        */
+
+        $order->loadMissing([
+            'details.mooGoldOrder',
+        ]);
+
+        $details =
+            $order->details;
+
+        /*
+        |--------------------------------------------------------------------------
+        | ORDER TANPA DETAIL
+        |--------------------------------------------------------------------------
+        */
+
+        if ($details->isEmpty()) {
+
+            return;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | AMBIL MOO GOLD ORDERS
+        |--------------------------------------------------------------------------
+        */
+
+        $mooGoldOrders =
+            $details
+                ->map(
+                    fn ($detail) =>
+                        $detail->mooGoldOrder
+                )
+                ->filter();
+
+        /*
+        |--------------------------------------------------------------------------
+        | BELUM SEMUA DETAIL MEMPUNYAI FULFILLMENT
+        |--------------------------------------------------------------------------
+        */
+
+        $allDetailsHaveMooGoldOrder =
+            $mooGoldOrders->count() ===
+            $details->count();
+
+        /*
+        |--------------------------------------------------------------------------
+        | NORMALIZE STATUS
+        |--------------------------------------------------------------------------
+        */
+
+        $statuses =
+            $mooGoldOrders
+                ->map(
+                    fn ($mooGoldOrder) =>
+                        strtolower(
+                            trim(
+                                (string)
+                                $mooGoldOrder->moogold_status
+                            )
+                        )
+                );
+
+        /*
+        |--------------------------------------------------------------------------
+        | FAILED / REFUNDED
+        |--------------------------------------------------------------------------
+        |
+        | Satu detail gagal berarti Order keseluruhan
+        | tidak boleh dianggap Completed.
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $statuses->contains(
+                fn ($status) =>
+                    in_array(
+                        $status,
+                        [
+                            'failed',
+                            'refunded',
+                        ],
+                        true
+                    )
+            )
+        ) {
+
+            $order->status =
+                'Cancelled';
+
+            $order->save();
+
+            return;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | PROCESSING / UNKNOWN / CREATING
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $statuses->contains(
+                fn ($status) =>
+                    in_array(
+                        $status,
+                        [
+                            'pending',
+                            'processing',
+                            'sending',
+                            'creating',
+                            'unknown',
+                        ],
+                        true
+                    )
+            )
+        ) {
+
+            $order->status =
+                'Processing';
+
+            $order->save();
+
+            return;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | SEMUA DETAIL HARUS SUDAH TER-CREATE
+        |--------------------------------------------------------------------------
+        */
+
+        if (!$allDetailsHaveMooGoldOrder) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | Belum semua fulfillment dibuat.
+            |
+            | Jangan menyatakan Completed.
+            |--------------------------------------------------------------------------
+            */
+
+            if ($mooGoldOrders->isNotEmpty()) {
+
+                $order->status =
+                    'Processing';
+
+                $order->save();
+            }
+
+            return;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | SEMUA HARUS FINAL SUCCESS
+        |--------------------------------------------------------------------------
+        */
+
+        $allSuccessful =
+            $statuses->count() ===
+            $details->count()
+            &&
+            $statuses->every(
+                fn ($status) =>
+                    in_array(
+                        $status,
+                        [
+                            'success',
+                            'successful',
+                            'completed',
+                            'complete',
+                            'successfully',
+                        ],
+                        true
+                    )
+            );
+
+        if ($allSuccessful) {
+
+            $order->status =
+                'Completed';
+
+            $order->save();
+
+            return;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | FALLBACK
+        |--------------------------------------------------------------------------
+        */
+
+        if ($mooGoldOrders->isNotEmpty()) {
+
+            $order->status =
+                'Processing';
+
+            $order->save();
+        }
+    }
 
     /**
      * =========================================================

@@ -16,15 +16,25 @@ return Application::configure(basePath: dirname(__DIR__))
 
         then: function () {
 
-                Route::prefix('api/v1')
-                    ->middleware('api')
-                    ->group(base_path('routes/api/v1/user.php'));
+            Route::prefix('api/v1')
+                ->middleware('api')
+                ->group(
+                    base_path('routes/api/v1/user.php')
+                );
 
-                Route::prefix('api/v1')
-                    ->middleware('api')
-                    ->group(base_path('routes/api/v1/admin.php'));
+            Route::prefix('api/v1')
+                ->middleware('api')
+                ->group(
+                    base_path('routes/api/v1/admin.php')
+                );
 
-            },
+            Route::prefix('api/v1')
+                ->middleware('api')
+                ->group(
+                    base_path('routes/api/v1/midtrans.php')
+                );
+
+        },
     )
     ->withMiddleware(function ($middleware) {
 
