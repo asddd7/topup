@@ -91,12 +91,6 @@ class OrderController extends Controller
         );
     }
 
-
-    /**
-     * ============================================================
-     * STORE ORDER
-     * ============================================================
-     */
 /**
  * ============================================================
  * STORE ORDER
@@ -635,11 +629,21 @@ if (empty($playerData) && !empty($gamePlayerFields)) {
     |--------------------------------------------------------------------------
     */
 
+    $routeParameters = [
+        'order' => $order->id,
+    ];
+
+
+    if (!$order->user_id) {
+
+        $routeParameters['token'] =
+            $order->guest_token;
+    }
+
+
     return redirect()->route(
         'midtrans.payment',
-        [
-            'order' => $order->id,
-        ]
+        $routeParameters
     );
 
 }

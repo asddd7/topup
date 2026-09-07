@@ -1,9 +1,10 @@
 <?php
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\MidtransTestController;
 
-// ADMIN
+use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MidtransController;
+
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\GameController;
 use App\Http\Controllers\Admin\ItemController;
@@ -17,14 +18,13 @@ use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\StockController;
 use App\Http\Controllers\Admin\MooGoldProductMappingController;
 
-// USER
 use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\User\GameController as UserGameController;
 use App\Http\Controllers\User\OrderController as UserOrderController;
 use App\Http\Controllers\User\VoucherController;
 
-
 use App\Http\Controllers\ProfileController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -33,33 +33,41 @@ use App\Http\Controllers\ProfileController;
 */
 
 Route::get(
-    '/midtrans/test/orders/{order}',
-    [
-        MidtransTestController::class,
-        'payment',
-    ]
-)->name('midtrans.test.payment');
+    '/',
+    [HomeController::class, 'index']
+)->name(
+    'dashboard'
+);
 
-Route::get(
-    '/midtrans/payment/finish',
-    [MidtransTestController::class, 'finish']
-)->name('midtrans.payment.finish');
+
+/*
+|--------------------------------------------------------------------------
+| MIDTRANS
+|--------------------------------------------------------------------------
+*/
 
 Route::get(
     '/midtrans/payment/{order}',
-    [MidtransTestController::class, 'payment']
-)->name('midtrans.payment');
+    [
+        MidtransController::class,
+        'payment',
+    ]
+)->name(
+    'midtrans.payment'
+);
+
 
 Route::get(
     '/midtrans/result/{order}',
-    [MidtransTestController::class, 'result']
-)->name('midtrans.result');
+    [
+        MidtransController::class,
+        'result',
+    ]
+)->name(
+    'midtrans.result'
+);
 
-Route::get(
-    '/',
-    [HomeController::class,'index']
-)
-->name('dashboard');
+
 /*
 |--------------------------------------------------------------------------
 | AUTH
@@ -68,26 +76,31 @@ Route::get(
 
 Route::get(
     '/login',
-    [AuthController::class,'showLogin']
-)
-->name('login');
+    [AuthController::class, 'showLogin']
+)->name(
+    'login'
+);
 
 
 Route::post(
     '/login',
-    [AuthController::class,'login']
+    [AuthController::class, 'login']
 );
+
 
 Route::get(
     '/register',
-    [AuthController::class,'showRegister']
-)
-->name('register');
+    [AuthController::class, 'showRegister']
+)->name(
+    'register'
+);
+
 
 Route::post(
     '/register',
-    [AuthController::class,'register']
+    [AuthController::class, 'register']
 );
+
 
 /*
 |--------------------------------------------------------------------------
@@ -97,20 +110,27 @@ Route::post(
 
 Route::get(
     '/game',
-    [UserGameController::class,'index']
-)
-->name('game.index');
+    [UserGameController::class, 'index']
+)->name(
+    'game.index'
+);
+
 
 Route::get(
     '/game/{game}',
-    [UserGameController::class,'show']
-)
-->name('game.show');
+    [UserGameController::class, 'show']
+)->name(
+    'game.show'
+);
+
 
 Route::post(
     '/games/validate-player',
     [UserGameController::class, 'validatePlayer']
-)->name('game.validate-player');
+)->name(
+    'game.validate-player'
+);
+
 
 /*
 |--------------------------------------------------------------------------
@@ -121,58 +141,76 @@ Route::post(
 Route::post(
     '/check-voucher',
     [VoucherController::class, 'check']
-)->name('voucher.check');
+)->name(
+    'voucher.check'
+);
+
 
 Route::post(
     '/payment-promo',
     [VoucherController::class, 'paymentPromo']
-)->name('payment.promo');
+)->name(
+    'payment.promo'
+);
+
 
 Route::post(
     '/voucher/calculate',
     [UserOrderController::class, 'calculatePromotion']
-)->name('voucher.calculate');
+)->name(
+    'voucher.calculate'
+);
+
+
 /*
 |--------------------------------------------------------------------------
-| PUBLIC ORDER
+| ORDER
 |--------------------------------------------------------------------------
 */
 
 Route::post(
     '/order',
-    [UserOrderController::class,'store']
-)
-->name('order.store');
+    [UserOrderController::class, 'store']
+)->name(
+    'order.store'
+);
+
 
 /*
 |--------------------------------------------------------------------------
-| DETAIL ORDER PUBLIC
+| ORDER DETAIL
 |--------------------------------------------------------------------------
 */
 
 Route::get(
     '/order/{invoice}',
-    [UserOrderController::class,'show']
-)
-->name('order.show');
+    [UserOrderController::class, 'show']
+)->name(
+    'order.show'
+);
+
 
 /*
 |--------------------------------------------------------------------------
-| PAYMENT
+| MANUAL PAYMENT
 |--------------------------------------------------------------------------
 */
 
 Route::get(
     '/order/{invoice}/payment',
-    [UserOrderController::class,'payment']
-)
-->name('order.payment');
+    [UserOrderController::class, 'payment']
+)->name(
+    'order.payment'
+);
+
 
 Route::post(
     '/order/{invoice}/upload-proof',
-    [UserOrderController::class,'uploadProof']
-)
-->name('order.uploadProof');
+    [UserOrderController::class, 'uploadProof']
+)->name(
+    'order.uploadProof'
+);
+
 
 /*
 |--------------------------------------------------------------------------
@@ -182,9 +220,10 @@ Route::post(
 
 Route::get(
     '/order/check/{invoice}',
-    [UserOrderController::class,'checkOrder']
-)
-->name('order.check');
+    [UserOrderController::class, 'checkOrder']
+)->name(
+    'order.check'
+);
 
 /*
 |--------------------------------------------------------------------------

@@ -91,7 +91,6 @@
     </div>
 
 </div>
-```
 
 </div>
 
@@ -99,7 +98,7 @@
 
 @push('scripts')
 
-```
+
 @if ($isProduction)
 
     <script
