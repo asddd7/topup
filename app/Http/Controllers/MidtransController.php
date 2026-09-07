@@ -16,58 +16,18 @@ class MidtransController extends Controller
     ) {
     }
 
-
     /**
      * =========================================================
-     * MIDTRANS PAYMENT
+     * PAYMENT PAGE
      * =========================================================
      */
     public function payment(
-        Request $request,
         Order $order
     ): View {
 
         /*
         |--------------------------------------------------------------------------
-        | AUTHORIZATION
-        |--------------------------------------------------------------------------
-        */
-
-        $this->authorizeOrder(
-            $request,
-            $order
-        );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | STATUS CHECK
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            !in_array(
-                $order->status,
-                [
-                    'Pending',
-                    'Waiting Payment',
-                ],
-                true
-            )
-        ) {
-
-            return redirect()->route(
-                'midtrans.result',
-                [
-                    'order' => $order->id,
-                ]
-            );
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | CREATE / RESOLVE SNAP TRANSACTION
+        | CREATE / RESOLVE SNAP PAYMENT
         |--------------------------------------------------------------------------
         */
 
@@ -80,7 +40,7 @@ class MidtransController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | LOAD RELATION
+        | LOAD ORDER
         |--------------------------------------------------------------------------
         */
 
@@ -92,7 +52,7 @@ class MidtransController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | PAYMENT PAGE
+        | VIEW
         |--------------------------------------------------------------------------
         */
 
@@ -125,6 +85,14 @@ class MidtransController extends Controller
      * =========================================================
      * PAYMENT RESULT
      * =========================================================
+     *
+     * Halaman hanya menampilkan hasil redirect Snap.
+     *
+     * Status resmi tetap berasal dari:
+     *
+     * Midtrans → Webhook → Database
+     *
+     * BUKAN dari query parameter browser.
      */
     public function result(
         Request $request,
@@ -133,35 +101,20 @@ class MidtransController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | AUTHORIZATION
-        |--------------------------------------------------------------------------
-        */
-
-        $this->authorizeOrder(
-            $request,
-            $order
-        );
-
-
-        /*
-        |--------------------------------------------------------------------------
         | REFRESH ORDER
         |--------------------------------------------------------------------------
         */
 
         $order =
-            $order->fresh(
-                [
-                    'game',
-                    'details.item',
-                    'payment',
-                ]
-            );
+            $order->fresh([
+                'game',
+                'details.item',
+            ]);
 
 
         /*
         |--------------------------------------------------------------------------
-        | GET LATEST MIDTRANS TRANSACTION
+        | LATEST MIDTRANS ATTEMPT
         |--------------------------------------------------------------------------
         */
 
@@ -174,12 +127,6 @@ class MidtransController extends Controller
                 ->first();
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | RESULT PAGE
-        |--------------------------------------------------------------------------
-        */
-
         return view(
             'midtrans.result',
             [
@@ -188,6 +135,12 @@ class MidtransController extends Controller
 
                 'transaction' =>
                     $transaction,
+
+                /*
+                |--------------------------------------------------------------------------
+                | Callback data hanya untuk display/debug.
+                |--------------------------------------------------------------------------
+                */
 
                 'midtransOrderId' =>
                     $request->query(
@@ -205,76 +158,5 @@ class MidtransController extends Controller
                     ),
             ]
         );
-    }
-
-
-    /**
-     * =========================================================
-     * AUTHORIZE ORDER
-     * =========================================================
-     */
-    private function authorizeOrder(
-        Request $request,
-        Order $order
-    ): void {
-
-        /*
-        |--------------------------------------------------------------------------
-        | AUTHENTICATED USER
-        |--------------------------------------------------------------------------
-        */
-
-        if ($order->user_id) {
-
-            if (!auth()->check()) {
-
-                abort(
-                    403,
-                    'Silakan login untuk mengakses order ini.'
-                );
-            }
-
-
-            if (
-                (int) $order->user_id !==
-                (int) auth()->id()
-            ) {
-
-                abort(
-                    403,
-                    'Anda tidak memiliki akses ke order ini.'
-                );
-            }
-
-
-            return;
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | GUEST ORDER
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            !$request->filled(
-                'token'
-            )
-            ||
-            !hash_equals(
-                (string)
-                $order->guest_token,
-
-                (string)
-                $request->token
-            )
-        ) {
-
-            abort(
-                403,
-                'Token order tidak valid.'
-            );
-        }
     }
 }

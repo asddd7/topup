@@ -37,9 +37,7 @@
                             trim(
                                 (string)
                                 (
-                                    $transaction
-                                    ?->transaction_status
-                                    ?? $transactionStatus
+                                    $transaction?->transaction_status
                                     ?? ''
                                 )
                             )

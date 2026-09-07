@@ -21,51 +21,31 @@ class MidtransOrderService
      * =========================================================
      * CREATE / RESOLVE SNAP TRANSACTION
      * =========================================================
+     *
+     * Flow:
+     *
+     * Pending / Waiting Payment
+     *      ↓
+     * latest attempt
+     *      ↓
+     * existing token?
+     *      ├── belum ada status → reuse token
+     *      ├── pending → reuse token
+     *      ├── settlement/capture → reuse transaction
+     *      └── expire/cancel/deny/failure → create next attempt
+     *      ↓
+     * create Snap token
      */
     public function createForOrder(
         Order $order
     ): MidtransTransaction {
-
-        /*
-        |--------------------------------------------------------------------------
-        | LOAD RELATIONS
-        |--------------------------------------------------------------------------
-        */
-
         $order->loadMissing([
             'details.item',
             'game',
             'user',
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDATE ORDER
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            !in_array(
-                $order->status,
-                [
-                    'Pending',
-                    'Waiting Payment',
-                ],
-                true
-            )
-        ) {
-            throw new RuntimeException(
-                'Order tidak dapat dibuatkan pembayaran Midtrans. '
-                . 'Status saat ini: '
-                . $order->status
-            );
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | APPLICATION LOCK
-        |--------------------------------------------------------------------------
-        */
+        $this->ensureOrderCanPay($order);
 
         $lock = Cache::lock(
             'midtrans-create-snap:' . $order->id,
@@ -75,11 +55,10 @@ class MidtransOrderService
         $lockAcquired = false;
 
         try {
-
             if (!$lock->get()) {
                 throw new RuntimeException(
-                    'Pembuatan pembayaran Midtrans untuk order ini '
-                    . 'sedang diproses. Silakan coba kembali.'
+                    'Pembuatan pembayaran Midtrans untuk order ini sedang diproses. '
+                    . 'Silakan coba kembali.'
                 );
             }
 
@@ -92,312 +71,39 @@ class MidtransOrderService
             */
 
             $transaction =
-                $this->getOrCreateLatestAttempt(
-                    $order
-                );
+                $this->getOrCreateLatestAttempt($order);
 
             /*
             |--------------------------------------------------------------------------
-            | EXISTING SNAP TOKEN
+            | RESOLVE EXISTING SNAP TOKEN
             |--------------------------------------------------------------------------
-            |
-            | Jika token sudah ada, cek status Midtrans.
-            |
             */
 
-            if (
-                !empty(
-                    $transaction->snap_token
-                )
-            ) {
-
-                $statusResponse =
-                    $this->midtrans
-                        ->getTransactionStatus(
-                            $transaction
-                                ->midtrans_order_id
-                        );
+            if (!empty($transaction->snap_token)) {
+                $transaction =
+                    $this->resolveExistingAttempt(
+                        $order,
+                        $transaction
+                    );
 
                 /*
                 |--------------------------------------------------------------------------
-                | MIDTRANS 404
+                | EXISTING ATTEMPT STILL USABLE
                 |--------------------------------------------------------------------------
-                |
-                | Transaction status belum tersedia.
-                |
-                | Ini normal untuk Snap yang tokennya sudah dibuat
-                | tetapi belum digunakan customer.
-                |
-                | Selama Snap Token lokal masih ada, token digunakan kembali.
-                |
                 */
 
-                if ($statusResponse === null) {
-
-                    Log::info(
-                        'Midtrans transaction belum memiliki status. '
-                        . 'Snap Token existing tetap digunakan.',
-                        [
-                            'order_id' =>
-                                $order->id,
-
-                            'attempt_number' =>
-                                $transaction
-                                    ->attempt_number,
-
-                            'midtrans_order_id' =>
-                                $transaction
-                                    ->midtrans_order_id,
-
-                            'snap_token_exists' =>
-                                true,
-                        ]
-                    );
-
+                if (!empty($transaction->snap_token)) {
                     return $transaction->fresh();
-                }
-
-                /*
-                |--------------------------------------------------------------------------
-                | GET STATUS
-                |--------------------------------------------------------------------------
-                */
-
-                $transactionStatus =
-                    strtolower(
-                        trim(
-                            (string)
-                            data_get(
-                                $statusResponse,
-                                'transaction_status'
-                            )
-                        )
-                    );
-
-                /*
-                |--------------------------------------------------------------------------
-                | SUCCESS
-                |--------------------------------------------------------------------------
-                */
-
-                if (
-                    in_array(
-                        $transactionStatus,
-                        [
-                            'capture',
-                            'settlement',
-                        ],
-                        true
-                    )
-                ) {
-
-                    Log::info(
-                        'Midtrans payment attempt sudah berhasil.',
-                        [
-                            'order_id' =>
-                                $order->id,
-
-                            'attempt_number' =>
-                                $transaction
-                                    ->attempt_number,
-
-                            'midtrans_order_id' =>
-                                $transaction
-                                    ->midtrans_order_id,
-
-                            'transaction_status' =>
-                                $transactionStatus,
-                        ]
-                    );
-
-                    return $transaction->fresh();
-                }
-
-                /*
-                |--------------------------------------------------------------------------
-                | PENDING
-                |--------------------------------------------------------------------------
-                */
-
-                if (
-                    $transactionStatus === 'pending'
-                ) {
-
-                    Log::info(
-                        'Midtrans payment attempt masih pending. '
-                        . 'Snap Token existing digunakan.',
-                        [
-                            'order_id' =>
-                                $order->id,
-
-                            'attempt_number' =>
-                                $transaction
-                                    ->attempt_number,
-
-                            'midtrans_order_id' =>
-                                $transaction
-                                    ->midtrans_order_id,
-                        ]
-                    );
-
-                    return $transaction->fresh();
-                }
-
-                /*
-                |--------------------------------------------------------------------------
-                | CLOSED TRANSACTION
-                |--------------------------------------------------------------------------
-                */
-
-                if (
-                    in_array(
-                        $transactionStatus,
-                        [
-                            'expire',
-                            'cancel',
-                            'deny',
-                            'failure',
-                        ],
-                        true
-                    )
-                ) {
-
-                    Log::info(
-                        'Midtrans payment attempt sudah ditutup. '
-                        . 'Membuat attempt pembayaran berikutnya.',
-                        [
-                            'order_id' =>
-                                $order->id,
-
-                            'previous_attempt_number' =>
-                                $transaction
-                                    ->attempt_number,
-
-                            'previous_midtrans_order_id' =>
-                                $transaction
-                                    ->midtrans_order_id,
-
-                            'transaction_status' =>
-                                $transactionStatus,
-                        ]
-                    );
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | SAVE OLD ATTEMPT
-                    |--------------------------------------------------------------------------
-                    */
-
-                    $transaction->update([
-                        'transaction_id' =>
-                            data_get(
-                                $statusResponse,
-                                'transaction_id'
-                            ),
-
-                        'transaction_status' =>
-                            $transactionStatus,
-
-                        'payment_type' =>
-                            data_get(
-                                $statusResponse,
-                                'payment_type'
-                            ),
-
-                        'fraud_status' =>
-                            data_get(
-                                $statusResponse,
-                                'fraud_status'
-                            ),
-
-                        'response_payload' =>
-                            $statusResponse,
-
-                        'expired_at' =>
-                            $transactionStatus === 'expire'
-                                ? now()
-                                : $transaction->expired_at,
-                    ]);
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | CREATE NEXT ATTEMPT
-                    |--------------------------------------------------------------------------
-                    */
-
-                    $transaction =
-                        $this->createNextAttempt(
-                            $order,
-                            $transaction
-                        );
-
-                } else {
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | UNKNOWN STATUS
-                    |--------------------------------------------------------------------------
-                    */
-
-                    if (
-                        $transactionStatus === ''
-                    ) {
-                        throw new RuntimeException(
-                            'Midtrans mengembalikan status transaksi kosong.'
-                        );
-                    }
-
-                    throw new RuntimeException(
-                        'Status transaksi Midtrans tidak dikenali: '
-                        . $transactionStatus
-                    );
                 }
             }
 
             /*
             |--------------------------------------------------------------------------
-            | REFRESH AFTER ATTEMPT RESOLUTION
+            | CREATE SNAP TOKEN
             |--------------------------------------------------------------------------
             */
 
             $transaction->refresh();
-
-            /*
-            |--------------------------------------------------------------------------
-            | SAFETY CHECK
-            |--------------------------------------------------------------------------
-            */
-
-            if (
-                !empty(
-                    $transaction->snap_token
-                )
-            ) {
-
-                Log::info(
-                    'Snap Token sudah tersedia setelah refresh.',
-                    [
-                        'order_id' =>
-                            $order->id,
-
-                        'attempt_number' =>
-                            $transaction
-                                ->attempt_number,
-
-                        'midtrans_order_id' =>
-                            $transaction
-                                ->midtrans_order_id,
-                    ]
-                );
-
-                return $transaction;
-            }
-
-            /*
-            |--------------------------------------------------------------------------
-            | RELOAD ORDER
-            |--------------------------------------------------------------------------
-            */
 
             $transactionOrder =
                 Order::query()
@@ -410,46 +116,15 @@ class MidtransOrderService
                         $transaction->order_id
                     );
 
-            /*
-            |--------------------------------------------------------------------------
-            | RECHECK ORDER STATUS
-            |--------------------------------------------------------------------------
-            */
-
-            if (
-                !in_array(
-                    $transactionOrder->status,
-                    [
-                        'Pending',
-                        'Waiting Payment',
-                    ],
-                    true
-                )
-            ) {
-                throw new RuntimeException(
-                    'Order tidak dapat dibuatkan pembayaran Midtrans. '
-                    . 'Status saat ini: '
-                    . $transactionOrder->status
-                );
-            }
-
-            /*
-            |--------------------------------------------------------------------------
-            | BUILD SNAP PARAMS
-            |--------------------------------------------------------------------------
-            */
+            $this->ensureOrderCanPay(
+                $transactionOrder
+            );
 
             $params =
                 $this->buildSnapParams(
                     $transactionOrder,
                     $transaction
                 );
-
-            /*
-            |--------------------------------------------------------------------------
-            | CREATE SNAP TOKEN
-            |--------------------------------------------------------------------------
-            */
 
             Log::info(
                 'Membuat Snap Token Midtrans.',
@@ -458,30 +133,18 @@ class MidtransOrderService
                         $transactionOrder->id,
 
                     'attempt_number' =>
-                        $transaction
-                            ->attempt_number,
+                        $transaction->attempt_number,
 
                     'midtrans_order_id' =>
-                        $transaction
-                            ->midtrans_order_id,
+                        $transaction->midtrans_order_id,
                 ]
             );
 
             $snapToken =
                 $this->midtrans
-                    ->createSnapToken(
-                        $params
-                    );
+                    ->createSnapToken($params);
 
-            /*
-            |--------------------------------------------------------------------------
-            | VALIDATE TOKEN
-            |--------------------------------------------------------------------------
-            */
-
-            if (
-                empty($snapToken)
-            ) {
+            if (empty($snapToken)) {
                 throw new RuntimeException(
                     'Midtrans tidak mengembalikan Snap Token.'
                 );
@@ -489,7 +152,7 @@ class MidtransOrderService
 
             /*
             |--------------------------------------------------------------------------
-            | SAVE TOKEN
+            | SAVE SNAP TOKEN SAFELY
             |--------------------------------------------------------------------------
             */
 
@@ -499,7 +162,6 @@ class MidtransOrderService
                     $snapToken,
                     $params
                 ) {
-
                     $lockedTransaction =
                         MidtransTransaction::query()
                             ->lockForUpdate()
@@ -507,13 +169,13 @@ class MidtransOrderService
                                 $transaction->id
                             );
 
-                    if (
-                        empty(
-                            $lockedTransaction
-                                ->snap_token
-                        )
-                    ) {
+                    /*
+                    |--------------------------------------------------------------------------
+                    | ANOTHER PROCESS ALREADY SAVED TOKEN
+                    |--------------------------------------------------------------------------
+                    */
 
+                    if (empty($lockedTransaction->snap_token)) {
                         $lockedTransaction->update([
                             'snap_token' =>
                                 $snapToken,
@@ -533,15 +195,16 @@ class MidtransOrderService
                             'fraud_status' =>
                                 null,
 
+                            'notification_payload' =>
+                                null,
+
                             'paid_at' =>
                                 null,
 
                             'expired_at' =>
                                 null,
                         ]);
-
                     } else {
-
                         Log::info(
                             'Snap Token sudah disimpan oleh proses lain.',
                             [
@@ -549,15 +212,14 @@ class MidtransOrderService
                                     $lockedTransaction->id,
 
                                 'midtrans_order_id' =>
-                                    $lockedTransaction
-                                        ->midtrans_order_id,
+                                    $lockedTransaction->midtrans_order_id,
                             ]
                         );
                     }
 
                     /*
                     |--------------------------------------------------------------------------
-                    | UPDATE ORDER STATUS
+                    | ORDER → WAITING PAYMENT
                     |--------------------------------------------------------------------------
                     */
 
@@ -565,15 +227,13 @@ class MidtransOrderService
                         Order::query()
                             ->lockForUpdate()
                             ->find(
-                                $lockedTransaction
-                                    ->order_id
+                                $lockedTransaction->order_id
                             );
 
                     if (
                         $lockedOrder &&
                         $lockedOrder->status === 'Pending'
                     ) {
-
                         $lockedOrder->update([
                             'status' =>
                                 'Waiting Payment',
@@ -594,11 +254,7 @@ class MidtransOrderService
                         $transaction->id
                     );
 
-            if (
-                empty(
-                    $result->snap_token
-                )
-            ) {
+            if (empty($result->snap_token)) {
                 throw new RuntimeException(
                     'Snap Token Midtrans berhasil dibuat tetapi gagal disimpan.'
                 );
@@ -624,7 +280,6 @@ class MidtransOrderService
             return $result;
 
         } catch (Throwable $e) {
-
             Log::error(
                 'Gagal membuat Midtrans transaction.',
                 [
@@ -642,26 +297,227 @@ class MidtransOrderService
             throw $e;
 
         } finally {
-
             if ($lockAcquired) {
                 $lock->release();
             }
         }
     }
 
+    /**
+     * =========================================================
+     * RESOLVE EXISTING ATTEMPT
+     * =========================================================
+     */
+    protected function resolveExistingAttempt(
+        Order $order,
+        MidtransTransaction $transaction
+    ): MidtransTransaction {
+        $statusResponse =
+            $this->midtrans
+                ->getTransactionStatus(
+                    $transaction->midtrans_order_id
+                );
+
+        /*
+        |--------------------------------------------------------------------------
+        | 404 / NOT FOUND
+        |--------------------------------------------------------------------------
+        |
+        | Snap token sudah ada tetapi transaksi belum digunakan.
+        |
+        | Ini NORMAL.
+        |
+        | Jangan membuat attempt baru.
+        |--------------------------------------------------------------------------
+        */
+
+        if ($statusResponse === null) {
+            Log::info(
+                'Midtrans transaction belum memiliki status. '
+                . 'Snap Token existing tetap digunakan.',
+                [
+                    'order_id' =>
+                        $order->id,
+
+                    'attempt_number' =>
+                        $transaction->attempt_number,
+
+                    'midtrans_order_id' =>
+                        $transaction->midtrans_order_id,
+                ]
+            );
+
+            return $transaction;
+        }
+
+        $transactionStatus =
+            strtolower(
+                trim(
+                    (string) data_get(
+                        $statusResponse,
+                        'transaction_status'
+                    )
+                )
+            );
+
+        /*
+        |--------------------------------------------------------------------------
+        | SUCCESS
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $this->isSuccessfulTransactionStatus(
+                $transactionStatus,
+                data_get(
+                    $statusResponse,
+                    'fraud_status'
+                )
+            )
+        ) {
+            Log::info(
+                'Midtrans payment attempt sudah berhasil.',
+                [
+                    'order_id' =>
+                        $order->id,
+
+                    'attempt_number' =>
+                        $transaction->attempt_number,
+
+                    'midtrans_order_id' =>
+                        $transaction->midtrans_order_id,
+
+                    'transaction_status' =>
+                        $transactionStatus,
+                ]
+            );
+
+            return $transaction;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | PENDING
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $this->isPendingTransactionStatus(
+                $transactionStatus
+            )
+        ) {
+            Log::info(
+                'Midtrans payment attempt masih pending. '
+                . 'Snap Token existing digunakan.',
+                [
+                    'order_id' =>
+                        $order->id,
+
+                    'attempt_number' =>
+                        $transaction->attempt_number,
+
+                    'midtrans_order_id' =>
+                        $transaction->midtrans_order_id,
+                ]
+            );
+
+            return $transaction;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | CLOSED
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $this->isClosedTransactionStatus(
+                $transactionStatus
+            )
+        ) {
+            Log::info(
+                'Midtrans payment attempt sudah ditutup. '
+                . 'Membuat attempt pembayaran berikutnya.',
+                [
+                    'order_id' =>
+                        $order->id,
+
+                    'previous_attempt_number' =>
+                        $transaction->attempt_number,
+
+                    'previous_midtrans_order_id' =>
+                        $transaction->midtrans_order_id,
+
+                    'transaction_status' =>
+                        $transactionStatus,
+                ]
+            );
+
+            $transaction->update([
+                'transaction_id' =>
+                    data_get(
+                        $statusResponse,
+                        'transaction_id'
+                    ),
+
+                'transaction_status' =>
+                    $transactionStatus,
+
+                'payment_type' =>
+                    data_get(
+                        $statusResponse,
+                        'payment_type'
+                    ),
+
+                'fraud_status' =>
+                    data_get(
+                        $statusResponse,
+                        'fraud_status'
+                    ),
+
+                'response_payload' =>
+                    $statusResponse,
+
+                'expired_at' =>
+                    $transactionStatus === 'expire'
+                        ? now()
+                        : $transaction->expired_at,
+            ]);
+
+            return $this->createNextAttempt(
+                $order,
+                $transaction
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | UNKNOWN
+        |--------------------------------------------------------------------------
+        */
+
+        if ($transactionStatus === '') {
+            throw new RuntimeException(
+                'Midtrans mengembalikan status transaksi kosong.'
+            );
+        }
+
+        throw new RuntimeException(
+            'Status transaksi Midtrans tidak dikenali: '
+            . $transactionStatus
+        );
+    }
 
     /**
      * =========================================================
-     * GET OR CREATE LATEST ATTEMPT
+     * GET / CREATE LATEST ATTEMPT
      * =========================================================
      */
     protected function getOrCreateLatestAttempt(
         Order $order
     ): MidtransTransaction {
-
         return DB::transaction(
             function () use ($order) {
-
                 $lockedOrder =
                     Order::query()
                         ->lockForUpdate()
@@ -669,22 +525,9 @@ class MidtransOrderService
                             $order->id
                         );
 
-                if (
-                    !in_array(
-                        $lockedOrder->status,
-                        [
-                            'Pending',
-                            'Waiting Payment',
-                        ],
-                        true
-                    )
-                ) {
-                    throw new RuntimeException(
-                        'Order tidak dapat dibuatkan pembayaran Midtrans. '
-                        . 'Status saat ini: '
-                        . $lockedOrder->status
-                    );
-                }
+                $this->ensureOrderCanPay(
+                    $lockedOrder
+                );
 
                 $latest =
                     MidtransTransaction::query()
@@ -702,12 +545,6 @@ class MidtransOrderService
                     return $latest;
                 }
 
-                /*
-                |--------------------------------------------------------------------------
-                | ATTEMPT #1
-                |--------------------------------------------------------------------------
-                */
-
                 $transaction =
                     MidtransTransaction::create([
                         'order_id' =>
@@ -717,13 +554,11 @@ class MidtransOrderService
                             1,
 
                         'midtrans_order_id' =>
-                            $lockedOrder
-                                ->invoice_number
+                            $lockedOrder->invoice_number
                             . '-MT1',
 
                         'gross_amount' =>
-                            $lockedOrder
-                                ->total_price,
+                            $lockedOrder->total_price,
                     ]);
 
                 Log::info(
@@ -736,8 +571,7 @@ class MidtransOrderService
                             1,
 
                         'midtrans_order_id' =>
-                            $transaction
-                                ->midtrans_order_id,
+                            $transaction->midtrans_order_id,
                     ]
                 );
 
@@ -745,7 +579,6 @@ class MidtransOrderService
             }
         );
     }
-
 
     /**
      * =========================================================
@@ -756,13 +589,11 @@ class MidtransOrderService
         Order $order,
         MidtransTransaction $previous
     ): MidtransTransaction {
-
         return DB::transaction(
             function () use (
                 $order,
                 $previous
             ) {
-
                 $lockedOrder =
                     Order::query()
                         ->lockForUpdate()
@@ -790,21 +621,16 @@ class MidtransOrderService
 
                 if (
                     $latest &&
-                    $latest->id !==
-                    $previous->id
+                    $latest->id !== $previous->id
                 ) {
                     return $latest;
                 }
 
                 $nextAttemptNumber =
-                    (
-                        (int)
-                        $previous->attempt_number
-                    ) + 1;
+                    (int) $previous->attempt_number + 1;
 
                 $midtransOrderId =
-                    $lockedOrder
-                        ->invoice_number
+                    $lockedOrder->invoice_number
                     . '-MT'
                     . $nextAttemptNumber;
 
@@ -820,8 +646,7 @@ class MidtransOrderService
                             $midtransOrderId,
 
                         'gross_amount' =>
-                            $lockedOrder
-                                ->total_price,
+                            $lockedOrder->total_price,
 
                         'snap_token' =>
                             null,
@@ -836,6 +661,15 @@ class MidtransOrderService
                             null,
 
                         'fraud_status' =>
+                            null,
+
+                        'request_payload' =>
+                            null,
+
+                        'response_payload' =>
+                            null,
+
+                        'notification_payload' =>
                             null,
 
                         'paid_at' =>
@@ -855,8 +689,7 @@ class MidtransOrderService
                             $nextAttemptNumber,
 
                         'previous_attempt_number' =>
-                            $previous
-                                ->attempt_number,
+                            $previous->attempt_number,
 
                         'midtrans_order_id' =>
                             $midtransOrderId,
@@ -868,7 +701,6 @@ class MidtransOrderService
         );
     }
 
-
     /**
      * =========================================================
      * BUILD SNAP PARAMS
@@ -878,29 +710,16 @@ class MidtransOrderService
         Order $order,
         MidtransTransaction $transaction
     ): array {
-
         $itemDetails = [];
 
-        /*
-        |--------------------------------------------------------------------------
-        | ORDER DETAILS
-        |--------------------------------------------------------------------------
-        */
-
-        foreach (
-            $order->details as $detail
-        ) {
-
+        foreach ($order->details as $detail) {
             $price =
-                (int)
-                round(
-                    (float)
-                    $detail->price
+                (int) round(
+                    (float) $detail->price
                 );
 
             $quantity =
-                (int)
-                $detail->qty;
+                (int) $detail->qty;
 
             if (
                 $price <= 0 ||
@@ -913,8 +732,7 @@ class MidtransOrderService
 
             $itemDetails[] = [
                 'id' =>
-                    (string)
-                    $detail->item_id,
+                    (string) $detail->item_id,
 
                 'price' =>
                     $price,
@@ -923,34 +741,19 @@ class MidtransOrderService
                     $quantity,
 
                 'name' =>
-                    $detail
-                        ->item
-                        ?->item_name
+                    $detail->item?->item_name
                     ?? 'Top Up Item',
             ];
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | FALLBACK ITEM
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            empty($itemDetails)
-        ) {
-
+        if (empty($itemDetails)) {
             $itemDetails[] = [
                 'id' =>
-                    'ORDER-' .
-                    $order->id,
+                    'ORDER-' . $order->id,
 
                 'price' =>
-                    (int)
-                    round(
-                        (float)
-                        $transaction
-                            ->gross_amount
+                    (int) round(
+                        (float) $transaction->gross_amount
                     ),
 
                 'quantity' =>
@@ -961,23 +764,12 @@ class MidtransOrderService
             ];
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | GROSS AMOUNT
-        |--------------------------------------------------------------------------
-        */
-
         $grossAmount =
-            (int)
-            round(
-                (float)
-                $transaction
-                    ->gross_amount
+            (int) round(
+                (float) $transaction->gross_amount
             );
 
-        if (
-            $grossAmount <= 0
-        ) {
+        if ($grossAmount <= 0) {
             throw new RuntimeException(
                 'Gross amount transaksi Midtrans tidak valid.'
             );
@@ -985,46 +777,25 @@ class MidtransOrderService
 
         /*
         |--------------------------------------------------------------------------
-        | ITEM TOTAL
+        | ADJUST ITEM TOTAL
         |--------------------------------------------------------------------------
         */
 
         $itemTotal = 0;
 
-        foreach (
-            $itemDetails as $item
-        ) {
-
+        foreach ($itemDetails as $item) {
             $itemTotal +=
-                (
-                    (int)
-                    $item['price']
-                )
-                *
-                (
-                    (int)
-                    $item['quantity']
-                );
+                (int) $item['price']
+                * (int) $item['quantity'];
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | ADJUSTMENT
-        |--------------------------------------------------------------------------
-        */
-
         $difference =
-            $grossAmount -
-            $itemTotal;
+            $grossAmount - $itemTotal;
 
-        if (
-            $difference !== 0
-        ) {
-
+        if ($difference !== 0) {
             $itemDetails[] = [
                 'id' =>
-                    'ADJUSTMENT-' .
-                    $order->id,
+                    'ADJUSTMENT-' . $order->id,
 
                 'price' =>
                     $difference,
@@ -1041,32 +812,19 @@ class MidtransOrderService
 
         /*
         |--------------------------------------------------------------------------
-        | FINAL VALIDATION
+        | FINAL ITEM TOTAL VALIDATION
         |--------------------------------------------------------------------------
         */
 
         $finalItemTotal = 0;
 
-        foreach (
-            $itemDetails as $item
-        ) {
-
+        foreach ($itemDetails as $item) {
             $finalItemTotal +=
-                (
-                    (int)
-                    $item['price']
-                )
-                *
-                (
-                    (int)
-                    $item['quantity']
-                );
+                (int) $item['price']
+                * (int) $item['quantity'];
         }
 
-        if (
-            $finalItemTotal !==
-            $grossAmount
-        ) {
+        if ($finalItemTotal !== $grossAmount) {
             throw new RuntimeException(
                 'Total item Midtrans tidak sama dengan gross amount.'
             );
@@ -1080,36 +838,25 @@ class MidtransOrderService
 
         $customer = [];
 
-        if (
-            $order->user
-        ) {
-
+        if ($order->user) {
             $customer['first_name'] =
                 $order->user->name;
 
-            if (
-                $order->user->email
-            ) {
+            if ($order->user->email) {
                 $customer['email'] =
                     $order->user->email;
             }
-
         } else {
-
             $customer['first_name'] =
                 $order->guest_name
                 ?? 'Guest Customer';
 
-            if (
-                $order->guest_email
-            ) {
+            if ($order->guest_email) {
                 $customer['email'] =
                     $order->guest_email;
             }
 
-            if (
-                $order->guest_phone
-            ) {
+            if ($order->guest_phone) {
                 $customer['phone'] =
                     $order->guest_phone;
             }
@@ -1119,17 +866,12 @@ class MidtransOrderService
         |--------------------------------------------------------------------------
         | SNAP PARAMS
         |--------------------------------------------------------------------------
-        |
-        | callbacks.finish menentukan halaman setelah customer selesai
-        | menggunakan Snap.
-        |
         */
 
         return [
             'transaction_details' => [
                 'order_id' =>
-                    $transaction
-                        ->midtrans_order_id,
+                    $transaction->midtrans_order_id,
 
                 'gross_amount' =>
                     $grossAmount,
@@ -1152,5 +894,105 @@ class MidtransOrderService
                     ),
             ],
         ];
+    }
+
+    /**
+     * =========================================================
+     * ORDER PAYMENT VALIDATION
+     * =========================================================
+     */
+    protected function ensureOrderCanPay(
+        Order $order
+    ): void {
+        if (
+            !in_array(
+                $order->status,
+                [
+                    'Pending',
+                    'Waiting Payment',
+                ],
+                true
+            )
+        ) {
+            throw new RuntimeException(
+                'Order tidak dapat dibuatkan pembayaran Midtrans. '
+                . 'Status saat ini: '
+                . $order->status
+            );
+        }
+    }
+
+    /**
+     * =========================================================
+     * SUCCESS STATUS
+     * =========================================================
+     */
+    public function isSuccessfulTransactionStatus(
+        string $transactionStatus,
+        ?string $fraudStatus = null
+    ): bool {
+        $transactionStatus =
+            strtolower(
+                trim($transactionStatus)
+            );
+
+        $fraudStatus =
+            strtolower(
+                trim(
+                    (string) $fraudStatus
+                )
+            );
+
+        if ($transactionStatus === 'settlement') {
+            return true;
+        }
+
+        if ($transactionStatus === 'capture') {
+            return in_array(
+                $fraudStatus,
+                [
+                    '',
+                    'accept',
+                ],
+                true
+            );
+        }
+
+        return false;
+    }
+
+    /**
+     * =========================================================
+     * PENDING STATUS
+     * =========================================================
+     */
+    public function isPendingTransactionStatus(
+        string $transactionStatus
+    ): bool {
+        return strtolower(
+            trim($transactionStatus)
+        ) === 'pending';
+    }
+
+    /**
+     * =========================================================
+     * CLOSED STATUS
+     * =========================================================
+     */
+    public function isClosedTransactionStatus(
+        string $transactionStatus
+    ): bool {
+        return in_array(
+            strtolower(
+                trim($transactionStatus)
+            ),
+            [
+                'expire',
+                'cancel',
+                'deny',
+                'failure',
+            ],
+            true
+        );
     }
 }

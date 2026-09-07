@@ -95,11 +95,32 @@ class MooGoldOrderService
             );
         }
 
-        if (!in_array($order->status, ['Paid', 'Processing'], true)) {
-            throw new RuntimeException(
-                'Order belum berada dalam status fulfillment yang valid.'
+        $wasAlreadyPaid =
+            in_array(
+                $order->status,
+                [
+                    'Paid',
+                    'Processing',
+                    'Completed',
+                ],
+                true
             );
+
+        if (!$wasAlreadyPaid) {
+
+            $order->update([
+                'status' => 'Paid',
+            ]);
+
+            // payment log
         }
+
+        return [
+            'order_id' => $order->id,
+
+            'should_process_moogold' =>
+                !$wasAlreadyPaid,
+        ];
 
         if (
             empty($item->moogold_category_id) ||
@@ -1793,5 +1814,7 @@ class MooGoldOrderService
                 $data,
         ];
     }
+
+
 }
 
