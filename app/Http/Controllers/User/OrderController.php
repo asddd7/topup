@@ -119,10 +119,10 @@ public function store(
             'exists:items,id',
         ],
 
-        'payment_id' => [
+        'midtrans_payment_type' => [
             'required',
-            'integer',
-            'exists:payments,id',
+            'string',
+            'max:100',
         ],
 
         'voucher' => [
@@ -316,7 +316,8 @@ if (empty($playerData) && !empty($gamePlayerFields)) {
 
                 itemId: (int) $item->id,
 
-                paymentId: (int) $request->payment_id,
+                paymentType:
+                    $request->midtrans_payment_type,
 
                 voucherCode:
                     $request->filled('voucher')
@@ -410,8 +411,14 @@ if (empty($playerData) && !empty($gamePlayerFields)) {
                 'game_id' =>
                     $item->game_id,
 
-                'payment_id' =>
-                    $request->payment_id,
+                'payment_id' => null,
+
+                'midtrans_payment_type' =>
+                    strtolower(
+                        trim(
+                            $request->midtrans_payment_type
+                        )
+                    ),
 
                 'discount_id' =>
                     $firstDiscountId,
@@ -631,6 +638,9 @@ if (empty($playerData) && !empty($gamePlayerFields)) {
 
     $routeParameters = [
         'order' => $order->id,
+
+        'payment' =>
+            $order->midtrans_payment_type,
     ];
 
 
@@ -1073,8 +1083,8 @@ public function uploadProof(
             'item_id' =>
                 'required|exists:items,id',
 
-            'payment_id' =>
-                'nullable|exists:payments,id',
+            'midtrans_payment_type' =>
+                'nullable|string|max:100',
 
             'voucher_code' =>
                 'nullable|string|max:255',
@@ -1131,16 +1141,12 @@ public function uploadProof(
                 itemId:
                     (int) $item->id,
 
-                paymentId:
-                    $request->payment_id
-                        ? (int)
-                        $request->payment_id
-                        : null,
+                paymentType:
+                    $request->midtrans_payment_type
+                        ?: null,
 
                 voucherCode:
-                    $request->filled(
-                        'voucher_code'
-                    )
+                    $request->filled('voucher_code')
                         ? $request->voucher_code
                         : null,
 

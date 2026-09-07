@@ -199,6 +199,13 @@
                         value=""
                     >
 
+                    <input
+                        type="hidden"
+                        name="midtrans_payment_type"
+                        id="midtrans_payment_type"
+                        value=""
+                    >
+
 
                     {{-- =================================================
                          SUBMIT

@@ -21,64 +21,173 @@ class MidtransController extends Controller
      * PAYMENT PAGE
      * =========================================================
      */
-    public function payment(
-        Order $order
-    ): View {
+public function payment(
+    Request $request,
+    Order $order
+): View {
 
-        /*
-        |--------------------------------------------------------------------------
-        | CREATE / RESOLVE SNAP PAYMENT
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | PAYMENT TYPE
+    |--------------------------------------------------------------------------
+    |
+    | Payment yang dipilih user pada game.show sudah disimpan
+    | ke orders.midtrans_payment_type.
+    |
+    */
 
-        $transaction =
-            $this->midtransOrderService
-                ->createForOrder(
-                    $order
-                );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | LOAD ORDER
-        |--------------------------------------------------------------------------
-        */
-
-        $order->loadMissing([
-            'game',
-            'details.item',
-        ]);
+    $paymentType =
+        $order->midtrans_payment_type;
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | VIEW
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | CREATE / RESOLVE SNAP PAYMENT
+    |--------------------------------------------------------------------------
+    */
 
-        return view(
-            'midtrans.payment',
-            [
-                'order' =>
-                    $order,
+    $transaction =
+        $this->midtransOrderService
+            ->createForOrder(
+                $order,
+                $paymentType
+            );
 
-                'transaction' =>
-                    $transaction,
 
-                'clientKey' =>
-                    config(
-                        'midtrans.client_key'
-                    ),
+    /*
+    |--------------------------------------------------------------------------
+    | LOAD ORDER
+    |--------------------------------------------------------------------------
+    */
 
-                'isProduction' =>
-                    (bool)
-                    config(
-                        'midtrans.is_production',
-                        false
-                    ),
-            ]
+    $order->loadMissing([
+        'game',
+        'details.item',
+    ]);
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PAYMENT LABEL
+    |--------------------------------------------------------------------------
+    */
+
+    $paymentLabels = [
+
+        'credit_card' =>
+            'Kartu Kredit',
+
+        'bca_va' =>
+            'BCA Virtual Account',
+
+        'bni_va' =>
+            'BNI Virtual Account',
+
+        'bri_va' =>
+            'BRI Virtual Account',
+
+        'cimb_va' =>
+            'CIMB Niaga Virtual Account',
+
+        'danamon_va' =>
+            'Danamon Virtual Account',
+
+        'bsi_va' =>
+            'BSI Virtual Account',
+
+        'seabank_va' =>
+            'SeaBank Virtual Account',
+
+        'saqu_va' =>
+            'Bank Saqu Virtual Account',
+
+        'permata_va' =>
+            'Permata Virtual Account',
+
+        'echannel' =>
+            'Mandiri Bill Payment',
+
+        'gopay' =>
+            'GoPay',
+
+        'ovo' =>
+            'OVO',
+
+        'dana' =>
+            'DANA',
+
+        'shopeepay' =>
+            'ShopeePay',
+
+        'other_qris' =>
+            'QRIS',
+
+        'alfamart' =>
+            'Alfamart',
+
+        'indomaret' =>
+            'Indomaret',
+
+        'akulaku' =>
+            'Akulaku',
+
+        'kredivo' =>
+            'Kredivo',
+
+    ];
+
+
+    $normalizedPaymentType =
+        strtolower(
+            trim(
+                (string) $paymentType
+            )
         );
-    }
+
+
+    $paymentName =
+        $paymentLabels[
+            $normalizedPaymentType
+        ]
+        ??
+        ucwords(
+            str_replace(
+                '_',
+                ' ',
+                $normalizedPaymentType
+            )
+        );
+
+
+    return view(
+        'midtrans.payment',
+        [
+            'order' =>
+                $order,
+
+            'transaction' =>
+                $transaction,
+
+            'clientKey' =>
+                config(
+                    'midtrans.client_key'
+                ),
+
+            'isProduction' =>
+                (bool)
+                config(
+                    'midtrans.is_production',
+                    false
+                ),
+
+            'paymentType' =>
+                $normalizedPaymentType,
+
+            'paymentName' =>
+                $paymentName,
+        ]
+    );
+}
 
 
     /**

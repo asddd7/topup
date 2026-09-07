@@ -37,7 +37,8 @@ class MidtransOrderService
      * create Snap token
      */
     public function createForOrder(
-        Order $order
+        Order $order,
+        ?string $paymentType = null
     ): MidtransTransaction {
         $order->loadMissing([
             'details.item',
@@ -123,7 +124,8 @@ class MidtransOrderService
             $params =
                 $this->buildSnapParams(
                     $transactionOrder,
-                    $transaction
+                    $transaction,
+                    $paymentType
                 );
 
             Log::info(
@@ -308,47 +310,63 @@ class MidtransOrderService
      * RESOLVE EXISTING ATTEMPT
      * =========================================================
      */
-    protected function resolveExistingAttempt(
-        Order $order,
-        MidtransTransaction $transaction
-    ): MidtransTransaction {
-        $statusResponse =
-            $this->midtrans
-                ->getTransactionStatus(
-                    $transaction->midtrans_order_id
-                );
+protected function resolveExistingAttempt(
+    Order $order,
+    MidtransTransaction $transaction
+): MidtransTransaction {
 
-        /*
-        |--------------------------------------------------------------------------
-        | 404 / NOT FOUND
-        |--------------------------------------------------------------------------
-        |
-        | Snap token sudah ada tetapi transaksi belum digunakan.
-        |
-        | Ini NORMAL.
-        |
-        | Jangan membuat attempt baru.
-        |--------------------------------------------------------------------------
-        */
+    /*
+    |--------------------------------------------------------------------------
+    | DANA
+    |--------------------------------------------------------------------------
+    |
+    | Midtrans mensyaratkan Get Status DANA menggunakan transaction_id.
+    |
+    | transaction_id baru tersedia setelah webhook/notification.
+    |
+    | Sebelum itu, Snap Token existing tetap dianggap usable.
+    |--------------------------------------------------------------------------
+    */
 
-        if ($statusResponse === null) {
-            Log::info(
-                'Midtrans transaction belum memiliki status. '
-                . 'Snap Token existing tetap digunakan.',
-                [
-                    'order_id' =>
-                        $order->id,
+    $paymentType =
+        strtolower(
+            trim(
+                (string) (
+                    $transaction->midtrans_payment_type
+                    ?? $order->midtrans_payment_type
+                    ?? ''
+                )
+            )
+        );
 
-                    'attempt_number' =>
-                        $transaction->attempt_number,
 
-                    'midtrans_order_id' =>
-                        $transaction->midtrans_order_id,
-                ]
-            );
+    if (
+        $paymentType === 'dana'
+        &&
+        empty($transaction->transaction_id)
+    ) {
 
-            return $transaction;
-        }
+        Log::info(
+            'DANA belum memiliki transaction_id. '
+            . 'Tidak menjalankan Get Status Midtrans. '
+            . 'Snap Token existing tetap digunakan.',
+            [
+                'order_id' =>
+                    $order->id,
+
+                'attempt_number' =>
+                    $transaction->attempt_number,
+
+                'midtrans_order_id' =>
+                    $transaction->midtrans_order_id,
+
+                'payment_type' =>
+                    $paymentType,
+            ]
+        );
+
+        return $transaction;
+    }
 
         $transactionStatus =
             strtolower(
@@ -554,11 +572,13 @@ class MidtransOrderService
                             1,
 
                         'midtrans_order_id' =>
-                            $lockedOrder->invoice_number
-                            . '-MT1',
+                            $lockedOrder->invoice_number . '-MT1',
 
                         'gross_amount' =>
                             $lockedOrder->total_price,
+
+                        'midtrans_payment_type' =>
+                            $lockedOrder->midtrans_payment_type,
                     ]);
 
                 Log::info(
@@ -648,6 +668,9 @@ class MidtransOrderService
                         'gross_amount' =>
                             $lockedOrder->total_price,
 
+                        'midtrans_payment_type' =>
+                            $lockedOrder->midtrans_payment_type,
+
                         'snap_token' =>
                             null,
 
@@ -708,7 +731,8 @@ class MidtransOrderService
      */
     protected function buildSnapParams(
         Order $order,
-        MidtransTransaction $transaction
+        MidtransTransaction $transaction,
+        ?string $paymentType = null
     ): array {
         $itemDetails = [];
 
@@ -868,7 +892,7 @@ class MidtransOrderService
         |--------------------------------------------------------------------------
         */
 
-        return [
+        $params = [
             'transaction_details' => [
                 'order_id' =>
                     $transaction->midtrans_order_id,
@@ -894,6 +918,32 @@ class MidtransOrderService
                     ),
             ],
         ];
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PAYMENT CHANNEL
+        |--------------------------------------------------------------------------
+        |
+        | Kalau user memilih satu payment method dari game.show,
+        | Snap diarahkan langsung ke metode tersebut.
+        |
+        | Kalau null, Snap tetap menampilkan semua channel aktif.
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            !empty($paymentType)
+        ) {
+
+            $params['enabled_payments'] = [
+                $paymentType,
+            ];
+
+        }
+
+
+        return $params;
     }
 
     /**

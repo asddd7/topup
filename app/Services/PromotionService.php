@@ -27,13 +27,13 @@ class PromotionService
      *
      * QUOTA TIDAK DIINCREMENT DI SINI.
      *
-     * Quota akan diproses ketika order berhasil dibuat.
+     * Quota diproses ketika order berhasil dibuat.
      */
     public function calculate(
         float $subtotal,
         int $gameId,
         int $itemId,
-        ?int $paymentId = null,
+        ?string $paymentType = null,
         ?string $voucherCode = null,
         $user = null,
         bool $lockForUpdate = false
@@ -61,19 +61,26 @@ class PromotionService
 
         $discounts = $this->findDiscounts(
 
-            subtotal: $subtotal,
+            subtotal:
+                $subtotal,
 
-            gameId: $gameId,
+            gameId:
+                $gameId,
 
-            itemId: $itemId,
+            itemId:
+                $itemId,
 
-            paymentId: $paymentId,
+            paymentType:
+                $paymentType,
 
-            voucherCode: $voucherCode,
+            voucherCode:
+                $voucherCode,
 
-            user: $user,
+            user:
+                $user,
 
-            lockForUpdate: $lockForUpdate
+            lockForUpdate:
+                $lockForUpdate
 
         );
 
@@ -178,8 +185,11 @@ class PromotionService
 
             $discountAmount =
                 $this->calculateDiscountAmount(
-                    discount: $discount,
-                    remaining: $remaining
+                    discount:
+                        $discount,
+
+                    remaining:
+                        $remaining
                 );
 
 
@@ -213,14 +223,17 @@ class PromotionService
 
             /*
             |--------------------------------------------------------------------------
-            | Simpan promo yang digunakan
+            | Simpan promo
             |--------------------------------------------------------------------------
             */
 
             $applied[] =
                 $this->formatAppliedDiscount(
-                    discount: $discount,
-                    discountAmount: $discountAmount
+                    discount:
+                        $discount,
+
+                    discountAmount:
+                        $discountAmount
                 );
         }
 
@@ -233,11 +246,14 @@ class PromotionService
 
         return $this->buildResponse(
 
-            applied: $applied,
+            applied:
+                $applied,
 
-            totalDiscount: $totalDiscount,
+            totalDiscount:
+                $totalDiscount,
 
-            remaining: $remaining
+            remaining:
+                $remaining
 
         );
     }
@@ -248,22 +264,26 @@ class PromotionService
      * INVALID RESPONSE
      * ============================================================
      */
-
     protected function invalidResponse(
         string $message
     ): array {
 
         return [
 
-            'status' => false,
+            'status' =>
+                false,
 
-            'discounts' => [],
+            'discounts' =>
+                [],
 
-            'discount_total' => 0,
+            'discount_total' =>
+                0,
 
-            'total' => 0,
+            'total' =>
+                0,
 
-            'message' => $message,
+            'message' =>
+                $message,
 
         ];
     }
@@ -274,7 +294,6 @@ class PromotionService
      * MINIMUM PURCHASE
      * ============================================================
      */
-
     protected function meetsMinimumPurchase(
         Discount $discount,
         float $subtotal
@@ -285,12 +304,6 @@ class PromotionService
                 $discount->minimum_purchase ?? 0
             );
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | 0 = tanpa minimum
-        |--------------------------------------------------------------------------
-        */
 
         if ($minimum <= 0) {
             return true;
@@ -306,16 +319,9 @@ class PromotionService
      * GLOBAL QUOTA
      * ============================================================
      */
-
     protected function hasAvailableQuota(
         Discount $discount
     ): bool {
-
-        /*
-        |--------------------------------------------------------------------------
-        | NULL = unlimited
-        |--------------------------------------------------------------------------
-        */
 
         if (
             $discount->usage_limit === null
@@ -337,17 +343,10 @@ class PromotionService
      * USER QUOTA
      * ============================================================
      */
-
     protected function hasAvailableUserQuota(
         Discount $discount,
         $user
     ): bool {
-
-        /*
-        |--------------------------------------------------------------------------
-        | 0 = unlimited
-        |--------------------------------------------------------------------------
-        */
 
         $limit =
             (int) (
@@ -364,9 +363,6 @@ class PromotionService
         |--------------------------------------------------------------------------
         | Guest
         |--------------------------------------------------------------------------
-        |
-        | Guest tidak mempunyai user_id.
-        |
         */
 
         if (
@@ -382,9 +378,6 @@ class PromotionService
         |--------------------------------------------------------------------------
         | Hitung penggunaan promo user
         |--------------------------------------------------------------------------
-        |
-        | Order Cancelled tidak dihitung.
-        |
         */
 
         $usageCount =
@@ -426,7 +419,6 @@ class PromotionService
      * NEW USER
      * ============================================================
      */
-
     protected function isNewUser(
         $user
     ): bool {
@@ -445,13 +437,6 @@ class PromotionService
             return false;
         }
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | User dianggap new user jika
-        | belum mempunyai order non-cancelled
-        |--------------------------------------------------------------------------
-        */
 
         return !Order::query()
 
@@ -476,7 +461,6 @@ class PromotionService
      * CALCULATE DISCOUNT AMOUNT
      * ============================================================
      */
-
     protected function calculateDiscountAmount(
         Discount $discount,
         float $remaining
@@ -526,12 +510,6 @@ class PromotionService
         }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | Jangan lebih besar dari remaining
-        |--------------------------------------------------------------------------
-        */
-
         return min(
             $amount,
             $remaining
@@ -544,7 +522,6 @@ class PromotionService
      * FORMAT APPLIED DISCOUNT
      * ============================================================
      */
-
     protected function formatAppliedDiscount(
         Discount $discount,
         float $discountAmount
@@ -585,7 +562,6 @@ class PromotionService
      * BUILD RESPONSE
      * ============================================================
      */
-
     protected function buildResponse(
         array $applied,
         float $totalDiscount,
@@ -633,12 +609,11 @@ class PromotionService
      * FIND DISCOUNTS
      * ============================================================
      */
-
     protected function findDiscounts(
         float $subtotal,
         int $gameId,
         int $itemId,
-        ?int $paymentId,
+        ?string $paymentType,
         ?string $voucherCode,
         $user,
         bool $lockForUpdate = false
@@ -843,9 +818,23 @@ class PromotionService
         |--------------------------------------------------------------------------
         | 2. PAYMENT METHOD
         |--------------------------------------------------------------------------
+        |
+        | payment_type pada tabel discounts sekarang berisi
+        | payment code Midtrans.
+        |
+        | Contoh:
+        |
+        | qris
+        | gopay
+        | bca_va
+        | bri_va
+        | credit_card
+        |
         */
 
-        if ($paymentId !== null) {
+        if (
+            filled($paymentType)
+        ) {
 
             $paymentQuery =
                 (clone $baseQuery)
@@ -856,8 +845,12 @@ class PromotionService
                     )
 
                     ->where(
-                        'payment_id',
-                        $paymentId
+                        'payment_type',
+                        strtolower(
+                            trim(
+                                $paymentType
+                            )
+                        )
                     )
 
                     ->orderByDesc(
@@ -1017,7 +1010,6 @@ class PromotionService
      * APPLY LOCK
      * ============================================================
      */
-
     protected function applyLock(
         Builder $query,
         bool $lockForUpdate
@@ -1026,6 +1018,7 @@ class PromotionService
         if ($lockForUpdate) {
 
             $query->lockForUpdate();
+
         }
     }
 }

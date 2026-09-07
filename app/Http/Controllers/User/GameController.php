@@ -10,9 +10,15 @@ use App\Models\Item;
 use App\Models\Payment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Services\Midtrans\MidtransService;
 
 class GameController extends Controller
 {
+
+public function __construct(
+    protected MidtransService $midtrans
+) {
+}
     /*
     |--------------------------------------------------------------------------
     | WEB
@@ -30,10 +36,6 @@ class GameController extends Controller
         |--------------------------------------------------------------------------
         | MOBILE LEGENDS INDONESIA
         |--------------------------------------------------------------------------
-        |
-        | Untuk sementara Railway hanya menampilkan produk
-        | MooGold Mobile Legends Indonesia.
-        |
         */
 
         if ($game->id === 1) {
@@ -49,10 +51,34 @@ class GameController extends Controller
             ->get();
 
 
-        $payments = Payment::query()
-            ->where('is_active', 1)
-            ->orderBy('payment_type')
-            ->get();
+        /*
+        |--------------------------------------------------------------------------
+        | MIDTRANS PAYMENT CHANNELS
+        |--------------------------------------------------------------------------
+        */
+
+        try {
+
+            $paymentChannels =
+                $this->midtrans
+                    ->getSnapPaymentChannels();
+
+        } catch (\Throwable $e) {
+
+            \Log::error(
+                'Gagal mengambil Midtrans payment channels.',
+                [
+                    'game_id' =>
+                        $game->id,
+
+                    'error' =>
+                        $e->getMessage(),
+                ]
+            );
+
+            $paymentChannels = [];
+
+        }
 
 
         return view(
@@ -60,7 +86,7 @@ class GameController extends Controller
             compact(
                 'game',
                 'items',
-                'payments'
+                'paymentChannels'
             )
         );
     }
@@ -163,17 +189,43 @@ class GameController extends Controller
             ], 404);
         }
 
-        $payments = Payment::query()
-            ->where('is_active', 1)
-            ->orderBy('payment_type')
-            ->get();
+        try {
+
+            $paymentChannels =
+                $this->midtrans
+                    ->getSnapPaymentChannels();
+
+        } catch (\Throwable $e) {
+
+            \Log::error(
+                'Gagal mengambil Midtrans payment channels API.',
+                [
+                    'game_id' =>
+                        $game->id,
+
+                    'error' =>
+                        $e->getMessage(),
+                ]
+            );
+
+            return response()->json([
+                'success' => false,
+                'message' =>
+                    'Metode pembayaran Midtrans tidak dapat diambil.',
+            ], 503);
+        }
+
 
         return response()->json([
             'success' => true,
-            'message' => 'Payment berhasil diambil.',
+            'message' =>
+                'Metode pembayaran Midtrans berhasil diambil.',
             'data' => [
-                'game' => $game,
-                'payments' => $payments,
+                'game' =>
+                    $game,
+
+                'payments' =>
+                    $paymentChannels,
             ],
         ]);
     }

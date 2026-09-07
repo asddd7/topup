@@ -21,7 +21,7 @@ let playerValidation = {
 };
 
 
-let selectedPaymentId = null;
+let selectedPaymentType = null;
 
 let selectedVoucher = null;
 
@@ -1305,7 +1305,7 @@ window.selectItem = function(
 
     }
 
-
+    updatePaymentTotals();
     /* -----------------------------------------------------
        HIDDEN SUBTOTAL
     ----------------------------------------------------- */
@@ -1395,7 +1395,7 @@ window.selectItem = function(
             <div class="promo-empty">
 
                 ${
-                    selectedPaymentId
+                    selectedPaymentType
                         ? 'Menghitung promo...'
                         : 'Pilih metode pembayaran untuk melihat promo.'
                 }
@@ -1434,7 +1434,7 @@ window.selectItem = function(
        CALCULATE PROMO
     ----------------------------------------------------- */
 
-    if (selectedPaymentId) {
+    if (selectedPaymentType) {
 
         calculatePromos();
 
@@ -1448,20 +1448,29 @@ window.selectItem = function(
 ========================================================= */
 
 document
-    .querySelectorAll(
-        '.payment-radio'
-    )
+    .querySelectorAll('.payment-radio')
     .forEach(function(payment) {
 
         payment.addEventListener(
             'change',
             function() {
 
-                selectedPaymentId =
-                    parseInt(
-                        this.value
-                    ) || null;
+                selectedPaymentType =
+                    this.dataset.paymentType
+                    || this.value
+                    || null;
 
+                const input =
+                    document.getElementById(
+                        'midtrans_payment_type'
+                    );
+
+                if (input) {
+                    input.value =
+                        selectedPaymentType || '';
+                }
+
+                updatePaymentTotals();
 
                 calculatePromos();
 
@@ -1470,6 +1479,53 @@ document
 
     });
 
+/* =========================================================
+   UPDATE PAYMENT TOTALS
+========================================================= */
+
+function updatePaymentTotals()
+{
+    const totalInput =
+        document.getElementById(
+            'total_price'
+        );
+
+
+    const total =
+        parseFloat(
+            totalInput?.value
+            ??
+            selectedPrice
+            ??
+            0
+        );
+
+
+    document
+        .querySelectorAll(
+            '.payment-total'
+        )
+        .forEach(function(element) {
+
+            element.innerText =
+                formatRupiah(
+                    total
+                );
+
+        });
+}
+
+const midtransPaymentInput =
+    document.getElementById(
+        'midtrans_payment_type'
+    );
+
+if (midtransPaymentInput) {
+
+    midtransPaymentInput.value =
+        selectedPaymentType || '';
+
+}
 
 /* =========================================================
    CHECK VOUCHER
@@ -1677,14 +1733,13 @@ function calculatePromos()
                 item_id:
                     itemId,
 
-                payment_id:
-                    selectedPaymentId,
+                midtrans_payment_type:
+                    selectedPaymentType,
 
                 voucher_code:
                     selectedVoucher
 
             })
-
         }
     )
 
@@ -2227,7 +2282,7 @@ if (checkoutForm) {
                    2. CEK PAYMENT
                 ============================================= */
 
-                if (!selectedPaymentId) {
+                if (!selectedPaymentType) {
 
                     await Swal.fire({
 
@@ -2591,7 +2646,7 @@ const initialPayment =
 
 if (initialPayment) {
 
-    selectedPaymentId =
+    selectedPaymentIdType =
         parseInt(
             initialPayment.value
         );

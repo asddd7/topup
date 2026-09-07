@@ -6,82 +6,192 @@
 
 <div class="container py-5">
 
-<div class="row justify-content-center">
+    <div class="row justify-content-center">
 
-    <div class="col-lg-7">
+        <div class="col-lg-7">
 
-        <div class="card shadow-sm border-0">
+            <div class="card shadow-sm border-0">
 
-            <div class="card-body p-4">
+                <div class="card-body p-4">
 
-                <h4 class="mb-4">
-                    Pembayaran Order
-                </h4>
+                    <h4 class="mb-4">
+                        Pembayaran Order
+                    </h4>
 
 
-                {{-- =====================================================
-                     ORDER INFO
-                ====================================================== --}}
+                    {{-- =====================================================
+                         ORDER INFO
+                    ====================================================== --}}
 
-                <div class="mb-3">
+                    <div class="mb-3">
 
-                    <div class="text-muted small">
-                        Invoice
+                        <div class="text-muted small">
+                            Invoice
+                        </div>
+
+                        <div class="fw-semibold">
+                            {{ $order->invoice_number }}
+                        </div>
+
                     </div>
 
-                    <div class="fw-semibold">
-                        {{ $order->invoice_number }}
+
+                    <div class="mb-3">
+
+                        <div class="text-muted small">
+                            Game
+                        </div>
+
+                        <div class="fw-semibold">
+                            {{ $order->game?->game_name }}
+                        </div>
+
                     </div>
 
-                </div>
 
+                    <div class="mb-3">
 
-                <div class="mb-3">
+                        <div class="text-muted small">
+                            Metode Pembayaran
+                        </div>
 
-                    <div class="text-muted small">
-                        Game
+                        <div class="fw-semibold fs-5">
+
+                            {{ $paymentName }}
+
+                        </div>
+
                     </div>
 
-                    <div class="fw-semibold">
-                        {{ $order->game?->game_name }}
+
+                    <div class="mb-3">
+
+                        <div class="text-muted small">
+                            Total Pembayaran
+                        </div>
+
+                        <div class="fs-4 fw-bold">
+
+                            Rp
+                            {{ number_format(
+                                $order->total_price,
+                                0,
+                                ',',
+                                '.'
+                            ) }}
+
+                        </div>
+
                     </div>
 
-                </div>
+
+                    <hr>
 
 
-                <div class="mb-3">
+                    {{-- =====================================================
+                         SELECTED PAYMENT SUMMARY
+                    ====================================================== --}}
 
-                    <div class="text-muted small">
-                        Total Pembayaran
+                    <div
+                        class="
+                            alert
+                            alert-primary
+                            d-flex
+                            align-items-center
+                            gap-3
+                            mb-4
+                        "
+                    >
+
+                        <div
+                            class="
+                                rounded-circle
+                                bg-white
+                                d-flex
+                                align-items-center
+                                justify-content-center
+                            "
+                            style="
+                                width:44px;
+                                height:44px;
+                            "
+                        >
+
+                            <i class="fa-solid fa-wallet"></i>
+
+                        </div>
+
+
+                        <div>
+
+                            <div class="small text-muted">
+                                Anda memilih
+                            </div>
+
+                            <strong>
+                                {{ $paymentName }}
+                            </strong>
+
+                        </div>
+
                     </div>
 
-                    <div class="fs-4 fw-bold">
-                        Rp {{ number_format($order->total_price, 0, ',', '.') }}
+
+                    {{-- =====================================================
+                         PAYMENT BUTTON
+                    ====================================================== --}}
+
+                    <button
+                        id="pay-button"
+                        type="button"
+                        class="btn btn-primary w-100"
+                    >
+
+                        <i class="fa-solid fa-lock me-1"></i>
+
+                        Bayar Rp
+                        {{ number_format(
+                            $order->total_price,
+                            0,
+                            ',',
+                            '.'
+                        ) }}
+
+                        dengan
+                        {{ $paymentName }}
+
+                    </button>
+
+
+                    <div
+                        class="
+                            text-center
+                            text-muted
+                            small
+                            mt-3
+                        "
+                    >
+
+                        Pembayaran diproses dengan aman
+                        melalui Midtrans.
+
                     </div>
 
-                </div>
 
+                    <div
+                        class="
+                            text-center
+                            mt-3
+                        "
+                    >
 
-                <hr>
+                        <small class="text-muted">
+                            Metode pembayaran sudah dipilih
+                            pada halaman checkout.
+                        </small>
 
+                    </div>
 
-                {{-- =====================================================
-                     PAYMENT BUTTON
-                ====================================================== --}}
-
-                <button
-                    id="pay-button"
-                    type="button"
-                    class="btn btn-primary w-100"
-                >
-                    Bayar Sekarang
-                </button>
-
-
-                <div
-                    class="text-center text-muted small mt-3"
-                >
-                    Pembayaran diproses dengan aman melalui Midtrans.
                 </div>
 
             </div>
@@ -92,12 +202,10 @@
 
 </div>
 
-</div>
-
 @endsection
 
-@push('scripts')
 
+@push('scripts')
 
 @if ($isProduction)
 
@@ -119,16 +227,46 @@
 <script>
 
 document
-    .getElementById(
-        'pay-button'
-    )
+    .getElementById('pay-button')
     .addEventListener(
         'click',
         function () {
 
+            const button =
+                this;
+
+
+            button.disabled =
+                true;
+
+
+            button.innerHTML =
+                '<i class="fa-solid fa-spinner fa-spin me-1"></i> Membuka pembayaran...';
+
+
             window.snap.pay(
                 @json($transaction->snap_token),
                 {
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | FILTER PAYMENT
+                    |--------------------------------------------------------------------------
+                    |
+                    | Ini menjadi lapisan tambahan.
+                    |
+                    | Backend sudah membuat token dengan:
+                    |
+                    | enabled_payments = [paymentType]
+                    |
+                    | Di frontend kita filter lagi.
+                    |
+                    */
+
+                    enabledPayments: [
+                        @json($paymentType)
+                    ],
+
 
                     onSuccess: function () {
 
@@ -142,6 +280,7 @@ document
                                     ]
                                 )
                             );
+
                     },
 
 
@@ -157,6 +296,7 @@ document
                                     ]
                                 )
                             );
+
                     },
 
 
@@ -172,6 +312,7 @@ document
                                     ]
                                 )
                             );
+
                     },
 
 
@@ -180,11 +321,18 @@ document
                         /*
                         |--------------------------------------------------------------------------
                         | Customer menutup Snap.
-                        |
-                        | Tidak mengubah status order.
-                        | Order tetap Waiting Payment.
                         |--------------------------------------------------------------------------
+                        |
+                        | Order tetap Waiting Payment.
+                        |
                         */
+
+                        button.disabled =
+                            false;
+
+
+                        button.innerHTML =
+                            '<i class="fa-solid fa-lock me-1"></i> Bayar Rp {{ number_format($order->total_price, 0, ',', '.') }} dengan {{ $paymentName }}';
 
                     }
 
@@ -195,6 +343,5 @@ document
     );
 
 </script>
-
 
 @endpush

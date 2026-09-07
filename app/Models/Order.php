@@ -17,6 +17,8 @@ class Order extends Model
         'game_id',
         'player_data',
         'payment_id',
+        'payment_id',
+        'midtrans_payment_type',
         'discount_id',
         'player_uid',
         'server_id',

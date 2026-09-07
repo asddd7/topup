@@ -23,21 +23,184 @@
     </div>
 
 
+    @php
+
+        $paymentLabels = [
+
+            'credit_card' => [
+                'name' => 'Kartu Kredit',
+                'type' => 'Credit Card',
+                'icon' => 'fa-credit-card',
+            ],
+
+            'bca_va' => [
+                'name' => 'BCA Virtual Account',
+                'type' => 'Virtual Account',
+                'icon' => 'fa-building-columns',
+            ],
+
+            'bni_va' => [
+                'name' => 'BNI Virtual Account',
+                'type' => 'Virtual Account',
+                'icon' => 'fa-building-columns',
+            ],
+
+            'bri_va' => [
+                'name' => 'BRI Virtual Account',
+                'type' => 'Virtual Account',
+                'icon' => 'fa-building-columns',
+            ],
+
+            'bsi_va' => [
+                'name' => 'BSI Virtual Account',
+                'type' => 'Virtual Account',
+                'icon' => 'fa-building-columns',
+            ],
+
+            'cimb_va' => [
+                'name' => 'CIMB Niaga Virtual Account',
+                'type' => 'Virtual Account',
+                'icon' => 'fa-building-columns',
+            ],
+
+            'danamon_va' => [
+                'name' => 'Danamon Virtual Account',
+                'type' => 'Virtual Account',
+                'icon' => 'fa-building-columns',
+            ],
+
+            'permata_va' => [
+                'name' => 'Permata Virtual Account',
+                'type' => 'Virtual Account',
+                'icon' => 'fa-building-columns',
+            ],
+
+            'seabank_va' => [
+                'name' => 'SeaBank Virtual Account',
+                'type' => 'Virtual Account',
+                'icon' => 'fa-building-columns',
+            ],
+
+            'saqu_va' => [
+                'name' => 'Bank Saqu Virtual Account',
+                'type' => 'Virtual Account',
+                'icon' => 'fa-building-columns',
+            ],
+
+            'other_va' => [
+                'name' => 'Virtual Account Lainnya',
+                'type' => 'Virtual Account',
+                'icon' => 'fa-building-columns',
+            ],
+
+            'echannel' => [
+                'name' => 'Mandiri Bill Payment',
+                'type' => 'Mandiri',
+                'icon' => 'fa-building-columns',
+            ],
+
+            'gopay' => [
+                'name' => 'GoPay',
+                'type' => 'E-Wallet',
+                'icon' => 'fa-wallet',
+            ],
+
+            'ovo' => [
+                'name' => 'OVO',
+                'type' => 'E-Wallet',
+                'icon' => 'fa-wallet',
+            ],
+
+            'dana' => [
+                'name' => 'DANA',
+                'type' => 'E-Wallet',
+                'icon' => 'fa-wallet',
+            ],
+
+            'shopeepay' => [
+                'name' => 'ShopeePay',
+                'type' => 'E-Wallet',
+                'icon' => 'fa-wallet',
+            ],
+
+            'other_qris' => [
+                'name' => 'QRIS',
+                'type' => 'QR Payment',
+                'icon' => 'fa-qrcode',
+            ],
+
+            'alfamart' => [
+                'name' => 'Alfamart',
+                'type' => 'Retail',
+                'icon' => 'fa-store',
+            ],
+
+            'indomaret' => [
+                'name' => 'Indomaret',
+                'type' => 'Retail',
+                'icon' => 'fa-store',
+            ],
+
+            'akulaku' => [
+                'name' => 'Akulaku',
+                'type' => 'PayLater',
+                'icon' => 'fa-credit-card',
+            ],
+
+            'kredivo' => [
+                'name' => 'Kredivo',
+                'type' => 'PayLater',
+                'icon' => 'fa-credit-card',
+            ],
+
+        ];
+
+    @endphp
+
+
     <div class="payment-list">
 
-        @forelse($payments as $payment)
+        @forelse($paymentChannels as $channel)
+
+            @php
+
+                $code =
+                    $channel['name'];
+
+                $meta =
+                    $paymentLabels[$code]
+                    ?? [
+                        'name' =>
+                            ucwords(
+                                str_replace(
+                                    '_',
+                                    ' ',
+                                    $code
+                                )
+                            ),
+
+                        'type' =>
+                            'Midtrans',
+
+                        'icon' =>
+                            'fa-wallet',
+                    ];
+
+            @endphp
+
 
             <label
                 class="payment-card"
-                for="payment_{{ $payment->id }}"
+                for="payment_{{ $code }}"
             >
 
                 <input
                     type="radio"
-                    id="payment_{{ $payment->id }}"
+                    id="payment_{{ $code }}"
                     class="payment-radio"
-                    name="payment_id"
-                    value="{{ $payment->id }}"
+                    name="midtrans_payment_type"
+                    value="{{ $code }}"
+                    data-payment-type="{{ $code }}"
                     required
                 >
 
@@ -49,45 +212,52 @@
                 </div>
 
 
-                @if($payment->image)
+                <div class="payment-image payment-placeholder">
 
-                    <div class="payment-image">
+                    <i
+                        class="
+                            fa-solid
+                            {{ $meta['icon'] }}
+                        "
+                    ></i>
 
-                        <img
-                            src="{{ asset('storage/'.$payment->image) }}"
-                            alt="{{ $payment->payment_name }}"
-                        >
-
-                    </div>
-
-                @else
-
-                    <div class="payment-image payment-placeholder">
-
-                        <i class="fa-solid fa-wallet"></i>
-
-                    </div>
-
-                @endif
+                </div>
 
 
                 <div class="payment-info">
 
                     <h4>
-                        {{ $payment->payment_name }}
+                        {{ $meta['name'] }}
                     </h4>
 
                     <span>
-                        {{ $payment->payment_type }}
+                        {{ $meta['type'] }}
                     </span>
 
-                    <strong>
-                        {{ $payment->payment_number }}
-                    </strong>
+                    <small>
+                        Midtrans
+                    </small>
+
+                </div>
+
+
+                <div class="payment-price">
 
                     <small>
-                        a.n {{ $payment->account_name }}
+                        Total
                     </small>
+
+                    <strong>
+
+                        Rp
+                        <span
+                            class="payment-total"
+                            data-payment-total="{{ $code }}"
+                        >
+                            0
+                        </span>
+
+                    </strong>
 
                 </div>
 
@@ -100,7 +270,8 @@
                 <i class="fa-solid fa-wallet"></i>
 
                 <p>
-                    Metode pembayaran belum tersedia.
+                    Tidak ada metode pembayaran Midtrans
+                    yang sedang aktif.
                 </p>
 
             </div>

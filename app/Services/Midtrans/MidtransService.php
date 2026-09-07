@@ -3,6 +3,8 @@
 namespace App\Services\Midtrans;
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Midtrans\Config;
 use Midtrans\Snap;
 use Midtrans\Transaction;
@@ -443,4 +445,120 @@ public function verifySignature(
         $signatureKey
     );
 }
+
+    /**
+     * =========================================================
+     * GET ACTIVE SNAP PAYMENT CHANNELS
+     * =========================================================
+     *
+     * Mengambil daftar payment channel yang benar-benar aktif
+     * pada Snap Preference Midtrans.
+     */
+    public function getSnapPaymentChannels(): array
+    {
+        $cacheKey =
+            'midtrans:snap-payment-channels';
+
+        return Cache::remember(
+            $cacheKey,
+            now()->addMinutes(5),
+            function () {
+
+                $serverKey =
+                    (string) config(
+                        'midtrans.server_key'
+                    );
+
+                if ($serverKey === '') {
+                    throw new RuntimeException(
+                        'Midtrans Server Key belum dikonfigurasi.'
+                    );
+                }
+
+
+                $baseUrl =
+                    (bool) config(
+                        'midtrans.is_production',
+                        false
+                    )
+                        ? 'https://app.midtrans.com'
+                        : 'https://app.sandbox.midtrans.com';
+
+
+                $response =
+                    Http::withBasicAuth(
+                        $serverKey,
+                        ''
+                    )
+                    ->acceptJson()
+                    ->timeout(15)
+                    ->get(
+                        $baseUrl
+                        . '/snap/v3/merchant-preferences'
+                    );
+
+
+                if (
+                    !$response->successful()
+                ) {
+
+                    throw new RuntimeException(
+                        'Gagal mengambil payment channels dari Midtrans.'
+                    );
+
+                }
+
+
+                $channels =
+                    $response->json(
+                        'payment_channels'
+                    );
+
+
+                if (
+                    !is_array($channels)
+                ) {
+                    return [];
+                }
+
+
+                return collect(
+                    $channels
+                )
+                    ->filter(
+                        function ($channel) {
+
+                            return
+                                is_array($channel)
+                                &&
+                                !empty(
+                                    $channel['name']
+                                )
+                                &&
+                                (
+                                    $channel['enabled']
+                                    ?? false
+                                ) === true;
+
+                        }
+                    )
+                    ->map(
+                        function ($channel) {
+
+                            return [
+                                'name' =>
+                                    (string)
+                                    $channel['name'],
+
+                                'enabled' =>
+                                    true,
+                            ];
+
+                        }
+                    )
+                    ->values()
+                    ->all();
+            }
+        );
+    }
 }

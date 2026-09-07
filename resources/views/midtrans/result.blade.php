@@ -89,6 +89,9 @@
                             [
                                 'order' =>
                                     $order->id,
+
+                                'payment' =>
+                                    $order->midtrans_payment_type,
                             ]
                         );
 
@@ -106,7 +109,12 @@
                     ) {
 
                         $paymentUrl .=
-                            '?token=' .
+                            '?payment=' .
+                            urlencode(
+                                (string)
+                                $order->midtrans_payment_type
+                            )
+                            . '&token=' .
                             urlencode(
                                 $guestToken
                             );

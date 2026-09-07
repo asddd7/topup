@@ -26,7 +26,8 @@ class VoucherController extends Controller
 
             'price' => 'required|numeric',
 
-            'payment_id' => 'nullable|integer',
+            'midtrans_payment_type' =>
+                'nullable|string|max:100',
 
         ]);
 
@@ -41,10 +42,9 @@ class VoucherController extends Controller
 
                 itemId: (int) $request->item_id,
 
-                paymentId:
-                    $request->payment_id
-                        ? (int) $request->payment_id
-                        : null,
+                paymentType:
+                    $request->midtrans_payment_type
+                        ?: null,
 
                 voucherCode:
                     $request->code,
@@ -61,15 +61,20 @@ class VoucherController extends Controller
     {
         $request->validate([
 
-            'payment_id' => 'required|integer',
+            'midtrans_payment_type' =>
+                'required|string|max:100',
 
-            'game_id' => 'required|integer',
+            'game_id' =>
+                'required|integer',
 
-            'item_id' => 'required|integer',
+            'item_id' =>
+                'required|integer',
 
-            'subtotal' => 'required|numeric',
+            'subtotal' =>
+                'required|numeric',
 
-            'voucher_code' => 'nullable|string',
+            'voucher_code' =>
+                'nullable|string',
 
         ]);
 
@@ -87,13 +92,14 @@ class VoucherController extends Controller
                 itemId:
                     (int) $request->item_id,
 
-                paymentId:
-                    (int) $request->payment_id,
+                paymentType:
+                    $request->midtrans_payment_type,
 
                 voucherCode:
                     $request->voucher_code,
 
-                user: auth()->user()
+                user:
+                    auth()->user()
 
             )
 
