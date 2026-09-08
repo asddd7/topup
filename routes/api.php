@@ -8,7 +8,14 @@ use Illuminate\Support\Facades\Route;
 | API V1
 |--------------------------------------------------------------------------
 */
-
+Route::get('/v1/admin/moogold/test-category', function (
+    \App\Services\MooGold\MooGoldService $mooGold
+) {
+    return response()->json([
+        'success' => true,
+        'data' => $mooGold->categories(),
+    ]);
+});
 Route::prefix('v1')->group(function () {
 
     /*
