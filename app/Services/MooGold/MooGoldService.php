@@ -69,7 +69,25 @@ protected function request(
 ): array {
 
     $timestamp = time();
+Log::info(
+    'MooGold API request debug',
+    [
+        'url' =>
+            $this->baseUrl . '/' . $path,
 
+        'path' =>
+            $path,
+
+        'method' =>
+            'POST',
+
+        'body' =>
+            $body,
+
+        'timestamp' =>
+            $timestamp,
+    ]
+);
     /*
     |--------------------------------------------------------------------------
     | REQUEST BODY
@@ -356,7 +374,7 @@ public function createOrder(
         $server !== ''
     ) {
 
-        $data['Server ID'] = $server;
+        $data['Server'] = $server;
     }
 
     return $this->request(

@@ -177,13 +177,13 @@ class MooGoldOrderService
                 (string) $userId,
         ];
 
-        if (
-            $server !== null &&
-            $server !== ''
-        ) {
-            $requestPayload['Server ID'] =
-                (string) $server;
-        }
+    if (
+        $server !== null &&
+        $server !== ''
+    ) {
+        $requestPayload['Server'] =
+            (string) $server;
+    }
 
         /*
         |--------------------------------------------------------------------------
@@ -414,79 +414,33 @@ class MooGoldOrderService
             );
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | =========================================================
-        | STEP 2 — RECOVERY BEFORE CREATE
-        | =========================================================
-        |
-        | Walaupun kita sudah claim create, kita tetap mencari
-        | Partner Order ID terlebih dahulu.
-        |
-        | Ini melindungi kasus:
-        |
-        | previous request berhasil
-        | ↓
-        | Laravel crash sebelum save
-        | ↓
-        | worker hidup kembali
-        |--------------------------------------------------------------------------
-        */
-
-        $mooGoldOrder =
-            $claim['order']->fresh();
-
-        try {
-
-            $recovered =
-                $this->recoverByPartnerOrderId(
-                    $mooGoldOrder
-                );
-
-            if ($recovered) {
-
-                Log::info(
-                    'MooGold order ditemukan sebelum create '
-                    . 'melalui Partner Order ID.',
-                    [
-                        'moo_gold_order_id' =>
-                            $recovered->id,
-
-                        'moogold_order_id' =>
-                            $recovered->moogold_order_id,
-
-                        'partner_order_id' =>
-                            $recovered->external_order_id,
-                    ]
-                );
-
-                return $recovered->fresh();
-            }
-
-        } catch (Throwable $recoveryError) {
 
             /*
             |--------------------------------------------------------------------------
-            | RECOVERY ERROR
+            | STEP 2 — CREATE FIRST REQUEST
             |--------------------------------------------------------------------------
             |
-            | Jangan create order kalau endpoint recovery sendiri
-            | tidak dapat memastikan kondisi transaksi.
-            |--------------------------------------------------------------------------
+            | Record ini baru pertama kali diproses dan belum memiliki
+            | MooGold Order ID.
+            |
+            | Recovery Partner Order ID tidak dijadikan syarat wajib di sini,
+            | karena endpoint tersebut dapat membutuhkan permission khusus
+            | dari akun MooGold.
+            |
+            | Proteksi duplicate tetap menggunakan:
+            |
+            | - deterministic Partner Order ID
+            | - unique OrderDetail
+            | - DB lock
+            | - creation lease
+            |
             */
 
-            $mooGoldOrder->update([
-                'moogold_status' =>
-                    'unknown',
+            $mooGoldOrder =
+                $claim['order']->fresh();
 
-                'error_message' =>
-                    'Recovery sebelum create gagal: ' .
-                    $recoveryError->getMessage(),
-            ]);
-
-            Log::error(
-                'Recovery sebelum create gagal. '
-                . 'Create MooGold dibatalkan demi keamanan.',
+            Log::info(
+                'MooGold create_order akan dijalankan.',
                 [
                     'moo_gold_order_id' =>
                         $mooGoldOrder->id,
@@ -494,13 +448,10 @@ class MooGoldOrderService
                     'partner_order_id' =>
                         $partnerOrderId,
 
-                    'error' =>
-                        $recoveryError->getMessage(),
+                    'attempts' =>
+                        $mooGoldOrder->attempts,
                 ]
             );
-
-            throw $recoveryError;
-        }
 
         /*
         |--------------------------------------------------------------------------
@@ -1767,9 +1718,8 @@ class MooGoldOrderService
             $server !== null &&
             $server !== ''
         ) {
-            $data['Server ID'] =
-                (string)
-                $server;
+            $data['Server'] =
+                (string) $server;
         }
 
         return [
