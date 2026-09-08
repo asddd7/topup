@@ -79,6 +79,30 @@ Route::prefix('admin')->group(function () {
     );
 
 
+
+Route::get('/moogold/test-order-detail/{partnerOrderId}', function (
+    string $partnerOrderId,
+    MooGoldService $mooGold
+) {
+    try {
+        $result = $mooGold->orderByPartnerOrderId(
+            $partnerOrderId
+        );
+
+        return response()->json([
+            'success' => true,
+            'partner_order_id' => $partnerOrderId,
+            'data' => $result,
+        ]);
+
+    } catch (\Throwable $e) {
+        return response()->json([
+            'success' => false,
+            'partner_order_id' => $partnerOrderId,
+            'message' => $e->getMessage(),
+        ], 500);
+    }
+});
     /*
     |--------------------------------------------------------------------------
     | OUTBOUND IP
