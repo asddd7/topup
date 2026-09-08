@@ -575,7 +575,9 @@ protected function resolveExistingAttempt(
                             $lockedOrder->invoice_number . '-MT1',
 
                         'gross_amount' =>
-                            $lockedOrder->total_price,
+                            (int) round(
+                                (float) $lockedOrder->total_price
+                            ),
 
                         'midtrans_payment_type' =>
                             $lockedOrder->midtrans_payment_type,
@@ -664,9 +666,11 @@ protected function resolveExistingAttempt(
 
                         'midtrans_order_id' =>
                             $midtransOrderId,
-
+                            
                         'gross_amount' =>
-                            $lockedOrder->total_price,
+                            (int) round(
+                                (float) $lockedOrder->total_price
+                            ),
 
                         'midtrans_payment_type' =>
                             $lockedOrder->midtrans_payment_type,
