@@ -416,6 +416,11 @@ public function verifySignature(
             'signature_key'
         );
 
+    $serverKey =
+        (string) config(
+            'midtrans.server_key'
+        );
+
     if (
         $orderId === ''
         ||
@@ -426,6 +431,23 @@ public function verifySignature(
         $signatureKey === ''
     ) {
 
+        Log::warning(
+            'Midtrans signature tidak dapat diverifikasi karena field tidak lengkap.',
+            [
+                'has_order_id' =>
+                    $orderId !== '',
+
+                'has_status_code' =>
+                    $statusCode !== '',
+
+                'has_gross_amount' =>
+                    $grossAmount !== '',
+
+                'has_signature_key' =>
+                    $signatureKey !== '',
+            ]
+        );
+
         return false;
     }
 
@@ -435,15 +457,60 @@ public function verifySignature(
             $orderId
             . $statusCode
             . $grossAmount
-            . config(
-                'midtrans.server_key'
-            )
+            . $serverKey
         );
 
-    return hash_equals(
-        $expectedSignature,
-        $signatureKey
+    $isValid =
+        hash_equals(
+            $expectedSignature,
+            $signatureKey
+        );
+
+    Log::info(
+        'Midtrans signature verification.',
+        [
+            'order_id' =>
+                $orderId,
+
+            'status_code' =>
+                $statusCode,
+
+            'gross_amount' =>
+                $grossAmount,
+
+            'server_key_present' =>
+                $serverKey !== '',
+
+            'server_key_prefix' =>
+                substr(
+                    $serverKey,
+                    0,
+                    12
+                ),
+
+            'is_production' =>
+                $this->isProduction(),
+
+            'signature_valid' =>
+                $isValid,
+
+            'expected_signature_prefix' =>
+                substr(
+                    $expectedSignature,
+                    0,
+                    12
+                ),
+
+            'received_signature_prefix' =>
+                substr(
+                    $signatureKey,
+                    0,
+                    12
+                ),
+        ]
     );
+
+    return $isValid;
 }
 
     /**
