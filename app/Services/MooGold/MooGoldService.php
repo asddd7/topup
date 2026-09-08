@@ -117,7 +117,16 @@ protected function request(
     | REQUEST
     |--------------------------------------------------------------------------
     */
-
+Log::info(
+    'MooGold API request debug',
+    [
+        'url' => $this->baseUrl . '/' . $path,
+        'path' => $path,
+        'method' => 'POST',
+        'body' => $body,
+        'timestamp' => $timestamp,
+    ]
+);
     $response = Http::timeout(
         $this->timeout
     )
