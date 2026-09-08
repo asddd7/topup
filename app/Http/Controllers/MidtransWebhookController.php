@@ -51,6 +51,24 @@ class MidtransWebhookController extends Controller
     public function handle(
         Request $request
     ): JsonResponse {
+
+        Log::info(
+            '=== MIDTRANS WEBHOOK MASUK KE LARAVEL ===',
+            [
+                'method' => $request->method(),
+                'url' => $request->fullUrl(),
+                'scheme' => $request->getScheme(),
+                'secure' => $request->isSecure(),
+                'host' => $request->getHost(),
+                'headers' => [
+                    'x_forwarded_proto' =>
+                        $request->header('X-Forwarded-Proto'),
+                    'x_forwarded_for' =>
+                        $request->header('X-Forwarded-For'),
+                ],
+            ]
+        );
+
         $payload = $request->all();
 
         $midtransOrderId =

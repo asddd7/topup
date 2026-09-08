@@ -36,7 +36,17 @@ return Application::configure(basePath: dirname(__DIR__))
 
         },
     )
-    ->withMiddleware(function ($middleware) {
+    ->withMiddleware(function (Middleware $middleware): void {
+
+        /*
+        |--------------------------------------------------------------------------
+        | Trust Railway Proxy
+        |--------------------------------------------------------------------------
+        */
+
+        $middleware->trustProxies(
+            at: '*'
+        );
 
         /*
         |--------------------------------------------------------------------------
