@@ -68,26 +68,15 @@ protected function request(
     array $data = []
 ): array {
 
+    /*
+    |--------------------------------------------------------------------------
+    | TIMESTAMP
+    |--------------------------------------------------------------------------
+    */
+
     $timestamp = time();
-Log::info(
-    'MooGold API request debug',
-    [
-        'url' =>
-            $this->baseUrl . '/' . $path,
 
-        'path' =>
-            $path,
 
-        'method' =>
-            'POST',
-
-        'body' =>
-            $body,
-
-        'timestamp' =>
-            $timestamp,
-    ]
-);
     /*
     |--------------------------------------------------------------------------
     | REQUEST BODY
@@ -99,12 +88,47 @@ Log::info(
         ...$data,
     ];
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | DEBUG REQUEST
+    |--------------------------------------------------------------------------
+    */
+
+    Log::info(
+        'MooGold API request debug',
+        [
+            'url' =>
+                $this->baseUrl . '/' . $path,
+
+            'path' =>
+                $path,
+
+            'method' =>
+                'POST',
+
+            'body' =>
+                $body,
+
+            'timestamp' =>
+                $timestamp,
+        ]
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | JSON
+    |--------------------------------------------------------------------------
+    */
+
     $json = json_encode(
         $body,
         JSON_UNESCAPED_SLASHES
     );
 
     if ($json === false) {
+
         throw new RuntimeException(
             'Gagal membuat JSON request MooGold.'
         );
@@ -115,12 +139,6 @@ Log::info(
     |--------------------------------------------------------------------------
     | SIGNATURE
     |--------------------------------------------------------------------------
-    |
-    | MooGold:
-    |
-    | HMAC SHA256
-    | body + timestamp + path
-    |
     */
 
     $auth = hash_hmac(
@@ -135,16 +153,7 @@ Log::info(
     | REQUEST
     |--------------------------------------------------------------------------
     */
-Log::info(
-    'MooGold API request debug',
-    [
-        'url' => $this->baseUrl . '/' . $path,
-        'path' => $path,
-        'method' => 'POST',
-        'body' => $body,
-        'timestamp' => $timestamp,
-    ]
-);
+
     $response = Http::timeout(
         $this->timeout
     )
@@ -157,13 +166,14 @@ Log::info(
             $this->secretKey
         )
         ->withHeaders([
+            'timestamp' =>
+                $timestamp,
 
-            'timestamp' => $timestamp,
+            'auth' =>
+                $auth,
 
-            'auth' => $auth,
-
-            'Accept' => 'application/json',
-
+            'Accept' =>
+                'application/json',
         ])
         ->withBody(
             $json,
@@ -176,7 +186,7 @@ Log::info(
 
     /*
     |--------------------------------------------------------------------------
-    | DEBUG LOG
+    | RESPONSE DEBUG
     |--------------------------------------------------------------------------
     */
 
@@ -198,39 +208,44 @@ Log::info(
     );
 
 
-if ($response->failed()) {
+    /*
+    |--------------------------------------------------------------------------
+    | HTTP ERROR
+    |--------------------------------------------------------------------------
+    */
 
-    Log::error(
-        'MooGold API HTTP error',
-        [
-            'path' =>
-                $path,
+    if ($response->failed()) {
 
-            'status' =>
-                $response->status(),
+        Log::error(
+            'MooGold API HTTP error',
+            [
+                'path' =>
+                    $path,
 
-            'body' =>
-                $response->body(),
-        ]
-    );
+                'status' =>
+                    $response->status(),
 
-    throw new RuntimeException(
-        'MooGold API error HTTP ' .
-        $response->status() .
-        ': ' .
-        $response->body()
-    );
-}
+                'body' =>
+                    $response->body(),
+            ]
+        );
+
+        throw new RuntimeException(
+            'MooGold API error HTTP ' .
+            $response->status() .
+            ': ' .
+            $response->body()
+        );
+    }
 
 
     /*
     |--------------------------------------------------------------------------
-    | JSON
+    | PARSE JSON
     |--------------------------------------------------------------------------
     */
 
     $result = $response->json();
-
 
     if (!is_array($result)) {
 
@@ -239,10 +254,8 @@ if ($response->failed()) {
         );
     }
 
-
     return $result;
 }
-
 
     /**
      * =========================================================
@@ -365,7 +378,7 @@ public function createOrder(
             (string) $quantity,
 
         'User ID' =>
-            $userId,
+            (string) $userId,
 
     ];
 
@@ -374,8 +387,10 @@ public function createOrder(
         $server !== ''
     ) {
 
-        $data['Server'] = $server;
+        $data['Server ID'] =
+            (string) $server;
     }
+
 
     return $this->request(
 

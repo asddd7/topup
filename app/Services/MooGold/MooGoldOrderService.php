@@ -181,7 +181,7 @@ class MooGoldOrderService
         $server !== null &&
         $server !== ''
     ) {
-        $requestPayload['Server'] =
+        $requestPayload['Server ID'] =
             (string) $server;
     }
 
@@ -1718,7 +1718,7 @@ class MooGoldOrderService
             $server !== null &&
             $server !== ''
         ) {
-            $data['Server'] =
+            $data['Server ID'] =
                 (string) $server;
         }
 
