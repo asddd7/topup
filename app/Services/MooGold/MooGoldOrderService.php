@@ -58,7 +58,7 @@ class MooGoldOrderService
      * - Jangan HTTP retry otomatis pada create_order.
      * - Timeout/error dianggap UNKNOWN sampai recovery memastikan
      *   transaksi memang tidak ditemukan.
-     */
+    */
     public function createFromOrderDetail(
         OrderDetail $orderDetail
     ): MooGoldOrder {
@@ -94,33 +94,6 @@ class MooGoldOrderService
                 'Item pada OrderDetail tidak ditemukan.'
             );
         }
-
-        $wasAlreadyPaid =
-            in_array(
-                $order->status,
-                [
-                    'Paid',
-                    'Processing',
-                    'Completed',
-                ],
-                true
-            );
-
-        if (!$wasAlreadyPaid) {
-
-            $order->update([
-                'status' => 'Paid',
-            ]);
-
-            // payment log
-        }
-
-        return [
-            'order_id' => $order->id,
-
-            'should_process_moogold' =>
-                !$wasAlreadyPaid,
-        ];
 
         if (
             empty($item->moogold_category_id) ||
