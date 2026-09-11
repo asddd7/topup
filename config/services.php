@@ -35,16 +35,42 @@ return [
         ],
     ],
 
-    'moogold' => [
+        'moogold' => [
 
-    'base_url' =>
-        env('MOOGOLD_BASE_URL'),
+        'base_url' =>
+            env('MOOGOLD_BASE_URL'),
 
-    'partner_id' =>
-        env('MOOGOLD_PARTNER_ID'),
+        'partner_id' =>
+            env('MOOGOLD_PARTNER_ID'),
 
-    'secret_key' =>
-        env('MOOGOLD_SECRET_KEY'),
+        'secret_key' =>
+            env('MOOGOLD_SECRET_KEY'),
 
-],
+    ],
+
+    'ditusi' => [
+
+        'base_url' => env(
+            'DITUSI_BASE_URL',
+            'https://api.ditusi.co.id/api/dev/v1'
+        ),
+
+        'client_id' => env(
+            'DITUSI_CLIENT_ID'
+        ),
+
+        'client_key' => env(
+            'DITUSI_CLIENT_KEY'
+        ),
+
+        'webhook_token' => env(
+            'DITUSI_WEBHOOK_TOKEN'
+        ),
+
+        'timeout' => (int) env(
+            'DITUSI_TIMEOUT',
+            30
+        ),
+
+    ],
 ];

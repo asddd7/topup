@@ -127,4 +127,9 @@ class Order extends Model
             MidtransTransaction::class
         )->orderByDesc('attempt_number');
     }
+
+    public function ditusiOrders(): HasMany
+    {
+        return $this->hasMany(DitusiOrder::class);
+    }
 }

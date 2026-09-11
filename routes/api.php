@@ -16,6 +16,36 @@ Route::get('/v1/admin/moogold/test-category', function (
         'data' => $mooGold->categories(),
     ]);
 });
+
+Route::get('/v1/admin/ditusi/test-product', function (
+    \App\Services\Ditusi\DitusiService $ditusi
+) {
+
+    $gameCode =
+        request()->query('gameCode');
+
+    $productCode =
+        request()->query('productCode');
+
+    return response()->json([
+        'success' => true,
+
+        'environment' =>
+            'DITUSI SANDBOX',
+
+        'gameCode' =>
+            $gameCode,
+
+        'productCode' =>
+            $productCode,
+
+        'data' =>
+            $ditusi->products(
+                $gameCode,
+                $productCode
+            ),
+    ]);
+});
 Route::prefix('v1')->group(function () {
 
     /*

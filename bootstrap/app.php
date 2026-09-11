@@ -33,7 +33,11 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->group(
                     base_path('routes/api/v1/midtrans.php')
                 );
-
+            Route::prefix('api/v1')
+                ->middleware('api')
+                ->group(
+                    base_path('routes/api/v1/ditusi.php')
+                );
         },
     )
     ->withMiddleware(function (Middleware $middleware): void {
