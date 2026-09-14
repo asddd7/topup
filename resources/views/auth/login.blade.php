@@ -8,6 +8,10 @@
 
     <div class="card auth-card position-relative">
 
+        {{-- DECORATION --}}
+        <div class="auth-decoration auth-decoration-one"></div>
+        <div class="auth-decoration auth-decoration-two"></div>
+
         <div class="card-body">
 
             {{-- CLOSE --}}
@@ -28,11 +32,6 @@
                     <img
                         src="{{ asset('storage/' . setting('app_logo')) }}"
                         alt="{{ setting('app_name', 'TopUp Game') }}"
-                        style="
-                            width:55px;
-                            height:55px;
-                            object-fit:contain;
-                        "
                     >
 
                 @else
@@ -45,24 +44,29 @@
 
 
             {{-- TITLE --}}
-            <h3 class="text-center fw-bold">
+            <div class="auth-heading text-center">
 
-                Login
+                <span class="auth-badge">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    Akun Aman
+                </span>
 
-            </h3>
+                <h3>
+                    Selamat Datang
+                </h3>
 
+                <p>
+                    Masuk ke akun Anda untuk melanjutkan
+                </p>
 
-            <p class="text-center text-muted mb-4">
-
-                Masuk ke akun Anda
-
-            </p>
+            </div>
 
 
             {{-- FORM --}}
             <form
                 method="POST"
                 action="{{ route('login') }}"
+                class="auth-form"
             >
 
                 @csrf
@@ -71,23 +75,34 @@
                 {{-- EMAIL --}}
                 <div class="mb-3">
 
-                    <label class="form-label">
+                    <label
+                        for="email"
+                        class="form-label"
+                    >
                         Email
                     </label>
 
-                    <input
-                        type="email"
-                        name="email"
-                        value="{{ old('email') }}"
-                        class="form-control auth-input @error('email') is-invalid @enderror"
-                        placeholder="Masukkan email Anda"
-                        autocomplete="email"
-                        required
-                    >
+                    <div class="auth-input-wrapper">
+
+                        <i class="fa-regular fa-envelope input-icon"></i>
+
+                        <input
+                            id="email"
+                            type="email"
+                            name="email"
+                            value="{{ old('email') }}"
+                            class="form-control auth-input @error('email') is-invalid @enderror"
+                            placeholder="Masukkan email Anda"
+                            autocomplete="email"
+                            required
+                            autofocus
+                        >
+
+                    </div>
 
                     @error('email')
 
-                        <div class="invalid-feedback">
+                        <div class="invalid-feedback d-block">
                             {{ $message }}
                         </div>
 
@@ -99,22 +114,41 @@
                 {{-- PASSWORD --}}
                 <div class="mb-3">
 
-                    <label class="form-label">
+                    <label
+                        for="password"
+                        class="form-label"
+                    >
                         Password
                     </label>
 
-                    <input
-                        type="password"
-                        name="password"
-                        class="form-control auth-input @error('password') is-invalid @enderror"
-                        placeholder="Masukkan password"
-                        autocomplete="current-password"
-                        required
-                    >
+                    <div class="auth-input-wrapper">
+
+                        <i class="fa-solid fa-lock input-icon"></i>
+
+                        <input
+                            id="password"
+                            type="password"
+                            name="password"
+                            class="form-control auth-input auth-password @error('password') is-invalid @enderror"
+                            placeholder="Masukkan password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            onclick="togglePassword()"
+                            aria-label="Tampilkan password"
+                        >
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+
+                    </div>
 
                     @error('password')
 
-                        <div class="invalid-feedback">
+                        <div class="invalid-feedback d-block">
                             {{ $message }}
                         </div>
 
@@ -124,20 +158,24 @@
 
 
                 {{-- REMEMBER --}}
-                <div class="form-check mb-4">
+                <div class="auth-options mb-4">
 
-                    <input
-                        class="form-check-input"
-                        type="checkbox"
-                        name="remember"
-                        id="remember"
-                    >
+                    <label class="remember-option">
 
-                    <label
-                        class="form-check-label"
-                        for="remember"
-                    >
-                        Ingat saya
+                        <input
+                            type="checkbox"
+                            name="remember"
+                            id="remember"
+                        >
+
+                        <span class="custom-check">
+                            <i class="fa-solid fa-check"></i>
+                        </span>
+
+                        <span>
+                            Ingat saya
+                        </span>
+
                     </label>
 
                 </div>
@@ -149,9 +187,10 @@
                     class="btn auth-btn w-100"
                 >
 
-                    <i class="fa-solid fa-right-to-bracket me-2"></i>
-
-                    Login
+                    <span>
+                        <i class="fa-solid fa-right-to-bracket me-2"></i>
+                        Login ke Akun
+                    </span>
 
                 </button>
 
@@ -159,15 +198,30 @@
 
 
             {{-- REGISTER --}}
-            <hr>
+            <div class="auth-register">
 
-            <div class="text-center">
+                <div class="auth-register-line"></div>
 
-                Belum punya akun?
+                <span>
+                    Belum punya akun?
+                </span>
 
                 <a href="{{ route('register') }}">
                     Daftar Sekarang
+                    <i class="fa-solid fa-arrow-right ms-1"></i>
                 </a>
+
+            </div>
+
+
+            {{-- FOOTER --}}
+            <div class="auth-security">
+
+                <i class="fa-solid fa-lock"></i>
+
+                <span>
+                    Data Anda terlindungi dan aman
+                </span>
 
             </div>
 
@@ -176,5 +230,35 @@
     </div>
 
 </div>
+
+
+<script>
+    function togglePassword() {
+
+        const input = document.getElementById('password');
+        const button = document.querySelector('.password-toggle i');
+
+        if (!input || !button) {
+            return;
+        }
+
+        if (input.type === 'password') {
+
+            input.type = 'text';
+
+            button.classList.remove('fa-eye');
+            button.classList.add('fa-eye-slash');
+
+        } else {
+
+            input.type = 'password';
+
+            button.classList.remove('fa-eye-slash');
+            button.classList.add('fa-eye');
+
+        }
+
+    }
+</script>
 
 @endsection
