@@ -237,11 +237,17 @@ class DitusiOrderService
                 );
 
                 if (!empty($recoveredTransaction['transactionId'])) {
-                    return $this->saveTransactionResponse(
+                    $ditusiOrder = $this->saveTransactionResponse(
                         $ditusiOrder,
                         $recovered,
                         $recoveredTransaction
                     );
+
+                    $this->scheduleStatusCheck(
+                        $ditusiOrder
+                    );
+
+                    return $ditusiOrder;
                 }
             } catch (Throwable $recoveryException) {
                 Log::warning(
@@ -266,11 +272,17 @@ class DitusiOrderService
             $response
         );
 
-        return $this->saveTransactionResponse(
+        $ditusiOrder = $this->saveTransactionResponse(
             $ditusiOrder,
             $response,
             $transactionData
         );
+
+        $this->scheduleStatusCheck(
+            $ditusiOrder
+        );
+
+        return $ditusiOrder;
     }
 
     /**
@@ -540,5 +552,46 @@ protected function buildFormDetails(
 
         return null;
     }
+
+protected function scheduleStatusCheck(
+    DitusiOrder $ditusiOrder
+): void {
+    if (!$ditusiOrder->ditusi_transaction_id) {
+        return;
+    }
+
+    if (
+        $this->isFinalStatus(
+            $ditusiOrder->status
+        )
+    ) {
+        return;
+    }
+
+    \App\Jobs\CheckDitusiOrderStatus::dispatch(
+        $ditusiOrder->id
+    )->delay(
+        now()->addMinutes(2)
+    );
+
+    Log::info(
+        'DITUSI status check dijadwalkan.',
+        [
+            'ditusi_order_id' =>
+                $ditusiOrder->id,
+
+            'transaction_id' =>
+                $ditusiOrder->ditusi_transaction_id,
+
+            'status' =>
+                $ditusiOrder->status,
+
+            'next_check' =>
+                now()
+                    ->addMinutes(2)
+                    ->toDateTimeString(),
+        ]
+    );
+}
 }
 

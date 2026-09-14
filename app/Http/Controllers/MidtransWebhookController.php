@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\ProcessMooGoldOrder;
+use App\Jobs\ProcessDitusiOrder;
 use App\Models\MidtransTransaction;
 use App\Models\Order;
 use App\Services\Midtrans\MidtransOrderService;
@@ -517,7 +518,9 @@ class MidtransWebhookController extends Controller
             ) {
                 $order =
                     Order::query()
-                        ->with('details')
+                        ->with([
+                            'details.item',
+                        ])
                         ->findOrFail(
                             $result['order_id']
                         );
@@ -550,6 +553,13 @@ class MidtransWebhookController extends Controller
                 }
 
                 foreach ($order->details as $detail) {
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | MOOGOLD
+                    |--------------------------------------------------------------------------
+                    */
+
                     ProcessMooGoldOrder::dispatch(
                         $detail->id
                     );
@@ -564,6 +574,62 @@ class MidtransWebhookController extends Controller
                                 $detail->id,
                         ]
                     );
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | DITUSI
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $item = $detail->item;
+
+                    if (
+                        $item &&
+                        (bool) $item->ditusi_enabled &&
+                        filled($item->ditusi_product_code)
+                    ) {
+                        ProcessDitusiOrder::dispatch(
+                            $detail->id
+                        );
+
+                        Log::info(
+                            'ProcessDitusiOrder didispatch setelah Order menjadi Paid.',
+                            [
+                                'order_id' =>
+                                    $order->id,
+
+                                'order_detail_id' =>
+                                    $detail->id,
+
+                                'item_id' =>
+                                    $item->id,
+
+                                'ditusi_product_code' =>
+                                    $item->ditusi_product_code,
+                            ]
+                        );
+                    } else {
+                        Log::info(
+                            'ProcessDitusiOrder tidak didispatch karena item belum aktif DITUSI atau product code kosong.',
+                            [
+                                'order_id' =>
+                                    $order->id,
+
+                                'order_detail_id' =>
+                                    $detail->id,
+
+                                'item_id' =>
+                                    $item?->id,
+
+                                'ditusi_enabled' =>
+                                    $item?->ditusi_enabled,
+
+                                'ditusi_product_code' =>
+                                    $item?->ditusi_product_code,
+                            ]
+                        );
+                    }
                 }
             }
 
