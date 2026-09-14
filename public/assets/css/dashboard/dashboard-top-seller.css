@@ -11,13 +11,15 @@
 
     overflow-x: auto;
 
-    padding: 5px 3px 15px;
+    padding: 6px 4px 16px;
 
     scroll-behavior: smooth;
 
     scrollbar-width: none;
 
     cursor: grab;
+
+    scroll-snap-type: x proximity;
 }
 
 
@@ -36,20 +38,29 @@
 ========================================================= */
 
 .market-product-card {
+    position: relative;
+
     flex: 0 0 220px;
 
     min-width: 220px;
 
     overflow: hidden;
 
-    background: #ffffff;
+    background:
+        linear-gradient(
+            180deg,
+            #ffffff,
+            #fbfdff
+        );
 
-    border: 1px solid #e5e7eb;
+    border: 1px solid #e2e8f0;
 
-    border-radius: 16px;
+    border-radius: 18px;
 
     box-shadow:
-        0 5px 18px rgba(15, 23, 42, 0.05);
+        0 7px 22px rgba(15, 23, 42, 0.05);
+
+    scroll-snap-align: start;
 
     transition:
         transform 0.25s ease,
@@ -59,12 +70,12 @@
 
 
 .market-product-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-6px);
 
-    border-color: #dbeafe;
+    border-color: #bfdbfe;
 
     box-shadow:
-        0 14px 32px rgba(37, 99, 235, 0.12);
+        0 18px 38px rgba(37, 99, 235, 0.13);
 }
 
 
@@ -92,7 +103,29 @@
 
     overflow: hidden;
 
-    background: #f3f4f6;
+    background:
+        linear-gradient(
+            135deg,
+            #eff6ff,
+            #f8fafc
+        );
+}
+
+
+.market-product-image::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            180deg,
+            transparent 68%,
+            rgba(15, 23, 42, 0.10)
+        );
+
+    pointer-events: none;
 }
 
 
@@ -104,13 +137,14 @@
 
     object-fit: cover;
 
-    transition: transform 0.35s ease;
+    transition:
+        transform 0.4s ease;
 }
 
 
 .market-product-card:hover
 .market-product-image img {
-    transform: scale(1.06);
+    transform: scale(1.07);
 }
 
 
@@ -135,7 +169,7 @@
 
     color: #93c5fd;
 
-    font-size: 42px;
+    font-size: 40px;
 }
 
 
@@ -155,18 +189,27 @@
 
     padding: 6px 9px;
 
-    border-radius: 7px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 8px;
 
-    background: #ef4444;
+    background:
+        linear-gradient(
+            135deg,
+            #ef4444,
+            #dc2626
+        );
 
     color: #ffffff;
 
     font-size: 9px;
     font-weight: 800;
-    letter-spacing: 0.5px;
+
+    letter-spacing: 0.4px;
 
     box-shadow:
-        0 5px 12px rgba(239, 68, 68, 0.25);
+        0 6px 14px rgba(239, 68, 68, 0.22);
+
+    z-index: 2;
 }
 
 
@@ -175,7 +218,7 @@
 ========================================================= */
 
 .market-product-info {
-    padding: 15px;
+    padding: 14px;
 }
 
 
@@ -186,26 +229,29 @@
 
     overflow: hidden;
 
-    font-size: 11px;
+    color: #64748b;
+
+    font-size: 10px;
     font-weight: 600;
 
-    color: #6b7280;
-
     white-space: nowrap;
+
     text-overflow: ellipsis;
 }
 
 
 .market-product-name {
-    margin: 0 0 12px;
+    min-height: 39px;
+
+    margin: 0 0 10px;
 
     overflow: hidden;
 
+    color: #0f172a;
+
     font-size: 14px;
     line-height: 1.4;
-    font-weight: 700;
-
-    color: #111827;
+    font-weight: 750;
 
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -214,8 +260,11 @@
 
 
 .market-price {
-    font-size: 16px;
-    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
 
     color: #2563eb;
+
+    font-size: 16px;
+    font-weight: 800;
 }

@@ -23,6 +23,30 @@
                     $orderStatus =
                         (string) $order->status;
 
+                        /*
+                        |--------------------------------------------------------------------------
+                        | PAYMENT STEPPER
+                        |--------------------------------------------------------------------------
+                        */
+
+                        $paymentStep =
+                            match ($orderStatus) {
+
+                                'Paid',
+                                'Processing',
+                                'Completed'
+                                    => 3,
+
+                                'Waiting Payment'
+                                    => 2,
+
+                                'Cancelled',
+                                'Failed'
+                                    => 2,
+
+                                default
+                                    => 1,
+                            };                        
                     /*
                     |--------------------------------------------------------------------------
                     | Transaction status dari database lebih dipercaya.
@@ -87,42 +111,185 @@
                         route(
                             'midtrans.payment',
                             [
-                                'order' =>
-                                    $order->id,
-
-                                'payment' =>
-                                    $order->midtrans_payment_type,
+                                'order' => $order->id,
                             ]
                         );
 
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Midtrans payment route dapat ditambah token
-                    | untuk flow guest.
-                    |--------------------------------------------------------------------------
-                    */
+                    $query = [
+                        'payment' => $order->midtrans_payment_type,
+                    ];
 
                     if (
-                        !$order->user_id
-                        &&
+                        !$order->user_id &&
                         $guestToken
                     ) {
-
-                        $paymentUrl .=
-                            '?payment=' .
-                            urlencode(
-                                (string)
-                                $order->midtrans_payment_type
-                            )
-                            . '&token=' .
-                            urlencode(
-                                $guestToken
-                            );
+                        $query['token'] = $guestToken;
                     }
+
+                    $paymentUrl .= '?' . http_build_query($query);
 
                 @endphp
 
+                {{-- =====================================================
+                    PAYMENT STEPS
+                ====================================================== --}}
 
+                <div class="payment-stepper mb-4">
+
+                    <ol class="payment-stepper-list">
+
+
+                        {{-- =================================================
+                            STEP 1 - DETAIL
+                        ================================================== --}}
+
+                        <li
+                            class="
+                                payment-stepper-item
+                                step-start
+                                {{ $paymentStep >= 2 ? 'completed' : '' }}
+                            "
+                        >
+
+                            <span class="payment-stepper-label">
+                                Detail
+                            </span>
+
+
+                            <span class="payment-stepper-icon">
+
+                                @if ($paymentStep >= 2)
+
+                                    <i class="fa-solid fa-check"></i>
+
+                                @else
+
+                                    <i class="fa-solid fa-circle"></i>
+
+                                @endif
+
+                            </span>
+
+
+                            <i
+                                class="
+                                    payment-stepper-mobile-icon
+                                    fa-solid
+                                    fa-file-lines
+                                "
+                            ></i>
+
+                        </li>
+
+
+                        {{-- =================================================
+                            STEP 2 - PEMBAYARAN
+                        ================================================== --}}
+
+                        <li
+                            class="
+                                payment-stepper-item
+                                step-center
+
+                                @if ($paymentStep === 2)
+                                    active
+
+                                @elseif ($paymentStep >= 3)
+                                    completed
+                                @endif
+                            "
+                        >
+
+                            <span class="payment-stepper-label">
+                                Pembayaran
+                            </span>
+
+
+                            <span class="payment-stepper-icon">
+
+                                @if ($paymentStep >= 3)
+
+                                    <i class="fa-solid fa-check"></i>
+
+                                @elseif (
+                                    in_array(
+                                        $orderStatus,
+                                        [
+                                            'Cancelled',
+                                            'Failed'
+                                        ],
+                                        true
+                                    )
+                                )
+
+                                    <i class="fa-solid fa-xmark"></i>
+
+                                @else
+
+                                    <i class="fa-solid fa-wallet"></i>
+
+                                @endif
+
+                            </span>
+
+
+                            <i
+                                class="
+                                    payment-stepper-mobile-icon
+                                    fa-solid
+                                    fa-wallet
+                                "
+                            ></i>
+
+                        </li>
+
+
+                        {{-- =================================================
+                            STEP 3 - SELESAI
+                        ================================================== --}}
+
+                        <li
+                            class="
+                                payment-stepper-item
+                                step-end
+
+                                {{ $paymentStep >= 3 ? 'active' : '' }}
+                            "
+                        >
+
+                            <span class="payment-stepper-label">
+                                Selesai
+                            </span>
+
+
+                            <span class="payment-stepper-icon">
+
+                                @if ($paymentStep >= 3)
+
+                                    <i class="fa-solid fa-check"></i>
+
+                                @else
+
+                                    <i class="fa-solid fa-circle"></i>
+
+                                @endif
+
+                            </span>
+
+
+                            <i
+                                class="
+                                    payment-stepper-mobile-icon
+                                    fa-solid
+                                    fa-circle-check
+                                "
+                            ></i>
+
+                        </li>
+
+                    </ol>
+
+                </div>
                 {{-- =====================================================
                      PAID / SUCCESS
                 ====================================================== --}}

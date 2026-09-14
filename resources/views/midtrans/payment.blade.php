@@ -13,7 +13,125 @@
             <div class="card shadow-sm border-0">
 
                 <div class="card-body p-4">
+                {{-- =====================================================
+                    PAYMENT STEPS
+                ====================================================== --}}
 
+                <div class="payment-stepper mb-4">
+
+                    <ol class="payment-stepper-list">
+
+                        {{-- =================================================
+                            STEP 1 - DETAIL
+                        ================================================== --}}
+
+                        <li
+                            class="payment-stepper-item step-start completed"
+                        >
+
+                            <span class="payment-stepper-label">
+                                Detail
+                            </span>
+
+                            {{-- Desktop circle --}}
+
+                            <span class="payment-stepper-icon">
+
+                                <i class="fa-solid fa-check"></i>
+
+                            </span>
+
+                            {{-- Mobile icon --}}
+
+                            <i
+                                class="
+                                    payment-stepper-mobile-icon
+                                    fa-solid
+                                    fa-file-lines
+                                "
+                                aria-hidden="true"
+                            ></i>
+
+                        </li>
+
+
+                        {{-- =================================================
+                            STEP 2 - PEMBAYARAN
+                        ================================================== --}}
+
+                        <li
+                            class="
+                                payment-stepper-item
+                                step-center
+                                active
+                            "
+                        >
+
+                            <span class="payment-stepper-label">
+                                Pembayaran
+                            </span>
+
+                            {{-- Desktop circle --}}
+
+                            <span class="payment-stepper-icon">
+
+                                <i class="fa-solid fa-check"></i>
+
+                            </span>
+
+                            {{-- Mobile icon --}}
+
+                            <i
+                                class="
+                                    payment-stepper-mobile-icon
+                                    fa-solid
+                                    fa-wallet
+                                "
+                                aria-hidden="true"
+                            ></i>
+
+                        </li>
+
+
+                        {{-- =================================================
+                            STEP 3 - SELESAI
+                        ================================================== --}}
+
+                        <li
+                            class="
+                                payment-stepper-item
+                                step-end
+                            "
+                        >
+
+                            <span class="payment-stepper-label">
+                                Selesai
+                            </span>
+
+                            {{-- Desktop circle --}}
+
+                            <span class="payment-stepper-icon">
+
+                                <i class="fa-solid fa-check"></i>
+
+                            </span>
+
+                            {{-- Mobile icon --}}
+
+                            <i
+                                class="
+                                    payment-stepper-mobile-icon
+                                    fa-solid
+                                    fa-circle-check
+                                "
+                                aria-hidden="true"
+                            ></i>
+
+                        </li>
+
+                    </ol>
+
+                </div>
                     <h4 class="mb-4">
                         Pembayaran Order
                     </h4>

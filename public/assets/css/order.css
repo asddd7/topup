@@ -1,0 +1,281 @@
+/* =========================================================
+   PAYMENT STEPPER
+========================================================= */
+
+.payment-stepper {
+    position: relative;
+    padding-bottom: 12px;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| GARIS PROGRESS
+|--------------------------------------------------------------------------
+*/
+
+.payment-stepper::after {
+    content: "";
+    position: absolute;
+
+    left: 0;
+    right: 0;
+
+    bottom: 8px;
+
+    height: 4px;
+
+    border-radius: 999px;
+
+    background: #e9ecef;
+
+    z-index: 0;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| LIST
+|--------------------------------------------------------------------------
+*/
+
+.payment-stepper-list {
+    position: relative;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    color: #6c757d;
+
+    z-index: 1;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| ITEM
+|--------------------------------------------------------------------------
+*/
+
+.payment-stepper-item {
+    position: relative;
+
+    display: flex;
+    align-items: flex-start;
+
+    min-height: 48px;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| ALIGNMENT
+|--------------------------------------------------------------------------
+*/
+
+.payment-stepper-item.step-start {
+    justify-content: flex-start;
+}
+
+.payment-stepper-item.step-center {
+    justify-content: center;
+}
+
+.payment-stepper-item.step-end {
+    justify-content: flex-end;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| LABEL
+|--------------------------------------------------------------------------
+*/
+
+.payment-stepper-label {
+    display: block;
+
+    padding-bottom: 20px;
+
+    line-height: 1.2;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| DEFAULT
+|--------------------------------------------------------------------------
+*/
+
+.payment-stepper-item {
+    color: #6c757d;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| ACTIVE
+|--------------------------------------------------------------------------
+*/
+
+.payment-stepper-item.active {
+    color: #0d6efd;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| COMPLETED
+|--------------------------------------------------------------------------
+*/
+
+.payment-stepper-item.completed {
+    color: #0d6efd;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| CIRCLE / CHECK
+|--------------------------------------------------------------------------
+*/
+
+.payment-stepper-icon {
+    position: absolute;
+
+    bottom: -5px;
+
+    width: 24px;
+    height: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #6c757d;
+
+    color: #fff;
+
+    z-index: 2;
+
+    font-size: 12px;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| ICON POSITION
+|--------------------------------------------------------------------------
+*/
+
+.step-start .payment-stepper-icon {
+    left: 0;
+}
+
+.step-center .payment-stepper-icon {
+    left: 50%;
+
+    transform: translateX(-50%);
+}
+
+.step-end .payment-stepper-icon {
+    right: 0;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| ACTIVE / COMPLETED ICON
+|--------------------------------------------------------------------------
+*/
+
+.payment-stepper-item.active .payment-stepper-icon,
+.payment-stepper-item.completed .payment-stepper-icon {
+    background: #0d6efd;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| MOBILE ICON
+|--------------------------------------------------------------------------
+*/
+
+.payment-stepper-mobile-icon {
+    display: none;
+
+    width: 24px;
+    height: 24px;
+
+    flex-shrink: 0;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| MOBILE
+|--------------------------------------------------------------------------
+*/
+
+@media (max-width: 575.98px) {
+
+    .payment-stepper {
+        padding-bottom: 12px;
+    }
+
+    .payment-stepper-list {
+        font-size: 0;
+    }
+
+    .payment-stepper-label {
+        display: none;
+    }
+
+    .payment-stepper-mobile-icon {
+        display: block;
+    }
+
+    .payment-stepper-item {
+        min-height: 36px;
+
+        align-items: flex-start;
+    }
+
+    .payment-stepper-item.step-start {
+        justify-content: flex-start;
+    }
+
+    .payment-stepper-item.step-center {
+        justify-content: center;
+    }
+
+    .payment-stepper-item.step-end {
+        justify-content: flex-end;
+    }
+
+    .payment-stepper-mobile-icon {
+        width: 24px;
+        height: 24px;
+
+        color: #6c757d;
+    }
+
+    .payment-stepper-item.active
+    .payment-stepper-mobile-icon,
+
+    .payment-stepper-item.completed
+    .payment-stepper-mobile-icon {
+        color: #0d6efd;
+    }
+
+}
