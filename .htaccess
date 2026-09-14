@@ -1,0 +1,11 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Jangan proses file/folder yang memang ada di public_html
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Semua request diarahkan ke folder public Laravel
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
