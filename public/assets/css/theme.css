@@ -1,0 +1,230 @@
+/* =========================================================
+   TOPUP THEME
+========================================================= */
+
+:root {
+
+    /* =====================================================
+       PRIMARY
+    ===================================================== */
+
+    --theme-primary: #2563eb;
+    --theme-primary-hover: #1d4ed8;
+    --theme-primary-soft: #eff6ff;
+
+    /* =====================================================
+       LIGHT
+    ===================================================== */
+
+    --theme-bg: #f8faff;
+    --theme-surface: #ffffff;
+    --theme-surface-soft: #f8fbff;
+
+    --theme-text: #0f172a;
+    --theme-text-secondary: #64748b;
+    --theme-text-muted: #94a3b8;
+
+    --theme-border: #e2e8f0;
+    --theme-border-soft: #edf2f7;
+
+    --theme-shadow:
+        0 8px 28px rgba(15, 23, 42, 0.06);
+
+    --theme-input-bg: #ffffff;
+
+    --theme-footer: #0f172a;
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+[data-theme="dark"] {
+
+    --theme-primary: #3b82f6;
+    --theme-primary-hover: #60a5fa;
+    --theme-primary-soft: #172554;
+
+    --theme-bg: #0b1220;
+    --theme-surface: #111827;
+    --theme-surface-soft: #0f172a;
+
+    --theme-text: #f1f5f9;
+    --theme-text-secondary: #cbd5e1;
+    --theme-text-muted: #94a3b8;
+
+    --theme-border: #1e293b;
+    --theme-border-soft: #172033;
+
+    --theme-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.30);
+
+    --theme-input-bg: #0f172a;
+
+    --theme-footer: #020617;
+}
+
+
+/* =========================================================
+   GLOBAL BODY
+========================================================= */
+
+body {
+
+    background: var(--theme-bg);
+
+    color: var(--theme-text);
+
+    transition:
+        background-color 0.25s ease,
+        color 0.25s ease;
+}
+
+
+/* =========================================================
+   COMMON SURFACE
+========================================================= */
+
+.card,
+.modal-content,
+.dropdown-menu {
+
+    background-color: var(--theme-surface);
+
+    border-color: var(--theme-border);
+
+    color: var(--theme-text);
+
+    transition:
+        background-color 0.25s ease,
+        border-color 0.25s ease,
+        color 0.25s ease;
+}
+
+
+/* =========================================================
+   TEXT
+========================================================= */
+
+.text-dark {
+    color: var(--theme-text) !important;
+}
+
+
+.text-muted {
+    color: var(--theme-text-secondary) !important;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.form-control,
+.form-select {
+
+    background-color: var(--theme-input-bg);
+
+    border-color: var(--theme-border);
+
+    color: var(--theme-text);
+}
+
+
+.form-control::placeholder {
+    color: var(--theme-text-muted);
+}
+
+
+.form-control:focus,
+.form-select:focus {
+
+    background-color: var(--theme-input-bg);
+
+    color: var(--theme-text);
+
+    border-color: var(--theme-primary);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(59, 130, 246, 0.12);
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.table {
+
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--theme-text);
+
+    color: var(--theme-text);
+
+    border-color: var(--theme-border);
+}
+
+
+[data-theme="dark"] .table-light {
+
+    --bs-table-bg: #172033;
+    --bs-table-color: #f1f5f9;
+}
+
+
+[data-theme="dark"] .table-dark {
+
+    --bs-table-bg: #020617;
+    --bs-table-color: #f8fafc;
+}
+
+
+/* =========================================================
+   LINK
+========================================================= */
+
+a {
+    transition: color 0.2s ease;
+}
+
+
+/* =========================================================
+   HR
+========================================================= */
+
+hr {
+
+    border-color: var(--theme-border);
+
+    opacity: 1;
+}
+
+
+/* =========================================================
+   DARK SCROLLBAR
+========================================================= */
+
+[data-theme="dark"] ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+    background: #0b1220;
+}
+
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+
+    background: #334155;
+
+    border-radius: 999px;
+}
+
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+}

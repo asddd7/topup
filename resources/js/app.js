@@ -1,3 +1,5 @@
+import './pages/theme';
+
 import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;

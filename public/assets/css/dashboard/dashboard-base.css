@@ -19,7 +19,9 @@
             rgba(59, 130, 246, 0.05),
             transparent 25%
         ),
-        #f8faff;
+        var(--theme-bg);
+
+    color: var(--theme-text);
 }
 
 
@@ -45,25 +47,23 @@
     margin: 0 auto;
 }
 
-
 .dashboard-section-header {
     margin-bottom: 22px;
 }
-
 
 .section-title-row {
     position: relative;
 }
 
-
 .section-eyebrow {
     display: inline-flex;
     align-items: center;
+
     gap: 7px;
 
     margin-bottom: 8px;
 
-    color: #2563eb;
+    color: var(--theme-primary);
 
     font-size: 10px;
     font-weight: 800;
@@ -71,7 +71,6 @@
     letter-spacing: 1.6px;
     text-transform: uppercase;
 }
-
 
 .section-eyebrow::before {
     content: "";
@@ -84,16 +83,15 @@
     background:
         linear-gradient(
             90deg,
-            #2563eb,
+            var(--theme-primary),
             #60a5fa
         );
 }
 
-
 .dashboard-section-title {
     margin: 0;
 
-    color: #0f172a;
+    color: var(--theme-text);
 
     font-size: 27px;
     line-height: 1.2;
@@ -102,13 +100,12 @@
     letter-spacing: -0.6px;
 }
 
-
 .dashboard-section-description {
     max-width: 650px;
 
     margin: 8px 0 0;
 
-    color: #64748b;
+    color: var(--theme-text-secondary);
 
     font-size: 14px;
     line-height: 1.6;
@@ -127,17 +124,18 @@
     background:
         linear-gradient(
             180deg,
-            #ffffff,
-            #f8fbff
+            var(--theme-surface),
+            var(--theme-surface-soft)
         );
 
-    border: 1px solid #e2e8f0;
+    border:
+        1px solid
+        var(--theme-border);
+
     border-radius: 20px;
 
-    box-shadow:
-        0 10px 30px rgba(15, 23, 42, 0.04);
+    box-shadow: var(--theme-shadow);
 }
-
 
 .dashboard-empty-state i {
     display: inline-flex;
@@ -151,20 +149,19 @@
 
     border-radius: 20px;
 
-    background: #eff6ff;
+    background: var(--theme-primary-soft);
 
     color: #60a5fa;
 
     font-size: 28px;
 }
 
-
 .dashboard-empty-state p {
     max-width: 420px;
 
     margin: 0 auto;
 
-    color: #64748b;
+    color: var(--theme-text-secondary);
 
     font-size: 14px;
 }
@@ -177,7 +174,6 @@
 .dashboard-products {
     margin-top: 38px;
 }
-
 
 .dashboard-games {
     margin-top: 48px;

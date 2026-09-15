@@ -62,66 +62,6 @@
 </div>
 
 
- {{-- =====================================================
-     CENTER : USER NAVIGATION
-====================================================== --}}
-
-<div class="topup-topbar-navigation">
-
-    {{-- NAVIGATION --}}
-    <nav class="topup-topbar-nav d-none d-lg-block">
-
-        <ul>
-
-            {{-- DASHBOARD --}}
-            <li>
-                <a href="{{ route('dashboard') }}">
-
-                    <i class="fa-solid fa-house"></i>
-
-                    Dashboard
-
-                </a>
-            </li>
-
-
-            {{-- GAME --}}
-            <li>
-                <a href="{{ route('game.index') }}">
-
-                    <i class="fa-solid fa-gamepad"></i>
-
-                    Game
-
-                </a>
-            </li>
-
-
-            {{-- PESANAN --}}
-            @auth
-
-                @if(Auth::user()->role_id == 2)
-
-                    <li>
-                        <a href="{{ route('order.index') }}">
-
-                            <i class="fa-solid fa-cart-shopping"></i>
-
-                            Pesanan Saya
-
-                        </a>
-                    </li>
-
-                @endif
-
-            @endauth
-
-        </ul>
-
-    </nav>
-
-</div>
-
 
         {{-- =====================================================
              RIGHT
@@ -129,6 +69,14 @@
 
         <div class="topup-topbar-right">
 
+        <button
+            type="button"
+            id="themeToggle"
+            class="theme-toggle"
+            aria-label="Ganti tema"
+        >
+            <i class="fa-solid fa-moon"></i>
+        </button>
             {{-- =================================================
                  USER / GUEST
             ================================================== --}}

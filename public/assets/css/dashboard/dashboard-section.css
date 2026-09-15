@@ -6,7 +6,6 @@
     position: relative;
 }
 
-
 .section-title-row {
     display: flex;
     align-items: flex-end;
@@ -27,7 +26,6 @@
     gap: 7px;
 }
 
-
 .marketplace-arrow {
     display: flex;
     align-items: center;
@@ -36,15 +34,18 @@
     width: 38px;
     height: 38px;
 
-    border: 1px solid #dbe5f3;
+    border:
+        1px solid
+        var(--theme-border);
+
     border-radius: 11px;
 
-    background: #ffffff;
+    background: var(--theme-surface);
 
-    color: #475569;
+    color: var(--theme-text-secondary);
 
     box-shadow:
-        0 4px 12px rgba(15, 23, 42, 0.04);
+        var(--theme-shadow);
 
     cursor: pointer;
 
@@ -56,20 +57,19 @@
         box-shadow 0.2s ease;
 }
 
-
 .marketplace-arrow:hover {
-    background: #2563eb;
+    background: var(--theme-primary);
 
-    border-color: #2563eb;
+    border-color: var(--theme-primary);
 
-    color: #ffffff;
+    color: #fff;
 
     transform: translateY(-2px);
 
     box-shadow:
-        0 8px 18px rgba(37, 99, 235, 0.20);
+        0 8px 18px
+        rgba(37, 99, 235, 0.20);
 }
-
 
 .marketplace-arrow:active {
     transform: scale(0.95);
@@ -89,7 +89,6 @@
     margin: 28px 0;
 }
 
-
 .game-market-line {
     flex: 1;
 
@@ -99,11 +98,10 @@
         linear-gradient(
             90deg,
             transparent,
-            #dbe5f3,
+            var(--theme-border),
             transparent
         );
 }
-
 
 .game-market-label {
     flex-shrink: 0;
@@ -112,9 +110,9 @@
 
     border-radius: 999px;
 
-    background: #eff6ff;
+    background: var(--theme-primary-soft);
 
-    color: #3b82f6;
+    color: var(--theme-primary);
 
     font-size: 10px;
     font-weight: 800;

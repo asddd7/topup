@@ -24,16 +24,18 @@
     background:
         linear-gradient(
             180deg,
-            #ffffff,
-            #fbfdff
+            var(--theme-surface),
+            var(--theme-surface-soft)
         );
 
-    border: 1px solid #e2e8f0;
+    border:
+        1px solid
+        var(--theme-border);
 
     border-radius: 17px;
 
     box-shadow:
-        0 6px 20px rgba(15, 23, 42, 0.045);
+        var(--theme-shadow);
 
     transition:
         transform 0.25s ease,
@@ -41,22 +43,21 @@
         border-color 0.25s ease;
 }
 
-
 .market-game-card:hover {
     transform: translateY(-5px);
 
-    border-color: #bfdbfe;
+    border-color:
+        var(--theme-primary);
 
     box-shadow:
-        0 16px 34px rgba(37, 99, 235, 0.12);
+        0 16px 34px
+        rgba(37, 99, 235, 0.12);
 }
-
 
 .market-game-card a {
     display: block;
 
     color: inherit;
-
     text-decoration: none;
 }
 
@@ -75,11 +76,10 @@
     background:
         linear-gradient(
             135deg,
-            #eff6ff,
-            #f8fafc
+            var(--theme-primary-soft),
+            var(--theme-surface-soft)
         );
 }
-
 
 .market-game-image::after {
     content: "";
@@ -97,7 +97,6 @@
     pointer-events: none;
 }
 
-
 .market-game-image img {
     display: block;
 
@@ -110,7 +109,6 @@
         transform 0.4s ease,
         filter 0.3s ease;
 }
-
 
 .market-game-card:hover
 .market-game-image img {
@@ -128,13 +126,12 @@
     padding: 14px;
 }
 
-
 .market-game-title {
     margin: 0;
 
     overflow: hidden;
 
-    color: #0f172a;
+    color: var(--theme-text);
 
     font-size: 13px;
     line-height: 1.4;
@@ -145,18 +142,15 @@
     -webkit-box-orient: vertical;
 }
 
-
 .market-game-publisher {
     margin-top: 5px;
 
-    color: #94a3b8;
+    color: var(--theme-text-muted);
 
     font-size: 10px;
 
     white-space: nowrap;
-
     overflow: hidden;
-
     text-overflow: ellipsis;
 }
 
@@ -167,6 +161,7 @@
 
 .market-game-overlay {
     position: absolute;
+
     inset: 0;
 
     display: flex;
@@ -188,12 +183,10 @@
     z-index: 2;
 }
 
-
 .market-game-card:hover
 .market-game-overlay {
     opacity: 1;
 }
-
 
 .market-game-action {
     width: 100%;
@@ -205,11 +198,11 @@
     background:
         linear-gradient(
             135deg,
-            #2563eb,
-            #1d4ed8
+            var(--theme-primary),
+            var(--theme-primary-hover)
         );
 
-    color: #ffffff;
+    color: #fff;
 
     font-size: 11px;
     font-weight: 700;
@@ -217,7 +210,8 @@
     text-align: center;
 
     box-shadow:
-        0 8px 18px rgba(37, 99, 235, 0.24);
+        0 8px 18px
+        rgba(37, 99, 235, 0.24);
 }
 
 
@@ -241,10 +235,9 @@
 
     margin-bottom: 7px;
 
-    color: #334155;
+    color: var(--theme-text-secondary);
 
     font-size: 12px;
-
     font-weight: 700;
 }
 
@@ -266,7 +259,6 @@
 
 .dashboard-search-input {
     width: 100%;
-
     height: 48px;
 
     padding:
@@ -275,46 +267,49 @@
         0
         17px;
 
-    border: 1px solid #dbe5f3;
+    border:
+        1px solid
+        var(--theme-border);
 
     border-radius: 13px;
 
-    background: #ffffff;
-
-    color: #0f172a;
+    background: var(--theme-input-bg);
+    color: var(--theme-text);
 
     font-size: 13px;
-
     line-height: 1.5;
 
     outline: none;
 
     box-shadow:
-        0 4px 14px rgba(15, 23, 42, 0.035);
+        var(--theme-shadow);
 
     transition:
         border-color 0.2s ease,
         box-shadow 0.2s ease,
-        transform 0.2s ease;
+        transform 0.2s ease,
+        background 0.2s ease;
 }
-
 
 .dashboard-search-input::placeholder {
-    color: #94a3b8;
+    color: var(--theme-text-muted);
 }
-
 
 .dashboard-search-input:hover {
-    border-color: #bfdbfe;
+    border-color:
+        var(--theme-primary);
 }
 
-
 .dashboard-search-input:focus {
-    border-color: #2563eb;
+    border-color:
+        var(--theme-primary);
 
     box-shadow:
-        0 0 0 4px rgba(37, 99, 235, 0.09),
-        0 8px 20px rgba(37, 99, 235, 0.05);
+        0 0 0 4px
+        rgba(37, 99, 235, 0.09),
+
+        0 8px 20px
+        rgba(37, 99, 235, 0.05);
 }
 
 
@@ -334,7 +329,6 @@
     height: 35px;
 
     display: grid;
-
     place-items: center;
 
     padding: 0;
@@ -342,9 +336,9 @@
     border: 0;
     border-radius: 10px;
 
-    background: #eff6ff;
+    background: var(--theme-primary-soft);
 
-    color: #2563eb;
+    color: var(--theme-primary);
 
     font-size: 13px;
 
@@ -356,23 +350,22 @@
         transform 0.2s ease;
 }
 
-
 .dashboard-search-button:hover {
-    background: #2563eb;
+    background: var(--theme-primary);
 
-    color: #ffffff;
+    color: #fff;
 
     transform:
         translateY(-50%)
         scale(1.04);
 }
 
-
 .dashboard-search-button:focus {
     outline: none;
 
     box-shadow:
-        0 0 0 3px rgba(37, 99, 235, 0.08);
+        0 0 0 3px
+        rgba(37, 99, 235, 0.08);
 }
 
 
@@ -383,15 +376,13 @@
 .dashboard-search-info {
     margin-top: 8px;
 
-    color: #64748b;
+    color: var(--theme-text-secondary);
 
     font-size: 11px;
 }
 
-
 .dashboard-search-info strong {
-    color: #2563eb;
-
+    color: var(--theme-primary);
     font-weight: 750;
 }
 
@@ -416,11 +407,12 @@
 
     border-radius: 18px;
 
-    background: #ffffff;
+    background: var(--theme-surface);
 
-    border: 1px dashed #dbe5f3;
+    border:
+        1px dashed
+        var(--theme-border);
 }
-
 
 .game-search-empty-icon {
     display: inline-flex;
@@ -434,13 +426,12 @@
 
     border-radius: 18px;
 
-    background: #eff6ff;
+    background: var(--theme-primary-soft);
 
     color: #60a5fa;
 
     font-size: 26px;
 }
-
 
 .game-search-empty h3 {
     margin:
@@ -448,13 +439,11 @@
         0
         7px;
 
-    color: #0f172a;
+    color: var(--theme-text);
 
     font-size: 18px;
-
     font-weight: 750;
 }
-
 
 .game-search-empty p {
     margin:
@@ -462,7 +451,7 @@
         0
         18px;
 
-    color: #64748b;
+    color: var(--theme-text-secondary);
 
     font-size: 13px;
 }
@@ -480,11 +469,9 @@
             22px;
     }
 
-
     .dashboard-search-input {
         height: 45px;
 
         border-radius: 11px;
     }
-
 }

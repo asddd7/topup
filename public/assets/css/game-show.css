@@ -8,7 +8,7 @@
     background:
         radial-gradient(
             circle at 5% 5%,
-            rgba(13, 148, 136, 0.08),
+            rgba(37, 99, 235, 0.08),
             transparent 28%
         ),
         radial-gradient(
@@ -16,12 +16,7 @@
             rgba(245, 158, 11, 0.07),
             transparent 28%
         ),
-        linear-gradient(
-            180deg,
-            #f8fafc 0%,
-            #f1f5f9 55%,
-            #eaf0f5 100%
-        );
+        var(--theme-bg);
 
     padding-bottom: 70px;
 }
@@ -43,16 +38,25 @@
     background:
         linear-gradient(
             135deg,
-            rgba(255,255,255,.95),
-            rgba(255,255,255,.72)
+            color-mix(
+                in srgb,
+                var(--theme-surface) 96%,
+                transparent
+            ),
+            color-mix(
+                in srgb,
+                var(--theme-surface-soft) 90%,
+                transparent
+            )
         );
 
-    border: 1px solid rgba(255,255,255,.9);
+    border: 1px solid var(--theme-border);
 
     box-shadow:
-        0 15px 40px rgba(15,23,42,.08);
+        0 15px 40px rgba(15, 23, 42, 0.08);
 
     backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
 }
 
 .game-hero-content {
@@ -60,7 +64,6 @@
     align-items: center;
 
     gap: 30px;
-
     padding: 30px;
 }
 
@@ -78,7 +81,7 @@
     border-radius: 22px;
 
     box-shadow:
-        0 10px 30px rgba(15,23,42,.12);
+        0 10px 30px rgba(15, 23, 42, 0.12);
 }
 
 .game-logo-placeholder {
@@ -89,8 +92,8 @@
     background:
         linear-gradient(
             135deg,
-            #0d9488,
-            #14b8a6
+            var(--theme-primary),
+            var(--theme-primary-hover)
         );
 
     color: #fff;
@@ -103,18 +106,17 @@
 
     margin-bottom: 8px;
 
-    color: #0d9488;
+    color: var(--theme-primary);
 
     font-size: 10px;
     font-weight: 800;
-
     letter-spacing: 1.5px;
 }
 
 .game-hero-info h1 {
     margin: 0;
 
-    color: #111827;
+    color: var(--theme-text);
 
     font-size: 32px;
     font-weight: 800;
@@ -123,15 +125,14 @@
 .game-hero-info p {
     margin: 8px 0 20px;
 
-    color: #64748b;
+    color: var(--theme-text-secondary);
 
     font-size: 14px;
 }
 
 .game-hero-info p i {
     margin-right: 6px;
-
-    color: #0d9488;
+    color: var(--theme-primary);
 }
 
 .game-topup-btn {
@@ -144,7 +145,13 @@
 
     border-radius: 10px;
 
-    background: #0d9488;
+    background:
+        linear-gradient(
+            135deg,
+            var(--theme-primary),
+            var(--theme-primary-hover)
+        );
+
     color: #fff;
 
     font-size: 13px;
@@ -153,11 +160,13 @@
     text-decoration: none;
 
     box-shadow:
-        0 8px 20px rgba(13,148,136,.22);
+        0 8px 20px
+        rgba(37, 99, 235, 0.22);
 
     transition:
-        transform .2s ease,
-        box-shadow .2s ease;
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
 }
 
 .game-topup-btn:hover {
@@ -165,8 +174,16 @@
 
     color: #fff;
 
+    background:
+        linear-gradient(
+            135deg,
+            var(--theme-primary-hover),
+            var(--theme-primary)
+        );
+
     box-shadow:
-        0 12px 25px rgba(13,148,136,.28);
+        0 12px 25px
+        rgba(37, 99, 235, 0.28);
 }
 
 
@@ -183,18 +200,17 @@
 }
 
 .game-section-eyebrow {
-    color: #64748b;
+    color: var(--theme-text-secondary);
 
     font-size: 10px;
     font-weight: 800;
-
     letter-spacing: 1.5px;
 }
 
 .game-section-header h2 {
     margin: 5px 0 0;
 
-    color: #111827;
+    color: var(--theme-text);
 
     font-size: 26px;
     font-weight: 800;
@@ -203,7 +219,7 @@
 .game-section-header p {
     margin: 6px 0 0;
 
-    color: #64748b;
+    color: var(--theme-text-secondary);
 
     font-size: 13px;
 }
@@ -227,27 +243,31 @@
 
     border-radius: 17px;
 
-    background: rgba(255,255,255,.92);
+    background: var(--theme-surface);
 
-    border: 1px solid #e2e8f0;
+    border:
+        1px solid
+        var(--theme-border);
 
     box-shadow:
-        0 5px 20px rgba(15,23,42,.055);
+        0 5px 20px
+        rgba(15, 23, 42, 0.055);
 
     transition:
-        transform .25s ease,
-        box-shadow .25s ease,
-        border-color .25s ease;
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
 }
 
 .game-item-card:hover {
     transform: translateY(-5px);
 
     border-color:
-        rgba(13,148,136,.25);
+        var(--theme-primary);
 
     box-shadow:
-        0 15px 35px rgba(15,23,42,.11);
+        0 15px 35px
+        rgba(37, 99, 235, 0.11);
 }
 
 
@@ -264,7 +284,7 @@
 
     overflow: hidden;
 
-    background: #f1f5f9;
+    background: var(--theme-surface-soft);
 }
 
 .game-item-image img {
@@ -276,7 +296,7 @@
     object-fit: cover;
 
     transition:
-        transform .45s ease;
+        transform 0.45s ease;
 }
 
 .game-item-card:hover
@@ -292,7 +312,7 @@
     align-items: center;
     justify-content: center;
 
-    color: #94a3b8;
+    color: var(--theme-text-muted);
 
     font-size: 40px;
 }
@@ -311,7 +331,7 @@
 
     margin-bottom: 5px;
 
-    color: #94a3b8;
+    color: var(--theme-text-muted);
 
     font-size: 10px;
 }
@@ -319,7 +339,7 @@
 .game-item-body h3 {
     margin: 0;
 
-    color: #1f2937;
+    color: var(--theme-text);
 
     font-size: 14px;
     font-weight: 700;
@@ -332,7 +352,7 @@
 .game-item-price {
     margin-top: 9px;
 
-    color: #0d9488;
+    color: var(--theme-primary);
 
     font-size: 16px;
     font-weight: 800;
@@ -357,8 +377,9 @@
     border: 0;
     border-radius: 9px;
 
-    background: #f0fdfa;
-    color: #0f766e;
+    background: var(--theme-primary-soft);
+
+    color: var(--theme-primary);
 
     font-size: 11px;
     font-weight: 800;
@@ -366,12 +387,12 @@
     cursor: pointer;
 
     transition:
-        background .2s ease,
-        color .2s ease;
+        background 0.2s ease,
+        color 0.2s ease;
 }
 
 .game-item-button:hover {
-    background: #0d9488;
+    background: var(--theme-primary);
     color: #fff;
 }
 
@@ -387,7 +408,7 @@
 
     text-align: center;
 
-    color: #94a3b8;
+    color: var(--theme-text-muted);
 }
 
 .game-empty-state i {
@@ -401,13 +422,15 @@
 .game-empty-state h3 {
     margin: 0;
 
-    color: #475569;
+    color: var(--theme-text);
 
     font-size: 17px;
 }
 
 .game-empty-state p {
     margin-top: 6px;
+
+    color: var(--theme-text-secondary);
 
     font-size: 13px;
 }
@@ -426,12 +449,15 @@
 
     border-radius: 22px;
 
-    background: #fff;
+    background: var(--theme-surface);
 
     box-shadow:
-        0 15px 45px rgba(15,23,42,.08);
+        0 15px 45px
+        rgba(15, 23, 42, 0.08);
 
-    border: 1px solid #e2e8f0;
+    border:
+        1px solid
+        var(--theme-border);
 }
 
 .checkout-header {
@@ -444,8 +470,8 @@
     background:
         linear-gradient(
             135deg,
-            #0f766e,
-            #0d9488
+            var(--theme-primary-hover),
+            var(--theme-primary)
         );
 
     color: #fff;
@@ -454,10 +480,9 @@
 .checkout-eyebrow {
     font-size: 9px;
     font-weight: 800;
-
     letter-spacing: 1.5px;
 
-    opacity: .75;
+    opacity: 0.75;
 }
 
 .checkout-header h2 {
@@ -477,7 +502,7 @@
 
     border-radius: 12px;
 
-    background: rgba(255,255,255,.15);
+    background: rgba(255, 255, 255, 0.15);
 
     font-size: 18px;
 }
@@ -512,14 +537,14 @@
 
     border-radius: 10px;
 
-    background: #f0fdfa;
-    color: #0d9488;
+    background: var(--theme-primary-soft);
+    color: var(--theme-primary);
 }
 
 .checkout-section-title h3 {
     margin: 0;
 
-    color: #1f2937;
+    color: var(--theme-text);
 
     font-size: 15px;
     font-weight: 800;
@@ -528,7 +553,7 @@
 .checkout-section-title p {
     margin: 2px 0 0;
 
-    color: #94a3b8;
+    color: var(--theme-text-muted);
 
     font-size: 11px;
 }
@@ -551,7 +576,7 @@
 
     margin-bottom: 7px;
 
-    color: #374151;
+    color: var(--theme-text-secondary);
 
     font-size: 12px;
     font-weight: 700;
@@ -567,33 +592,42 @@
 
     padding: 11px 13px;
 
-    border: 1px solid #dbe3ec;
+    border:
+        1px solid
+        var(--theme-border);
+
     border-radius: 9px;
 
-    background: #fff;
-
-    color: #1f2937;
+    background: var(--theme-input-bg);
+    color: var(--theme-text);
 
     font-size: 13px;
 
     outline: none;
 
     transition:
-        border-color .2s ease,
-        box-shadow .2s ease;
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.player-field input::placeholder {
+    color: var(--theme-text-muted);
 }
 
 .player-field input:focus,
 .player-field select:focus {
-    border-color: #0d9488;
+    border-color: var(--theme-primary);
 
     box-shadow:
-        0 0 0 3px rgba(13,148,136,.10);
+        0 0 0 3px
+        rgba(37, 99, 235, 0.10);
 }
 
 
 /* =========================================================
-   VOUCHER
+   VOUCHER / PROMO / PAYMENT BOX
 ========================================================= */
 
 .voucher-box,
@@ -605,35 +639,52 @@
 
     border-radius: 15px;
 
-    background: #f8fafc;
+    background: var(--theme-surface-soft);
 
-    border: 1px solid #e2e8f0;
+    border:
+        1px solid
+        var(--theme-border);
 }
 
 .voucher-input-group {
     display: flex;
-
     gap: 8px;
 }
 
 .voucher-input {
     flex: 1;
-
     min-width: 0;
 
     padding: 11px 13px;
 
-    border: 1px solid #dbe3ec;
+    border:
+        1px solid
+        var(--theme-border);
+
     border-radius: 9px;
 
+    background: var(--theme-input-bg);
+    color: var(--theme-text);
+
     outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.voucher-input::placeholder {
+    color: var(--theme-text-muted);
 }
 
 .voucher-input:focus {
-    border-color: #0d9488;
+    border-color: var(--theme-primary);
 
     box-shadow:
-        0 0 0 3px rgba(13,148,136,.10);
+        0 0 0 3px
+        rgba(37, 99, 235, 0.10);
 }
 
 .voucher-button {
@@ -642,19 +693,27 @@
     border: 0;
     border-radius: 9px;
 
-    background: #0d9488;
+    background: var(--theme-primary);
     color: #fff;
 
     font-size: 12px;
     font-weight: 700;
 
     cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.voucher-button:hover {
+    background: var(--theme-primary-hover);
 }
 
 .voucher-message {
     margin-top: 7px;
 
-    color: #94a3b8;
+    color: var(--theme-text-muted);
 
     font-size: 11px;
 }
@@ -671,9 +730,11 @@
 
     border-radius: 15px;
 
-    background: #fff;
+    background: var(--theme-surface);
 
-    border: 1px solid #e2e8f0;
+    border:
+        1px solid
+        var(--theme-border);
 }
 
 .price-row {
@@ -685,13 +746,13 @@
 
     margin-bottom: 12px;
 
-    color: #64748b;
+    color: var(--theme-text-secondary);
 
     font-size: 13px;
 }
 
 .price-row strong {
-    color: #1f2937;
+    color: var(--theme-text);
 }
 
 .discount-value {
@@ -703,7 +764,7 @@
 
     margin: 15px 0;
 
-    background: #e2e8f0;
+    background: var(--theme-border);
 }
 
 .price-total {
@@ -713,14 +774,14 @@
 }
 
 .price-total strong {
-    color: #0d9488;
+    color: var(--theme-primary);
 
     font-size: 20px;
 }
 
 
 /* =========================================================
-   PROMO
+   PROMO EMPTY
 ========================================================= */
 
 .promo-empty {
@@ -728,7 +789,7 @@
 
     text-align: center;
 
-    color: #94a3b8;
+    color: var(--theme-text-muted);
 
     font-size: 11px;
 }
@@ -759,38 +820,47 @@
 
     padding: 14px;
 
-    border: 1px solid #e2e8f0;
+    border:
+        1px solid
+        var(--theme-border);
 
     border-radius: 12px;
 
-    background: #fff;
+    background: var(--theme-surface);
+
+    color: var(--theme-text);
 
     cursor: pointer;
 
     transition:
-        border-color .2s ease,
-        box-shadow .2s ease,
-        background .2s ease;
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
 }
 
 .payment-card:hover {
-    border-color: #99f6e4;
+    border-color:
+        color-mix(
+            in srgb,
+            var(--theme-primary) 45%,
+            var(--theme-border)
+        );
 }
 
 .payment-card:has(.payment-radio:checked) {
-    border-color: #0d9488;
+    border-color: var(--theme-primary);
 
-    background: #f0fdfa;
+    background: var(--theme-primary-soft);
 
     box-shadow:
-        0 5px 15px rgba(13,148,136,.08);
+        0 5px 15px
+        rgba(37, 99, 235, 0.08);
 }
 
 .payment-radio {
     position: absolute;
 
     opacity: 0;
-
     pointer-events: none;
 }
 
@@ -804,7 +874,10 @@
 
     flex: 0 0 18px;
 
-    border: 2px solid #cbd5e1;
+    border:
+        2px solid
+        var(--theme-border);
+
     border-radius: 50%;
 
     color: #fff;
@@ -814,9 +887,9 @@
 
 .payment-card:has(.payment-radio:checked)
 .payment-check {
-    border-color: #0d9488;
+    border-color: var(--theme-primary);
 
-    background: #0d9488;
+    background: var(--theme-primary);
 }
 
 .payment-image {
@@ -833,7 +906,7 @@
 
     border-radius: 8px;
 
-    background: #f1f5f9;
+    background: var(--theme-surface-soft);
 }
 
 .payment-image img {
@@ -844,7 +917,7 @@
 }
 
 .payment-placeholder {
-    color: #94a3b8;
+    color: var(--theme-text-muted);
 }
 
 .payment-info {
@@ -857,7 +930,7 @@
 .payment-info h4 {
     margin: 0;
 
-    color: #1f2937;
+    color: var(--theme-text);
 
     font-size: 13px;
     font-weight: 800;
@@ -866,7 +939,7 @@
 .payment-info span {
     margin-top: 2px;
 
-    color: #94a3b8;
+    color: var(--theme-text-muted);
 
     font-size: 10px;
 }
@@ -874,7 +947,7 @@
 .payment-info strong {
     margin-top: 3px;
 
-    color: #374151;
+    color: var(--theme-text-secondary);
 
     font-size: 11px;
 }
@@ -882,7 +955,7 @@
 .payment-info small {
     margin-top: 2px;
 
-    color: #64748b;
+    color: var(--theme-text-secondary);
 
     font-size: 10px;
 }
@@ -892,7 +965,7 @@
 
     text-align: center;
 
-    color: #94a3b8;
+    color: var(--theme-text-muted);
 }
 
 .payment-empty i {
@@ -929,8 +1002,8 @@
     background:
         linear-gradient(
             135deg,
-            #059669,
-            #10b981
+            var(--theme-primary),
+            var(--theme-primary-hover)
         );
 
     color: #fff;
@@ -941,18 +1014,28 @@
     cursor: pointer;
 
     box-shadow:
-        0 8px 20px rgba(16,185,129,.20);
+        0 8px 20px
+        rgba(37, 99, 235, 0.20);
 
     transition:
-        transform .2s ease,
-        box-shadow .2s ease;
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
 }
 
 .checkout-submit:hover {
     transform: translateY(-2px);
 
+    background:
+        linear-gradient(
+            135deg,
+            var(--theme-primary-hover),
+            var(--theme-primary)
+        );
+
     box-shadow:
-        0 12px 25px rgba(16,185,129,.27);
+        0 12px 25px
+        rgba(37, 99, 235, 0.27);
 }
 
 
@@ -966,7 +1049,6 @@
         grid-template-columns:
             repeat(3, minmax(0, 1fr));
     }
-
 }
 
 
@@ -986,7 +1068,6 @@
 
     .game-hero-content {
         gap: 18px;
-
         padding: 20px;
     }
 
@@ -998,7 +1079,6 @@
     .game-logo-placeholder {
         width: 100px;
         height: 100px;
-
         border-radius: 15px;
     }
 
@@ -1044,7 +1124,6 @@
     .checkout-body {
         padding: 18px;
     }
-
 }
 
 
@@ -1066,7 +1145,6 @@
     .game-logo-placeholder {
         width: 75px;
         height: 75px;
-
         border-radius: 12px;
     }
 
@@ -1080,13 +1158,11 @@
 
     .game-hero-info p {
         margin-bottom: 12px;
-
         font-size: 11px;
     }
 
     .game-topup-btn {
         padding: 9px 12px;
-
         font-size: 10px;
     }
 
@@ -1112,7 +1188,6 @@
 
     .game-item-button {
         padding: 7px 9px;
-
         font-size: 9px;
     }
 
@@ -1141,5 +1216,4 @@
     .voucher-button {
         min-height: 40px;
     }
-
 }
