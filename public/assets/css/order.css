@@ -577,9 +577,9 @@
 ========================================================= */
 
 .status-waiting {
-    background: #fff7ed;
+    background:  #ea580c;
 
-    color: #ea580c;
+    color: #fff7ed;
 
     border:
         1px solid
@@ -588,9 +588,9 @@
 
 
 .status-paid {
-    background: #eff6ff;
+    background: #2563eb;
 
-    color: #2563eb;
+    color:  #eff6ff;
 
     border:
         1px solid
@@ -599,9 +599,9 @@
 
 
 .status-processing {
-    background: #eef2ff;
+    background:  #4f46e5;
 
-    color: #4f46e5;
+    color: #eef2ff ;
 
     border:
         1px solid
@@ -610,9 +610,9 @@
 
 
 .status-completed {
-    background: #ecfdf5;
+    background:  #059669;
 
-    color: #059669;
+    color: #ecfdf5;
 
     border:
         1px solid
@@ -621,9 +621,9 @@
 
 
 .status-cancelled {
-    background: #fef2f2;
+    background:  #dc2626;
 
-    color: #dc2626;
+    color: #fef2f2;
 
     border:
         1px solid
@@ -632,9 +632,9 @@
 
 
 .status-default {
-    background: #f8fafc;
+    background:  #64748b;
 
-    color: #64748b;
+    color: #f8fafc;
 
     border:
         1px solid
