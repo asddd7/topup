@@ -1,273 +1,342 @@
 @extends('layouts.app')
 
-
 @section('content')
 
+<div class="order-history-page">
 
-<div class="container py-4">
+    <div class="order-history-container">
 
 
-<h4 class="fw-bold mb-4">
+        {{-- =====================================================
+             PAGE HEADER
+        ====================================================== --}}
 
-<i class="fa-solid fa-clock-rotate-left me-2"></i>
+        <div class="order-history-header">
 
-Riwayat Pesanan
+            <div>
 
-</h4>
+                <span class="order-history-eyebrow">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    RIWAYAT TRANSAKSI
+                </span>
 
+                <h1 class="order-history-title">
+                    Pesanan Saya
+                </h1>
 
+                <p class="order-history-description">
+                    Lihat riwayat pesanan dan status transaksi Anda.
+                </p>
 
-<div class="card shadow-sm border-0 rounded-4">
+            </div>
 
+        </div>
 
-<div class="card-body">
 
+        {{-- =====================================================
+             ORDER LIST
+        ====================================================== --}}
 
+        @forelse($orders as $order)
 
-<div class="table-responsive">
+            @php
 
+                $detail = $order->details->first();
 
-<table class="table align-middle">
+                $game = $order->game;
 
+                $item = $detail?->item;
 
-<thead class="table-dark">
+            @endphp
 
-<tr>
 
-<th>
-Invoice
-</th>
+            <article class="order-history-card">
 
 
-<th>
-Game
-</th>
+                {{-- =================================================
+                     ORDER TOP
+                ================================================== --}}
 
+                <div class="order-card-top">
 
-<th>
-Total
-</th>
 
+                    {{-- GAME --}}
+                    <div class="order-game-info">
 
-<th>
-Status
-</th>
+                        <div class="order-game-image">
 
+                            @if($game?->game_logo)
 
-<th>
-Action
-</th>
+                                <img
+                                    src="{{ asset('storage/' . $game->game_logo) }}"
+                                    alt="{{ $game->game_name }}"
+                                    loading="lazy"
+                                >
 
+                            @else
 
-</tr>
+                                <div class="order-image-placeholder">
+                                    <i class="fa-solid fa-gamepad"></i>
+                                </div>
 
-</thead>
+                            @endif
 
+                        </div>
 
 
+                        <div class="order-game-text">
 
-<tbody>
+                            <span class="order-label">
+                                GAME
+                            </span>
 
+                            <h2>
+                                {{ $game?->game_name ?? '-' }}
+                            </h2>
 
-@forelse($orders as $order)
+                        </div>
 
+                    </div>
 
 
-<tr>
+                    {{-- STATUS --}}
+                    <div class="order-status-wrapper">
 
+                        <span class="order-label">
+                            STATUS
+                        </span>
 
-<td>
+                        @if($order->status === 'Waiting Payment')
 
+                            <span class="order-status status-waiting">
+                                <i class="fa-solid fa-hourglass-half"></i>
+                                {{ $order->status }}
+                            </span>
 
-<strong>
+                        @elseif($order->status === 'Paid')
 
-{{$order->invoice_number}}
+                            <span class="order-status status-paid">
+                                <i class="fa-solid fa-circle-check"></i>
+                                {{ $order->status }}
+                            </span>
 
-</strong>
+                        @elseif($order->status === 'Processing')
 
+                            <span class="order-status status-processing">
+                                <i class="fa-solid fa-spinner"></i>
+                                {{ $order->status }}
+                            </span>
 
-</td>
+                        @elseif($order->status === 'Completed')
 
+                            <span class="order-status status-completed">
+                                <i class="fa-solid fa-check"></i>
+                                {{ $order->status }}
+                            </span>
 
+                        @elseif($order->status === 'Cancelled')
 
+                            <span class="order-status status-cancelled">
+                                <i class="fa-solid fa-xmark"></i>
+                                {{ $order->status }}
+                            </span>
 
-<td>
+                        @else
 
-{{$order->game->game_name}}
+                            <span class="order-status status-default">
+                                <i class="fa-solid fa-clock"></i>
+                                {{ $order->status }}
+                            </span>
 
-</td>
+                        @endif
 
+                    </div>
 
+                </div>
 
 
-<td>
+                {{-- =================================================
+                     PRODUCT
+                ================================================== --}}
 
-Rp {{number_format($order->total_price)}}
+                <div class="order-product-row">
 
-</td>
 
+                    <div class="order-product-info">
 
+                        <div class="order-product-image">
 
+                            @if($item?->image)
 
-<td>
+                                <img
+                                    src="{{ asset('storage/' . $item->image) }}"
+                                    alt="{{ $item->item_name }}"
+                                    loading="lazy"
+                                >
 
+                            @else
 
-@if($order->status == 'Waiting Payment')
+                                <div class="order-image-placeholder">
+                                    <i class="fa-solid fa-box-open"></i>
+                                </div>
 
+                            @endif
 
-<span class="badge bg-warning">
+                        </div>
 
-{{$order->status}}
 
-</span>
+                        <div class="order-product-text">
 
+                            <span class="order-label">
+                                PRODUK
+                            </span>
 
-@elseif($order->status == 'Paid')
+                            <h3>
+                                {{ $item?->item_name ?? 'Produk tidak tersedia' }}
+                            </h3>
 
+                            @if($detail)
 
-<span class="badge bg-info">
+                                <span class="order-product-qty">
+                                    Qty {{ $detail->qty }}
+                                </span>
 
-{{$order->status}}
+                            @endif
 
-</span>
+                        </div>
 
+                    </div>
 
-@elseif($order->status == 'Processing')
 
+                    {{-- TOTAL --}}
+                    <div class="order-price">
 
-<span class="badge bg-primary">
+                        <span class="order-label">
+                            TOTAL
+                        </span>
 
-{{$order->status}}
+                        <strong>
+                            Rp {{ number_format((float) $order->total_price, 0, ',', '.') }}
+                        </strong>
 
-</span>
+                    </div>
 
+                </div>
 
-@elseif($order->status == 'Completed')
 
+                {{-- =================================================
+                     ORDER META
+                ================================================== --}}
 
-<span class="badge bg-success">
+                <div class="order-card-meta">
 
-{{$order->status}}
+                    <div class="order-invoice">
 
-</span>
+                        <span class="order-label">
+                            INVOICE
+                        </span>
 
+                        <strong>
+                            {{ $order->invoice_number }}
+                        </strong>
 
-@else
+                    </div>
 
 
-<span class="badge bg-danger">
+                    <div class="order-action">
 
-{{$order->status}}
 
-</span>
+                        {{-- DETAIL --}}
+                        <a
+                            href="{{ route(
+                                'order.show',
+                                [
+                                    'invoice' => $order->invoice_number,
+                                    'token' => $order->guest_token
+                                ]
+                            ) }}"
+                            class="order-detail-button"
+                        >
 
+                            <i class="fa-solid fa-eye"></i>
 
-@endif
+                            <span>
+                                Detail
+                            </span>
 
+                        </a>
 
 
-</td>
+                        {{-- BAYAR --}}
+                        @if($order->status === 'Waiting Payment')
 
+                            <a
+                                href="{{ route(
+                                    'order.payment',
+                                    [
+                                        'invoice' => $order->invoice_number,
+                                        'token' => $order->guest_token
+                                    ]
+                                ) }}"
+                                class="order-payment-button"
+                            >
 
+                                <i class="fa-solid fa-credit-card"></i>
 
+                                <span>
+                                    Bayar
+                                </span>
 
-<td>
+                            </a>
 
+                        @endif
 
+                    </div>
 
-<a href="{{ route(
-    'order.show',
-    [
-        'invoice'=>$order->invoice_number,
-        'token'=>$order->guest_token
-    ]
-) }}"
-class="btn btn-primary btn-sm">
+                </div>
 
 
-<i class="fa-solid fa-eye me-1"></i>
+            </article>
 
-Detail
 
+        @empty
 
-</a>
 
+            {{-- =================================================
+                 EMPTY
+            ================================================== --}}
 
+            <div class="order-empty-state">
 
-@if(
-$order->status == 'Waiting Payment'
-)
+                <div class="order-empty-icon">
 
+                    <i class="fa-solid fa-receipt"></i>
 
-<a href="{{ route(
-    'order.payment',
-    [
-        'invoice'=>$order->invoice_number,
-        'token'=>$order->guest_token
-    ]
-) }}"
-class="btn btn-success btn-sm">
+                </div>
 
+                <h3>
+                    Belum Ada Pesanan
+                </h3>
 
-<i class="fa-solid fa-credit-card me-1"></i>
+                <p>
+                    Riwayat pesanan Anda akan muncul di halaman ini.
+                </p>
 
-Bayar
+                <a
+                    href="{{ route('dashboard') }}"
+                    class="order-empty-button"
+                >
+                    <i class="fa-solid fa-gamepad me-1"></i>
+                    Mulai Top Up
+                </a>
 
+            </div>
 
-</a>
+        @endforelse
 
 
-@endif
-
-
-
-</td>
-
-
-
-</tr>
-
-
-
-
-@empty
-
-
-<tr>
-
-<td colspan="5"
-class="text-center text-muted">
-
-
-Belum ada pesanan.
-
-
-</td>
-
-</tr>
-
-
-
-@endforelse
-
-
-
-</tbody>
-
-
-</table>
-
+    </div>
 
 </div>
-
-
-
-</div>
-
-</div>
-
-
-</div>
-
 
 @endsection
