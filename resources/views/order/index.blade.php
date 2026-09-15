@@ -271,13 +271,7 @@
                         @if($order->status === 'Waiting Payment')
 
                             <a
-                                href="{{ route(
-                                    'order.payment',
-                                    [
-                                        'invoice' => $order->invoice_number,
-                                        'token' => $order->guest_token
-                                    ]
-                                ) }}"
+                                href="{{ route('midtrans.payment', ['order' => $order]) }}"
                                 class="order-payment-button"
                             >
 
