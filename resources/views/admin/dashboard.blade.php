@@ -271,7 +271,24 @@ class="text-decoration-none">
 
 </div>
 
+<div class="col-md-2">
 
+    <a href="{{ route('top-seller.index') }}"
+       class="text-decoration-none">
+
+        <div class="card shadow-sm text-center p-3">
+
+            <i class="fa-solid fa-star fa-2x text-warning"></i>
+
+            <h6 class="mt-2">
+                Top Seller
+            </h6>
+
+        </div>
+
+    </a>
+
+</div>
 
 <div class="col-md-2">
 

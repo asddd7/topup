@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\StockController;
 use App\Http\Controllers\Admin\MooGoldProductMappingController;
+use App\Http\Controllers\Admin\TopSellerController;
 
 use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\User\GameController as UserGameController;
@@ -491,6 +492,12 @@ Route::post(
 Route::get('/setting', [SettingController::class, 'index'])->name('setting.index');
 Route::put('/setting', [SettingController::class, 'update'])->name('setting.update');
 });
+
+Route::get('/top-seller', [TopSellerController::class, 'index'])
+    ->name('top-seller.index');
+
+Route::post('/top-seller', [TopSellerController::class, 'update'])
+    ->name('top-seller.update');
 
 /*
 |--------------------------------------------------------------------------
