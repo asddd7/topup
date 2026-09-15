@@ -1,0 +1,1618 @@
+/* =========================================================
+   ADMIN DISCOUNT / VOUCHER
+========================================================= */
+
+.admin-layout .discount-page {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding: 24px 0 50px;
+
+    overflow-x: hidden;
+
+    background:
+        radial-gradient(
+            circle at 8% 0%,
+            rgba(37, 99, 235, 0.06),
+            transparent 28%
+        ),
+        var(--theme-bg);
+
+    color: var(--theme-text);
+}
+
+
+/* =========================================================
+   GLOBAL WIDTH CONTROL
+========================================================= */
+
+.admin-layout .discount-page,
+.admin-layout .discount-page *,
+.admin-layout .discount-page *::before,
+.admin-layout .discount-page *::after {
+    box-sizing: border-box;
+}
+
+.admin-layout .discount-page > .container-fluid {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.admin-layout .discount-page .card {
+    max-width: 100%;
+    min-width: 0;
+}
+
+.admin-layout .discount-page .row {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.admin-layout .discount-page .row > [class*="col-"] {
+    min-width: 0;
+    max-width: 100%;
+}
+
+
+/* =========================================================
+   MAIN CARD
+========================================================= */
+
+.admin-layout .discount-page > .container-fluid > .card {
+    width: 100%;
+    overflow: hidden;
+
+    border:
+        1px solid
+        var(--theme-border);
+
+    border-radius: 16px;
+
+    background:
+        var(--theme-surface);
+
+    box-shadow:
+        var(--theme-shadow);
+}
+
+.admin-layout .discount-page > .container-fluid > .card > .card-header {
+    min-width: 0;
+
+    padding:
+        15px
+        18px;
+
+    border-bottom:
+        1px solid
+        var(--theme-border-soft);
+
+    background:
+        var(--theme-surface-soft);
+
+    color:
+        var(--theme-text);
+
+    gap: 12px;
+}
+
+.admin-layout .discount-page > .container-fluid > .card > .card-body {
+    min-width: 0;
+    padding: 18px;
+}
+
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+.admin-layout .discount-page .card-header h5 {
+    min-width: 0;
+    margin: 0;
+
+    color:
+        var(--theme-text);
+
+    font-size: 15px;
+    font-weight: 800;
+
+    line-height: 1.3;
+
+    white-space: nowrap;
+}
+
+.admin-layout .discount-page .card-header h5 i {
+    color:
+        var(--theme-primary);
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   HEADER BUTTON
+========================================================= */
+
+.admin-layout .discount-page .card-header > .btn-primary {
+    flex-shrink: 0;
+
+    min-height: 38px;
+
+    padding:
+        8px
+        13px;
+
+    border-color:
+        var(--theme-primary);
+
+    border-radius: 9px;
+
+    background:
+        var(--theme-primary);
+
+    color: #fff;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    box-shadow:
+        0 6px 15px
+        rgba(37, 99, 235, 0.14);
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.admin-layout .discount-page .card-header > .btn-primary:hover {
+    border-color:
+        var(--theme-primary-hover);
+
+    background:
+        var(--theme-primary-hover);
+
+    color: #fff;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 8px 18px
+        rgba(37, 99, 235, 0.20);
+}
+
+
+/* =========================================================
+   ALERT
+========================================================= */
+
+.admin-layout .discount-page .alert-success {
+    margin-bottom: 18px;
+
+    padding:
+        10px
+        13px;
+
+    border:
+        1px solid
+        #a7f3d0;
+
+    border-radius: 10px;
+
+    background:
+        #ecfdf5;
+
+    color:
+        #047857;
+
+    font-size: 11px;
+
+    line-height: 1.4;
+}
+
+
+/* =========================================================
+   STATISTICS
+========================================================= */
+
+.admin-layout .discount-page .row.g-3.mb-4 {
+    margin-bottom: 18px !important;
+}
+
+.admin-layout .discount-page .row.g-3.mb-4 .card {
+    height: 100%;
+
+    border:
+        1px solid
+        var(--theme-border) !important;
+
+    border-radius: 13px !important;
+
+    background:
+        var(--theme-surface);
+
+    box-shadow:
+        none !important;
+}
+
+.admin-layout .discount-page .row.g-3.mb-4 .card-body {
+    padding: 15px;
+}
+
+.admin-layout .discount-page .row.g-3.mb-4 small {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color:
+        var(--theme-text-secondary) !important;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    line-height: 1.3;
+}
+
+.admin-layout .discount-page .row.g-3.mb-4 h3 {
+    margin: 0;
+
+    color:
+        var(--theme-text);
+
+    font-size: 24px;
+    font-weight: 800;
+
+    line-height: 1.1;
+}
+
+.admin-layout .discount-page .row.g-3.mb-4 h3.text-success {
+    color:
+        #059669 !important;
+}
+
+.admin-layout .discount-page .row.g-3.mb-4 h3.text-danger {
+    color:
+        #dc2626 !important;
+}
+
+
+/* =========================================================
+   TABLE WRAPPER
+========================================================= */
+
+.admin-layout .discount-page .table-responsive {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    margin: 0;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    -webkit-overflow-scrolling: touch;
+
+    scrollbar-width: thin;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.admin-layout .discount-page table {
+    width: 100%;
+    min-width: 1050px;
+
+    margin: 0;
+
+    table-layout: auto;
+
+    color:
+        var(--theme-text);
+
+    border-color:
+        var(--theme-border);
+}
+
+.admin-layout .discount-page .table > :not(caption) > * > * {
+    padding:
+        11px
+        10px;
+
+    border-bottom-color:
+        var(--theme-border-soft);
+
+    vertical-align: middle;
+
+    color:
+        var(--theme-text-secondary);
+
+    font-size: 10px;
+
+    white-space: nowrap;
+}
+
+.admin-layout .discount-page .table thead th {
+    padding:
+        11px
+        10px;
+
+    background:
+        var(--theme-surface-soft);
+
+    color:
+        var(--theme-text-secondary);
+
+    font-size: 9px;
+    font-weight: 800;
+
+    text-transform: uppercase;
+    letter-spacing: 0.25px;
+
+    white-space: nowrap;
+
+    border-bottom:
+        1px solid
+        var(--theme-border);
+}
+
+.admin-layout .discount-page .table tbody tr {
+    background:
+        var(--theme-surface);
+
+    transition:
+        background 0.18s ease;
+}
+
+.admin-layout .discount-page .table tbody tr:hover {
+    background:
+        var(--theme-surface-soft);
+}
+
+.admin-layout .discount-page .table tbody td {
+    color:
+        var(--theme-text-secondary);
+}
+
+.admin-layout .discount-page .table tbody td:first-child {
+    color:
+        var(--theme-text-muted);
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   TABLE NAME
+========================================================= */
+
+.admin-layout .discount-page .table .fw-semibold {
+    max-width: 190px;
+
+    overflow: hidden;
+
+    color:
+        var(--theme-text);
+
+    font-size: 10px;
+    font-weight: 750;
+
+    line-height: 1.35;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.admin-layout .discount-page .table small {
+    color:
+        var(--theme-text-muted) !important;
+
+    font-size: 8px;
+}
+
+
+/* =========================================================
+   TABLE BADGES
+========================================================= */
+
+.admin-layout .discount-page .table .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 22px;
+
+    max-width: 170px;
+
+    padding:
+        0
+        8px;
+
+    overflow: hidden;
+
+    border-radius: 999px;
+
+    font-size: 8px;
+    font-weight: 750;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.admin-layout .discount-page .table .bg-dark {
+    background:
+        #1e293b !important;
+
+    color:
+        #fff !important;
+}
+
+.admin-layout .discount-page .table .bg-primary {
+    background:
+        var(--theme-primary) !important;
+
+    color:
+        #fff !important;
+}
+
+.admin-layout .discount-page .table .bg-info {
+    background:
+        #dbeafe !important;
+
+    color:
+        #1d4ed8 !important;
+}
+
+.admin-layout .discount-page .table .bg-success {
+    background:
+        #dcfce7 !important;
+
+    color:
+        #166534 !important;
+}
+
+.admin-layout .discount-page .table .bg-warning {
+    background:
+        #fef3c7 !important;
+
+    color:
+        #92400e !important;
+}
+
+.admin-layout .discount-page .table .bg-danger {
+    background:
+        #fee2e2 !important;
+
+    color:
+        #b91c1c !important;
+}
+
+.admin-layout .discount-page .table .bg-secondary {
+    background:
+        #e2e8f0 !important;
+
+    color:
+        #475569 !important;
+}
+
+
+/* =========================================================
+   TABLE PRICE
+========================================================= */
+
+.admin-layout .discount-page .table strong {
+    color:
+        var(--theme-text);
+
+    font-size: 10px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   QUOTA
+========================================================= */
+
+.admin-layout .discount-page .table td:nth-child(7) {
+    min-width: 95px;
+}
+
+.admin-layout .discount-page .table td:nth-child(7) strong {
+    color:
+        var(--theme-primary);
+}
+
+.admin-layout .discount-page .table td:nth-child(7) small {
+    display: block;
+
+    margin-top: 2px;
+}
+
+
+/* =========================================================
+   PERIOD
+========================================================= */
+
+.admin-layout .discount-page .table td:nth-child(8) {
+    min-width: 90px;
+}
+
+.admin-layout .discount-page .table td:nth-child(8) div {
+    line-height: 1.35;
+}
+
+.admin-layout .discount-page .table td:nth-child(8) small {
+    display: block;
+
+    margin: 1px 0;
+}
+
+
+/* =========================================================
+   ACTION
+========================================================= */
+
+.admin-layout .discount-page .table td:last-child {
+    min-width: 90px;
+
+    white-space: nowrap;
+}
+
+.admin-layout .discount-page .table td:last-child .btn {
+    width: 32px;
+    height: 32px;
+
+    padding: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    font-size: 10px;
+}
+
+.admin-layout .discount-page .table td:last-child .btn-warning {
+    border-color:
+        #f59e0b;
+
+    background:
+        #f59e0b;
+
+    color:
+        #fff;
+}
+
+.admin-layout .discount-page .table td:last-child .btn-danger {
+    border-color:
+        #dc2626;
+
+    background:
+        #dc2626;
+
+    color:
+        #fff;
+}
+
+
+/* =========================================================
+   EMPTY TABLE
+========================================================= */
+
+.admin-layout .discount-page .table tbody td.text-center {
+    height: 220px;
+
+    padding:
+        35px
+        20px;
+
+    white-space: normal;
+}
+
+.admin-layout .discount-page .table tbody td.text-center i {
+    display: block;
+
+    margin-bottom: 10px !important;
+
+    color:
+        var(--theme-text-muted) !important;
+
+    font-size: 28px;
+}
+
+.admin-layout .discount-page .table tbody td.text-center .text-muted {
+    color:
+        var(--theme-text-secondary) !important;
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   MODAL - SHARED
+========================================================= */
+
+.admin-layout .discount-page ~ .modal,
+.admin-layout + .modal {
+    color:
+        var(--theme-text);
+}
+
+.modal .modal-content {
+    background:
+        var(--theme-surface);
+
+    color:
+        var(--theme-text);
+
+    border:
+        1px solid
+        var(--theme-border) !important;
+}
+
+.modal .modal-header {
+    border-bottom:
+        1px solid
+        rgba(255, 255, 255, 0.12);
+}
+
+.modal .modal-header.bg-primary {
+    background:
+        var(--theme-primary) !important;
+}
+
+.modal .modal-header.bg-warning {
+    background:
+        #f59e0b !important;
+
+    color:
+        #111827;
+}
+
+.modal .modal-title {
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.modal .modal-title i {
+    font-size: 13px;
+}
+
+.modal .modal-body {
+    color:
+        var(--theme-text);
+}
+
+.modal .modal-footer {
+    border-top:
+        1px solid
+        var(--theme-border-soft);
+
+    background:
+        var(--theme-surface-soft);
+}
+
+
+/* =========================================================
+   MODAL FORM
+========================================================= */
+
+.modal .modal-body h6 {
+    margin-bottom: 13px !important;
+
+    color:
+        var(--theme-primary) !important;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    line-height: 1.3;
+}
+
+.modal .modal-body hr {
+    margin:
+        18px
+        0;
+
+    border-color:
+        var(--theme-border);
+    opacity: 1;
+}
+
+.modal .modal-body .form-label,
+.modal .modal-body label {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color:
+        var(--theme-text-secondary);
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.modal .modal-body .form-control,
+.modal .modal-body .form-select {
+    min-height: 40px;
+
+    border:
+        1px solid
+        var(--theme-border);
+
+    border-radius: 8px;
+
+    background:
+        var(--theme-input-bg);
+
+    color:
+        var(--theme-text);
+
+    font-size: 11px;
+
+    box-shadow: none;
+}
+
+.modal .modal-body .form-control::placeholder {
+    color:
+        var(--theme-text-muted);
+}
+
+.modal .modal-body .form-control:hover,
+.modal .modal-body .form-select:hover {
+    border-color:
+        color-mix(
+            in srgb,
+            var(--theme-primary) 40%,
+            var(--theme-border)
+        );
+}
+
+.modal .modal-body .form-control:focus,
+.modal .modal-body .form-select:focus {
+    border-color:
+        var(--theme-primary);
+
+    background:
+        var(--theme-input-bg);
+
+    color:
+        var(--theme-text);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(37, 99, 235, 0.10);
+}
+
+
+/* =========================================================
+   MODAL TEXT
+========================================================= */
+
+.modal .modal-body .text-muted,
+.modal .modal-body small.text-muted {
+    color:
+        var(--theme-text-muted) !important;
+
+    font-size: 9px;
+    line-height: 1.4;
+}
+
+
+/* =========================================================
+   FORM SWITCH
+========================================================= */
+
+.modal .modal-body .form-switch {
+    padding-left: 2.7em;
+}
+
+.modal .modal-body .form-switch .form-check-input {
+    width: 2.1em;
+    height: 1.1em;
+
+    margin-left: -2.7em;
+
+    border-color:
+        var(--theme-border);
+
+    background-color:
+        var(--theme-border);
+
+    box-shadow: none;
+}
+
+.modal .modal-body .form-switch .form-check-input:checked {
+    border-color:
+        var(--theme-primary);
+
+    background-color:
+        var(--theme-primary);
+}
+
+.modal .modal-body .form-switch .form-check-label {
+    margin-bottom: 0;
+
+    color:
+        var(--theme-text-secondary);
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   MODAL BUTTONS
+========================================================= */
+
+.modal .modal-footer .btn {
+    min-height: 38px;
+
+    padding:
+        7px
+        13px;
+
+    border-radius: 8px;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.modal .modal-footer .btn-primary {
+    border-color:
+        var(--theme-primary);
+
+    background:
+        var(--theme-primary);
+
+    color:
+        #fff;
+}
+
+.modal .modal-footer .btn-warning {
+    border-color:
+        #f59e0b;
+
+    background:
+        #f59e0b;
+
+    color:
+        #fff;
+}
+
+.modal .modal-footer .btn-secondary {
+    border-color:
+        var(--theme-border);
+
+    background:
+        var(--theme-surface);
+
+    color:
+        var(--theme-text-secondary);
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+[data-theme="dark"] .admin-layout .discount-page .alert-success {
+    background:
+        rgba(16, 185, 129, 0.12);
+
+    border-color:
+        rgba(52, 211, 153, 0.28);
+
+    color:
+        #6ee7b7;
+}
+
+[data-theme="dark"] .admin-layout .discount-page .table .bg-dark {
+    background:
+        #334155 !important;
+}
+
+[data-theme="dark"] .admin-layout .discount-page .table .bg-info {
+    background:
+        rgba(59, 130, 246, 0.14) !important;
+
+    color:
+        #93c5fd !important;
+}
+
+[data-theme="dark"] .admin-layout .discount-page .table .bg-success {
+    background:
+        rgba(16, 185, 129, 0.14) !important;
+
+    color:
+        #6ee7b7 !important;
+}
+
+[data-theme="dark"] .admin-layout .discount-page .table .bg-warning {
+    background:
+        rgba(245, 158, 11, 0.14) !important;
+
+    color:
+        #fcd34d !important;
+}
+
+[data-theme="dark"] .admin-layout .discount-page .table .bg-danger {
+    background:
+        rgba(220, 38, 38, 0.14) !important;
+
+    color:
+        #fca5a5 !important;
+}
+
+[data-theme="dark"] .admin-layout .discount-page .table .bg-secondary {
+    background:
+        rgba(100, 116, 139, 0.18) !important;
+
+    color:
+        #cbd5e1 !important;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 992px) {
+
+    .admin-layout .discount-page {
+        padding:
+            18px
+            0
+            40px;
+    }
+
+    .admin-layout .discount-page > .container-fluid {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .admin-layout .discount-page > .container-fluid > .card > .card-header {
+        padding:
+            13px
+            14px;
+    }
+
+    .admin-layout .discount-page > .container-fluid > .card > .card-body {
+        padding: 14px;
+    }
+
+    .admin-layout .discount-page .card-header h5 {
+        font-size: 13px;
+    }
+
+    .admin-layout .discount-page .card-header > .btn-primary {
+        min-height: 36px;
+
+        padding:
+            7px
+            11px;
+
+        font-size: 9px;
+    }
+
+    .admin-layout .discount-page .row.g-3.mb-4 .card-body {
+        padding: 13px;
+    }
+
+    .admin-layout .discount-page .row.g-3.mb-4 h3 {
+        font-size: 21px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 767px) {
+
+    .admin-layout .discount-page {
+        padding:
+            14px
+            0
+            30px;
+
+        overflow-x: hidden;
+    }
+
+    .admin-layout .discount-page > .container-fluid {
+        padding-left: 9px;
+        padding-right: 9px;
+    }
+
+
+    /* MAIN CARD */
+
+    .admin-layout .discount-page > .container-fluid > .card {
+        border-radius: 13px;
+    }
+
+    .admin-layout .discount-page > .container-fluid > .card > .card-header {
+        padding:
+            11px
+            12px;
+
+        flex-wrap: wrap;
+    }
+
+    .admin-layout .discount-page > .container-fluid > .card > .card-body {
+        padding: 11px;
+    }
+
+
+    /* HEADER */
+
+    .admin-layout .discount-page .card-header h5 {
+        flex: 1 1 auto;
+        min-width: 0;
+
+        font-size: 11px;
+    }
+
+    .admin-layout .discount-page .card-header h5 i {
+        font-size: 10px;
+    }
+
+    .admin-layout .discount-page .card-header > .btn-primary {
+        min-height: 34px;
+
+        padding:
+            6px
+            9px;
+
+        border-radius: 8px;
+
+        font-size: 8px;
+    }
+
+
+    /* ALERT */
+
+    .admin-layout .discount-page .alert-success {
+        margin-bottom: 12px;
+
+        padding:
+            8px
+            10px;
+
+        border-radius: 8px;
+
+        font-size: 9px;
+    }
+
+
+    /* STATS */
+
+    .admin-layout .discount-page .row.g-3.mb-4 {
+        --bs-gutter-x: 7px;
+        --bs-gutter-y: 7px;
+
+        margin-bottom: 12px !important;
+    }
+
+    .admin-layout .discount-page .row.g-3.mb-4 .card {
+        border-radius: 10px !important;
+    }
+
+    .admin-layout .discount-page .row.g-3.mb-4 .card-body {
+        padding: 10px;
+    }
+
+    .admin-layout .discount-page .row.g-3.mb-4 small {
+        margin-bottom: 4px;
+
+        font-size: 8px;
+    }
+
+    .admin-layout .discount-page .row.g-3.mb-4 h3 {
+        font-size: 18px;
+    }
+
+
+    /* TABLE */
+
+    .admin-layout .discount-page .table-responsive {
+        margin-right: -1px;
+        padding-bottom: 3px;
+    }
+
+    .admin-layout .discount-page table {
+        min-width: 1000px;
+    }
+
+    .admin-layout .discount-page .table > :not(caption) > * > * {
+        padding:
+            9px
+            8px;
+
+        font-size: 9px;
+    }
+
+    .admin-layout .discount-page .table thead th {
+        padding:
+            9px
+            8px;
+
+        font-size: 8px;
+    }
+
+    .admin-layout .discount-page .table .fw-semibold {
+        max-width: 160px;
+
+        font-size: 9px;
+    }
+
+    .admin-layout .discount-page .table small {
+        font-size: 7px;
+    }
+
+    .admin-layout .discount-page .table .badge {
+        min-height: 19px;
+
+        max-width: 145px;
+
+        padding:
+            0
+            6px;
+
+        font-size: 7px;
+    }
+
+    .admin-layout .discount-page .table strong {
+        font-size: 9px;
+    }
+
+    .admin-layout .discount-page .table td:last-child .btn {
+        width: 29px;
+        height: 29px;
+
+        border-radius: 7px;
+
+        font-size: 8px;
+    }
+
+
+    /* MODAL */
+
+    .modal .modal-dialog {
+        width: auto;
+        max-width: none;
+
+        margin:
+            10px;
+    }
+
+    .modal .modal-content {
+        width: 100%;
+        max-width: 100%;
+
+        border-radius: 14px !important;
+    }
+
+    .modal .modal-header {
+        padding:
+            11px
+            12px;
+    }
+
+    .modal .modal-title {
+        font-size: 12px;
+    }
+
+    .modal .modal-title i {
+        font-size: 10px;
+    }
+
+    .modal .modal-body {
+        max-height: calc(100vh - 145px);
+
+        padding:
+            14px
+            12px;
+
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .modal .modal-body h6 {
+        margin-bottom: 10px !important;
+
+        font-size: 10px;
+    }
+
+    .modal .modal-body hr {
+        margin:
+            14px
+            0;
+    }
+
+    .modal .modal-body .form-label,
+    .modal .modal-body label {
+        margin-bottom: 5px;
+
+        font-size: 9px;
+    }
+
+    .modal .modal-body .form-control,
+    .modal .modal-body .form-select {
+        min-height: 36px;
+
+        padding:
+            7px
+            9px;
+
+        border-radius: 7px;
+
+        font-size: 9px;
+    }
+
+    .modal .modal-body .row {
+        --bs-gutter-x: 8px;
+        --bs-gutter-y: 8px;
+    }
+
+    .modal .modal-body .text-muted,
+    .modal .modal-body small.text-muted {
+        font-size: 8px;
+    }
+
+    .modal .modal-body .form-switch {
+        margin-top: 14px !important;
+    }
+
+    .modal .modal-body .form-switch .form-check-label {
+        font-size: 9px;
+    }
+
+    .modal .modal-footer {
+        padding:
+            9px
+            12px;
+    }
+
+    .modal .modal-footer .btn {
+        min-height: 35px;
+
+        padding:
+            6px
+            11px;
+
+        border-radius: 7px;
+
+        font-size: 9px;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .admin-layout .discount-page {
+        padding-top: 10px;
+        padding-bottom: 24px;
+    }
+
+    .admin-layout .discount-page > .container-fluid {
+        padding-left: 7px;
+        padding-right: 7px;
+    }
+
+
+    /* HEADER */
+
+    .admin-layout .discount-page > .container-fluid > .card > .card-header {
+        padding:
+            9px
+            10px;
+
+        gap: 8px;
+    }
+
+    .admin-layout .discount-page .card-header h5 {
+        font-size: 10px;
+    }
+
+    .admin-layout .discount-page .card-header > .btn-primary {
+        min-height: 31px;
+
+        padding:
+            5px
+            8px;
+
+        font-size: 7px;
+    }
+
+
+    /* BODY */
+
+    .admin-layout .discount-page > .container-fluid > .card > .card-body {
+        padding: 9px;
+    }
+
+
+    /* ALERT */
+
+    .admin-layout .discount-page .alert-success {
+        padding:
+            7px
+            8px;
+
+        font-size: 8px;
+    }
+
+
+    /* STATS */
+
+    .admin-layout .discount-page .row.g-3.mb-4 {
+        --bs-gutter-x: 5px;
+        --bs-gutter-y: 5px;
+    }
+
+    .admin-layout .discount-page .row.g-3.mb-4 .card {
+        border-radius: 8px !important;
+    }
+
+    .admin-layout .discount-page .row.g-3.mb-4 .card-body {
+        padding: 8px;
+    }
+
+    .admin-layout .discount-page .row.g-3.mb-4 small {
+        font-size: 7px;
+    }
+
+    .admin-layout .discount-page .row.g-3.mb-4 h3 {
+        font-size: 16px;
+    }
+
+
+    /* TABLE */
+
+    .admin-layout .discount-page table {
+        min-width: 960px;
+    }
+
+    .admin-layout .discount-page .table > :not(caption) > * > * {
+        padding:
+            8px
+            7px;
+
+        font-size: 8px;
+    }
+
+    .admin-layout .discount-page .table thead th {
+        padding:
+            8px
+            7px;
+
+        font-size: 7px;
+    }
+
+    .admin-layout .discount-page .table .fw-semibold {
+        max-width: 135px;
+
+        font-size: 8px;
+    }
+
+    .admin-layout .discount-page .table small {
+        font-size: 6.5px;
+    }
+
+    .admin-layout .discount-page .table .badge {
+        min-height: 17px;
+
+        max-width: 120px;
+
+        padding:
+            0
+            5px;
+
+        font-size: 6.5px;
+    }
+
+    .admin-layout .discount-page .table strong {
+        font-size: 8px;
+    }
+
+    .admin-layout .discount-page .table td:last-child .btn {
+        width: 27px;
+        height: 27px;
+
+        font-size: 7px;
+    }
+
+
+    /* MODAL */
+
+    .modal .modal-dialog {
+        margin:
+            7px;
+    }
+
+    .modal .modal-content {
+        border-radius: 12px !important;
+    }
+
+    .modal .modal-header {
+        padding:
+            9px
+            10px;
+    }
+
+    .modal .modal-title {
+        font-size: 10px;
+    }
+
+    .modal .modal-body {
+        max-height: calc(100vh - 125px);
+
+        padding:
+            12px
+            10px;
+    }
+
+    .modal .modal-body h6 {
+        margin-bottom: 8px !important;
+
+        font-size: 9px;
+    }
+
+    .modal .modal-body hr {
+        margin:
+            12px
+            0;
+    }
+
+    .modal .modal-body .form-label,
+    .modal .modal-body label {
+        font-size: 8px;
+    }
+
+    .modal .modal-body .form-control,
+    .modal .modal-body .form-select {
+        min-height: 34px;
+
+        padding:
+            6px
+            8px;
+
+        font-size: 8px;
+    }
+
+    .modal .modal-body .text-muted,
+    .modal .modal-body small.text-muted {
+        font-size: 7px;
+    }
+
+    .modal .modal-footer {
+        padding:
+            8px
+            10px;
+    }
+
+    .modal .modal-footer .btn {
+        min-height: 33px;
+
+        padding:
+            5px
+            9px;
+
+        font-size: 8px;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONE
+========================================================= */
+
+@media (max-width: 360px) {
+
+    .admin-layout .discount-page {
+        padding-top: 8px;
+    }
+
+    .admin-layout .discount-page > .container-fluid {
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+
+    /* HEADER */
+
+    .admin-layout .discount-page > .container-fluid > .card > .card-header {
+        padding:
+            8px;
+    }
+
+    .admin-layout .discount-page .card-header h5 {
+        font-size: 9px;
+    }
+
+    .admin-layout .discount-page .card-header > .btn-primary {
+        min-height: 29px;
+
+        padding:
+            4px
+            7px;
+
+        font-size: 6.5px;
+    }
+
+
+    /* BODY */
+
+    .admin-layout .discount-page > .container-fluid > .card > .card-body {
+        padding: 7px;
+    }
+
+
+    /* STATS */
+
+    .admin-layout .discount-page .row.g-3.mb-4 {
+        --bs-gutter-x: 4px;
+        --bs-gutter-y: 4px;
+    }
+
+    .admin-layout .discount-page .row.g-3.mb-4 .card-body {
+        padding: 7px;
+    }
+
+    .admin-layout .discount-page .row.g-3.mb-4 small {
+        font-size: 6.5px;
+    }
+
+    .admin-layout .discount-page .row.g-3.mb-4 h3 {
+        font-size: 14px;
+    }
+
+
+    /* TABLE */
+
+    .admin-layout .discount-page table {
+        min-width: 920px;
+    }
+
+
+    /* MODAL */
+
+    .modal .modal-dialog {
+        margin:
+            5px;
+    }
+
+    .modal .modal-body {
+        max-height: calc(100vh - 115px);
+
+        padding:
+            10px
+            8px;
+    }
+
+    .modal .modal-header {
+        padding:
+            8px;
+    }
+
+    .modal .modal-title {
+        font-size: 9px;
+    }
+
+    .modal .modal-footer {
+        padding: 7px 8px;
+    }
+}

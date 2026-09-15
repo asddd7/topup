@@ -6,6 +6,7 @@
 
 @section('content')
 
+<div class="discount-page">
 
 <div class="container-fluid">
 
@@ -531,8 +532,7 @@ Action
 
 
 </div>
-
-
+</div>
 
 @include('admin.discount.create')
 
