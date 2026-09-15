@@ -1,74 +1,146 @@
 /* =========================================================
    TOPUP FOOTER
-   ========================================================= */
+========================================================= */
 
 .topup-footer {
-    background: #111827;
-    color: #ffffff;
-    margin-top: 60px;
+    position: relative;
+
     width: 100%;
+
+    margin-top: 56px;
+
+    background:
+        radial-gradient(
+            circle at 12% 0%,
+            rgba(37, 99, 235, 0.18),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 88% 25%,
+            rgba(59, 130, 246, 0.10),
+            transparent 28%
+        ),
+        linear-gradient(
+            180deg,
+            #0f172a 0%,
+            #111c34 100%
+        );
+
+    color: #ffffff;
+
+    border-top:
+        1px solid
+        rgba(255, 255, 255, 0.06);
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   TOP ACCENT
+========================================================= */
+
+.topup-footer::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 3px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #2563eb,
+            #3b82f6,
+            #60a5fa,
+            #2563eb
+        );
 }
 
 
 /* =========================================================
    CONTAINER
-   ========================================================= */
+========================================================= */
 
 .topup-footer-container {
+    position: relative;
+
+    width: 100%;
     max-width: 1280px;
+
     margin: 0 auto;
-    padding: 64px 32px 28px;
+
+    padding:
+        48px
+        32px
+        24px;
 }
 
 
 /* =========================================================
    FOOTER TOP
-   ========================================================= */
+========================================================= */
 
 .topup-footer-top {
     display: flex;
+
     align-items: center;
+
     justify-content: space-between;
+
     gap: 30px;
 }
 
 
 /* =========================================================
    BRAND
-   ========================================================= */
+========================================================= */
 
 .topup-footer-brand {
     display: flex;
+
     align-items: center;
 }
 
 
 .topup-footer-logo {
-    max-height: 45px;
-    max-width: 180px;
+    display: block;
+
+    max-width: 170px;
+    max-height: 46px;
+
     object-fit: contain;
 }
 
 
 .topup-footer-logo-text {
-    font-size: 25px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
     color: #ffffff;
+
+    font-size: 24px;
+    font-weight: 800;
+
+    letter-spacing: -0.5px;
 }
 
 
 /* =========================================================
    SOCIAL MEDIA
-   ========================================================= */
+========================================================= */
 
 .topup-footer-social {
     display: flex;
+
     align-items: center;
     justify-content: flex-end;
-    gap: 10px;
+
+    gap: 8px;
 
     list-style: none;
+
     padding: 0;
     margin: 0;
 }
@@ -80,43 +152,62 @@
 
 
 .topup-footer-social a {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
-    border-radius: 10px;
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.10);
 
-    color: #d1d5db;
-    background: rgba(255, 255, 255, 0.06);
+    border-radius: 11px;
+
+    background:
+        rgba(255, 255, 255, 0.055);
+
+    color: #cbd5e1;
 
     text-decoration: none;
 
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+
     transition:
-        color 0.25s ease,
-        background 0.25s ease,
-        transform 0.25s ease;
+        color 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 
 .topup-footer-social a:hover {
+    background: #2563eb;
+
+    border-color: #2563eb;
+
     color: #ffffff;
-    background: #0d9488;
 
     transform: translateY(-3px);
+
+    box-shadow:
+        0 8px 18px
+        rgba(37, 99, 235, 0.25);
 }
 
 
 .topup-footer-social i {
-    font-size: 17px;
+    font-size: 15px;
 }
 
 
 /* =========================================================
-   DIVIDER + LINKS
-   ========================================================= */
+   FOOTER LINKS
+========================================================= */
 
 .topup-footer-links {
     display: grid;
@@ -124,64 +215,97 @@
     grid-template-columns:
         repeat(4, minmax(0, 1fr));
 
-    gap: 40px;
+    gap: 38px;
 
-    margin-top: 50px;
-    padding-top: 45px;
+    margin-top: 42px;
 
-    border-top: 1px solid rgba(255, 255, 255, 0.10);
+    padding-top: 34px;
+
+    border-top:
+        1px solid
+        rgba(255, 255, 255, 0.08);
 }
 
 
 /* =========================================================
    COLUMN
-   ========================================================= */
+========================================================= */
 
 .topup-footer-column h5 {
     margin: 0;
 
-    font-size: 15px;
-    font-weight: 700;
-
     color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+
+.topup-footer-column h5::after {
+    content: "";
+
+    display: block;
+
+    width: 24px;
+    height: 2px;
+
+    margin-top: 8px;
+
+    border-radius: 999px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #2563eb,
+            #60a5fa
+        );
 }
 
 
 .topup-footer-column ul {
     list-style: none;
 
-    margin: 20px 0 0;
+    margin:
+        16px
+        0
+        0;
+
     padding: 0;
 }
 
 
 .topup-footer-column li {
-    margin-bottom: 13px;
+    margin-bottom: 10px;
 }
 
 
 .topup-footer-column a {
-    color: #9ca3af;
+    display: inline-flex;
+
+    align-items: center;
+
+    color: #94a3b8;
 
     text-decoration: none;
 
-    font-size: 14px;
+    font-size: 13px;
 
     transition:
         color 0.2s ease,
-        padding-left 0.2s ease;
+        transform 0.2s ease;
 }
 
 
 .topup-footer-column a:hover {
     color: #ffffff;
-    padding-left: 4px;
+
+    transform: translateX(4px);
 }
 
 
 /* =========================================================
    FOOTER BOTTOM
-   ========================================================= */
+========================================================= */
 
 .topup-footer-bottom {
     display: flex;
@@ -191,28 +315,34 @@
 
     gap: 20px;
 
-    margin-top: 45px;
-    padding-top: 25px;
+    margin-top: 34px;
 
-    border-top: 1px solid rgba(255, 255, 255, 0.10);
+    padding-top: 20px;
+
+    border-top:
+        1px solid
+        rgba(255, 255, 255, 0.08);
 }
 
 
 .topup-footer-bottom p {
     margin: 0;
 
-    color: #6b7280;
+    color: #64748b;
 
-    font-size: 12px;
+    font-size: 11px;
+
+    line-height: 1.5;
 }
 
 
 /* =========================================================
    WHATSAPP CONTACT
-   ========================================================= */
+========================================================= */
 
 .topup-footer-contact {
     display: flex;
+
     align-items: center;
 }
 
@@ -221,26 +351,53 @@
     display: inline-flex;
 
     align-items: center;
+
     gap: 7px;
 
-    color: #9ca3af;
+    padding:
+        7px
+        11px;
 
-    font-size: 13px;
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.08);
+
+    border-radius: 9px;
+
+    background:
+        rgba(255, 255, 255, 0.035);
+
+    color: #94a3b8;
+
+    font-size: 12px;
 
     text-decoration: none;
 
-    transition: color 0.2s ease;
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
 }
 
 
 .topup-footer-contact a:hover {
-    color: #22c55e;
+    color: #ffffff;
+
+    background:
+        rgba(37, 99, 235, 0.14);
+
+    border-color:
+        rgba(59, 130, 246, 0.35);
+
+    transform: translateY(-1px);
 }
 
 
 .topup-footer-contact i {
-    font-size: 16px;
+    font-size: 15px;
 }
+
 
 /* =========================================================
    FOOTER NAVIGATION
@@ -248,8 +405,13 @@
 
 .topup-footer-nav {
     width: 100%;
-    background: rgba(255, 255, 255, 0.025);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+    background:
+        rgba(2, 6, 23, 0.30);
+
+    border-bottom:
+        1px solid
+        rgba(255, 255, 255, 0.06);
 }
 
 
@@ -258,16 +420,23 @@
 ========================================================= */
 
 .topup-footer-nav-container {
+    width: 100%;
+
     max-width: 1280px;
+
     margin: 0 auto;
 
-    padding: 0 32px;
+    padding:
+        0
+        32px;
 
     display: flex;
+
     align-items: center;
+
     justify-content: flex-start;
 
-    gap: 4px;
+    gap: 3px;
 }
 
 
@@ -279,51 +448,51 @@
     position: relative;
 
     display: inline-flex;
+
     align-items: center;
     justify-content: center;
 
-    gap: 8px;
+    gap: 7px;
 
-    min-height: 56px;
+    min-height: 52px;
 
-    padding: 0 22px;
+    padding:
+        0
+        19px;
 
     color: #64748b;
 
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 650;
 
     text-decoration: none;
 
     transition:
-        color .2s ease,
-        background .2s ease;
+        color 0.2s ease,
+        background 0.2s ease;
 }
 
-
-/* =========================================================
-   ICON
-========================================================= */
-
-.topup-footer-nav-item i {
-    font-size: 14px;
-
-    transition:
-        transform .2s ease,
-        color .2s ease;
-}
-
-
-/* =========================================================
-   HOVER
-========================================================= */
 
 .topup-footer-nav-item:hover {
-    color: #0d9488;
+    color: #93c5fd;
+
+    background:
+        rgba(255, 255, 255, 0.025);
+}
+
+
+.topup-footer-nav-item i {
+    font-size: 13px;
+
+    transition:
+        transform 0.2s ease,
+        color 0.2s ease;
 }
 
 
 .topup-footer-nav-item:hover i {
+    color: #60a5fa;
+
     transform: translateY(-1px);
 }
 
@@ -333,130 +502,171 @@
 ========================================================= */
 
 .topup-footer-nav-item.active {
-    color: #0d9488;
+    color: #60a5fa;
 }
 
-
-/* ACTIVE INDICATOR */
 
 .topup-footer-nav-item.active::after {
     content: "";
 
     position: absolute;
 
-    left: 18px;
-    right: 18px;
+    left: 16px;
+    right: 16px;
+
     bottom: 0;
 
-    height: 3px;
+    height: 2px;
 
-    border-radius: 999px 999px 0 0;
+    border-radius:
+        999px
+        999px
+        0
+        0;
 
-    background: #0d9488;
+    background:
+        linear-gradient(
+            90deg,
+            #2563eb,
+            #60a5fa
+        );
+
+    box-shadow:
+        0 -2px 10px
+        rgba(37, 99, 235, 0.25);
 }
 
+
 /* =========================================================
-   RESPONSIVE - TABLET
+   TABLET
 ========================================================= */
 
 @media (max-width: 991px) {
 
     .topup-footer-container {
-        padding: 45px 24px 24px;
+        padding:
+            42px
+            24px
+            22px;
     }
 
+
     .topup-footer-links {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 30px 40px;
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap:
+            28px
+            36px;
+    }
+
+
+    .topup-footer-nav-container {
+        padding:
+            0
+            24px;
     }
 
 }
 
 
 /* =========================================================
-   RESPONSIVE - MOBILE
+   MOBILE
 ========================================================= */
 
 @media (max-width: 767px) {
 
     .topup-footer {
-        margin-top: 35px;
+        margin-top: 34px;
     }
+
 
     .topup-footer-container {
-        padding: 30px 18px 18px;
+        padding:
+            32px
+            17px
+            17px;
     }
 
 
-    /* =========================
-       FOOTER TOP
-    ========================= */
+    /* -----------------------------------------------------
+       TOP
+    ----------------------------------------------------- */
 
     .topup-footer-top {
-        display: flex;
-        flex-direction: row;
-
         align-items: center;
-        justify-content: space-between;
 
-        gap: 15px;
+        gap: 12px;
     }
 
 
     .topup-footer-logo {
-        max-width: 130px;
-        max-height: 38px;
+        max-width: 125px;
+        max-height: 35px;
     }
 
 
     .topup-footer-logo-text {
-        font-size: 20px;
+        font-size: 19px;
     }
 
 
-    /* =========================
+    /* -----------------------------------------------------
        SOCIAL
-    ========================= */
+    ----------------------------------------------------- */
 
     .topup-footer-social {
-        gap: 6px;
+        gap: 5px;
     }
+
 
     .topup-footer-social a {
-        width: 34px;
-        height: 34px;
+        width: 32px;
+        height: 32px;
 
-        border-radius: 8px;
+        border-radius: 9px;
     }
+
 
     .topup-footer-social i {
-        font-size: 14px;
+        font-size: 13px;
     }
 
 
-    /* =========================
-       FOOTER LINKS
-       2 KOLOM
-    ========================= */
+    /* -----------------------------------------------------
+       LINKS
+    ----------------------------------------------------- */
 
     .topup-footer-links {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
 
-        gap: 24px 30px;
+        gap:
+            24px
+            18px;
 
-        margin-top: 30px;
-        padding-top: 25px;
+        margin-top: 27px;
+
+        padding-top: 24px;
     }
 
 
     .topup-footer-column h5 {
-        font-size: 13px;
-        margin-bottom: 0;
+        font-size: 12px;
+    }
+
+
+    .topup-footer-column h5::after {
+        width: 18px;
+
+        height: 2px;
+
+        margin-top: 6px;
     }
 
 
     .topup-footer-column ul {
-        margin-top: 10px;
+        margin-top: 11px;
     }
 
 
@@ -466,33 +676,84 @@
 
 
     .topup-footer-column a {
-        font-size: 12px;
-    }
-
-
-    /* =========================
-       FOOTER BOTTOM
-    ========================= */
-
-    .topup-footer-bottom {
-        flex-direction: column;
-
-        align-items: flex-start;
-
-        gap: 10px;
-
-        margin-top: 28px;
-        padding-top: 18px;
-    }
-
-
-    .topup-footer-bottom p {
         font-size: 11px;
     }
 
 
+    /* -----------------------------------------------------
+       BOTTOM
+    ----------------------------------------------------- */
+
+    .topup-footer-bottom {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 10px;
+
+        margin-top: 25px;
+
+        padding-top: 17px;
+    }
+
+
+    .topup-footer-bottom p {
+        font-size: 10px;
+    }
+
+
     .topup-footer-contact a {
-        font-size: 12px;
+        padding:
+            6px
+            9px;
+
+        font-size: 11px;
+    }
+
+
+    .topup-footer-contact i {
+        font-size: 13px;
+    }
+
+
+    /* -----------------------------------------------------
+       FOOTER NAV
+    ----------------------------------------------------- */
+
+    .topup-footer-nav-container {
+        padding:
+            0
+            9px;
+
+        gap: 2px;
+    }
+
+
+    .topup-footer-nav-item {
+        flex: 1;
+
+        min-height: 48px;
+
+        padding:
+            0
+            7px;
+
+        gap: 5px;
+
+        font-size: 10px;
+    }
+
+
+    .topup-footer-nav-item i {
+        font-size: 11px;
+    }
+
+
+    .topup-footer-nav-item.active::after {
+        left: 10px;
+        right: 10px;
+
+        height: 2px;
     }
 
 }
@@ -504,114 +765,201 @@
 
 @media (max-width: 480px) {
 
-    .topup-footer-container {
-        padding: 25px 15px 16px;
+    .topup-footer {
+        margin-top: 28px;
     }
 
 
-    /* LOGO + SOCIAL */
+    .topup-footer-container {
+        padding:
+            27px
+            14px
+            15px;
+    }
+
+
+    /* -----------------------------------------------------
+       BRAND + SOCIAL
+    ----------------------------------------------------- */
 
     .topup-footer-logo {
-        max-width: 110px;
-        max-height: 32px;
+        max-width: 105px;
+        max-height: 30px;
     }
 
+
     .topup-footer-logo-text {
-        font-size: 18px;
+        font-size: 17px;
     }
 
 
     .topup-footer-social {
-        gap: 5px;
+        gap: 4px;
     }
+
 
     .topup-footer-social a {
-        width: 31px;
-        height: 31px;
-        border-radius: 7px;
+        width: 29px;
+        height: 29px;
+
+        border-radius: 8px;
     }
+
 
     .topup-footer-social i {
-        font-size: 13px;
+        font-size: 12px;
     }
 
 
-    /* LINK */
+    /* -----------------------------------------------------
+       LINKS
+    ----------------------------------------------------- */
 
     .topup-footer-links {
-        gap: 20px 25px;
+        gap:
+            19px
+            15px;
 
-        margin-top: 25px;
-        padding-top: 22px;
+        margin-top: 23px;
+
+        padding-top: 20px;
     }
 
 
     .topup-footer-column h5 {
-        font-size: 12px;
+        font-size: 11px;
     }
+
 
     .topup-footer-column ul {
         margin-top: 8px;
     }
 
+
     .topup-footer-column li {
         margin-bottom: 5px;
     }
 
+
     .topup-footer-column a {
-        font-size: 11px;
+        font-size: 10px;
     }
 
 
-    /* BOTTOM */
+    /* -----------------------------------------------------
+       BOTTOM
+    ----------------------------------------------------- */
 
     .topup-footer-bottom {
-        margin-top: 22px;
-        padding-top: 15px;
+        margin-top: 20px;
+
+        padding-top: 14px;
+
         gap: 7px;
     }
 
+
     .topup-footer-bottom p {
-        font-size: 10px;
+        font-size: 9px;
+
         line-height: 1.5;
     }
 
+
     .topup-footer-contact a {
-        font-size: 11px;
+        font-size: 10px;
+
+        padding:
+            5px
+            8px;
     }
 
 
-    .topup-footer-nav-container {
-        padding: 0 10px;
+    /* -----------------------------------------------------
+       NAV
+    ----------------------------------------------------- */
 
-        gap: 4px;
+    .topup-footer-nav-container {
+        padding:
+            0
+            6px;
     }
 
 
     .topup-footer-nav-item {
+        min-height: 46px;
 
-        flex: 1;
+        padding:
+            0
+            5px;
 
-        min-height: 52px;
-
-        padding: 0 10px;
-
-        font-size: 11px;
-
-        gap: 6px;
+        font-size: 9px;
     }
 
 
     .topup-footer-nav-item i {
-        font-size: 13px;
+        font-size: 10px;
     }
 
 
     .topup-footer-nav-item.active::after {
-
-        left: 12px;
-        right: 12px;
-
-        height: 2px;
+        left: 8px;
+        right: 8px;
     }
+
+}
+
+
+/* =========================================================
+   VERY SMALL PHONE
+========================================================= */
+
+@media (max-width: 360px) {
+
+    .topup-footer-container {
+        padding:
+            24px
+            11px
+            13px;
+    }
+
+
+    .topup-footer-logo {
+        max-width: 92px;
+        max-height: 27px;
+    }
+
+
+    .topup-footer-social a {
+        width: 27px;
+        height: 27px;
+    }
+
+
+    .topup-footer-social i {
+        font-size: 11px;
+    }
+
+
+    .topup-footer-links {
+        gap:
+            17px
+            12px;
+    }
+
+
+    .topup-footer-column h5 {
+        font-size: 10px;
+    }
+
+
+    .topup-footer-column a {
+        font-size: 9px;
+    }
+
+
+    .topup-footer-nav-item {
+        font-size: 8px;
+    }
+
 }
