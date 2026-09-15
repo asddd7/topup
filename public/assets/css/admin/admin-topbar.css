@@ -179,6 +179,70 @@
         var(--theme-primary);
 }
 
+/* =========================================================
+   ADMIN BACK TO DASHBOARD
+========================================================= */
+
+.admin-layout .topup-admin-back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    min-height: 36px;
+
+    padding:
+        0
+        11px;
+
+    flex-shrink: 0;
+
+    border:
+        1px solid
+        var(--theme-border);
+
+    border-radius: 9px;
+
+    background:
+        var(--theme-surface);
+
+    color:
+        var(--theme-text-secondary);
+
+    font-size: 10px;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.admin-layout .topup-admin-back:hover {
+    background:
+        var(--theme-primary-soft);
+
+    border-color:
+        var(--theme-primary);
+
+    color:
+        var(--theme-primary);
+
+    transform: translateX(-1px);
+
+    box-shadow:
+        0 5px 14px
+        rgba(37, 99, 235, 0.08);
+}
+
+.admin-layout .topup-admin-back i {
+    font-size: 9px;
+}
 
 /* =========================================================
    RIGHT
@@ -649,6 +713,24 @@
     .admin-layout .topup-user-dropdown {
         max-width: calc(100vw - 20px);
     }
+
+    .admin-layout .topup-admin-back {
+        min-height: 34px;
+
+        padding:
+            0
+            9px;
+
+        gap: 5px;
+
+        border-radius: 8px;
+
+        font-size: 9px;
+    }
+
+    .admin-layout .topup-admin-back i {
+        font-size: 8px;
+    }
 }
 
 
@@ -662,4 +744,22 @@
         max-width: 125px;
     }
 
+    .admin-layout .topup-admin-back {
+        width: 32px;
+        min-width: 32px;
+        height: 32px;
+        min-height: 32px;
+
+        padding: 0;
+
+        border-radius: 8px;
+    }
+
+    .admin-layout .topup-admin-back span {
+        display: none;
+    }
+
+    .admin-layout .topup-admin-back i {
+        font-size: 9px;
+    }
 }

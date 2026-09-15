@@ -1,0 +1,1735 @@
+/* =========================================================
+   ADMIN TOP SELLER
+========================================================= */
+
+.top-seller-page {
+    min-height: calc(100vh - 70px);
+
+    padding: 24px 0 50px;
+
+    background:
+        radial-gradient(
+            circle at 8% 0%,
+            rgba(37, 99, 235, 0.06),
+            transparent 28%
+        ),
+        var(--theme-bg);
+
+    color: var(--theme-text);
+}
+
+/* =========================================================
+   WIDTH / OVERFLOW CONTROL
+========================================================= */
+
+.top-seller-page,
+.top-seller-page *,
+.top-seller-page *::before,
+.top-seller-page *::after {
+    box-sizing: border-box;
+}
+
+.top-seller-page {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.top-seller-page > .container-fluid {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.top-seller-page .row {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.top-seller-page .row > [class*="col-"] {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.top-seller-filter-card,
+.top-seller-list-card,
+.top-seller-item-card {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.top-seller-list-card .card-header,
+.top-seller-list-card .card-body,
+.top-seller-list-card .card-footer,
+.top-seller-filter-card .card-body {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.top-seller-item-card .card-body {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.top-seller-item-card .d-flex {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.top-seller-item-content {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.top-seller-item-name,
+.top-seller-game-name,
+.top-seller-item-price {
+    max-width: 100%;
+    min-width: 0;
+}
+
+.top-seller-item-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow-wrap: anywhere;
+}
+
+.top-seller-game-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.top-seller-item-price {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.top-seller-item-card input {
+    flex-shrink: 0;
+}
+
+.top-seller-back-button,
+.top-seller-page .btn {
+    max-width: 100%;
+}
+
+.top-seller-page .form-control,
+.top-seller-page .form-select,
+.top-seller-page .input-group {
+    max-width: 100%;
+    min-width: 0;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.top-seller-header {
+    margin-bottom: 22px;
+}
+
+.top-seller-header-content {
+    min-width: 0;
+}
+
+.top-seller-title {
+    margin: 0 0 5px;
+
+    color: var(--theme-text);
+
+    font-size: 25px;
+    font-weight: 800;
+    line-height: 1.2;
+
+    letter-spacing: -0.4px;
+}
+
+.top-seller-description {
+    margin: 0;
+
+    color: var(--theme-text-secondary);
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+
+.top-seller-back-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    min-height: 36px;
+
+    padding: 0 13px;
+
+    border:
+        1px solid
+        var(--theme-border);
+
+    border-radius: 9px;
+
+    background: var(--theme-surface);
+
+    color: var(--theme-text-secondary);
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.top-seller-back-button:hover {
+    background: var(--theme-primary-soft);
+
+    border-color: var(--theme-primary);
+
+    color: var(--theme-primary);
+
+    transform: translateX(-2px);
+
+    box-shadow:
+        0 5px 14px
+        rgba(37, 99, 235, 0.08);
+}
+
+
+/* =========================================================
+   ALERT
+========================================================= */
+
+.top-seller-page .alert-success {
+    border:
+        1px solid
+        #a7f3d0;
+
+    background:
+        #ecfdf5;
+
+    color:
+        #047857;
+
+    border-radius: 11px;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   FILTER CARD
+========================================================= */
+
+.top-seller-filter-card {
+    margin-bottom: 18px;
+
+    border:
+        1px solid
+        var(--theme-border) !important;
+
+    border-radius: 16px !important;
+
+    background:
+        var(--theme-surface);
+
+    box-shadow:
+        var(--theme-shadow);
+}
+
+.top-seller-filter-card .card-body {
+    padding: 18px;
+}
+
+
+/* =========================================================
+   FILTER LABEL
+========================================================= */
+
+.top-seller-page .form-label {
+    color: var(--theme-text-secondary);
+
+    font-size: 11px;
+    font-weight: 700;
+
+    margin-bottom: 6px;
+}
+
+
+/* =========================================================
+   FILTER INPUT
+========================================================= */
+
+.top-seller-page .input-group-text {
+    border:
+        1px solid
+        var(--theme-border);
+
+    border-right: 0;
+
+    background:
+        var(--theme-input-bg);
+
+    color:
+        var(--theme-text-muted);
+}
+
+.top-seller-page .form-control,
+.top-seller-page .form-select {
+    min-height: 40px;
+
+    border:
+        1px solid
+        var(--theme-border);
+
+    background:
+        var(--theme-input-bg);
+
+    color:
+        var(--theme-text);
+
+    font-size: 12px;
+
+    box-shadow: none;
+}
+
+.top-seller-page .input-group .form-control {
+    border-left: 0;
+}
+
+.top-seller-page .form-control::placeholder {
+    color: var(--theme-text-muted);
+}
+
+.top-seller-page .form-control:hover,
+.top-seller-page .form-select:hover {
+    border-color:
+        color-mix(
+            in srgb,
+            var(--theme-primary) 40%,
+            var(--theme-border)
+        );
+}
+
+.top-seller-page .form-control:focus,
+.top-seller-page .form-select:focus {
+    border-color:
+        var(--theme-primary);
+
+    background:
+        var(--theme-input-bg);
+
+    color:
+        var(--theme-text);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(37, 99, 235, 0.10);
+}
+
+
+/* =========================================================
+   BUTTON
+========================================================= */
+
+.top-seller-page .btn-primary {
+    min-height: 40px;
+
+    border-color:
+        var(--theme-primary);
+
+    background:
+        var(--theme-primary);
+
+    color: #fff;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    box-shadow:
+        0 6px 15px
+        rgba(37, 99, 235, 0.16);
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.top-seller-page .btn-primary:hover {
+    border-color:
+        var(--theme-primary-hover);
+
+    background:
+        var(--theme-primary-hover);
+
+    color: #fff;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 8px 18px
+        rgba(37, 99, 235, 0.22);
+}
+
+.top-seller-page .btn-outline-secondary {
+    min-height: 40px;
+
+    border:
+        1px solid
+        var(--theme-border);
+
+    background:
+        var(--theme-surface);
+
+    color:
+        var(--theme-text-secondary);
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.top-seller-page .btn-outline-secondary:hover {
+    border-color:
+        var(--theme-primary);
+
+    background:
+        var(--theme-primary-soft);
+
+    color:
+        var(--theme-primary);
+}
+
+
+/* =========================================================
+   RESULT INFO
+========================================================= */
+
+.top-seller-result-info {
+    margin-bottom: 12px;
+
+    color:
+        var(--theme-text-secondary);
+
+    font-size: 11px;
+}
+
+.top-seller-result-info strong {
+    color:
+        var(--theme-text);
+
+    font-weight: 750;
+}
+
+.top-seller-filter-badge {
+    display: inline-flex;
+    align-items: center;
+
+    min-height: 26px;
+
+    padding: 0 9px;
+
+    border:
+        1px solid
+        var(--theme-border);
+
+    border-radius: 999px;
+
+    background:
+        var(--theme-surface-soft);
+
+    color:
+        var(--theme-text-secondary);
+
+    font-size: 9px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   ITEM LIST CARD
+========================================================= */
+
+.top-seller-list-card {
+    overflow: hidden;
+
+    border:
+        1px solid
+        var(--theme-border) !important;
+
+    border-radius: 17px !important;
+
+    background:
+        var(--theme-surface);
+
+    box-shadow:
+        var(--theme-shadow);
+}
+
+.top-seller-list-card .card-header,
+.top-seller-list-card .card-footer {
+    padding:
+        14px
+        18px;
+
+    background:
+        var(--theme-surface-soft) !important;
+
+    border-color:
+        var(--theme-border-soft);
+}
+
+.top-seller-list-card .card-header strong {
+    color:
+        var(--theme-text);
+
+    font-size: 13px;
+}
+
+.top-seller-list-card .card-body {
+    padding: 18px;
+}
+
+
+/* =========================================================
+   ITEM CARD
+========================================================= */
+
+.top-seller-item-card {
+    position: relative;
+
+    display: block;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    height: 100%;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        var(--theme-border) !important;
+
+    border-radius: 14px !important;
+
+    background:
+        var(--theme-surface);
+
+    box-shadow:
+        none;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.22s ease,
+        border-color 0.22s ease,
+        box-shadow 0.22s ease,
+        background 0.22s ease,
+        opacity 0.22s ease;
+}
+
+.top-seller-item-card:hover {
+    transform: translateY(-2px);
+
+    border-color:
+        var(--theme-primary) !important;
+
+    background:
+        var(--theme-surface);
+
+    box-shadow:
+        0 10px 24px
+        rgba(37, 99, 235, 0.08);
+}
+
+.top-seller-item-card.is-out-of-stock {
+    opacity: 0.68;
+
+    cursor: not-allowed;
+}
+
+.top-seller-item-card.is-out-of-stock:hover {
+    transform: none;
+
+    border-color:
+        var(--theme-border) !important;
+
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   ITEM BODY
+========================================================= */
+
+.top-seller-item-card .card-body {
+    padding: 13px;
+}
+
+.top-seller-item-content {
+    flex: 1 1 0;
+    width: 0;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.top-seller-item-name {
+    display: block;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    overflow: hidden;
+
+    color:
+        var(--theme-text);
+
+    font-size: 12px;
+    font-weight: 750;
+
+    line-height: 1.35;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.top-seller-game-name {
+    display: block;
+
+    margin-top: 2px;
+
+    color:
+        var(--theme-text-muted);
+
+    font-size: 9px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.top-seller-item-price {
+    display: block;
+
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
+    margin-top: 3px;
+
+    overflow: hidden;
+
+    color:
+        var(--theme-primary);
+
+    font-size: 10px;
+    font-weight: 800;
+
+    line-height: 1.25;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   ITEM IMAGE
+========================================================= */
+
+.top-seller-item-image {
+    width: 60px;
+    height: 60px;
+
+    flex-shrink: 0;
+
+    overflow: hidden;
+
+    border-radius: 11px;
+
+    background:
+        var(--theme-primary-soft);
+
+    border:
+        1px solid
+        var(--theme-border-soft);
+}
+
+.top-seller-item-image img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+.top-seller-image-placeholder {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        var(--theme-primary-soft);
+
+    color:
+        var(--theme-text-muted);
+
+    font-size: 18px;
+}
+
+
+/* =========================================================
+   CHECKBOX
+========================================================= */
+
+.top-seller-checkbox {
+    width: 20px;
+    height: 20px;
+
+    flex: 0 0 20px;
+    flex-shrink: 0;
+
+    margin: 0;
+
+    border:
+        1px solid
+        var(--theme-border);
+
+    background:
+        var(--theme-input-bg);
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.top-seller-checkbox:checked {
+    border-color:
+        var(--theme-primary);
+
+    background-color:
+        var(--theme-primary);
+}
+
+.top-seller-checkbox:focus {
+    box-shadow:
+        0 0 0 3px
+        rgba(37, 99, 235, 0.10);
+}
+
+.top-seller-checkbox:disabled {
+    background:
+        var(--theme-border-soft);
+
+    border-color:
+        var(--theme-border);
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   STOCK BADGE
+========================================================= */
+
+.top-seller-stock {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 4px;
+
+    min-height: 20px;
+
+    padding: 0 7px;
+
+    border-radius: 999px;
+
+    font-size: 8px;
+    font-weight: 750;
+}
+
+.top-seller-stock.in-stock {
+    background:
+        #ecfdf5;
+
+    color:
+        #047857;
+
+    border:
+        1px solid
+        #a7f3d0;
+}
+
+.top-seller-stock.out-of-stock {
+    background:
+        #fef2f2;
+
+    color:
+        #dc2626;
+
+    border:
+        1px solid
+        #fecaca;
+}
+
+.top-seller-stock.unknown {
+    background:
+        var(--theme-surface-soft);
+
+    color:
+        var(--theme-text-muted);
+
+    border:
+        1px solid
+        var(--theme-border);
+}
+
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
+.top-seller-empty {
+    padding: 55px 20px;
+
+    text-align: center;
+
+    color:
+        var(--theme-text-muted);
+}
+
+.top-seller-empty i {
+    display: block;
+
+    margin-bottom: 12px;
+
+    font-size: 32px;
+}
+
+.top-seller-empty h6 {
+    margin: 0 0 5px;
+
+    color:
+        var(--theme-text);
+
+    font-size: 14px;
+    font-weight: 750;
+}
+
+.top-seller-empty p {
+    margin: 0;
+
+    color:
+        var(--theme-text-secondary);
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+[data-theme="dark"] .top-seller-page .alert-success {
+    background:
+        rgba(16, 185, 129, 0.12);
+
+    border-color:
+        rgba(52, 211, 153, 0.28);
+
+    color:
+        #6ee7b7;
+}
+
+[data-theme="dark"] .top-seller-stock.in-stock {
+    background:
+        rgba(16, 185, 129, 0.12);
+
+    color:
+        #6ee7b7;
+
+    border-color:
+        rgba(52, 211, 153, 0.28);
+}
+
+[data-theme="dark"] .top-seller-stock.out-of-stock {
+    background:
+        rgba(220, 38, 38, 0.12);
+
+    color:
+        #fca5a5;
+
+    border-color:
+        rgba(248, 113, 113, 0.25);
+}
+
+@media (min-width: 769px) {
+
+    .top-seller-page {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .top-seller-page > .container-fluid {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .top-seller-item-card {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .top-seller-item-card .d-flex {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .top-seller-item-content {
+        flex: 1 1 0;
+        width: 0;
+        min-width: 0;
+    }
+
+    .top-seller-item-name,
+    .top-seller-game-name,
+    .top-seller-item-price {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+/* =========================================================
+   MOBILE FIRST
+========================================================= */
+
+@media (max-width: 768px) {
+
+    /* =====================================================
+       PAGE
+    ===================================================== */
+
+    .top-seller-page {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .top-seller-page > .container-fluid {
+        width: 100%;
+        max-width: 100%;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .top-seller-page .row {
+        width: 100%;
+        max-width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .top-seller-page .row > [class*="col-"] {
+        min-width: 0;
+        max-width: 100%;
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+
+    .top-seller-list-card .card-body {
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .top-seller-item-card {
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    .top-seller-item-card .card-body {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    .top-seller-item-card .d-flex {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    .top-seller-item-image {
+        flex: 0 0 48px;
+        width: 48px;
+        height: 48px;
+    }
+
+    .top-seller-item-content {
+        flex: 1 1 0;
+        width: 0;
+        min-width: 0;
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    .top-seller-item-name,
+    .top-seller-game-name,
+    .top-seller-item-price {
+        width: 100%;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .top-seller-checkbox {
+        flex: 0 0 17px;
+        width: 17px;
+        height: 17px;
+    }
+
+
+    /* =====================================================
+       HEADER
+    ===================================================== */
+
+    .top-seller-header {
+        margin-bottom: 14px;
+    }
+
+    .top-seller-header > .d-flex {
+        align-items: flex-start !important;
+        gap: 12px !important;
+    }
+
+    .top-seller-header-content {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .top-seller-title {
+        margin-bottom: 4px;
+        font-size: 20px;
+        line-height: 1.2;
+        letter-spacing: -0.25px;
+    }
+
+    .top-seller-description {
+        max-width: 100%;
+        font-size: 10px;
+        line-height: 1.45;
+    }
+
+    .top-seller-back-button {
+        min-height: 32px;
+        padding: 0 10px;
+        gap: 5px;
+        border-radius: 8px;
+        font-size: 9px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .top-seller-back-button i {
+        font-size: 9px;
+    }
+
+
+    /* =====================================================
+       ALERT
+    ===================================================== */
+
+    .top-seller-page .alert-success {
+        margin-bottom: 12px !important;
+        padding: 9px 11px;
+        border-radius: 9px;
+        font-size: 10px;
+        line-height: 1.4;
+    }
+
+
+    /* =====================================================
+       FILTER CARD
+    ===================================================== */
+
+    .top-seller-filter-card {
+        margin-bottom: 12px;
+        border-radius: 13px !important;
+    }
+
+    .top-seller-filter-card .card-body {
+        padding: 12px;
+    }
+
+    .top-seller-filter-card form .row {
+        --bs-gutter-x: 8px;
+        --bs-gutter-y: 9px;
+    }
+
+
+    /* =====================================================
+       FILTER LABEL
+    ===================================================== */
+
+    .top-seller-page .form-label {
+        margin-bottom: 5px;
+        font-size: 9px;
+        line-height: 1.2;
+    }
+
+
+    /* =====================================================
+       FILTER INPUT
+    ===================================================== */
+
+    .top-seller-page .input-group-text {
+        min-height: 37px;
+        padding: 0 9px;
+        font-size: 10px;
+    }
+
+    .top-seller-page .form-control,
+    .top-seller-page .form-select {
+        min-height: 37px;
+        padding: 7px 9px;
+        border-radius: 8px;
+        font-size: 10px;
+    }
+
+    .top-seller-page .input-group .form-control {
+        border-radius: 0 8px 8px 0;
+    }
+
+    .top-seller-page .form-control:focus,
+    .top-seller-page .form-select:focus {
+        box-shadow:
+            0 0 0 2px
+            rgba(37, 99, 235, 0.10);
+    }
+
+
+    /* =====================================================
+       FILTER BUTTON
+    ===================================================== */
+
+    .top-seller-filter-card .btn {
+        min-height: 37px;
+        border-radius: 8px;
+        font-size: 10px;
+    }
+
+    .top-seller-filter-card .btn-primary {
+        padding: 7px 10px;
+    }
+
+    .top-seller-filter-card .btn-outline-secondary {
+        width: 37px;
+        min-width: 37px;
+        padding: 0;
+    }
+
+
+    /* =====================================================
+       RESULT INFO
+    ===================================================== */
+
+    .top-seller-result-info {
+        margin-bottom: 9px;
+        gap: 7px !important;
+        font-size: 9px;
+        line-height: 1.4;
+    }
+
+    .top-seller-filter-badge {
+        min-height: 22px;
+        padding: 0 7px;
+        border-radius: 999px;
+        font-size: 8px;
+    }
+
+
+    /* =====================================================
+       LIST CARD
+    ===================================================== */
+
+    .top-seller-list-card {
+        border-radius: 13px !important;
+    }
+
+    .top-seller-list-card .card-header {
+        padding: 10px 12px;
+    }
+
+    .top-seller-list-card .card-header strong {
+        font-size: 11px;
+    }
+
+    .top-seller-list-card .card-header .btn {
+        min-height: 32px;
+        padding: 6px 9px;
+        border-radius: 7px;
+        font-size: 9px;
+    }
+
+    .top-seller-list-card .card-body {
+        padding: 10px;
+    }
+
+    .top-seller-list-card .card-footer {
+        padding: 10px 12px;
+    }
+
+    .top-seller-list-card .card-footer .btn {
+        width: 100%;
+        min-height: 35px;
+        border-radius: 8px;
+        font-size: 10px;
+    }
+
+
+    /* =====================================================
+       ITEM GRID
+    ===================================================== */
+
+    .top-seller-list-card .row {
+        --bs-gutter-x: 8px;
+        --bs-gutter-y: 8px;
+    }
+
+    .top-seller-list-card .row > [class*="col-"] {
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+
+
+    /* =====================================================
+       ITEM CARD
+    ===================================================== */
+
+    .top-seller-item-card {
+        border-radius: 11px !important;
+        transition:
+            border-color 0.18s ease,
+            background 0.18s ease,
+            box-shadow 0.18s ease;
+    }
+
+    .top-seller-item-card:hover {
+        transform: none;
+        box-shadow:
+            0 5px 14px
+            rgba(37, 99, 235, 0.06);
+    }
+
+    .top-seller-item-card.is-out-of-stock {
+        opacity: 0.58;
+    }
+
+
+    /* =====================================================
+       ITEM BODY
+    ===================================================== */
+
+    .top-seller-item-card .card-body {
+        padding: 9px;
+    }
+
+    .top-seller-item-card .d-flex {
+        gap: 8px !important;
+        align-items: center !important;
+    }
+
+
+    /* =====================================================
+       ITEM IMAGE
+    ===================================================== */
+
+    .top-seller-item-image {
+        width: 48px;
+        height: 48px;
+        border-radius: 9px;
+    }
+
+    .top-seller-image-placeholder {
+        font-size: 14px;
+    }
+
+
+    /* =====================================================
+       ITEM CONTENT
+    ===================================================== */
+
+    .top-seller-item-content {
+        min-width: 0;
+    }
+
+    .top-seller-item-name {
+        font-size: 10px;
+        font-weight: 750;
+        line-height: 1.3;
+    }
+
+    .top-seller-game-name {
+        margin-top: 2px;
+        font-size: 8px;
+        line-height: 1.25;
+    }
+
+    .top-seller-item-price {
+        margin-top: 3px;
+        font-size: 9px;
+        line-height: 1.25;
+    }
+
+
+    /* =====================================================
+       STOCK BADGE
+    ===================================================== */
+
+    .top-seller-item-card .mt-2 {
+        margin-top: 5px !important;
+    }
+
+    .top-seller-stock {
+        min-height: 18px;
+        padding: 0 6px;
+        gap: 3px;
+        font-size: 7px;
+        line-height: 1;
+    }
+
+    .top-seller-stock i {
+        font-size: 6px;
+    }
+
+
+    /* =====================================================
+       CHECKBOX
+    ===================================================== */
+
+    .top-seller-checkbox {
+        width: 17px;
+        height: 17px;
+        border-radius: 4px;
+    }
+
+    .top-seller-checkbox:focus {
+        box-shadow:
+            0 0 0 2px
+            rgba(37, 99, 235, 0.10);
+    }
+
+
+    /* =====================================================
+       EMPTY
+    ===================================================== */
+
+    .top-seller-empty {
+        padding: 42px 14px;
+    }
+
+    .top-seller-empty i {
+        margin-bottom: 9px;
+        font-size: 27px;
+    }
+
+    .top-seller-empty h6 {
+        margin-bottom: 4px;
+        font-size: 12px;
+    }
+
+    .top-seller-empty p {
+        font-size: 9px;
+        line-height: 1.45;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .top-seller-page {
+        padding-top: 13px;
+        padding-bottom: 28px;
+    }
+
+    .top-seller-page > .container-fluid {
+        padding-left: 9px;
+        padding-right: 9px;
+    }
+
+
+    /* HEADER */
+
+    .top-seller-header {
+        margin-bottom: 12px;
+    }
+
+    .top-seller-header > .d-flex {
+        flex-direction: column;
+        align-items: stretch !important;
+        gap: 9px !important;
+    }
+
+    .top-seller-title {
+        font-size: 18px;
+    }
+
+    .top-seller-description {
+        font-size: 9px;
+    }
+
+    .top-seller-header .top-seller-back-button {
+        width: 100%;
+        min-height: 31px;
+    }
+
+
+    /* FILTER */
+
+    .top-seller-filter-card {
+        border-radius: 11px !important;
+    }
+
+    .top-seller-filter-card .card-body {
+        padding: 10px;
+    }
+
+    .top-seller-filter-card form .row {
+        --bs-gutter-x: 7px;
+        --bs-gutter-y: 8px;
+    }
+
+    .top-seller-page .form-label {
+        font-size: 8px;
+    }
+
+    .top-seller-page .form-control,
+    .top-seller-page .form-select,
+    .top-seller-page .input-group-text {
+        min-height: 35px;
+        font-size: 9px;
+    }
+
+    .top-seller-page .input-group-text {
+        padding: 0 8px;
+    }
+
+    .top-seller-filter-card .btn {
+        min-height: 35px;
+        font-size: 9px;
+    }
+
+    .top-seller-filter-card .btn-outline-secondary {
+        width: 35px;
+        min-width: 35px;
+    }
+
+
+    /* RESULT */
+
+    .top-seller-result-info {
+        font-size: 8px;
+    }
+
+    .top-seller-filter-badge {
+        min-height: 20px;
+        font-size: 7px;
+    }
+
+
+    /* LIST */
+
+    .top-seller-list-card {
+        border-radius: 11px !important;
+    }
+
+    .top-seller-list-card .card-header,
+    .top-seller-list-card .card-footer {
+        padding: 9px 10px;
+    }
+
+    .top-seller-list-card .card-header strong {
+        font-size: 10px;
+    }
+
+    .top-seller-list-card .card-header .btn {
+        min-height: 30px;
+        padding: 5px 8px;
+        font-size: 8px;
+    }
+
+    .top-seller-list-card .card-body {
+        padding: 8px;
+    }
+
+
+    /* ITEM GRID */
+
+    .top-seller-list-card .row {
+        --bs-gutter-x: 6px;
+        --bs-gutter-y: 6px;
+    }
+
+    .top-seller-list-card .row > [class*="col-"] {
+        padding-left: 3px;
+        padding-right: 3px;
+    }
+
+
+    /* ITEM */
+
+    .top-seller-item-card {
+        border-radius: 10px !important;
+    }
+
+    .top-seller-item-card .card-body {
+        padding: 8px;
+    }
+
+    .top-seller-item-card .d-flex {
+        gap: 7px !important;
+    }
+
+    .top-seller-item-image {
+        width: 44px;
+        height: 44px;
+        border-radius: 8px;
+    }
+
+    .top-seller-image-placeholder {
+        font-size: 13px;
+    }
+
+    .top-seller-item-name {
+        font-size: 9px;
+    }
+
+    .top-seller-game-name {
+        font-size: 7px;
+    }
+
+    .top-seller-item-price {
+        font-size: 8px;
+    }
+
+
+    /* STOCK */
+
+    .top-seller-stock {
+        min-height: 17px;
+        padding: 0 5px;
+        font-size: 6.5px;
+    }
+
+    .top-seller-stock i {
+        font-size: 5.5px;
+    }
+
+
+    /* CHECKBOX */
+
+    .top-seller-checkbox {
+        width: 16px;
+        height: 16px;
+    }
+
+
+    /* FOOTER BUTTON */
+
+    .top-seller-list-card .card-footer .btn {
+        min-height: 34px;
+        font-size: 9px;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONE
+========================================================= */
+
+@media (max-width: 360px) {
+
+    .top-seller-page {
+        padding-top: 11px;
+        padding-bottom: 24px;
+    }
+
+    .top-seller-page > .container-fluid {
+        padding-left: 7px;
+        padding-right: 7px;
+    }
+
+
+    /* HEADER */
+
+    .top-seller-title {
+        font-size: 17px;
+    }
+
+    .top-seller-description {
+        font-size: 8px;
+    }
+
+    .top-seller-header .top-seller-back-button {
+        min-height: 30px;
+        font-size: 8px;
+    }
+
+
+    /* FILTER */
+
+    .top-seller-filter-card .card-body {
+        padding: 8px;
+    }
+
+    .top-seller-page .form-control,
+    .top-seller-page .form-select,
+    .top-seller-page .input-group-text {
+        min-height: 34px;
+        font-size: 8px;
+    }
+
+    .top-seller-filter-card .btn {
+        min-height: 34px;
+        font-size: 8px;
+    }
+
+
+    /* RESULT */
+
+    .top-seller-result-info {
+        font-size: 7px;
+    }
+
+
+    /* LIST */
+
+    .top-seller-list-card .card-header {
+        padding: 8px;
+    }
+
+    .top-seller-list-card .card-header strong {
+        font-size: 9px;
+    }
+
+    .top-seller-list-card .card-body {
+        padding: 6px;
+    }
+
+
+    /* GRID */
+
+    .top-seller-list-card .row {
+        --bs-gutter-x: 5px;
+        --bs-gutter-y: 5px;
+    }
+
+    .top-seller-list-card .row > [class*="col-"] {
+        padding-left: 2.5px;
+        padding-right: 2.5px;
+    }
+
+
+    /* ITEM */
+
+    .top-seller-item-card {
+        border-radius: 9px !important;
+    }
+
+    .top-seller-item-card .card-body {
+        padding: 7px;
+    }
+
+    .top-seller-item-card .d-flex {
+        gap: 5px !important;
+    }
+
+    .top-seller-item-image {
+        width: 40px;
+        height: 40px;
+        border-radius: 7px;
+    }
+
+    .top-seller-image-placeholder {
+        font-size: 11px;
+    }
+
+    .top-seller-item-name {
+        font-size: 8px;
+    }
+
+    .top-seller-game-name {
+        font-size: 6.5px;
+    }
+
+    .top-seller-item-price {
+        font-size: 7px;
+    }
+
+
+    /* STOCK */
+
+    .top-seller-item-card .mt-2 {
+        margin-top: 4px !important;
+    }
+
+    .top-seller-stock {
+        min-height: 16px;
+        padding: 0 4px;
+        font-size: 6px;
+    }
+
+    .top-seller-stock i {
+        font-size: 5px;
+    }
+
+
+    /* CHECKBOX */
+
+    .top-seller-checkbox {
+        width: 15px;
+        height: 15px;
+    }
+}

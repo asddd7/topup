@@ -29,20 +29,6 @@
 
                 </div>
 
-
-                <a
-                    href="{{ route('admin.dashboard') }}"
-                    class="top-seller-back-button"
-                >
-
-                    <i class="fa-solid fa-arrow-left"></i>
-
-                    <span>
-                        Kembali
-                    </span>
-
-                </a>
-
             </div>
 
         </div>

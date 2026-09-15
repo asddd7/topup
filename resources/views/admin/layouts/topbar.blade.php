@@ -6,55 +6,65 @@
              LEFT : LOGO + APP NAME
         ====================================================== --}}
 
-        <div class="topup-topbar-left">
+    <div class="topup-topbar-left">
 
-            {{-- MOBILE SIDEBAR BUTTON --}}
-            <button
-                type="button"
-                class="btn topup-mobile-menu d-lg-none"
-                data-bs-toggle="offcanvas"
-                data-bs-target="#sidebar"
-                aria-label="Toggle sidebar"
+        {{-- MOBILE SIDEBAR BUTTON --}}
+        <button
+            type="button"
+            class="btn topup-mobile-menu d-lg-none"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#sidebar"
+            aria-label="Toggle sidebar"
+        >
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        {{-- BACK TO ADMIN DASHBOARD --}}
+        @if (!request()->routeIs('admin.dashboard'))
+            <a
+                href="{{ route('admin.dashboard') }}"
+                class="topup-admin-back"
+                aria-label="Kembali ke Dashboard"
+                title="Kembali ke Dashboard"
             >
-                <i class="fa-solid fa-bars"></i>
-            </button>
+                <i class="fa-solid fa-arrow-left"></i>
+            </a>
+        @endif
 
+        {{-- LOGO --}}
+        <a href="{{ url('/') }}" class="topup-brand">
 
-            {{-- LOGO --}}
-            <a href="{{ url('/') }}" class="topup-brand">
+            @if(setting('app_logo'))
 
-                @if(setting('app_logo'))
+                <img
+                    src="{{ asset('storage/' . setting('app_logo')) }}"
+                    alt="{{ setting('app_name', 'TopUp Game') }}"
+                    class="topup-brand-logo"
+                >
 
-                    <img
-                        src="{{ asset('storage/' . setting('app_logo')) }}"
-                        alt="{{ setting('app_name', 'TopUp Game') }}"
-                        class="topup-brand-logo"
-                    >
+            @else
 
-                @else
-
-                    <div class="topup-brand-icon">
-                        <i class="fa-solid fa-gamepad"></i>
-                    </div>
-
-                @endif
-
-
-                <div class="topup-brand-info">
-
-                    <div class="topup-brand-name">
-                        {{ setting('app_name', 'TopUp Game') }}
-                    </div>
-
-                    <small>
-                        Admin Dashboard
-                    </small>
-
+                <div class="topup-brand-icon">
+                    <i class="fa-solid fa-gamepad"></i>
                 </div>
 
-            </a>
+            @endif
 
-        </div>
+            <div class="topup-brand-info">
+
+                <div class="topup-brand-name">
+                    {{ setting('app_name', 'TopUp Game') }}
+                </div>
+
+                <small>
+                    Admin Dashboard
+                </small>
+
+            </div>
+
+        </a>
+
+    </div>
 
 
         {{-- =====================================================
@@ -62,7 +72,14 @@
         ====================================================== --}}
 
         <div class="topup-topbar-right">
-
+            <button
+                type="button"
+                id="themeToggle"
+                class="theme-toggle"
+                aria-label="Ganti tema"
+            >
+                <i class="fa-solid fa-moon"></i>
+            </button>
 
             {{-- =================================================
                  NOTIFICATION
@@ -172,7 +189,7 @@
 
 
                 </ul>
-
+            
             </div>
 
 
