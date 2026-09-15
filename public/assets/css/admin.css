@@ -1,8 +1,10 @@
-@import url("global.css");
-@import url("layout.css");
-@import url("auth.css");
-@import url("dashboard.css");
-@import url("order.css");
-@import url("topbar.css");
-@import url("footer.css");
-@import url("admin.css");
+/* =========================================================
+   ADMIN CSS
+========================================================= */
+
+@import url("./global.css");
+@import url("./layout.css");
+@import url("./theme.css");
+
+/* ADMIN COMPONENTS */
+@import url("./admin/admin-dashboard.css");

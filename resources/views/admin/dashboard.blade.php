@@ -1,449 +1,470 @@
 @extends('admin.layouts.app')
 
-@section('title','Dashboard Admin')
-
+@section('title', 'Dashboard Admin')
 
 @section('content')
 
+<div class="admin-dashboard-page">
 
-<div class="container-fluid">
+    <div class="admin-dashboard-container">
 
 
-<h3 class="fw-bold mb-4">
+        {{-- =====================================================
+             HEADER
+        ====================================================== --}}
 
-Dashboard Admin
+        <div class="admin-dashboard-header">
 
-</h3>
+            <h1 class="admin-dashboard-title">
+                Dashboard Admin
+            </h1>
 
-
-
-
-<div class="row g-3 mb-4">
-
-
-<div class="col-md-3">
-
-<div class="card shadow-sm border-0">
-
-<div class="card-body">
-
-
-<h6>
-Total Pesanan
-</h6>
-
-
-<h2 class="fw-bold">
-
-{{$totalOrder}}
-
-</h2>
-
-
-</div>
-
-</div>
-
-</div>
-
-
-
-
-
-<div class="col-md-3">
-
-<div class="card shadow-sm border-0">
-
-<div class="card-body">
-
-
-<h6>
-Menunggu Pembayaran
-</h6>
-
-
-<h2 class="fw-bold text-warning">
-
-{{$waitingPayment}}
-
-</h2>
-
-
-</div>
-
-</div>
-
-</div>
-
-
-
-
-
-
-<div class="col-md-3">
-
-<div class="card shadow-sm border-0">
-
-<div class="card-body">
-
-
-<h6>
-Jumlah Game
-</h6>
-
-
-<h2 class="fw-bold">
-
-{{$totalGame}}
-
-</h2>
-
-
-</div>
-
-</div>
-
-</div>
-
-
-
-
-
-<div class="col-md-3">
-
-<div class="card shadow-sm border-0">
-
-<div class="card-body">
-
-
-<h6>
-Pendapatan
-</h6>
-
-
-<h4 class="fw-bold text-success">
-
-Rp {{number_format($income)}}
-
-</h4>
-
-
-</div>
-
-</div>
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-<h5 class="fw-bold mb-3">
-
-Shortcut
-
-</h5>
-
-
-
-<div class="row g-3 mb-4">
-
-<div class="col-md-2">
-
-
-<a href="{{route('admin.order.index')}}"
-class="text-decoration-none">
-
-
-<div class="card shadow-sm text-center p-3">
-
-
-<i class="fa-solid fa-money-check-dollar fa-2x text-success"></i>
-
-
-<h6 class="mt-2">
-
-Konfirmasi
-
-</h6>
-    @php
-        $waiting = \App\Models\Order::where('status','Paid')->count();
-    @endphp
-
-    @if($waiting)
-        <span class="badge bg-danger float-end">
-            {{ $waiting }}
-        </span>
-    @endif
-
-</div>
-
-
-</a>
-
-
-</div>
-
-
-
-
-
-<div class="col-md-2">
-
-
-<a href="{{route('admin.game.index')}}"
-class="text-decoration-none">
-
-
-<div class="card shadow-sm text-center p-3">
-
-
-<i class="fa-solid fa-gamepad fa-2x text-danger"></i>
-
-
-<h6 class="mt-2">
-
-Game
-
-</h6>
-
-
-</div>
-
-
-</a>
-
-
-</div>
-
-
-
-
-
-<div class="col-md-2">
-
-
-<a href="{{route('admin.discount.index')}}"
-class="text-decoration-none">
-
-
-<div class="card shadow-sm text-center p-3">
-
-
-<i class="fa-solid fa-ticket fa-2x text-warning"></i>
-
-
-<h6 class="mt-2">
-
-Voucher
-
-</h6>
-
-
-</div>
-
-
-</a>
-
-
-</div>
-
-<div class="col-md-2">
-
-<a href="{{ route('admin.stock.index') }}"
-class="text-decoration-none">
-
-<div class="card shadow-sm text-center p-3">
-
-<i class="fa-solid fa-boxes-stacked fa-2x text-primary"></i>
-
-<h6 class="mt-2">
-    Tambah Stock
-</h6>
-
-</div>
-
-</a>
-
-</div>
-
-<div class="col-md-2">
-
-    <a href="{{ route('top-seller.index') }}"
-       class="text-decoration-none">
-
-        <div class="card shadow-sm text-center p-3">
-
-            <i class="fa-solid fa-star fa-2x text-warning"></i>
-
-            <h6 class="mt-2">
-                Top Seller
-            </h6>
+            <p class="admin-dashboard-subtitle">
+                Ringkasan pesanan, game, pendapatan, dan aktivitas terbaru.
+            </p>
 
         </div>
 
-    </a>
+
+        {{-- =====================================================
+             STATISTICS
+        ====================================================== --}}
+
+        <div class="admin-stat-grid">
+
+
+            {{-- TOTAL ORDER --}}
+
+            <div class="admin-stat-card primary">
+
+                <div class="admin-stat-body">
+
+                    <span class="admin-stat-label">
+                        Total Pesanan
+                    </span>
+
+                    <h2 class="admin-stat-value">
+                        {{ $totalOrder }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            {{-- WAITING PAYMENT --}}
+
+            <div class="admin-stat-card warning">
+
+                <div class="admin-stat-body">
+
+                    <span class="admin-stat-label">
+                        Menunggu Pembayaran
+                    </span>
+
+                    <h2 class="admin-stat-value">
+                        {{ $waitingPayment }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            {{-- TOTAL GAME --}}
+
+            <div class="admin-stat-card primary">
+
+                <div class="admin-stat-body">
+
+                    <span class="admin-stat-label">
+                        Jumlah Game
+                    </span>
+
+                    <h2 class="admin-stat-value">
+                        {{ $totalGame }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            {{-- INCOME --}}
+
+            <div class="admin-stat-card success">
+
+                <div class="admin-stat-body">
+
+                    <span class="admin-stat-label">
+                        Pendapatan
+                    </span>
+
+                    <h2 class="admin-stat-value currency">
+                        Rp {{ number_format($income) }}
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        {{-- =====================================================
+             SHORTCUT
+        ====================================================== --}}
+
+        <section class="admin-shortcut-section">
+
+            <h2 class="admin-shortcut-title">
+                Shortcut
+            </h2>
+
+
+            <div class="admin-shortcut-grid">
+
+
+                {{-- KONFIRMASI --}}
+
+                <a
+                    href="{{ route('admin.order.index') }}"
+                    class="admin-shortcut-card"
+                >
+
+                    <div class="admin-shortcut-icon">
+
+                        <i class="fa-solid fa-money-check-dollar"></i>
+
+                    </div>
+
+                    <span class="admin-shortcut-label">
+                        Konfirmasi
+                    </span>
+
+
+                    @php
+
+                        $waiting = \App\Models\Order::where(
+                            'status',
+                            'Paid'
+                        )->count();
+
+                    @endphp
+
+
+                    @if($waiting)
+
+                        <span class="admin-shortcut-badge">
+
+                            {{ $waiting }}
+
+                        </span>
+
+                    @endif
+
+                </a>
+
+
+                {{-- GAME --}}
+
+                <a
+                    href="{{ route('admin.game.index') }}"
+                    class="admin-shortcut-card"
+                >
+
+                    <div class="admin-shortcut-icon">
+
+                        <i class="fa-solid fa-gamepad"></i>
+
+                    </div>
+
+                    <span class="admin-shortcut-label">
+                        Game
+                    </span>
+
+                </a>
+
+
+                {{-- VOUCHER --}}
+
+                <a
+                    href="{{ route('admin.discount.index') }}"
+                    class="admin-shortcut-card"
+                >
+
+                    <div class="admin-shortcut-icon">
+
+                        <i class="fa-solid fa-ticket"></i>
+
+                    </div>
+
+                    <span class="admin-shortcut-label">
+                        Voucher
+                    </span>
+
+                </a>
+
+
+                {{-- STOCK --}}
+
+                <a
+                    href="{{ route('admin.stock.index') }}"
+                    class="admin-shortcut-card"
+                >
+
+                    <div class="admin-shortcut-icon">
+
+                        <i class="fa-solid fa-boxes-stacked"></i>
+
+                    </div>
+
+                    <span class="admin-shortcut-label">
+                        Tambah Stock
+                    </span>
+
+                </a>
+
+
+                {{-- TOP SELLER --}}
+
+                <a
+                    href="{{ route('top-seller.index') }}"
+                    class="admin-shortcut-card"
+                >
+
+                    <div class="admin-shortcut-icon">
+
+                        <i class="fa-solid fa-star"></i>
+
+                    </div>
+
+                    <span class="admin-shortcut-label">
+                        Top Seller
+                    </span>
+
+                </a>
+
+
+                {{-- SETTING --}}
+
+                <a
+                    href="{{ route('admin.setting.index') }}"
+                    class="admin-shortcut-card"
+                >
+
+                    <div class="admin-shortcut-icon">
+
+                        <i class="fa-solid fa-gears"></i>
+
+                    </div>
+
+                    <span class="admin-shortcut-label">
+                        Setting
+                    </span>
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        {{-- =====================================================
+             RECENT ORDERS
+        ====================================================== --}}
+
+        <div class="admin-recent-order-card">
+
+
+            {{-- HEADER --}}
+
+            <div class="admin-recent-order-header">
+
+                <h2 class="admin-recent-order-title">
+                    Order Terbaru
+                </h2>
+
+            </div>
+
+
+            {{-- TABLE --}}
+
+            <div class="admin-recent-order-body">
+
+                <table class="admin-recent-order-table table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Invoice
+                            </th>
+
+                            <th>
+                                Game
+                            </th>
+
+                            <th>
+                                Total
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @forelse($recentOrders as $order)
+
+                            <tr>
+
+                                <td>
+
+                                    <span class="admin-recent-order-invoice">
+
+                                        {{ $order->invoice_number }}
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="admin-recent-order-game">
+
+                                        {{ $order->game->game_name }}
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="admin-recent-order-total">
+
+                                        Rp {{ number_format($order->total_price) }}
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    @if($order->status === 'Waiting Payment')
+
+                                        <span class="admin-order-status waiting">
+
+                                            <i class="fa-regular fa-clock"></i>
+
+                                            Waiting Payment
+
+                                        </span>
+
+                                    @elseif($order->status === 'Paid')
+
+                                        <span class="admin-order-status paid">
+
+                                            <i class="fa-solid fa-circle-check"></i>
+
+                                            Paid
+
+                                        </span>
+
+                                    @elseif($order->status === 'Processing')
+
+                                        <span class="admin-order-status processing">
+
+                                            <i class="fa-solid fa-spinner"></i>
+
+                                            Processing
+
+                                        </span>
+
+                                    @elseif($order->status === 'Completed')
+
+                                        <span class="admin-order-status completed">
+
+                                            <i class="fa-solid fa-circle-check"></i>
+
+                                            Completed
+
+                                        </span>
+
+                                    @elseif($order->status === 'Cancelled')
+
+                                        <span class="admin-order-status cancelled">
+
+                                            <i class="fa-solid fa-circle-xmark"></i>
+
+                                            Cancelled
+
+                                        </span>
+
+                                    @elseif($order->status === 'Success')
+
+                                        <span class="admin-order-status success">
+
+                                            <i class="fa-solid fa-circle-check"></i>
+
+                                            Success
+
+                                        </span>
+
+                                    @else
+
+                                        <span class="admin-order-status waiting">
+
+                                            {{ $order->status }}
+
+                                        </span>
+
+                                    @endif
+
+                                </td>
+
+                            </tr>
+
+                        @empty
+
+                            <tr>
+
+                                <td
+                                    colspan="4"
+                                    class="text-center py-4"
+                                >
+
+                                    <span class="text-muted small">
+
+                                        Belum ada pesanan.
+
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                        @endforelse
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
-
-<div class="col-md-2">
-
-
-<a href="{{route('admin.setting.index')}}"
-class="text-decoration-none">
-
-
-<div class="card shadow-sm text-center p-3">
-
-
-<i class="fa-solid fa-gears fa-2x text-secondary"></i>
-
-
-<h6 class="mt-2">
-
-Setting
-
-</h6>
-
-
-</div>
-
-
-</a>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-<div class="card shadow-sm">
-
-
-<div class="card-header">
-
-Order Terbaru
-
-</div>
-
-
-
-<div class="card-body">
-
-
-<table class="table">
-
-
-<tr>
-
-<th>Invoice</th>
-
-<th>Game</th>
-
-<th>Total</th>
-
-<th>Status</th>
-
-</tr>
-
-
-
-@foreach($recentOrders as $order)
-
-
-<tr>
-
-<td>
-
-{{$order->invoice_number}}
-
-</td>
-
-
-<td>
-
-{{$order->game->game_name}}
-
-</td>
-
-
-<td>
-
-Rp {{number_format($order->total_price)}}
-
-</td>
-
-
-<td>
-
-@if($order->status=='Waiting Payment')
-
-<span class="badge bg-secondary">
-Waiting Payment
-</span>
-
-@elseif($order->status=='Completed')
-
-<span class="badge bg-success">
-Completed
-</span>
-
-@elseif($order->status=='Paid')
-
-<span class="badge bg-primary">
-Paid
-</span>
-
-
-@elseif($order->status=='Processing')
-
-<span class="badge bg-warning">
-Processing
-</span>
-
-
-@elseif($order->status=='Success')
-
-<span class="badge bg-success">
-Success
-</span>
-
-
-@elseif($order->status=='Cancelled')
-
-<span class="badge bg-danger">
-Canceled
-</span>
-
-
-@endif
-</td>
-
-
-</tr>
-
-
-@endforeach
-
-
-</table>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
 
 @endsection

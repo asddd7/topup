@@ -1,0 +1,934 @@
+/* =========================================================
+   ADMIN DASHBOARD
+========================================================= */
+
+.admin-dashboard-page {
+    min-height: calc(100vh - 70px);
+
+    padding: 24px 0 50px;
+
+    background:
+        radial-gradient(
+            circle at 8% 0%,
+            rgba(37, 99, 235, 0.06),
+            transparent 28%
+        ),
+        var(--theme-bg);
+
+    color: var(--theme-text);
+}
+
+
+/* =========================================================
+   PAGE CONTAINER
+========================================================= */
+
+.admin-dashboard-container {
+    width: 100%;
+    max-width: 1480px;
+
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.admin-dashboard-header {
+    margin-bottom: 22px;
+}
+
+.admin-dashboard-title {
+    margin: 0;
+
+    color: var(--theme-text);
+
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.2;
+
+    letter-spacing: -0.5px;
+}
+
+.admin-dashboard-subtitle {
+    margin: 6px 0 0;
+
+    color: var(--theme-text-secondary);
+
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   STATISTICS
+========================================================= */
+
+.admin-stat-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 16px;
+
+    margin-bottom: 28px;
+}
+
+.admin-stat-card {
+    position: relative;
+
+    overflow: hidden;
+
+    min-height: 130px;
+
+    border:
+        1px solid
+        var(--theme-border);
+
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            180deg,
+            var(--theme-surface),
+            var(--theme-surface-soft)
+        );
+
+    box-shadow:
+        var(--theme-shadow);
+
+    transition:
+        transform 0.22s ease,
+        border-color 0.22s ease,
+        box-shadow 0.22s ease;
+}
+
+.admin-stat-card:hover {
+    transform: translateY(-3px);
+
+    border-color:
+        var(--theme-primary);
+
+    box-shadow:
+        0 12px 28px
+        rgba(37, 99, 235, 0.10);
+}
+
+.admin-stat-card::after {
+    content: "";
+
+    position: absolute;
+
+    top: -45px;
+    right: -45px;
+
+    width: 110px;
+    height: 110px;
+
+    border-radius: 50%;
+
+    background:
+        var(--theme-primary-soft);
+
+    opacity: 0.75;
+
+    pointer-events: none;
+}
+
+.admin-stat-body {
+    position: relative;
+
+    height: 100%;
+
+    padding: 20px;
+
+    z-index: 1;
+}
+
+.admin-stat-label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: var(--theme-text-secondary);
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+}
+
+.admin-stat-value {
+    margin: 0;
+
+    color: var(--theme-text);
+
+    font-size: 28px;
+    font-weight: 800;
+
+    line-height: 1.1;
+}
+
+.admin-stat-value.currency {
+    font-size: 21px;
+}
+
+
+/* =========================================================
+   STAT COLOR
+========================================================= */
+
+.admin-stat-card.warning .admin-stat-value {
+    color: #f59e0b;
+}
+
+.admin-stat-card.success .admin-stat-value {
+    color: #059669;
+}
+
+.admin-stat-card.primary .admin-stat-value {
+    color: var(--theme-primary);
+}
+
+
+/* =========================================================
+   SHORTCUT SECTION
+========================================================= */
+
+.admin-shortcut-section {
+    margin-bottom: 30px;
+}
+
+.admin-shortcut-title {
+    margin: 0 0 14px;
+
+    color: var(--theme-text);
+
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.admin-shortcut-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(6, minmax(0, 1fr));
+
+    gap: 14px;
+}
+
+.admin-shortcut-card {
+    position: relative;
+
+    min-height: 125px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding: 16px 10px;
+
+    border:
+        1px solid
+        var(--theme-border);
+
+    border-radius: 15px;
+
+    background:
+        var(--theme-surface);
+
+    color: var(--theme-text);
+
+    text-decoration: none;
+
+    box-shadow:
+        0 5px 18px
+        rgba(15, 23, 42, 0.045);
+
+    transition:
+        transform 0.22s ease,
+        border-color 0.22s ease,
+        background 0.22s ease,
+        box-shadow 0.22s ease;
+}
+
+.admin-shortcut-card:hover {
+    transform: translateY(-4px);
+
+    border-color:
+        var(--theme-primary);
+
+    background:
+        var(--theme-primary-soft);
+
+    color:
+        var(--theme-text);
+
+    box-shadow:
+        0 12px 26px
+        rgba(37, 99, 235, 0.10);
+}
+
+.admin-shortcut-icon {
+    width: 48px;
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 10px;
+
+    border-radius: 13px;
+
+    background:
+        var(--theme-primary-soft);
+
+    color:
+        var(--theme-primary);
+
+    font-size: 18px;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.admin-shortcut-card:hover
+.admin-shortcut-icon {
+    transform: translateY(-2px);
+
+    background:
+        var(--theme-primary);
+
+    color:
+        #fff;
+}
+
+.admin-shortcut-label {
+    margin: 0;
+
+    color:
+        var(--theme-text);
+
+    font-size: 11px;
+    font-weight: 750;
+
+    text-align: center;
+}
+
+.admin-shortcut-badge {
+    position: absolute;
+
+    top: 8px;
+    right: 8px;
+
+    min-width: 20px;
+    min-height: 20px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 6px;
+
+    border-radius: 999px;
+
+    background:
+        #dc2626;
+
+    color:
+        #fff;
+
+    font-size: 9px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   RECENT ORDER SECTION
+========================================================= */
+
+.admin-recent-order-card {
+    overflow: hidden;
+
+    border:
+        1px solid
+        var(--theme-border) !important;
+
+    border-radius: 16px !important;
+
+    background:
+        var(--theme-surface);
+
+    box-shadow:
+        var(--theme-shadow);
+}
+
+.admin-recent-order-header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 16px 18px;
+
+    background:
+        var(--theme-surface-soft);
+
+    border-bottom:
+        1px solid
+        var(--theme-border-soft);
+}
+
+.admin-recent-order-title {
+    margin: 0;
+
+    color:
+        var(--theme-text);
+
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.admin-recent-order-body {
+    padding: 0;
+
+    overflow-x: auto;
+}
+
+
+/* =========================================================
+   RECENT ORDER TABLE
+========================================================= */
+
+.admin-recent-order-table {
+    width: 100%;
+
+    margin: 0;
+
+    color:
+        var(--theme-text);
+
+    vertical-align: middle;
+}
+
+.admin-recent-order-table > :not(caption) > * > * {
+    padding:
+        13px
+        18px;
+
+    background:
+        transparent;
+
+    border-bottom:
+        1px solid
+        var(--theme-border-soft);
+
+    color:
+        var(--theme-text);
+}
+
+.admin-recent-order-table thead th {
+    color:
+        var(--theme-text-secondary);
+
+    font-size: 10px;
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.6px;
+
+    white-space: nowrap;
+}
+
+.admin-recent-order-table tbody td {
+    font-size: 11px;
+}
+
+.admin-recent-order-table tbody tr {
+    transition:
+        background 0.2s ease;
+}
+
+.admin-recent-order-table tbody tr:hover {
+    background:
+        var(--theme-surface-soft);
+}
+
+.admin-recent-order-invoice {
+    color:
+        var(--theme-primary);
+
+    font-family:
+        monospace;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.admin-recent-order-game {
+    color:
+        var(--theme-text);
+
+    font-weight: 650;
+}
+
+.admin-recent-order-total {
+    color:
+        var(--theme-text);
+
+    font-weight: 750;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   ORDER STATUS
+========================================================= */
+
+.admin-order-status {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 5px;
+
+    min-height: 24px;
+
+    padding: 0 8px;
+
+    border-radius: 999px;
+
+    font-size: 9px;
+    font-weight: 750;
+
+    white-space: nowrap;
+}
+
+.admin-order-status.waiting {
+    background:
+        #f1f5f9;
+
+    color:
+        #475569;
+}
+
+.admin-order-status.paid {
+    background:
+        var(--theme-primary-soft);
+
+    color:
+        var(--theme-primary);
+}
+
+.admin-order-status.processing {
+    background:
+        #fff7ed;
+
+    color:
+        #c2410c;
+}
+
+.admin-order-status.completed {
+    background:
+        #ecfdf5;
+
+    color:
+        #047857;
+}
+
+.admin-order-status.cancelled {
+    background:
+        #fef2f2;
+
+    color:
+        #dc2626;
+}
+
+.admin-order-status.success {
+    background:
+        #ecfdf5;
+
+    color:
+        #047857;
+}
+
+
+/* =========================================================
+   DARK MODE — SEMANTIC STATUS
+========================================================= */
+
+[data-theme="dark"] .admin-order-status.waiting {
+    background:
+        rgba(148, 163, 184, 0.12);
+
+    color:
+        #cbd5e1;
+}
+
+[data-theme="dark"] .admin-order-status.processing {
+    background:
+        rgba(245, 158, 11, 0.12);
+
+    color:
+        #fbbf24;
+}
+
+[data-theme="dark"] .admin-order-status.completed,
+[data-theme="dark"] .admin-order-status.success {
+    background:
+        rgba(16, 185, 129, 0.12);
+
+    color:
+        #6ee7b7;
+}
+
+[data-theme="dark"] .admin-order-status.cancelled {
+    background:
+        rgba(220, 38, 38, 0.12);
+
+    color:
+        #fca5a5;
+}
+
+
+/* =========================================================
+   RESPONSIVE — 1200
+========================================================= */
+
+@media (max-width: 1200px) {
+
+    .admin-dashboard-container {
+        padding:
+            0
+            20px;
+    }
+
+    .admin-shortcut-grid {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — TABLET
+========================================================= */
+
+@media (max-width: 992px) {
+
+    .admin-dashboard-page {
+        padding-top: 18px;
+    }
+
+    .admin-stat-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .admin-shortcut-grid {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .admin-dashboard-page {
+        padding:
+            14px
+            0
+            40px;
+    }
+
+    .admin-dashboard-container {
+        padding:
+            0
+            11px;
+    }
+
+    .admin-dashboard-title {
+        font-size: 21px;
+    }
+
+    .admin-dashboard-subtitle {
+        font-size: 10px;
+    }
+
+
+    /* ---------------------------------------------
+       STAT
+    --------------------------------------------- */
+
+    .admin-stat-grid {
+        gap: 10px;
+
+        margin-bottom: 22px;
+    }
+
+    .admin-stat-card {
+        min-height: 105px;
+
+        border-radius: 13px;
+    }
+
+    .admin-stat-body {
+        padding: 13px;
+    }
+
+    .admin-stat-label {
+        font-size: 8px;
+    }
+
+    .admin-stat-value {
+        font-size: 22px;
+    }
+
+    .admin-stat-value.currency {
+        font-size: 15px;
+    }
+
+
+    /* ---------------------------------------------
+       SHORTCUT
+    --------------------------------------------- */
+
+    .admin-shortcut-section {
+        margin-bottom: 22px;
+    }
+
+    .admin-shortcut-title {
+        margin-bottom: 11px;
+
+        font-size: 15px;
+    }
+
+    .admin-shortcut-grid {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+
+        gap: 8px;
+    }
+
+    .admin-shortcut-card {
+        min-height: 95px;
+
+        padding:
+            10px
+            6px;
+
+        border-radius: 11px;
+    }
+
+    .admin-shortcut-icon {
+        width: 38px;
+        height: 38px;
+
+        margin-bottom: 7px;
+
+        border-radius: 10px;
+
+        font-size: 14px;
+    }
+
+    .admin-shortcut-label {
+        font-size: 9px;
+    }
+
+    .admin-shortcut-badge {
+        top: 5px;
+        right: 5px;
+
+        min-width: 17px;
+        min-height: 17px;
+
+        padding: 0 5px;
+
+        font-size: 7px;
+    }
+
+
+    /* ---------------------------------------------
+       RECENT ORDER
+    --------------------------------------------- */
+
+    .admin-recent-order-card {
+        border-radius: 13px !important;
+    }
+
+    .admin-recent-order-header {
+        padding:
+            12px
+            13px;
+    }
+
+    .admin-recent-order-title {
+        font-size: 12px;
+    }
+
+    .admin-recent-order-table > :not(caption) > * > * {
+        padding:
+            10px
+            12px;
+    }
+
+    .admin-recent-order-table thead th {
+        font-size: 8px;
+    }
+
+    .admin-recent-order-table tbody td {
+        font-size: 9px;
+    }
+
+    .admin-order-status {
+        min-height: 20px;
+
+        padding:
+            0
+            6px;
+
+        font-size: 7px;
+    }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .admin-dashboard-container {
+        padding:
+            0
+            8px;
+    }
+
+    .admin-dashboard-title {
+        font-size: 19px;
+    }
+
+    .admin-dashboard-subtitle {
+        font-size: 9px;
+    }
+
+    .admin-stat-card {
+        min-height: 98px;
+    }
+
+    .admin-stat-body {
+        padding: 11px;
+    }
+
+    .admin-stat-value {
+        font-size: 19px;
+    }
+
+    .admin-stat-value.currency {
+        font-size: 13px;
+    }
+
+    .admin-shortcut-grid {
+        gap: 7px;
+    }
+
+    .admin-shortcut-card {
+        min-height: 88px;
+    }
+
+    .admin-shortcut-icon {
+        width: 34px;
+        height: 34px;
+
+        font-size: 12px;
+    }
+
+    .admin-shortcut-label {
+        font-size: 8px;
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL PHONE
+========================================================= */
+
+@media (max-width: 360px) {
+
+    .admin-dashboard-container {
+        padding:
+            0
+            6px;
+    }
+
+    .admin-stat-grid {
+        gap: 7px;
+    }
+
+    .admin-stat-card {
+        min-height: 92px;
+    }
+
+    .admin-stat-body {
+        padding: 9px;
+    }
+
+    .admin-stat-label {
+        font-size: 7px;
+    }
+
+    .admin-stat-value {
+        font-size: 17px;
+    }
+
+    .admin-shortcut-grid {
+        gap: 5px;
+    }
+
+    .admin-shortcut-card {
+        min-height: 82px;
+
+        padding:
+            8px
+            4px;
+    }
+
+    .admin-shortcut-icon {
+        width: 30px;
+        height: 30px;
+
+        margin-bottom: 5px;
+
+        font-size: 11px;
+    }
+
+    .admin-shortcut-label {
+        font-size: 7px;
+    }
+
+    .admin-recent-order-table > :not(caption) > * > * {
+        padding:
+            8px
+            9px;
+    }
+
+}
