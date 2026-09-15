@@ -6,5 +6,19 @@
 @import url("./layout.css");
 @import url("./theme.css");
 
-/* ADMIN COMPONENTS */
+
+/* =========================================================
+   ADMIN COMPONENTS
+========================================================= */
+
 @import url("./admin/admin-dashboard.css");
+@import url("./admin/admin-topbar.css");
+@import url("./admin/admin-sidebar.css");
+@import url("./admin/admin-footer.css");
+
+
+/* =========================================================
+   ADMIN PAGES
+========================================================= */
+
+@import url("./admin/top-seller.css");

@@ -58,58 +58,6 @@
 
 
         {{-- =====================================================
-             CENTER : NAVIGATION
-        ====================================================== --}}
-
-        <nav class="topup-topbar-nav d-none d-lg-block">
-
-            <ul>
-
-                <li>
-                    <a href="{{ url('/') }}">
-                        <i class="fa-solid fa-house"></i>
-                        Dashboard
-                    </a>
-                </li>
-
-
-                <li>
-                    <a href="#">
-                        <i class="fa-solid fa-gamepad"></i>
-                        Games
-                    </a>
-                </li>
-
-
-                <li>
-                    <a href="#">
-                        <i class="fa-solid fa-cart-shopping"></i>
-                        Orders
-                    </a>
-                </li>
-
-
-                <li>
-                    <a href="#">
-                        <i class="fa-solid fa-users"></i>
-                        Users
-                    </a>
-                </li>
-
-
-                <li>
-                    <a href="#">
-                        <i class="fa-solid fa-chart-line"></i>
-                        Reports
-                    </a>
-                </li>
-
-            </ul>
-
-        </nav>
-
-
-        {{-- =====================================================
              RIGHT : NOTIFICATION + USER
         ====================================================== --}}
 

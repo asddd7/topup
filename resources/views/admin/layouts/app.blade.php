@@ -14,36 +14,38 @@ content="{{ csrf_token() }}">
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
 
-<link href="{{ asset('assets/css/app.css') }}" rel="stylesheet">
+<link
+    href="{{ asset('assets/css/admin.css') }}"
+    rel="stylesheet"
+>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 @stack('styles')
-<link 
-href="{{ asset('assets/css/footer.css') }}"
-rel="stylesheet">
 
-@include('admin.layouts.topbar')
+
 </head>
-
 <body class="admin-layout">
 
-<div class="page-wrapper">
-@include('admin.layouts.sidebar')
+    @include('admin.layouts.topbar')
 
-<main class="main-content">
-    <div class="content-wrapper">
-        @yield('content')
+    <div class="page-wrapper">
+
+        @include('admin.layouts.sidebar')
+
+        <main class="main-content">
+            <div class="content-wrapper">
+                @yield('content')
+            </div>
+        </main>
+
     </div>
-</main>
 
-</div>
+    @auth
+        @include('profile.modal')
+    @endauth
 
-@auth
-    @include('profile.modal')
-@endauth
-
-@include('admin.layouts.footer')
+    @include('admin.layouts.footer')
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 

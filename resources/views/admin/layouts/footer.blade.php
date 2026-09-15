@@ -1,27 +1,28 @@
-<footer class="topup-footer">
+<footer class="admin-footer">
 
-    <div class="topup-footer-container">
+    <div class="admin-footer-container">
 
-        {{-- ============================= --}}
-        {{-- FOOTER TOP --}}
-        {{-- ============================= --}}
-        <div class="topup-footer-top">
+        {{-- =====================================================
+             LEFT
+        ====================================================== --}}
 
-            {{-- BRAND --}}
-            <div class="topup-footer-brand">
+        <div class="admin-footer-brand">
+
+            <div class="admin-footer-logo">
 
                 @if(setting('app_logo'))
 
                     <img
                         src="{{ asset('storage/' . setting('app_logo')) }}"
                         alt="{{ setting('app_name', 'TOPUP') }}"
-                        class="topup-footer-logo"
                     >
 
                 @else
 
-                    <div class="topup-footer-logo-text">
-                        {{ setting('app_name', 'TOPUP') }}
+                    <div class="admin-footer-logo-icon">
+
+                        <i class="fa-solid fa-gamepad"></i>
+
                     </div>
 
                 @endif
@@ -29,95 +30,51 @@
             </div>
 
 
-            {{-- SOCIAL MEDIA --}}
-            <ul class="topup-footer-social">
+            <div>
 
-                @if(setting('facebook'))
-                    <li>
-                        <a
-                            href="{{ setting('facebook') }}"
-                            target="_blank"
-                            rel="noreferrer"
-                            aria-label="Facebook"
-                        >
-                            <i class="fa-brands fa-facebook-f"></i>
-                        </a>
-                    </li>
-                @endif
+                <strong class="admin-footer-name">
 
+                    {{ setting('app_name', 'TOPUP') }}
 
-                @if(setting('instagram'))
-                    <li>
-                        <a
-                            href="{{ setting('instagram') }}"
-                            target="_blank"
-                            rel="noreferrer"
-                            aria-label="Instagram"
-                        >
-                            <i class="fa-brands fa-instagram"></i>
-                        </a>
-                    </li>
-                @endif
+                </strong>
 
+                <span class="admin-footer-label">
 
-                @if(setting('youtube'))
-                    <li>
-                        <a
-                            href="{{ setting('youtube') }}"
-                            target="_blank"
-                            rel="noreferrer"
-                            aria-label="YouTube"
-                        >
-                            <i class="fa-brands fa-youtube"></i>
-                        </a>
-                    </li>
-                @endif
+                    Admin Panel
 
+                </span>
 
-                @if(setting('whatsapp'))
-                    <li>
-                        <a
-                            href="https://wa.me/{{ setting('whatsapp') }}"
-                            target="_blank"
-                            rel="noreferrer"
-                            aria-label="WhatsApp"
-                        >
-                            <i class="fa-brands fa-whatsapp"></i>
-                        </a>
-                    </li>
-                @endif
-
-            </ul>
+            </div>
 
         </div>
 
 
-        {{-- ============================= --}}
-        {{-- FOOTER BOTTOM --}}
-        {{-- ============================= --}}
-        <div class="topup-footer-bottom">
+        {{-- =====================================================
+             CENTER / COPYRIGHT
+        ====================================================== --}}
 
-            <p>
-                &copy; {{ date('Y') }}
-                {{ setting('app_name', 'TOPUP') }}.
-                All rights reserved.
-            </p>
+        <p class="admin-footer-copyright">
 
-            <div class="topup-footer-contact">
+            &copy; {{ date('Y') }}
 
-                @if(setting('whatsapp'))
+            {{ setting('app_name', 'TOPUP') }}.
 
-                    <a
-                        href="https://wa.me/{{ setting('whatsapp') }}"
-                        target="_blank"
-                    >
-                        <i class="fa-brands fa-whatsapp"></i>
-                        WhatsApp
-                    </a>
+            All rights reserved.
 
-                @endif
+        </p>
 
-            </div>
+
+        {{-- =====================================================
+             RIGHT / STATUS
+        ====================================================== --}}
+
+        <div class="admin-footer-status">
+
+            <span class="admin-footer-status-dot"></span>
+
+            <span>
+                System Online
+            </span>
 
         </div>
 

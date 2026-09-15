@@ -1,0 +1,665 @@
+/* =========================================================
+   ADMIN TOPBAR
+========================================================= */
+
+.admin-layout .topup-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1035;
+
+    width: 100%;
+
+    background:
+        color-mix(
+            in srgb,
+            var(--theme-surface) 94%,
+            transparent
+        );
+
+    border-bottom:
+        1px solid
+        var(--theme-border);
+
+    box-shadow:
+        0 4px 18px
+        rgba(15, 23, 42, 0.045);
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+.admin-layout .topup-topbar-container {
+    width: 100%;
+    min-height: 66px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding:
+        0
+        24px;
+}
+
+
+/* =========================================================
+   LEFT
+========================================================= */
+
+.admin-layout .topup-topbar-left {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+.admin-layout .topup-brand {
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    color: var(--theme-text);
+
+    text-decoration: none;
+}
+
+.admin-layout .topup-brand-logo {
+    width: auto;
+    max-width: 42px;
+    max-height: 42px;
+
+    object-fit: contain;
+}
+
+.admin-layout .topup-brand-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 11px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--theme-primary),
+            var(--theme-primary-hover)
+        );
+
+    color: #fff;
+
+    font-size: 17px;
+
+    box-shadow:
+        0 7px 16px
+        rgba(37, 99, 235, 0.20);
+}
+
+.admin-layout .topup-brand-info {
+    min-width: 0;
+}
+
+.admin-layout .topup-brand-name {
+    overflow: hidden;
+
+    color: var(--theme-text);
+
+    font-size: 14px;
+    font-weight: 800;
+
+    line-height: 1.2;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.admin-layout .topup-brand-info small {
+    display: block;
+
+    margin-top: 3px;
+
+    color: var(--theme-text-muted);
+
+    font-size: 9px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   MOBILE MENU
+========================================================= */
+
+.admin-layout .topup-mobile-menu {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border:
+        1px solid
+        var(--theme-border);
+
+    border-radius: 10px;
+
+    background:
+        var(--theme-surface);
+
+    color:
+        var(--theme-text-secondary);
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.admin-layout .topup-mobile-menu:hover {
+    background:
+        var(--theme-primary-soft);
+
+    color:
+        var(--theme-primary);
+
+    border-color:
+        var(--theme-primary);
+}
+
+
+/* =========================================================
+   RIGHT
+========================================================= */
+
+.admin-layout .topup-topbar-right {
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+}
+
+
+/* =========================================================
+   NOTIFICATION
+========================================================= */
+
+.admin-layout .topup-notification-btn {
+    position: relative;
+
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border:
+        1px solid
+        var(--theme-border);
+
+    border-radius: 11px;
+
+    background:
+        var(--theme-surface);
+
+    color:
+        var(--theme-text-secondary);
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.admin-layout .topup-notification-btn:hover {
+    background:
+        var(--theme-primary-soft);
+
+    color:
+        var(--theme-primary);
+
+    border-color:
+        var(--theme-primary);
+
+    transform: translateY(-1px);
+}
+
+.admin-layout .topup-notification-badge {
+    position: absolute;
+
+    top: -4px;
+    right: -4px;
+
+    min-width: 17px;
+    height: 17px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 4px;
+
+    border-radius: 999px;
+
+    background:
+        #dc2626;
+
+    color:
+        #fff;
+
+    font-size: 8px;
+    font-weight: 800;
+
+    border:
+        2px solid
+        var(--theme-surface);
+}
+
+
+/* =========================================================
+   USER BUTTON
+========================================================= */
+
+.admin-layout .topup-user-button {
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    padding:
+        5px
+        8px;
+
+    border:
+        1px solid
+        var(--theme-border);
+
+    border-radius: 12px;
+
+    background:
+        var(--theme-surface);
+
+    color:
+        var(--theme-text);
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.admin-layout .topup-user-button:hover,
+.admin-layout .topup-user-button.show {
+    background:
+        var(--theme-surface-soft);
+
+    border-color:
+        var(--theme-primary);
+
+    box-shadow:
+        0 5px 15px
+        rgba(37, 99, 235, 0.08);
+}
+
+.admin-layout .topup-user-avatar {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--theme-primary),
+            var(--theme-primary-hover)
+        );
+
+    color: #fff;
+
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.admin-layout .topup-user-avatar.large {
+    width: 42px;
+    height: 42px;
+
+    border-radius: 11px;
+}
+
+.admin-layout .topup-user-info {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    text-align: left;
+}
+
+.admin-layout .topup-user-info strong {
+    overflow: hidden;
+
+    color: var(--theme-text);
+
+    font-size: 11px;
+    font-weight: 750;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.admin-layout .topup-user-info small {
+    margin-top: 2px;
+
+    overflow: hidden;
+
+    color: var(--theme-text-muted);
+
+    font-size: 8px;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.admin-layout .topup-user-arrow {
+    color:
+        var(--theme-text-muted);
+
+    font-size: 9px;
+}
+
+
+/* =========================================================
+   DROPDOWN
+========================================================= */
+
+.admin-layout .topup-notification-dropdown,
+.admin-layout .topup-user-dropdown {
+    min-width: 270px;
+
+    margin-top: 8px !important;
+
+    padding: 7px;
+
+    border:
+        1px solid
+        var(--theme-border);
+
+    border-radius: 14px;
+
+    background:
+        var(--theme-surface);
+
+    box-shadow:
+        0 16px 40px
+        rgba(15, 23, 42, 0.12);
+}
+
+.admin-layout .topup-user-dropdown {
+    min-width: 240px;
+}
+
+.admin-layout .topup-notification-header {
+    padding:
+        7px
+        9px;
+}
+
+.admin-layout .topup-notification-header > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+}
+
+.admin-layout .topup-notification-header strong,
+.admin-layout .topup-user-dropdown-header strong {
+    color:
+        var(--theme-text);
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.admin-layout .topup-user-dropdown-header {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding:
+        8px
+        9px;
+}
+
+.admin-layout .topup-user-dropdown-header small {
+    display: block;
+
+    margin-top: 3px;
+
+    color:
+        var(--theme-text-muted);
+
+    font-size: 8px;
+}
+
+.admin-layout .topup-notification-item,
+.admin-layout .topup-user-dropdown .dropdown-item {
+    border-radius: 9px;
+
+    color:
+        var(--theme-text-secondary);
+
+    font-size: 11px;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.admin-layout .topup-user-dropdown .dropdown-item {
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    padding:
+        8px
+        9px;
+}
+
+.admin-layout .topup-user-dropdown .dropdown-item i {
+    width: 15px;
+
+    text-align: center;
+
+    color:
+        var(--theme-text-muted);
+}
+
+.admin-layout .topup-notification-item:hover,
+.admin-layout .topup-user-dropdown .dropdown-item:hover {
+    background:
+        var(--theme-primary-soft);
+
+    color:
+        var(--theme-primary);
+}
+
+.admin-layout .topup-user-dropdown .dropdown-item:hover i {
+    color:
+        var(--theme-primary);
+}
+
+.admin-layout .topup-notification-title {
+    color:
+        var(--theme-text);
+
+    font-size: 10px;
+    font-weight: 750;
+}
+
+.admin-layout .topup-notification-message {
+    margin-top: 3px;
+
+    color:
+        var(--theme-text-secondary);
+
+    font-size: 9px;
+
+    line-height: 1.4;
+}
+
+.admin-layout .topup-notification-time {
+    display: block;
+
+    margin-top: 4px;
+
+    color:
+        var(--theme-text-muted);
+
+    font-size: 8px;
+}
+
+.admin-layout .topup-no-notification {
+    padding:
+        30px
+        15px;
+
+    text-align: center;
+
+    color:
+        var(--theme-text-muted);
+
+    font-size: 10px;
+}
+
+.admin-layout .topup-no-notification i {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-size: 22px;
+}
+
+.admin-layout .topup-user-dropdown .dropdown-divider {
+    border-color:
+        var(--theme-border);
+    opacity: 1;
+}
+
+.admin-layout .topup-user-dropdown .topup-logout:hover {
+    background:
+        rgba(220, 38, 38, 0.08);
+
+    color:
+        #dc2626;
+}
+
+.admin-layout .topup-user-dropdown .topup-logout:hover i {
+    color:
+        #dc2626;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 767px) {
+
+    .admin-layout .topup-topbar-container {
+        min-height: 58px;
+
+        padding:
+            0
+            11px;
+    }
+
+    .admin-layout .topup-topbar-left {
+        gap: 7px;
+    }
+
+    .admin-layout .topup-brand {
+        gap: 8px;
+    }
+
+    .admin-layout .topup-brand-logo,
+    .admin-layout .topup-brand-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .admin-layout .topup-brand-name {
+        font-size: 12px;
+    }
+
+    .admin-layout .topup-brand-info small {
+        font-size: 7px;
+    }
+
+    .admin-layout .topup-mobile-menu {
+        width: 34px;
+        height: 34px;
+    }
+
+    .admin-layout .topup-notification-btn {
+        width: 35px;
+        height: 35px;
+    }
+
+    .admin-layout .topup-user-avatar {
+        width: 30px;
+        height: 30px;
+
+        border-radius: 8px;
+
+        font-size: 10px;
+    }
+
+    .admin-layout .topup-user-button {
+        padding: 4px;
+        border-radius: 9px;
+    }
+
+    .admin-layout .topup-notification-dropdown,
+    .admin-layout .topup-user-dropdown {
+        max-width: calc(100vw - 20px);
+    }
+}
+
+
+@media (max-width: 480px) {
+
+    .admin-layout .topup-brand-info small {
+        display: none;
+    }
+
+    .admin-layout .topup-brand-name {
+        max-width: 125px;
+    }
+
+}

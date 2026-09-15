@@ -1,222 +1,408 @@
 <div
-class="offcanvas-lg offcanvas-start bg-white shadow"
+    class="offcanvas-lg offcanvas-start"
+    tabindex="-1"
+    id="sidebar"
+    aria-labelledby="adminSidebarLabel"
+>
 
-tabindex="-1"
+    {{-- =====================================================
+         SIDEBAR HEADER
+    ====================================================== --}}
 
-id="sidebar"
+    <div class="offcanvas-header">
 
-style="width:260px;">
+        <div class="d-flex align-items-center gap-2">
 
-<div class="offcanvas-header">
+            <div class="admin-sidebar-brand-icon">
 
-    <h4 class="fw-bold text-primary">
+                @if(setting('app_logo'))
 
-       {{ setting('app_name') }} | ADMIN
+                    <img
+                        src="{{ asset('storage/' . setting('app_logo')) }}"
+                        alt="{{ setting('app_name', 'TOPUP') }}"
+                    >
 
-    </h4>
+                @else
 
-</div>
+                    <i class="fa-solid fa-gamepad"></i>
 
-<div class="offcanvas-body p-0">
+                @endif
 
-    <div class="list-group list-group-flush">
+            </div>
 
-        <a href="{{ route('admin.dashboard') }}"
-           class="list-group-item">
 
-            <i class="fa-solid fa-house me-2"></i>
+            <div>
 
-            Dashboard
+                <h4
+                    id="adminSidebarLabel"
+                    class="admin-sidebar-brand-title"
+                >
+                    {{ setting('app_name', 'TOPUP') }}
+                </h4>
 
-        </a>
+                <small class="admin-sidebar-brand-subtitle">
+                    ADMIN PANEL
+                </small>
 
+            </div>
 
-        {{-- GAME --}}
+        </div>
 
-        <a href="{{ route('admin.game.index') }}"
-           class="list-group-item">
 
-            <i class="fa-solid fa-store me-2"></i>
+        {{-- CLOSE MOBILE --}}
 
-            Game
-
-        </a>
-
-
-        {{-- MOO GOLD PRODUCT MAPPING --}}
-
-        <a href="{{ route('admin.moogold.product-mapping.index') }}"
-        class="list-group-item">
-
-            <i class="fa-solid fa-link me-2"></i>
-
-            MooGold Product Mapping
-
-        </a>
-
-
-        {{-- KATEGORI ITEM --}}
-
-        <a href="{{ route('admin.item-category.index') }}"
-           class="list-group-item">
-
-            <i class="fa-solid fa-layer-group me-2"></i>
-
-            Kategori Item
-
-        </a>
-
-
-        {{-- STOCK --}}
-
-        <a href="{{ route('admin.stock.index') }}"
-           class="list-group-item">
-
-            <i class="fa-solid fa-boxes-stacked me-2"></i>
-
-            Manajemen Stock
-
-        </a>
-
-
-        {{-- DISKON --}}
-
-        <a href="{{ route('admin.discount.index') }}"
-           class="list-group-item">
-
-            <i class="fa-solid fa-ticket me-2"></i>
-
-            Voucher Diskon
-
-        </a>
-
-
-        {{-- BANNER --}}
-
-        <a href="{{ route('admin.banner.index') }}"
-           class="list-group-item">
-
-            <i class="fa-solid fa-images me-2"></i>
-
-            Banner
-
-        </a>
-
-
-        {{-- PAYMENT --}}
-
-        <a href="{{ route('admin.payment.index') }}"
-           class="list-group-item">
-
-            <i class="fa-solid fa-credit-card me-2"></i>
-
-            Metode Pembayaran
-
-        </a>
-
-
-        {{-- ORDER --}}
-
-        <a href="{{ route('admin.order.index') }}"
-           class="list-group-item">
-
-            <i class="fa-solid fa-shopping-cart me-2"></i>
-
-            Pesanan
-
-
-            @php
-
-                $waitingPayment =
-                    \App\Models\Order::where(
-                        'status',
-                        'Paid'
-                    )->count();
-
-            @endphp
-
-
-            @if($waitingPayment)
-
-                <span class="badge bg-danger float-end">
-
-                    {{ $waitingPayment }}
-
-                </span>
-
-            @endif
-
-        </a>
-
-
-        {{-- PROFILE --}}
-
-        <a href="#"
-           class="list-group-item"
-           data-bs-toggle="modal"
-           data-bs-target="#adminProfileModal">
-
-            <i class="fa-solid fa-user-shield me-2"></i>
-
-            Profil Admin
-
-        </a>
-
-
-        {{-- SETTING --}}
-
-        <a href="{{ route('admin.setting.index') }}"
-           class="list-group-item">
-
-            <i class="fa-solid fa-gears me-2"></i>
-
-            Pengaturan
-
-        </a>
-
-
-        {{-- ACTIVITY LOG --}}
-
-        <a href="{{ route('admin.activity-log.index') }}"
-           class="list-group-item">
-
-            <i class="fa-solid fa-clock-rotate-left me-2"></i>
-
-            Activity Log
-
-        </a>
-
-
-        {{-- LOGOUT --}}
-
-        @auth
-
-        <form
-            action="{{ route('logout') }}"
-            method="POST">
-
-            @csrf
-
-            <button
-                class="list-group-item
-                       list-group-item-action
-                       text-danger
-                       border-0
-                       w-100
-                       text-start">
-
-                <i class="fa-solid fa-right-from-bracket me-2"></i>
-
-                Logout
-
-            </button>
-
-        </form>
-
-        @endauth
+        <button
+            type="button"
+            class="btn-close d-lg-none"
+            data-bs-dismiss="offcanvas"
+            aria-label="Tutup"
+        ></button>
 
     </div>
 
-</div>
+
+    {{-- =====================================================
+         SIDEBAR BODY
+    ====================================================== --}}
+
+    <div class="offcanvas-body p-0">
+
+        <nav class="admin-sidebar-nav">
+
+            {{-- =================================================
+                 OVERVIEW
+            ================================================== --}}
+
+            <div class="admin-sidebar-group">
+
+                <div class="admin-sidebar-group-title">
+                    Overview
+                </div>
+
+
+                {{-- DASHBOARD --}}
+
+                <a
+                    href="{{ route('admin.dashboard') }}"
+                    class="admin-sidebar-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
+                >
+
+                    <i class="fa-solid fa-house"></i>
+
+                    <span>
+                        Dashboard
+                    </span>
+
+                </a>
+
+            </div>
+
+
+            {{-- =================================================
+                 PRODUCT
+            ================================================== --}}
+
+            <div class="admin-sidebar-group">
+
+                <div class="admin-sidebar-group-title">
+                    Product
+                </div>
+
+
+                {{-- GAME --}}
+
+                <a
+                    href="{{ route('admin.game.index') }}"
+                    class="admin-sidebar-link {{ request()->routeIs('admin.game.*') ? 'active' : '' }}"
+                >
+
+                    <i class="fa-solid fa-gamepad"></i>
+
+                    <span>
+                        Game
+                    </span>
+
+                </a>
+
+
+                {{-- MOO GOLD PRODUCT MAPPING --}}
+
+                <a
+                    href="{{ route('admin.moogold.product-mapping.index') }}"
+                    class="admin-sidebar-link {{ request()->routeIs('admin.moogold.product-mapping.*') ? 'active' : '' }}"
+                >
+
+                    <i class="fa-solid fa-link"></i>
+
+                    <span>
+                        MooGold Product Mapping
+                    </span>
+
+                </a>
+
+
+                {{-- KATEGORI ITEM --}}
+
+                <a
+                    href="{{ route('admin.item-category.index') }}"
+                    class="admin-sidebar-link {{ request()->routeIs('admin.item-category.*') ? 'active' : '' }}"
+                >
+
+                    <i class="fa-solid fa-layer-group"></i>
+
+                    <span>
+                        Kategori Item
+                    </span>
+
+                </a>
+
+
+                {{-- STOCK --}}
+
+                <a
+                    href="{{ route('admin.stock.index') }}"
+                    class="admin-sidebar-link {{ request()->routeIs('admin.stock.*') ? 'active' : '' }}"
+                >
+
+                    <i class="fa-solid fa-boxes-stacked"></i>
+
+                    <span>
+                        Manajemen Stock
+                    </span>
+
+                </a>
+
+
+                {{-- TOP SELLER --}}
+
+                <a
+                    href="{{ route('top-seller.index') }}"
+                    class="admin-sidebar-link {{ request()->routeIs('top-seller.*') ? 'active' : '' }}"
+                >
+
+                    <i class="fa-solid fa-star"></i>
+
+                    <span>
+                        Top Seller
+                    </span>
+
+                </a>
+
+            </div>
+
+
+            {{-- =================================================
+                 SALES
+            ================================================== --}}
+
+            <div class="admin-sidebar-group">
+
+                <div class="admin-sidebar-group-title">
+                    Sales
+                </div>
+
+
+                {{-- VOUCHER --}}
+
+                <a
+                    href="{{ route('admin.discount.index') }}"
+                    class="admin-sidebar-link {{ request()->routeIs('admin.discount.*') ? 'active' : '' }}"
+                >
+
+                    <i class="fa-solid fa-ticket"></i>
+
+                    <span>
+                        Voucher Diskon
+                    </span>
+
+                </a>
+
+
+                {{-- ORDER --}}
+
+                <a
+                    href="{{ route('admin.order.index') }}"
+                    class="admin-sidebar-link {{ request()->routeIs('admin.order.*') ? 'active' : '' }}"
+                >
+
+                    <i class="fa-solid fa-cart-shopping"></i>
+
+                    <span>
+                        Pesanan
+                    </span>
+
+
+                    {{-- WAITING PAYMENT / PAID --}}
+
+                    @php
+
+                        $waitingOrderCount = \App\Models\Order::where(
+                            'status',
+                            'Paid'
+                        )->count();
+
+                    @endphp
+
+
+                    @if($waitingOrderCount > 0)
+
+                        <span class="admin-sidebar-badge">
+
+                            {{ $waitingOrderCount }}
+
+                        </span>
+
+                    @endif
+
+                </a>
+
+
+                {{-- PAYMENT --}}
+
+                <a
+                    href="{{ route('admin.payment.index') }}"
+                    class="admin-sidebar-link {{ request()->routeIs('admin.payment.*') ? 'active' : '' }}"
+                >
+
+                    <i class="fa-solid fa-credit-card"></i>
+
+                    <span>
+                        Metode Pembayaran
+                    </span>
+
+                </a>
+
+            </div>
+
+
+            {{-- =================================================
+                 CONTENT
+            ================================================== --}}
+
+            <div class="admin-sidebar-group">
+
+                <div class="admin-sidebar-group-title">
+                    Content
+                </div>
+
+
+                {{-- BANNER --}}
+
+                <a
+                    href="{{ route('admin.banner.index') }}"
+                    class="admin-sidebar-link {{ request()->routeIs('admin.banner.*') ? 'active' : '' }}"
+                >
+
+                    <i class="fa-solid fa-images"></i>
+
+                    <span>
+                        Banner
+                    </span>
+
+                </a>
+
+            </div>
+
+
+            {{-- =================================================
+                 SYSTEM
+            ================================================== --}}
+
+            <div class="admin-sidebar-group">
+
+                <div class="admin-sidebar-group-title">
+                    System
+                </div>
+
+
+                {{-- SETTING --}}
+
+                <a
+                    href="{{ route('admin.setting.index') }}"
+                    class="admin-sidebar-link {{ request()->routeIs('admin.setting.*') ? 'active' : '' }}"
+                >
+
+                    <i class="fa-solid fa-gears"></i>
+
+                    <span>
+                        Pengaturan
+                    </span>
+
+                </a>
+
+
+                {{-- ACTIVITY LOG --}}
+
+                <a
+                    href="{{ route('admin.activity-log.index') }}"
+                    class="admin-sidebar-link {{ request()->routeIs('admin.activity-log.*') ? 'active' : '' }}"
+                >
+
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+
+                    <span>
+                        Activity Log
+                    </span>
+
+                </a>
+
+
+                {{-- PROFILE --}}
+
+                <a
+                    href="#"
+                    class="admin-sidebar-link"
+                    data-bs-toggle="modal"
+                    data-bs-target="#adminProfileModal"
+                >
+
+                    <i class="fa-solid fa-user-shield"></i>
+
+                    <span>
+                        Profil Admin
+                    </span>
+
+                </a>
+
+            </div>
+
+
+            {{-- =================================================
+                 LOGOUT
+            ================================================== --}}
+
+            @auth
+
+                <div class="admin-sidebar-logout-section">
+
+                    <form
+                        action="{{ route('logout') }}"
+                        method="POST"
+                    >
+
+                        @csrf
+
+                        <button
+                            type="submit"
+                            class="admin-sidebar-link admin-sidebar-logout"
+                        >
+
+                            <i class="fa-solid fa-right-from-bracket"></i>
+
+                            <span>
+                                Logout
+                            </span>
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            @endauth
+
+        </nav>
+
+    </div>
 
 </div>

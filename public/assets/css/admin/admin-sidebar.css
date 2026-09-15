@@ -1,0 +1,394 @@
+/* =========================================================
+   ADMIN SIDEBAR
+========================================================= */
+
+.admin-layout #sidebar {
+    width: 260px !important;
+
+    background:
+        var(--theme-surface) !important;
+
+    border-right:
+        1px solid
+        var(--theme-border) !important;
+
+    box-shadow:
+        8px 0 28px
+        rgba(15, 23, 42, 0.05) !important;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.admin-layout #sidebar .offcanvas-header {
+    min-height: 70px;
+
+    padding:
+        14px
+        16px;
+
+    border-bottom:
+        1px solid
+        var(--theme-border);
+}
+
+.admin-sidebar-brand-icon {
+    width: 38px;
+    height: 38px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--theme-primary),
+            var(--theme-primary-hover)
+        );
+
+    color: #fff;
+
+    font-size: 15px;
+}
+
+.admin-sidebar-brand-icon img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+}
+
+.admin-sidebar-brand-title {
+    margin: 0;
+
+    color:
+        var(--theme-text) !important;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    line-height: 1.2;
+}
+
+.admin-sidebar-brand-subtitle {
+    display: block;
+
+    margin-top: 2px;
+
+    color:
+        var(--theme-text-muted);
+
+    font-size: 7px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+}
+
+
+/* =========================================================
+   NAV
+========================================================= */
+
+.admin-sidebar-nav {
+    padding:
+        10px;
+}
+
+.admin-sidebar-group {
+    margin-bottom: 17px;
+}
+
+.admin-sidebar-group-title {
+    margin:
+        0
+        8px
+        0
+        10px;
+
+    color:
+        var(--theme-text-muted);
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   LINK
+========================================================= */
+
+.admin-sidebar-link {
+    position: relative;
+
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    min-height: 41px;
+
+    margin-bottom: 3px;
+
+    padding:
+        8px
+        10px;
+
+    border: 0 !important;
+
+    border-radius: 9px !important;
+
+    background:
+        transparent;
+
+    color:
+        var(--theme-text-secondary);
+
+    font-size: 10px;
+
+    font-weight: 650;
+
+    text-align: left;
+
+    text-decoration: none;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.admin-sidebar-link:hover {
+    background:
+        var(--theme-primary-soft);
+
+    color:
+        var(--theme-primary);
+
+    transform:
+        translateX(2px);
+}
+
+.admin-sidebar-link i {
+    width: 17px;
+
+    flex-shrink: 0;
+
+    text-align: center;
+
+    color:
+        var(--theme-text-muted);
+
+    font-size: 12px;
+
+    transition:
+        color 0.2s ease;
+}
+
+.admin-sidebar-link:hover i {
+    color:
+        var(--theme-primary);
+}
+
+
+/* =========================================================
+   ACTIVE
+========================================================= */
+
+.admin-sidebar-link.active {
+    background:
+        var(--theme-primary-soft);
+
+    color:
+        var(--theme-primary);
+
+    font-weight: 750;
+}
+
+.admin-sidebar-link.active::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 7px;
+    bottom: 7px;
+
+    width: 3px;
+
+    border-radius:
+        0
+        999px
+        999px
+        0;
+
+    background:
+        var(--theme-primary);
+}
+
+.admin-sidebar-link.active i {
+    color:
+        var(--theme-primary);
+}
+
+
+/* =========================================================
+   BADGE
+========================================================= */
+
+.admin-sidebar-badge {
+    margin-left: auto;
+
+    min-width: 18px;
+    height: 18px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding:
+        0
+        5px;
+
+    border-radius: 999px;
+
+    background:
+        #dc2626;
+
+    color:
+        #fff;
+
+    font-size: 7px;
+    font-weight: 800;
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+.admin-sidebar-logout-section {
+    margin-top: 5px;
+
+    padding-top: 10px;
+
+    border-top:
+        1px solid
+        var(--theme-border);
+}
+
+.admin-sidebar-logout {
+    color:
+        #dc2626;
+}
+
+.admin-sidebar-logout:hover {
+    background:
+        rgba(220, 38, 38, 0.08);
+
+    color:
+        #dc2626;
+
+    transform:
+        translateX(2px);
+}
+
+.admin-sidebar-logout i {
+    color:
+        #dc2626;
+}
+
+
+/* =========================================================
+   SCROLL
+========================================================= */
+
+.admin-layout #sidebar .offcanvas-body {
+    overflow-y: auto;
+}
+
+.admin-layout #sidebar .offcanvas-body::-webkit-scrollbar {
+    width: 5px;
+}
+
+.admin-layout #sidebar .offcanvas-body::-webkit-scrollbar-track {
+    background:
+        var(--theme-surface);
+}
+
+.admin-layout #sidebar .offcanvas-body::-webkit-scrollbar-thumb {
+    background:
+        var(--theme-border);
+
+    border-radius: 999px;
+}
+
+.admin-layout #sidebar .offcanvas-body::-webkit-scrollbar-thumb:hover {
+    background:
+        var(--theme-text-muted);
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 991px) {
+
+    .admin-layout #sidebar {
+        width: 275px !important;
+    }
+
+}
+
+@media (max-width: 576px) {
+
+    .admin-layout #sidebar {
+        width: 255px !important;
+    }
+
+    .admin-sidebar-nav {
+        padding:
+            8px;
+    }
+
+    .admin-sidebar-group {
+        margin-bottom: 14px;
+    }
+
+    .admin-sidebar-group-title {
+        margin-bottom: 6px;
+    }
+
+    .admin-sidebar-link {
+        min-height: 40px;
+
+        padding:
+            8px
+            9px;
+
+        font-size: 9px;
+    }
+
+    .admin-sidebar-link i {
+        font-size: 11px;
+    }
+
+}
