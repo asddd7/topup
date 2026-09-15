@@ -57,6 +57,8 @@
         @include('profile.modal')
     @endauth
 
+    @include('layouts.sidebar')    
+
     @include('layouts.footer')
 
     {{-- Bootstrap JS --}}

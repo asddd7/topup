@@ -1,138 +1,109 @@
-<div
-class="offcanvas-lg offcanvas-start bg-white shadow"
+{{-- =========================================================
+     BOTTOM NAVIGATION
+========================================================= --}}
 
-tabindex="-1"
+<nav
+    id="sidebar"
+    class="topup-bottom-nav"
+    aria-label="Navigasi utama"
+>
 
-id="sidebar"
+    <div class="topup-bottom-nav-inner">
 
-style="width:260px;">
 
-<div class="offcanvas-header">
+        {{-- DASHBOARD --}}
+        <a
+            href="{{ route('dashboard') }}"
+            class="topup-bottom-nav-item
+                {{ request()->routeIs('dashboard') ? 'active' : '' }}"
+        >
 
-    <h4 class="fw-bold text-primary">
+            <span class="topup-bottom-nav-icon">
+                <i class="fa-solid fa-house"></i>
+            </span>
 
-        {{ setting('app_name') }}
+            <span class="topup-bottom-nav-label">
+                Dashboard
+            </span>
 
-    </h4>
+        </a>
 
-</div>
 
+        {{-- PESANAN --}}
+        @auth
 
+            <a
+                href="{{ route('order.index') }}"
+                class="topup-bottom-nav-item
+                    {{ request()->routeIs('order.*') ? 'active' : '' }}"
+            >
 
-<div class="offcanvas-body p-0">
+                <span class="topup-bottom-nav-icon">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </span>
 
+                <span class="topup-bottom-nav-label">
+                    Pesanan
+                </span>
 
-<div class="list-group list-group-flush">
+            </a>
 
+        @endauth
 
 
-<a href="{{ route('dashboard') }}"
-class="list-group-item">
+        {{-- LOGIN --}}
+        @guest
 
+            <a
+                href="{{ route('login') }}"
+                class="topup-bottom-nav-item
+                    {{ request()->routeIs('login') ? 'active' : '' }}"
+            >
 
-<i class="fa-solid fa-house me-2"></i>
+                <span class="topup-bottom-nav-icon">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                </span>
 
+                <span class="topup-bottom-nav-label">
+                    Login
+                </span>
 
-Dashboard
+            </a>
 
+        @endguest
 
-</a>
 
+        {{-- LOGOUT --}}
+        @auth
 
+            <form
+                action="{{ route('logout') }}"
+                method="POST"
+                class="topup-bottom-nav-form"
+            >
 
+                @csrf
 
+                <button
+                    type="submit"
+                    class="topup-bottom-nav-item topup-bottom-nav-logout"
+                >
 
-@auth
+                    <span class="topup-bottom-nav-icon">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </span>
 
+                    <span class="topup-bottom-nav-label">
+                        Logout
+                    </span>
 
+                </button>
 
+            </form>
 
+        @endauth
 
-<a href="{{ route('order.index') }}"
-class="list-group-item">
 
+    </div>
 
-<i class="fa-solid fa-cart-shopping me-2"></i>
-
-
-Pesanan Saya
-
-
-</a>
-
-
-
-@endauth
-
-
-
-
-
-
-@guest
-
-
-<a href="{{ route('login') }}"
-class="list-group-item">
-
-
-<i class="fa-solid fa-right-to-bracket me-2"></i>
-
-
-Login
-
-
-</a>
-
-
-@endguest
-
-
-
-
-
-
-@auth
-
-
-<form
-action="{{ route('logout') }}"
-method="POST">
-
-
-@csrf
-
-
-<button
-
-class="list-group-item 
-list-group-item-action 
-text-danger 
-border-0 
-w-100 
-text-start">
-
-
-<i class="fa-solid fa-right-from-bracket me-2"></i>
-
-
-Logout
-
-
-</button>
-
-
-</form>
-
-
-@endauth
-
-
-
-</div>
-
-
-</div>
-
-
-</div>
+</nav>
