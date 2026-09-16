@@ -6,6 +6,7 @@
     width: 100%;
     max-width: 100%;
     min-width: 0;
+
     padding: 24px 0 50px;
 
     overflow-x: hidden;
@@ -23,7 +24,7 @@
 
 
 /* =========================================================
-   GLOBAL WIDTH CONTROL
+   GLOBAL BOX / WIDTH CONTROL
 ========================================================= */
 
 .admin-layout .discount-page,
@@ -39,11 +40,6 @@
     min-width: 0;
 }
 
-.admin-layout .discount-page .card {
-    max-width: 100%;
-    min-width: 0;
-}
-
 .admin-layout .discount-page .row {
     width: 100%;
     max-width: 100%;
@@ -55,6 +51,17 @@
     max-width: 100%;
 }
 
+.admin-layout .discount-page .card {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.admin-layout .discount-page .btn,
+.admin-layout .discount-page .form-control,
+.admin-layout .discount-page .form-select {
+    max-width: 100%;
+}
+
 
 /* =========================================================
    MAIN CARD
@@ -62,13 +69,16 @@
 
 .admin-layout .discount-page > .container-fluid > .card {
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
     overflow: hidden;
 
     border:
         1px solid
-        var(--theme-border);
+        var(--theme-border) !important;
 
-    border-radius: 16px;
+    border-radius: 16px !important;
 
     background:
         var(--theme-surface);
@@ -77,12 +87,22 @@
         var(--theme-shadow);
 }
 
-.admin-layout .discount-page > .container-fluid > .card > .card-header {
+.admin-layout .discount-page
+    > .container-fluid
+    > .card
+    > .card-header {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
     min-width: 0;
 
     padding:
         15px
         18px;
+
+    gap: 12px;
 
     border-bottom:
         1px solid
@@ -93,23 +113,31 @@
 
     color:
         var(--theme-text);
-
-    gap: 12px;
 }
 
-.admin-layout .discount-page > .container-fluid > .card > .card-body {
+.admin-layout .discount-page
+    > .container-fluid
+    > .card
+    > .card-body {
+
     min-width: 0;
+    max-width: 100%;
+
     padding: 18px;
 }
 
 
 /* =========================================================
-   TITLE
+   HEADER TITLE
 ========================================================= */
 
 .admin-layout .discount-page .card-header h5 {
     min-width: 0;
+    max-width: 100%;
+
     margin: 0;
+
+    overflow: hidden;
 
     color:
         var(--theme-text);
@@ -120,6 +148,7 @@
     line-height: 1.3;
 
     white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .admin-layout .discount-page .card-header h5 i {
@@ -135,7 +164,10 @@
 ========================================================= */
 
 .admin-layout .discount-page .card-header > .btn-primary {
-    flex-shrink: 0;
+    flex:
+        0
+        0
+        auto;
 
     min-height: 38px;
 
@@ -178,7 +210,8 @@
 
     color: #fff;
 
-    transform: translateY(-1px);
+    transform:
+        translateY(-1px);
 
     box-shadow:
         0 8px 18px
@@ -187,7 +220,7 @@
 
 
 /* =========================================================
-   ALERT
+   SUCCESS ALERT
 ========================================================= */
 
 .admin-layout .discount-page .alert-success {
@@ -210,20 +243,29 @@
         #047857;
 
     font-size: 11px;
-
     line-height: 1.4;
 }
 
 
 /* =========================================================
-   STATISTICS
+   STATISTICS WRAPPER
 ========================================================= */
 
 .admin-layout .discount-page .row.g-3.mb-4 {
     margin-bottom: 18px !important;
 }
 
+.admin-layout .discount-page .row.g-3.mb-4 > [class*="col-"] {
+    display: flex;
+}
+
+
+/* =========================================================
+   STATISTIC CARD
+========================================================= */
+
 .admin-layout .discount-page .row.g-3.mb-4 .card {
+    width: 100%;
     height: 100%;
 
     border:
@@ -281,7 +323,7 @@
 
 
 /* =========================================================
-   TABLE WRAPPER
+   TABLE RESPONSIVE
 ========================================================= */
 
 .admin-layout .discount-page .table-responsive {
@@ -290,6 +332,7 @@
     min-width: 0;
 
     margin: 0;
+    padding-bottom: 2px;
 
     overflow-x: auto;
     overflow-y: hidden;
@@ -306,17 +349,17 @@
 
 .admin-layout .discount-page table {
     width: 100%;
-    min-width: 1050px;
+    min-width: 1100px;
 
     margin: 0;
 
-    table-layout: auto;
+    border-color:
+        var(--theme-border);
 
     color:
         var(--theme-text);
 
-    border-color:
-        var(--theme-border);
+    table-layout: auto;
 }
 
 .admin-layout .discount-page .table > :not(caption) > * > * {
@@ -324,10 +367,10 @@
         11px
         10px;
 
+    vertical-align: middle;
+
     border-bottom-color:
         var(--theme-border-soft);
-
-    vertical-align: middle;
 
     color:
         var(--theme-text-secondary);
@@ -336,6 +379,11 @@
 
     white-space: nowrap;
 }
+
+
+/* =========================================================
+   TABLE HEADER
+========================================================= */
 
 .admin-layout .discount-page .table thead th {
     padding:
@@ -351,8 +399,9 @@
     font-size: 9px;
     font-weight: 800;
 
-    text-transform: uppercase;
     letter-spacing: 0.25px;
+
+    text-transform: uppercase;
 
     white-space: nowrap;
 
@@ -360,6 +409,11 @@
         1px solid
         var(--theme-border);
 }
+
+
+/* =========================================================
+   TABLE ROW
+========================================================= */
 
 .admin-layout .discount-page .table tbody tr {
     background:
@@ -388,11 +442,16 @@
 
 
 /* =========================================================
-   TABLE NAME
+   TABLE TEXT
 ========================================================= */
 
 .admin-layout .discount-page .table .fw-semibold {
+    display: block;
+
+    width: 190px;
     max-width: 190px;
+
+    margin: 0;
 
     overflow: hidden;
 
@@ -413,6 +472,7 @@
         var(--theme-text-muted) !important;
 
     font-size: 8px;
+    line-height: 1.3;
 }
 
 
@@ -426,8 +486,7 @@
     justify-content: center;
 
     min-height: 22px;
-
-    max-width: 170px;
+    max-width: 180px;
 
     padding:
         0
@@ -502,7 +561,7 @@
 
 
 /* =========================================================
-   TABLE PRICE
+   TABLE STRONG
 ========================================================= */
 
 .admin-layout .discount-page .table strong {
@@ -549,7 +608,9 @@
 .admin-layout .discount-page .table td:nth-child(8) small {
     display: block;
 
-    margin: 1px 0;
+    margin:
+        1px
+        0;
 }
 
 
@@ -558,7 +619,7 @@
 ========================================================= */
 
 .admin-layout .discount-page .table td:last-child {
-    min-width: 90px;
+    min-width: 88px;
 
     white-space: nowrap;
 }
@@ -566,6 +627,8 @@
 .admin-layout .discount-page .table td:last-child .btn {
     width: 32px;
     height: 32px;
+
+    margin-right: 3px;
 
     padding: 0;
 
@@ -635,28 +698,32 @@
 
 
 /* =========================================================
-   MODAL - SHARED
+   MODAL
 ========================================================= */
 
-.admin-layout .discount-page ~ .modal,
-.admin-layout + .modal {
-    color:
-        var(--theme-text);
-}
-
 .modal .modal-content {
+    width: 100%;
+    max-width: 100%;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        var(--theme-border) !important;
+
     background:
         var(--theme-surface);
 
     color:
         var(--theme-text);
 
-    border:
-        1px solid
-        var(--theme-border) !important;
+    box-shadow:
+        var(--theme-shadow);
 }
 
 .modal .modal-header {
+    min-width: 0;
+
     border-bottom:
         1px solid
         rgba(255, 255, 255, 0.12);
@@ -676,8 +743,17 @@
 }
 
 .modal .modal-title {
+    min-width: 0;
+
+    overflow: hidden;
+
     font-size: 15px;
     font-weight: 800;
+
+    line-height: 1.3;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .modal .modal-title i {
@@ -685,11 +761,17 @@
 }
 
 .modal .modal-body {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+
     color:
         var(--theme-text);
 }
 
 .modal .modal-footer {
+    min-width: 0;
+
     border-top:
         1px solid
         var(--theme-border-soft);
@@ -722,12 +804,30 @@
 
     border-color:
         var(--theme-border);
+
     opacity: 1;
+}
+
+.modal .modal-body .mb-3 {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.modal .modal-body .row {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.modal .modal-body .row > [class*="col-"] {
+    min-width: 0;
 }
 
 .modal .modal-body .form-label,
 .modal .modal-body label {
     display: block;
+
+    max-width: 100%;
 
     margin-bottom: 6px;
 
@@ -736,10 +836,15 @@
 
     font-size: 10px;
     font-weight: 700;
+
+    line-height: 1.3;
 }
 
 .modal .modal-body .form-control,
 .modal .modal-body .form-select {
+    width: 100%;
+    max-width: 100%;
+
     min-height: 40px;
 
     border:
@@ -801,6 +906,7 @@
         var(--theme-text-muted) !important;
 
     font-size: 9px;
+
     line-height: 1.4;
 }
 
@@ -817,7 +923,8 @@
     width: 2.1em;
     height: 1.1em;
 
-    margin-left: -2.7em;
+    margin-left:
+        -2.7em;
 
     border-color:
         var(--theme-border);
@@ -847,7 +954,7 @@
 
 
 /* =========================================================
-   MODAL BUTTONS
+   MODAL BUTTON
 ========================================================= */
 
 .modal .modal-footer .btn {
@@ -976,13 +1083,21 @@
         padding-right: 12px;
     }
 
-    .admin-layout .discount-page > .container-fluid > .card > .card-header {
+    .admin-layout .discount-page
+        > .container-fluid
+        > .card
+        > .card-header {
+
         padding:
             13px
             14px;
     }
 
-    .admin-layout .discount-page > .container-fluid > .card > .card-body {
+    .admin-layout .discount-page
+        > .container-fluid
+        > .card
+        > .card-body {
+
         padding: 14px;
     }
 
@@ -1006,6 +1121,10 @@
 
     .admin-layout .discount-page .row.g-3.mb-4 h3 {
         font-size: 21px;
+    }
+
+    .admin-layout .discount-page table {
+        min-width: 1080px;
     }
 }
 
@@ -1031,29 +1150,50 @@
     }
 
 
-    /* MAIN CARD */
+    /* =====================================================
+       MAIN CARD
+    ===================================================== */
 
-    .admin-layout .discount-page > .container-fluid > .card {
-        border-radius: 13px;
+    .admin-layout .discount-page
+        > .container-fluid
+        > .card {
+
+        border-radius: 13px !important;
     }
 
-    .admin-layout .discount-page > .container-fluid > .card > .card-header {
+    .admin-layout .discount-page
+        > .container-fluid
+        > .card
+        > .card-header {
+
         padding:
-            11px
-            12px;
+            10px
+            11px;
+
+        gap: 8px;
 
         flex-wrap: wrap;
     }
 
-    .admin-layout .discount-page > .container-fluid > .card > .card-body {
-        padding: 11px;
+    .admin-layout .discount-page
+        > .container-fluid
+        > .card
+        > .card-body {
+
+        padding: 10px;
     }
 
 
-    /* HEADER */
+    /* =====================================================
+       HEADER
+    ===================================================== */
 
     .admin-layout .discount-page .card-header h5 {
-        flex: 1 1 auto;
+        flex:
+            1
+            1
+            0;
+
         min-width: 0;
 
         font-size: 11px;
@@ -1064,7 +1204,7 @@
     }
 
     .admin-layout .discount-page .card-header > .btn-primary {
-        min-height: 34px;
+        min-height: 33px;
 
         padding:
             6px
@@ -1076,7 +1216,9 @@
     }
 
 
-    /* ALERT */
+    /* =====================================================
+       ALERT
+    ===================================================== */
 
     .admin-layout .discount-page .alert-success {
         margin-bottom: 12px;
@@ -1091,7 +1233,9 @@
     }
 
 
-    /* STATS */
+    /* =====================================================
+       STATISTICS
+    ===================================================== */
 
     .admin-layout .discount-page .row.g-3.mb-4 {
         --bs-gutter-x: 7px;
@@ -1100,39 +1244,57 @@
         margin-bottom: 12px !important;
     }
 
-    .admin-layout .discount-page .row.g-3.mb-4 .card {
+    .admin-layout .discount-page
+        .row.g-3.mb-4
+        .card {
+
         border-radius: 10px !important;
     }
 
-    .admin-layout .discount-page .row.g-3.mb-4 .card-body {
+    .admin-layout .discount-page
+        .row.g-3.mb-4
+        .card-body {
+
         padding: 10px;
     }
 
-    .admin-layout .discount-page .row.g-3.mb-4 small {
+    .admin-layout .discount-page
+        .row.g-3.mb-4
+        small {
+
         margin-bottom: 4px;
 
         font-size: 8px;
     }
 
-    .admin-layout .discount-page .row.g-3.mb-4 h3 {
+    .admin-layout .discount-page
+        .row.g-3.mb-4
+        h3 {
+
         font-size: 18px;
     }
 
 
-    /* TABLE */
+    /* =====================================================
+       TABLE
+    ===================================================== */
 
     .admin-layout .discount-page .table-responsive {
-        margin-right: -1px;
-        padding-bottom: 3px;
+        width: 100%;
+        max-width: 100%;
+
+        overflow-x: auto;
     }
 
     .admin-layout .discount-page table {
         min-width: 1000px;
     }
 
-    .admin-layout .discount-page .table > :not(caption) > * > * {
+    .admin-layout .discount-page
+        .table > :not(caption) > * > * {
+
         padding:
-            9px
+            8px
             8px;
 
         font-size: 9px;
@@ -1140,14 +1302,15 @@
 
     .admin-layout .discount-page .table thead th {
         padding:
-            9px
+            8px
             8px;
 
         font-size: 8px;
     }
 
     .admin-layout .discount-page .table .fw-semibold {
-        max-width: 160px;
+        width: 155px;
+        max-width: 155px;
 
         font-size: 9px;
     }
@@ -1176,58 +1339,67 @@
         width: 29px;
         height: 29px;
 
+        margin-right: 2px;
+
         border-radius: 7px;
 
         font-size: 8px;
     }
 
 
-    /* MODAL */
+    /* =====================================================
+       MODAL
+    ===================================================== */
 
     .modal .modal-dialog {
         width: auto;
         max-width: none;
 
         margin:
-            10px;
+            8px;
     }
 
     .modal .modal-content {
         width: 100%;
         max-width: 100%;
 
-        border-radius: 14px !important;
+        border-radius: 13px !important;
     }
 
     .modal .modal-header {
         padding:
-            11px
-            12px;
+            10px
+            11px;
     }
 
     .modal .modal-title {
-        font-size: 12px;
+        font-size: 11px;
     }
 
     .modal .modal-title i {
-        font-size: 10px;
+        font-size: 9px;
     }
 
     .modal .modal-body {
-        max-height: calc(100vh - 145px);
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+
+        max-height:
+            calc(100vh - 138px);
 
         padding:
-            14px
-            12px;
+            13px
+            11px;
 
-        overflow-y: auto;
         overflow-x: hidden;
+        overflow-y: auto;
 
         -webkit-overflow-scrolling: touch;
     }
 
     .modal .modal-body h6 {
-        margin-bottom: 10px !important;
+        margin-bottom: 9px !important;
 
         font-size: 10px;
     }
@@ -1269,7 +1441,7 @@
     }
 
     .modal .modal-body .form-switch {
-        margin-top: 14px !important;
+        margin-top: 13px !important;
     }
 
     .modal .modal-body .form-switch .form-check-label {
@@ -1279,7 +1451,7 @@
     .modal .modal-footer {
         padding:
             9px
-            12px;
+            11px;
     }
 
     .modal .modal-footer .btn {
@@ -1303,8 +1475,10 @@
 @media (max-width: 480px) {
 
     .admin-layout .discount-page {
-        padding-top: 10px;
-        padding-bottom: 24px;
+        padding:
+            10px
+            0
+            24px;
     }
 
     .admin-layout .discount-page > .container-fluid {
@@ -1315,12 +1489,14 @@
 
     /* HEADER */
 
-    .admin-layout .discount-page > .container-fluid > .card > .card-header {
+    .admin-layout .discount-page
+        > .container-fluid
+        > .card
+        > .card-header {
+
         padding:
             9px
             10px;
-
-        gap: 8px;
     }
 
     .admin-layout .discount-page .card-header h5 {
@@ -1340,8 +1516,12 @@
 
     /* BODY */
 
-    .admin-layout .discount-page > .container-fluid > .card > .card-body {
-        padding: 9px;
+    .admin-layout .discount-page
+        > .container-fluid
+        > .card
+        > .card-body {
+
+        padding: 8px;
     }
 
 
@@ -1356,26 +1536,38 @@
     }
 
 
-    /* STATS */
+    /* STATISTICS */
 
     .admin-layout .discount-page .row.g-3.mb-4 {
         --bs-gutter-x: 5px;
         --bs-gutter-y: 5px;
     }
 
-    .admin-layout .discount-page .row.g-3.mb-4 .card {
+    .admin-layout .discount-page
+        .row.g-3.mb-4
+        .card {
+
         border-radius: 8px !important;
     }
 
-    .admin-layout .discount-page .row.g-3.mb-4 .card-body {
+    .admin-layout .discount-page
+        .row.g-3.mb-4
+        .card-body {
+
         padding: 8px;
     }
 
-    .admin-layout .discount-page .row.g-3.mb-4 small {
+    .admin-layout .discount-page
+        .row.g-3.mb-4
+        small {
+
         font-size: 7px;
     }
 
-    .admin-layout .discount-page .row.g-3.mb-4 h3 {
+    .admin-layout .discount-page
+        .row.g-3.mb-4
+        h3 {
+
         font-size: 16px;
     }
 
@@ -1386,7 +1578,9 @@
         min-width: 960px;
     }
 
-    .admin-layout .discount-page .table > :not(caption) > * > * {
+    .admin-layout .discount-page
+        .table > :not(caption) > * > * {
+
         padding:
             8px
             7px;
@@ -1403,6 +1597,7 @@
     }
 
     .admin-layout .discount-page .table .fw-semibold {
+        width: 135px;
         max-width: 135px;
 
         font-size: 8px;
@@ -1440,11 +1635,11 @@
 
     .modal .modal-dialog {
         margin:
-            7px;
+            6px;
     }
 
     .modal .modal-content {
-        border-radius: 12px !important;
+        border-radius: 11px !important;
     }
 
     .modal .modal-header {
@@ -1458,11 +1653,12 @@
     }
 
     .modal .modal-body {
-        max-height: calc(100vh - 125px);
+        max-height:
+            calc(100vh - 122px);
 
         padding:
-            12px
-            10px;
+            11px
+            9px;
     }
 
     .modal .modal-body h6 {
@@ -1501,7 +1697,7 @@
     .modal .modal-footer {
         padding:
             8px
-            10px;
+            9px;
     }
 
     .modal .modal-footer .btn {
@@ -1524,6 +1720,7 @@
 
     .admin-layout .discount-page {
         padding-top: 8px;
+        padding-bottom: 20px;
     }
 
     .admin-layout .discount-page > .container-fluid {
@@ -1534,9 +1731,12 @@
 
     /* HEADER */
 
-    .admin-layout .discount-page > .container-fluid > .card > .card-header {
-        padding:
-            8px;
+    .admin-layout .discount-page
+        > .container-fluid
+        > .card
+        > .card-header {
+
+        padding: 7px 8px;
     }
 
     .admin-layout .discount-page .card-header h5 {
@@ -1556,27 +1756,40 @@
 
     /* BODY */
 
-    .admin-layout .discount-page > .container-fluid > .card > .card-body {
+    .admin-layout .discount-page
+        > .container-fluid
+        > .card
+        > .card-body {
+
         padding: 7px;
     }
 
 
-    /* STATS */
+    /* STATISTICS */
 
     .admin-layout .discount-page .row.g-3.mb-4 {
         --bs-gutter-x: 4px;
         --bs-gutter-y: 4px;
     }
 
-    .admin-layout .discount-page .row.g-3.mb-4 .card-body {
+    .admin-layout .discount-page
+        .row.g-3.mb-4
+        .card-body {
+
         padding: 7px;
     }
 
-    .admin-layout .discount-page .row.g-3.mb-4 small {
+    .admin-layout .discount-page
+        .row.g-3.mb-4
+        small {
+
         font-size: 6.5px;
     }
 
-    .admin-layout .discount-page .row.g-3.mb-4 h3 {
+    .admin-layout .discount-page
+        .row.g-3.mb-4
+        h3 {
+
         font-size: 14px;
     }
 
@@ -1595,24 +1808,26 @@
             5px;
     }
 
-    .modal .modal-body {
-        max-height: calc(100vh - 115px);
-
-        padding:
-            10px
-            8px;
-    }
-
     .modal .modal-header {
-        padding:
-            8px;
+        padding: 8px;
     }
 
     .modal .modal-title {
         font-size: 9px;
     }
 
+    .modal .modal-body {
+        max-height:
+            calc(100vh - 112px);
+
+        padding:
+            9px
+            8px;
+    }
+
     .modal .modal-footer {
-        padding: 7px 8px;
+        padding:
+            7px
+            8px;
     }
 }

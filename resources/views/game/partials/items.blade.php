@@ -52,6 +52,40 @@
                     !empty($item->moogold_product_id) &&
                     !empty($item->moogold_variation_id);
 
+
+                /*
+                |--------------------------------------------------------------------------
+                | AUTOMATIC PRICE
+                |--------------------------------------------------------------------------
+                |
+                | Harga asli tetap berasal dari:
+                |
+                | $item->price
+                |
+                | Harga automatic hanya untuk display.
+                |
+                */
+
+                $automaticPrice =
+                    $item->automatic_price
+                    ?? [
+                        'has_discount' => false,
+                        'original_price' => (float) $item->price,
+                        'discount_total' => 0,
+                        'final_price' => (float) $item->price,
+                        'discounts' => [],
+                    ];
+
+                $hasAutomaticDiscount =
+                    !empty(
+                        $automaticPrice['has_discount']
+                    )
+                    &&
+                    (float) (
+                        $automaticPrice['final_price']
+                        ?? $item->price
+                    ) < (float) $item->price;
+
             @endphp
 
 
@@ -61,6 +95,9 @@
                 data-requires-player-validation="{{ $requiresPlayerValidation ? '1' : '0' }}"
             >
 
+                {{-- =================================================
+                     IMAGE
+                ================================================== --}}
                 <div class="game-item-image">
 
                     @if($item->image)
@@ -68,6 +105,7 @@
                         <img
                             src="{{ asset('storage/'.$item->image) }}"
                             alt="{{ $item->item_name }}"
+                            loading="lazy"
                         >
 
                     @else
@@ -83,8 +121,12 @@
                 </div>
 
 
+                {{-- =================================================
+                     BODY
+                ================================================== --}}
                 <div class="game-item-body">
 
+                    {{-- QUANTITY --}}
                     <span class="game-item-qty">
 
                         {{ $item->qty }} Item
@@ -92,18 +134,68 @@
                     </span>
 
 
+                    {{-- NAME --}}
                     <h3>
                         {{ $item->item_name }}
                     </h3>
 
 
-                    <div class="game-item-price">
+                    {{-- =================================================
+                         PRICE
+                    ================================================== --}}
+                    @if($hasAutomaticDiscount)
 
-                        Rp {{ number_format($item->price, 0, ',', '.') }}
+                        <div class="game-item-price has-automatic-discount">
 
-                    </div>
+                            {{-- HARGA ASLI --}}
+                            <span class="game-item-price-original">
+
+                                Rp
+                                {{ number_format(
+                                    (float) ($automaticPrice['original_price'] ?? $item->price),
+                                    0,
+                                    ',',
+                                    '.'
+                                ) }}
+
+                            </span>
 
 
+                            {{-- HARGA PROMO --}}
+                            <span class="game-item-price-discount">
+
+                                Rp
+                                {{ number_format(
+                                    (float) ($automaticPrice['final_price'] ?? $item->price),
+                                    0,
+                                    ',',
+                                    '.'
+                                ) }}
+
+                            </span>
+
+                        </div>
+
+                    @else
+
+                        <div class="game-item-price">
+
+                            Rp
+                            {{ number_format(
+                                (float) $item->price,
+                                0,
+                                ',',
+                                '.'
+                            ) }}
+
+                        </div>
+
+                    @endif
+
+
+                    {{-- =================================================
+                         BUTTON
+                    ================================================== --}}
                     <button
                         type="button"
                         class="game-item-button"
@@ -129,6 +221,9 @@
 
         @empty
 
+            {{-- =================================================
+                 EMPTY STATE
+            ================================================== --}}
             <div class="game-empty-state">
 
                 <i class="fa-solid fa-box-open"></i>

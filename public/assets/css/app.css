@@ -1,3 +1,4 @@
+@import url("theme.css");
 @import url("global.css");
 @import url("layout.css");
 @import url("auth.css");
@@ -5,7 +6,5 @@
 @import url("order.css");
 @import url("topbar.css");
 @import url("footer.css");
-@import url("admin.css");
 @import url("sidebar.css");
-@import url("theme.css");
-@import url("top-seller.css");
+@import url("admin/top-seller.css");

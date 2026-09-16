@@ -11,14 +11,17 @@ use App\Models\Payment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Services\Midtrans\MidtransService;
+use App\Services\PromotionService;
 
 class GameController extends Controller
 {
 
 public function __construct(
-    protected MidtransService $midtrans
+    protected MidtransService $midtrans,
+    protected PromotionService $promotion
 ) {
 }
+
     /*
     |--------------------------------------------------------------------------
     | WEB
@@ -53,8 +56,47 @@ public function __construct(
 
         /*
         |--------------------------------------------------------------------------
+        | AUTOMATIC PROMOTION DISPLAY PRICE
+        |--------------------------------------------------------------------------
+        |
+        | Harga database tidak diubah.
+        |
+        | Kita hanya menambahkan:
+        |
+        | $item->automatic_price
+        |
+        | untuk kebutuhan tampilan harga coret.
+        |
+        */
+
+        $items->each(function ($item) use ($game) {
+
+            $item->automatic_price =
+                $this->promotion
+                    ->calculateAutomaticDisplayPrice(
+                        price:
+                            (float) $item->price,
+
+                        gameId:
+                            (int) $game->id,
+
+                        itemId:
+                            (int) $item->id,
+
+                        user:
+                            auth()->user()
+                    );
+
+        });
+
+
+        /*
+        |--------------------------------------------------------------------------
         | MIDTRANS PAYMENT CHANNELS
         |--------------------------------------------------------------------------
+        |
+        | TETAP dipertahankan.
+        |
         */
 
         try {
@@ -80,6 +122,12 @@ public function __construct(
 
         }
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | VIEW
+        |--------------------------------------------------------------------------
+        */
 
         return view(
             'game.show',

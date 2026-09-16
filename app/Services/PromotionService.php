@@ -603,6 +603,322 @@ class PromotionService
         ];
     }
 
+        /**
+         * ============================================================
+         * AUTOMATIC DISPLAY PRICE
+         * ============================================================
+         *
+         * Digunakan untuk menampilkan harga promo otomatis
+         * pada halaman produk.
+         *
+         * Tidak mengubah items.price di database.
+         *
+         * Hanya promo dengan trigger_type = automatic.
+         */
+        public function calculateAutomaticDisplayPrice(
+            float $price,
+            int $gameId,
+            int $itemId,
+            $user = null
+        ): array {
+
+            /*
+            |--------------------------------------------------------------------------
+            | Harga tidak valid
+            |--------------------------------------------------------------------------
+            */
+
+            if ($price <= 0) {
+
+                return [
+                    'has_discount' => false,
+                    'original_price' => max($price, 0),
+                    'discount_total' => 0,
+                    'final_price' => max($price, 0),
+                    'discounts' => [],
+                ];
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Ambil promo automatic
+            |--------------------------------------------------------------------------
+            */
+
+            $today = Carbon::today();
+
+            $discounts = Discount::query()
+
+                /*
+                |--------------------------------------------------------------------------
+                | Active
+                |--------------------------------------------------------------------------
+                */
+
+                ->where(
+                    'is_active',
+                    1
+                )
+
+                /*
+                |--------------------------------------------------------------------------
+                | Automatic
+                |--------------------------------------------------------------------------
+                */
+
+                ->where(
+                    'trigger_type',
+                    'automatic'
+                )
+
+                /*
+                |--------------------------------------------------------------------------
+                | Game
+                |--------------------------------------------------------------------------
+                */
+
+                ->where(
+                    function ($query) use ($gameId) {
+
+                        $query
+                            ->whereNull('game_id')
+                            ->orWhere('game_id', $gameId);
+
+                    }
+                )
+
+                /*
+                |--------------------------------------------------------------------------
+                | Item
+                |--------------------------------------------------------------------------
+                */
+
+                ->where(
+                    function ($query) use ($itemId) {
+
+                        $query
+                            ->whereNull('item_id')
+                            ->orWhere('item_id', $itemId);
+
+                    }
+                )
+
+                /*
+                |--------------------------------------------------------------------------
+                | Start date
+                |--------------------------------------------------------------------------
+                */
+
+                ->where(
+                    function ($query) use ($today) {
+
+                        $query
+                            ->whereNull('start_date')
+                            ->orWhereDate(
+                                'start_date',
+                                '<=',
+                                $today
+                            );
+
+                    }
+                )
+
+                /*
+                |--------------------------------------------------------------------------
+                | End date
+                |--------------------------------------------------------------------------
+                */
+
+                ->where(
+                    function ($query) use ($today) {
+
+                        $query
+                            ->whereNull('end_date')
+                            ->orWhereDate(
+                                'end_date',
+                                '>=',
+                                $today
+                            );
+
+                    }
+                )
+
+                /*
+                |--------------------------------------------------------------------------
+                | Global quota
+                |--------------------------------------------------------------------------
+                */
+
+                ->where(
+                    function ($query) {
+
+                        $query
+                            ->whereNull('usage_limit')
+                            ->orWhereColumn(
+                                'quota_used',
+                                '<',
+                                'usage_limit'
+                            );
+
+                    }
+                )
+
+                ->orderByDesc('amount')
+                ->get();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Hitung stacking automatic
+            |--------------------------------------------------------------------------
+            */
+
+            $remaining = $price;
+
+            $totalDiscount = 0;
+
+            $applied = [];
+
+
+            foreach ($discounts as $discount) {
+
+                /*
+                |--------------------------------------------------------------------------
+                | Harga sudah habis
+                |--------------------------------------------------------------------------
+                */
+
+                if ($remaining <= 0) {
+                    break;
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Minimum purchase
+                |--------------------------------------------------------------------------
+                */
+
+                if (
+                    !$this->meetsMinimumPurchase(
+                        $discount,
+                        $price
+                    )
+                ) {
+                    continue;
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | User quota
+                |--------------------------------------------------------------------------
+                */
+
+                if (
+                    !$this->hasAvailableUserQuota(
+                        $discount,
+                        $user
+                    )
+                ) {
+                    continue;
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Hitung discount
+                |--------------------------------------------------------------------------
+                */
+
+                $discountAmount =
+                    $this->calculateDiscountAmount(
+                        $discount,
+                        $remaining
+                    );
+
+
+                if ($discountAmount <= 0) {
+                    continue;
+                }
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Apply
+                |--------------------------------------------------------------------------
+                */
+
+                $remaining =
+                    max(
+                        $remaining - $discountAmount,
+                        0
+                    );
+
+
+                $totalDiscount +=
+                    $discountAmount;
+
+
+                $applied[] = [
+                    'id' =>
+                        (int) $discount->id,
+
+                    'name' =>
+                        $discount->discount_name,
+
+                    'discount_type' =>
+                        $discount->discount_type,
+
+                    'amount' =>
+                        (float) $discount->amount,
+
+                    'discount' =>
+                        round(
+                            $discountAmount,
+                            2
+                        ),
+                ];
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Response
+            |--------------------------------------------------------------------------
+            */
+
+            return [
+
+                'has_discount' =>
+                    $totalDiscount > 0,
+
+                'original_price' =>
+                    round(
+                        $price,
+                        2
+                    ),
+
+                'discount_total' =>
+                    round(
+                        $totalDiscount,
+                        2
+                    ),
+
+                'final_price' =>
+                    round(
+                        max(
+                            $remaining,
+                            0
+                        ),
+                        2
+                    ),
+
+                'discounts' =>
+                    $applied,
+            ];
+        }    
 
     /**
      * ============================================================

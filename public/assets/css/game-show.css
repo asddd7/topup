@@ -1217,3 +1217,100 @@
         min-height: 40px;
     }
 }
+
+/* =========================================================
+   GAME ITEM PRICE
+========================================================= */
+
+.game-item-price {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+    max-width: 100%;
+}
+
+.game-item-price-original {
+    display: block;
+
+    max-width: 100%;
+
+    overflow: hidden;
+
+    color:
+        var(--theme-text-muted);
+
+    font-size: 10px;
+    font-weight: 500;
+
+    line-height: 1.2;
+
+    text-decoration: line-through;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.game-item-price-discount {
+    display: block;
+
+    max-width: 100%;
+
+    margin-top: 2px;
+
+    overflow: hidden;
+
+    color:
+        var(--theme-primary);
+
+    font-size: 13px;
+    font-weight: 800;
+
+    line-height: 1.25;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   AUTOMATIC DISCOUNT
+========================================================= */
+
+.game-item-price.has-automatic-discount {
+    gap: 0;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .game-item-price-original {
+        font-size: 8px;
+    }
+
+    .game-item-price-discount {
+        font-size: 11px;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .game-item-price-original {
+        font-size: 7px;
+    }
+
+    .game-item-price-discount {
+        font-size: 10px;
+    }
+
+}
