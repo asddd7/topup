@@ -451,4 +451,63 @@ public function orderByPartnerOrderId(
         ]
     );
 }
+
+/**
+ * =========================================================
+ * ORDER TRANSACTION HISTORY
+ * =========================================================
+ *
+ * Mengambil history transaksi/order dari MooGold
+ * berdasarkan rentang tanggal, status, dan pagination.
+ *
+ * Rules dari API:
+ *
+ * - start_date wajib
+ * - end_date wajib
+ * - format YYYY-MM-DD
+ * - status: processing|completed|refunded
+ * - page default 1
+ * - limit default 20
+ * - limit maksimal 100
+ * - range tanggal maksimal 30 hari
+ */
+public function transactionHistory(
+    string $startDate,
+    string $endDate,
+    ?string $status = null,
+    int $page = 1,
+    int $limit = 20
+): array {
+
+    $data = [
+        'start_date' => $startDate,
+        'end_date'   => $endDate,
+        'page'       => max($page, 1),
+        'limit'      => min(max($limit, 1), 100),
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | STATUS
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        $status !== null &&
+        $status !== ''
+    ) {
+        $data['status'] = $status;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | REQUEST
+    |--------------------------------------------------------------------------
+    */
+
+    return $this->request(
+        'order/transaction_history',
+        $data
+    );
+}
 }

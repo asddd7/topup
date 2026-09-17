@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\StockController;
 use App\Http\Controllers\Admin\MooGoldProductMappingController;
 use App\Http\Controllers\Admin\TopSellerController;
+use App\Http\Controllers\Admin\MooGoldTransactionHistoryController;
 
 use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\User\GameController as UserGameController;
@@ -288,6 +289,12 @@ Route::middleware([
 ->name('admin.')
 ->group(function(){
 
+Route::get(
+    'transaction-history',
+    [MooGoldTransactionHistoryController::class, 'index']
+)->name(
+    'transaction-history.index'
+);
 /*
 |--------------------------------------------------------------------------
 | DASHBOARD

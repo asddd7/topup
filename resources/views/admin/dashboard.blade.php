@@ -125,47 +125,6 @@
             <div class="admin-shortcut-grid">
 
 
-                {{-- KONFIRMASI --}}
-
-                <a
-                    href="{{ route('admin.order.index') }}"
-                    class="admin-shortcut-card"
-                >
-
-                    <div class="admin-shortcut-icon">
-
-                        <i class="fa-solid fa-money-check-dollar"></i>
-
-                    </div>
-
-                    <span class="admin-shortcut-label">
-                        Konfirmasi
-                    </span>
-
-
-                    @php
-
-                        $waiting = \App\Models\Order::where(
-                            'status',
-                            'Paid'
-                        )->count();
-
-                    @endphp
-
-
-                    @if($waiting)
-
-                        <span class="admin-shortcut-badge">
-
-                            {{ $waiting }}
-
-                        </span>
-
-                    @endif
-
-                </a>
-
-
                 {{-- GAME --}}
 
                 <a

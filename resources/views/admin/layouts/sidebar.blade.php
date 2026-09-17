@@ -157,22 +157,6 @@
                 </a>
 
 
-                {{-- STOCK --}}
-
-                <a
-                    href="{{ route('admin.stock.index') }}"
-                    class="admin-sidebar-link {{ request()->routeIs('admin.stock.*') ? 'active' : '' }}"
-                >
-
-                    <i class="fa-solid fa-boxes-stacked"></i>
-
-                    <span>
-                        Manajemen Stock
-                    </span>
-
-                </a>
-
-
                 {{-- TOP SELLER --}}
 
                 <a
@@ -192,7 +176,7 @@
 
 
             {{-- =================================================
-                 SALES
+                SALES
             ================================================== --}}
 
             <div class="admin-sidebar-group">
@@ -232,8 +216,6 @@
                     </span>
 
 
-                    {{-- WAITING PAYMENT / PAID --}}
-
                     @php
 
                         $waitingOrderCount = \App\Models\Order::where(
@@ -247,12 +229,26 @@
                     @if($waitingOrderCount > 0)
 
                         <span class="admin-sidebar-badge">
-
                             {{ $waitingOrderCount }}
-
                         </span>
 
                     @endif
+
+                </a>
+
+
+                {{-- HISTORY PEMBELIAN --}}
+
+                <a
+                    href="{{ route('admin.transaction-history.index') }}"
+                    class="admin-sidebar-link {{ request()->routeIs('admin.transaction-history.*') ? 'active' : '' }}"
+                >
+
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+
+                    <span>
+                        History Pembelian
+                    </span>
 
                 </a>
 
