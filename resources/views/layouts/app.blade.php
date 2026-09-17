@@ -13,6 +13,25 @@
 
     <title>{{ setting('app_name') }}</title>
 
+    {{-- SET THEME BEFORE PAGE RENDER --}}
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('topup-theme');
+
+            const systemDark =
+                window.matchMedia &&
+                window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            const theme =
+                savedTheme === 'dark' || savedTheme === 'light'
+                    ? savedTheme
+                    : (systemDark ? 'dark' : 'light');
+
+            document.documentElement.setAttribute('data-theme', theme);
+            document.documentElement.style.colorScheme = theme;
+        })();
+    </script>
+
     {{-- Bootstrap --}}
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
@@ -36,6 +55,8 @@
 </head>
 
 <body>
+
+    @include('components.loading')
 
     @include('layouts.topbar')
 

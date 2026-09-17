@@ -1,86 +1,58 @@
 const html = document.documentElement;
 const toggle = document.getElementById('themeToggle');
+const icon = toggle ? toggle.querySelector('i') : null;
 
-if (toggle) {
-const savedTheme = localStorage.getItem('topup-theme');
+function getSystemTheme() {
+    return (
+        window.matchMedia &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches
+    )
+        ? 'dark'
+        : 'light';
+}
 
-const systemDark =
-    window.matchMedia &&
-    window.matchMedia('(prefers-color-scheme: dark)').matches;
+function getInitialTheme() {
+    const currentTheme = html.getAttribute('data-theme');
 
-const initialTheme =
-    savedTheme ||
-    (systemDark ? 'dark' : 'light');
+    if (currentTheme === 'dark' || currentTheme === 'light') {
+        return currentTheme;
+    }
 
-applyTheme(initialTheme);
+    const savedTheme = localStorage.getItem('topup-theme');
 
-toggle.addEventListener('click', () => {
+    if (savedTheme === 'dark' || savedTheme === 'light') {
+        return savedTheme;
+    }
 
-    const currentTheme =
-        html.getAttribute('data-theme') || 'light';
-
-    const newTheme =
-        currentTheme === 'dark'
-            ? 'light'
-            : 'dark';
-
-    applyTheme(newTheme);
-
-    localStorage.setItem(
-        'topup-theme',
-        newTheme
-    );
-});
-
+    return getSystemTheme();
 }
 
 function applyTheme(theme) {
-
-
-html.setAttribute(
-    'data-theme',
-    theme
-);
-
-if (!toggle) {
-    return;
-}
-
-const icon = toggle.querySelector('i');
-
-if (theme === 'dark') {
+    html.setAttribute('data-theme', theme);
+    html.style.colorScheme = theme;
 
     if (icon) {
-        icon.classList.remove('fa-moon');
-        icon.classList.add('fa-sun');
+        icon.classList.toggle('fa-moon', theme === 'light');
+        icon.classList.toggle('fa-sun', theme === 'dark');
     }
-
-    toggle.setAttribute(
-        'aria-label',
-        'Gunakan mode terang'
-    );
-
-    toggle.setAttribute(
-        'title',
-        'Gunakan mode terang'
-    );
-
-} else {
-
-    if (icon) {
-        icon.classList.remove('fa-sun');
-        icon.classList.add('fa-moon');
-    }
-
-    toggle.setAttribute(
-        'aria-label',
-        'Gunakan mode gelap'
-    );
-
-    toggle.setAttribute(
-        'title',
-        'Gunakan mode gelap'
-    );
 }
 
+const initialTheme = getInitialTheme();
+
+applyTheme(initialTheme);
+
+if (toggle) {
+    toggle.addEventListener('click', () => {
+        const currentTheme =
+            html.getAttribute('data-theme') || 'light';
+
+        const newTheme =
+            currentTheme === 'dark'
+                ? 'light'
+                : 'dark';
+
+        localStorage.setItem('topup-theme', newTheme);
+
+        applyTheme(newTheme);
+    });
 }

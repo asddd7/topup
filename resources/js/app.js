@@ -1,4 +1,5 @@
 import './pages/theme';
+import './loading';
 
 import Alpine from 'alpinejs';
 

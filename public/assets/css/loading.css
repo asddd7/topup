@@ -1,0 +1,107 @@
+/* =========================================================
+   GLOBAL LOADING
+========================================================= */
+
+.global-loading {
+    position: fixed;
+    inset: 0;
+
+    z-index: 99999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(246, 248, 252, 0.72);
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    transition:
+        opacity 0.2s ease,
+        visibility 0.2s ease;
+}
+
+.global-loading.is-active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+[data-theme="dark"] .global-loading {
+    background: rgba(13, 17, 23, 0.72);
+}
+
+
+/* =========================================================
+   DOTS
+========================================================= */
+
+.global-loading-dots {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.global-loading-dot {
+    width: 10px;
+    height: 10px;
+
+    border-radius: 50%;
+
+    background: var(--theme-primary);
+
+    animation:
+        global-loading-ping 1.2s ease-in-out infinite;
+}
+
+.global-loading-dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.global-loading-dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+@keyframes global-loading-ping {
+
+    0%,
+    80%,
+    100% {
+        opacity: 0.35;
+        transform: scale(0.75);
+    }
+
+    40% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 767.98px) {
+
+    .global-loading-dots {
+        gap: 7px;
+    }
+
+    .global-loading-dot {
+        width: 9px;
+        height: 9px;
+    }
+}
