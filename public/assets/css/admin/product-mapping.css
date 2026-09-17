@@ -1,0 +1,1048 @@
+/* =========================================================
+   MOO GOLD PRODUCT MAPPING
+========================================================= */
+
+.moogold-product-mapping-page {
+    width: 100%;
+    min-width: 0;
+    color: var(--theme-text);
+}
+
+
+/* =========================================================
+   GENERAL
+========================================================= */
+
+.moogold-product-mapping-page *,
+.moogold-product-mapping-page *::before,
+.moogold-product-mapping-page *::after {
+    box-sizing: border-box;
+}
+
+.moogold-product-mapping-page .card {
+    background: var(--theme-surface);
+    border-color: var(--theme-border-soft);
+    color: var(--theme-text);
+    box-shadow: var(--theme-shadow) !important;
+}
+
+.moogold-product-mapping-page .card-header,
+.moogold-product-mapping-page .card-footer {
+    background: var(--theme-surface) !important;
+    border-color: var(--theme-border-soft) !important;
+}
+
+.moogold-product-mapping-page .text-dark {
+    color: var(--theme-text) !important;
+}
+
+.moogold-product-mapping-page .text-muted {
+    color: var(--theme-text-secondary) !important;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.moogold-product-mapping-page .mapping-page-header {
+    min-width: 0;
+}
+
+.moogold-product-mapping-page .mapping-page-title {
+    margin: 0;
+
+    color: var(--theme-text);
+
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.moogold-product-mapping-page .mapping-page-description {
+    margin: 5px 0 0;
+
+    color: var(--theme-text-secondary);
+
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   FILTER CARD
+========================================================= */
+
+.moogold-product-mapping-page .mapping-filter-card {
+    overflow: hidden;
+
+    border-radius: 14px !important;
+}
+
+.moogold-product-mapping-page .mapping-filter-card .card-body {
+    padding: 18px;
+}
+
+.moogold-product-mapping-page .form-label {
+    margin-bottom: 6px;
+
+    color: var(--theme-text);
+
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.moogold-product-mapping-page .form-control,
+.moogold-product-mapping-page .form-select {
+    min-height: 40px;
+
+    background-color: var(--theme-input-bg) !important;
+    border: 1px solid var(--theme-border);
+    border-radius: 9px;
+
+    color: var(--theme-text) !important;
+
+    font-size: 0.8rem;
+}
+
+.moogold-product-mapping-page .form-control::placeholder {
+    color: var(--theme-text-muted);
+}
+
+.moogold-product-mapping-page .form-control:focus,
+.moogold-product-mapping-page .form-select:focus {
+    border-color: var(--theme-primary);
+
+    background-color: var(--theme-input-bg) !important;
+
+    color: var(--theme-text) !important;
+
+    box-shadow:
+        0 0 0 3px rgba(79, 111, 206, 0.08);
+}
+
+.moogold-product-mapping-page .input-group-text {
+    background: var(--theme-input-bg) !important;
+    border-color: var(--theme-border);
+    color: var(--theme-text-secondary);
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.moogold-product-mapping-page .btn {
+    min-height: 40px;
+
+    border-radius: 9px;
+
+    font-size: 0.79rem;
+    font-weight: 600;
+}
+
+.moogold-product-mapping-page .btn-primary {
+    border-color: var(--theme-primary);
+    background: var(--theme-primary);
+}
+
+.moogold-product-mapping-page .btn-primary:hover {
+    border-color: var(--theme-primary-hover);
+    background: var(--theme-primary-hover);
+}
+
+.moogold-product-mapping-page .btn-outline-primary {
+    border-color: var(--theme-primary);
+    color: var(--theme-primary);
+}
+
+.moogold-product-mapping-page .btn-outline-primary:hover {
+    background: var(--theme-primary);
+    border-color: var(--theme-primary);
+}
+
+
+/* =========================================================
+   STATISTICS
+========================================================= */
+
+.moogold-product-mapping-page .mapping-stat-card {
+    height: 100%;
+    overflow: hidden;
+
+    border-radius: 14px !important;
+}
+
+.moogold-product-mapping-page .mapping-stat-card .card-body {
+    min-width: 0;
+    padding: 16px;
+}
+
+.moogold-product-mapping-page .mapping-stat-icon {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+}
+
+.moogold-product-mapping-page .mapping-stat-label {
+    color: var(--theme-text-secondary);
+
+    font-size: 0.74rem;
+}
+
+.moogold-product-mapping-page .mapping-stat-value {
+    margin-top: 2px;
+
+    color: var(--theme-text);
+
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+
+/* =========================================================
+   MAIN TABLE CARD
+========================================================= */
+
+.moogold-product-mapping-page .mapping-table-card {
+    width: 100%;
+    min-width: 0;
+
+    overflow: hidden;
+
+    border-radius: 14px !important;
+}
+
+.moogold-product-mapping-page .mapping-table-header {
+    min-width: 0;
+
+    padding: 15px 18px !important;
+}
+
+.moogold-product-mapping-page .mapping-table-title {
+    margin: 0 0 3px;
+
+    color: var(--theme-text);
+
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.moogold-product-mapping-page .mapping-table-description {
+    color: var(--theme-text-secondary);
+
+    font-size: 0.75rem;
+}
+
+
+/* =========================================================
+   TABLE WRAPPER
+========================================================= */
+
+.moogold-product-mapping-page .table-responsive {
+    width: 100%;
+    max-width: 100%;
+
+    overflow-x: auto;
+    overflow-y: visible;
+
+    -webkit-overflow-scrolling: touch;
+}
+
+
+/* =========================================================
+   MAIN TABLE
+========================================================= */
+
+.moogold-product-mapping-page #mappingTable {
+    color: var(--theme-text);
+}
+
+.moogold-product-mapping-page .mapping-main-table {
+    width: 100%;
+    min-width: 1080px;
+
+    margin-bottom: 0;
+}
+
+.moogold-product-mapping-page .mapping-main-table thead th,
+.moogold-product-mapping-page .table > thead.table-light th {
+    padding: 12px;
+
+    background: var(--theme-surface-soft) !important;
+
+    border-color: var(--theme-border);
+
+    color: var(--theme-text-secondary);
+
+    font-size: 0.69rem;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    vertical-align: middle;
+}
+
+.moogold-product-mapping-page .mapping-main-table tbody td,
+.moogold-product-mapping-page #mappingTable > tr > td {
+    padding: 12px;
+
+    background: var(--theme-surface);
+
+    border-color: var(--theme-border-soft);
+
+    color: var(--theme-text);
+
+    font-size: 0.78rem;
+    vertical-align: middle;
+}
+
+.moogold-product-mapping-page #mappingTable > tr:not([id^="variation-row-"]):hover > td {
+    background: var(--theme-surface-soft);
+}
+
+
+/* =========================================================
+   PRODUCT NAME
+========================================================= */
+
+.moogold-product-mapping-page .mapping-product-name {
+    display: block;
+
+    max-width: 420px;
+
+    overflow: hidden;
+
+    color: var(--theme-text);
+
+    font-size: 0.8rem;
+    font-weight: 600;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.moogold-product-mapping-page .mapping-product-meta {
+    display: block;
+
+    margin-top: 2px;
+
+    color: var(--theme-text-muted);
+
+    font-size: 0.68rem;
+}
+
+
+/* =========================================================
+   PRODUCT ID
+========================================================= */
+
+.moogold-product-mapping-page code {
+    padding: 3px 6px;
+
+    border: 1px solid var(--theme-border-soft);
+    border-radius: 6px;
+
+    background: var(--theme-surface-soft);
+
+    color: var(--theme-text-secondary);
+
+    font-size: 0.7rem;
+}
+
+
+/* =========================================================
+   GAME SELECT
+========================================================= */
+
+.moogold-product-mapping-page .mapping-game {
+    min-width: 220px;
+    max-width: 280px;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.moogold-product-mapping-page #mappingTable .badge {
+    padding: 5px 8px;
+
+    border-radius: 999px;
+
+    font-size: 0.63rem;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   ACTION GROUP
+========================================================= */
+
+.moogold-product-mapping-page .mapping-action-group {
+    display: inline-flex;
+    align-items: center;
+
+    max-width: 100%;
+
+    gap: 0;
+}
+
+.moogold-product-mapping-page .mapping-action-group .btn {
+    min-width: 36px;
+    height: 36px;
+
+    padding: 7px 9px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 0.74rem;
+}
+
+.moogold-product-mapping-page .mapping-action-group .btn-info {
+    background: #5f7fbe;
+    border-color: #5f7fbe;
+    color: #fff;
+}
+
+.moogold-product-mapping-page .mapping-action-group .btn-info:hover {
+    background: #526fa8;
+    border-color: #526fa8;
+}
+
+.moogold-product-mapping-page .mapping-action-group .btn-warning {
+    color: #4f4020;
+}
+
+.moogold-product-mapping-page .mapping-action-group .btn-success {
+    background: #5e9b7e;
+    border-color: #5e9b7e;
+}
+
+.moogold-product-mapping-page .mapping-action-group .btn-success:hover {
+    background: #50886d;
+    border-color: #50886d;
+}
+
+
+/* =========================================================
+   VARIATION ROW
+========================================================= */
+
+.moogold-product-mapping-page [id^="variation-row-"] > td {
+    padding: 0 !important;
+
+    background: var(--theme-surface-soft) !important;
+
+    border-top: 1px solid var(--theme-border);
+    border-bottom: 1px solid var(--theme-border);
+}
+
+.moogold-product-mapping-page [id^="variation-container-"] {
+    width: 100%;
+    min-width: 0;
+
+    padding: 16px !important;
+}
+
+.moogold-product-mapping-page [id^="variation-container-"] .table-responsive {
+    border: 1px solid var(--theme-border-soft);
+    border-radius: 10px;
+}
+
+
+/* =========================================================
+   VARIATION HEADER
+========================================================= */
+
+.moogold-product-mapping-page .variation-header {
+    min-width: 0;
+}
+
+.moogold-product-mapping-page .variation-title {
+    margin: 0;
+
+    color: var(--theme-text);
+
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.moogold-product-mapping-page .variation-subtitle {
+    margin-top: 2px;
+
+    color: var(--theme-text-secondary);
+
+    font-size: 0.69rem;
+}
+
+
+/* =========================================================
+   VARIATION TABLE
+========================================================= */
+
+.moogold-product-mapping-page .variation-table {
+    width: 100%;
+    min-width: 980px;
+
+    margin-bottom: 0;
+
+    color: var(--theme-text);
+}
+
+.moogold-product-mapping-page .variation-table thead th {
+    padding: 9px 10px;
+
+    background: var(--theme-surface-soft) !important;
+
+    border-color: var(--theme-border);
+
+    color: var(--theme-text-secondary);
+
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.moogold-product-mapping-page .variation-table tbody td {
+    padding: 9px 10px;
+
+    background: var(--theme-surface);
+
+    border-color: var(--theme-border-soft);
+
+    color: var(--theme-text);
+
+    font-size: 0.75rem;
+}
+
+.moogold-product-mapping-page .variation-table tbody tr:hover td {
+    background: var(--theme-surface-soft);
+}
+
+
+/* =========================================================
+   VARIATION NAME
+========================================================= */
+
+.moogold-product-mapping-page .variation-name {
+    max-width: 300px;
+
+    overflow: hidden;
+
+    color: var(--theme-text);
+
+    font-weight: 600;
+
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   VARIATION PRICE
+========================================================= */
+
+.moogold-product-mapping-page .variation-price {
+    color: var(--theme-text);
+
+    font-size: 0.76rem;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   VARIATION STOCK
+========================================================= */
+
+.moogold-product-mapping-page .variation-table .badge {
+    padding: 4px 7px;
+
+    border-radius: 999px;
+
+    font-size: 0.61rem;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   VARIATION CATEGORY
+========================================================= */
+
+.moogold-product-mapping-page .variation-category {
+    min-width: 210px;
+}
+
+.moogold-product-mapping-page .variation-table .form-select {
+    min-height: 35px;
+
+    font-size: 0.74rem;
+}
+
+
+/* =========================================================
+   ACTIVE SWITCH
+========================================================= */
+
+.moogold-product-mapping-page .variation-active {
+    cursor: pointer;
+}
+
+.moogold-product-mapping-page .variation-table .form-check {
+    min-height: auto;
+    margin-bottom: 0;
+}
+
+.moogold-product-mapping-page .variation-table .form-check-label {
+    color: var(--theme-text-secondary);
+
+    font-size: 0.68rem;
+}
+
+
+/* =========================================================
+   VARIATION SAVE
+========================================================= */
+
+.moogold-product-mapping-page .save-variation {
+    min-width: 34px;
+    height: 34px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* =========================================================
+   PAGINATION
+========================================================= */
+
+.moogold-product-mapping-page #pagination {
+    min-width: 0;
+}
+
+.moogold-product-mapping-page #pagination .pagination {
+    margin-bottom: 0;
+}
+
+.moogold-product-mapping-page #pagination .page-link {
+    min-width: 34px;
+    height: 34px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 5px 8px;
+
+    background: var(--theme-surface);
+
+    border-color: var(--theme-border);
+
+    color: var(--theme-text-secondary);
+
+    font-size: 0.72rem;
+}
+
+.moogold-product-mapping-page #pagination .page-link:hover {
+    background: var(--theme-surface-soft);
+    color: var(--theme-primary);
+}
+
+.moogold-product-mapping-page #pagination .page-item.active .page-link {
+    background: var(--theme-primary);
+    border-color: var(--theme-primary);
+
+    color: #fff;
+}
+
+.moogold-product-mapping-page #paginationInfo,
+.moogold-product-mapping-page #pageInfo {
+    color: var(--theme-text-secondary) !important;
+
+    font-size: 0.72rem;
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.moogold-product-mapping-page .spinner-border {
+    vertical-align: middle;
+}
+
+.moogold-product-mapping-page #mappingTable .spinner-border,
+.moogold-product-mapping-page [id^="variation-container-"] .spinner-border {
+    color: var(--theme-primary) !important;
+}
+
+
+/* =========================================================
+   ALERT
+========================================================= */
+
+.moogold-product-mapping-page .alert {
+    border-radius: 10px;
+
+    font-size: 0.76rem;
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+[data-theme="dark"] .moogold-product-mapping-page .bg-white {
+    background-color: var(--theme-surface) !important;
+}
+
+[data-theme="dark"] .moogold-product-mapping-page .bg-light {
+    background-color: var(--theme-surface-soft) !important;
+}
+
+[data-theme="dark"] .moogold-product-mapping-page .table-light {
+    --bs-table-bg: var(--theme-surface-soft);
+    --bs-table-color: var(--theme-text-secondary);
+
+    color: var(--theme-text-secondary);
+}
+
+[data-theme="dark"] .moogold-product-mapping-page .table-success {
+    --bs-table-bg: #16271f;
+    --bs-table-color: var(--theme-text);
+}
+
+[data-theme="dark"] .moogold-product-mapping-page .btn-warning {
+    color: #e5d39c;
+}
+
+[data-theme="dark"] .moogold-product-mapping-page code {
+    background: #11161d;
+    border-color: var(--theme-border);
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 991.98px) {
+
+    .moogold-product-mapping-page .container-fluid {
+        padding-right: 14px;
+        padding-left: 14px;
+    }
+
+    .moogold-product-mapping-page .mapping-page-title {
+        font-size: 1.2rem;
+    }
+
+    .moogold-product-mapping-page .mapping-main-table {
+        min-width: 1000px;
+    }
+
+    .moogold-product-mapping-page .variation-table {
+        min-width: 920px;
+    }
+
+    .moogold-product-mapping-page .mapping-game {
+        min-width: 200px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 767.98px) {
+
+    .moogold-product-mapping-page .container-fluid {
+        padding-top: 16px;
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+
+
+    /* -----------------------------------------------------
+       HEADER
+    ----------------------------------------------------- */
+
+    .moogold-product-mapping-page .mapping-page-header {
+        align-items: flex-start !important;
+    }
+
+    .moogold-product-mapping-page .mapping-page-title {
+        font-size: 1.05rem;
+    }
+
+    .moogold-product-mapping-page .mapping-page-description {
+        max-width: 100%;
+
+        font-size: 0.73rem;
+    }
+
+
+    /* -----------------------------------------------------
+       FILTER
+    ----------------------------------------------------- */
+
+    .moogold-product-mapping-page .mapping-filter-card {
+        border-radius: 12px !important;
+    }
+
+    .moogold-product-mapping-page .mapping-filter-card .card-body {
+        padding: 13px;
+    }
+
+    .moogold-product-mapping-page .form-label {
+        font-size: 0.72rem;
+    }
+
+    .moogold-product-mapping-page .form-control,
+    .moogold-product-mapping-page .form-select {
+        min-height: 39px;
+
+        font-size: 0.76rem;
+    }
+
+    .moogold-product-mapping-page .btn {
+        min-height: 38px;
+
+        font-size: 0.74rem;
+    }
+
+
+    /* -----------------------------------------------------
+       STATISTICS
+    ----------------------------------------------------- */
+
+    .moogold-product-mapping-page .mapping-stat-card {
+        border-radius: 12px !important;
+    }
+
+    .moogold-product-mapping-page .mapping-stat-card .card-body {
+        padding: 13px;
+    }
+
+    .moogold-product-mapping-page .mapping-stat-icon {
+        width: 40px;
+        height: 40px;
+
+        flex-basis: 40px;
+
+        font-size: 0.9rem;
+    }
+
+    .moogold-product-mapping-page .mapping-stat-value {
+        font-size: 1.25rem;
+    }
+
+    .moogold-product-mapping-page .mapping-stat-label {
+        font-size: 0.68rem;
+    }
+
+
+    /* -----------------------------------------------------
+       MAIN TABLE HEADER
+    ----------------------------------------------------- */
+
+    .moogold-product-mapping-page .mapping-table-card {
+        border-radius: 12px !important;
+    }
+
+    .moogold-product-mapping-page .mapping-table-header {
+        padding: 13px !important;
+    }
+
+    .moogold-product-mapping-page .mapping-table-title {
+        font-size: 0.87rem;
+    }
+
+    .moogold-product-mapping-page .mapping-table-description {
+        font-size: 0.68rem;
+        line-height: 1.4;
+    }
+
+
+    /* -----------------------------------------------------
+       MAIN TABLE
+    ----------------------------------------------------- */
+
+    .moogold-product-mapping-page .mapping-main-table {
+        min-width: 930px;
+    }
+
+    .moogold-product-mapping-page .mapping-main-table thead th {
+        padding: 10px 8px;
+
+        font-size: 0.62rem;
+    }
+
+    .moogold-product-mapping-page .mapping-main-table tbody td,
+    .moogold-product-mapping-page #mappingTable > tr > td {
+        padding: 10px 8px;
+
+        font-size: 0.7rem;
+    }
+
+    .moogold-product-mapping-page .mapping-product-name {
+        max-width: 300px;
+
+        font-size: 0.74rem;
+    }
+
+    .moogold-product-mapping-page .mapping-product-meta {
+        font-size: 0.62rem;
+    }
+
+    .moogold-product-mapping-page .mapping-game {
+        min-width: 190px;
+        max-width: 220px;
+    }
+
+
+    /* -----------------------------------------------------
+       ACTION
+    ----------------------------------------------------- */
+
+    .moogold-product-mapping-page .mapping-action-group .btn {
+        min-width: 32px;
+        height: 32px;
+
+        padding: 5px 7px;
+    }
+
+
+    /* -----------------------------------------------------
+       VARIATION
+    ----------------------------------------------------- */
+
+    .moogold-product-mapping-page [id^="variation-container-"] {
+        padding: 11px !important;
+    }
+
+    .moogold-product-mapping-page .variation-table {
+        min-width: 880px;
+    }
+
+    .moogold-product-mapping-page .variation-table thead th {
+        padding: 8px;
+
+        font-size: 0.59rem;
+    }
+
+    .moogold-product-mapping-page .variation-table tbody td {
+        padding: 8px;
+
+        font-size: 0.68rem;
+    }
+
+    .moogold-product-mapping-page .variation-category {
+        min-width: 185px;
+    }
+
+    .moogold-product-mapping-page .variation-name {
+        max-width: 250px;
+    }
+
+
+    /* -----------------------------------------------------
+       PAGINATION
+    ----------------------------------------------------- */
+
+    .moogold-product-mapping-page .card-footer {
+        padding: 10px 12px !important;
+    }
+
+    .moogold-product-mapping-page #paginationInfo {
+        font-size: 0.65rem;
+    }
+
+    .moogold-product-mapping-page #pageInfo {
+        font-size: 0.65rem;
+    }
+
+    .moogold-product-mapping-page #pagination .page-link {
+        min-width: 31px;
+        height: 31px;
+
+        font-size: 0.67rem;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .moogold-product-mapping-page .container-fluid {
+        padding-top: 12px;
+        padding-right: 8px;
+        padding-left: 8px;
+    }
+
+    .moogold-product-mapping-page .mapping-page-title {
+        font-size: 0.98rem;
+    }
+
+    .moogold-product-mapping-page .mapping-page-description {
+        font-size: 0.69rem;
+    }
+
+    .moogold-product-mapping-page .mapping-filter-card .card-body {
+        padding: 11px;
+    }
+
+    .moogold-product-mapping-page .mapping-stat-card .card-body {
+        padding: 11px;
+    }
+
+    .moogold-product-mapping-page .mapping-stat-icon {
+        width: 36px;
+        height: 36px;
+
+        flex-basis: 36px;
+
+        font-size: 0.8rem;
+    }
+
+    .moogold-product-mapping-page .mapping-stat-value {
+        font-size: 1.1rem;
+    }
+
+    .moogold-product-mapping-page .mapping-main-table {
+        min-width: 900px;
+    }
+
+    .moogold-product-mapping-page .variation-table {
+        min-width: 850px;
+    }
+
+    .moogold-product-mapping-page .mapping-action-group .btn {
+        min-width: 30px;
+        height: 30px;
+
+        padding: 4px 6px;
+
+        font-size: 0.68rem;
+    }
+
+    .moogold-product-mapping-page [id^="variation-container-"] {
+        padding: 9px !important;
+    }
+}
