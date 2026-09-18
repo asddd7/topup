@@ -296,11 +296,6 @@ Route::get(
     'transaction-history.index'
 );
 
-Route::get(
-    'setting/moogold/balance',
-    [SettingController::class, 'moogoldBalance']
-)->name('setting.moogold.balance');
-
 Route::post(
     'setting/moogold/reload-balance',
     [SettingController::class, 'reloadMoogoldBalance']

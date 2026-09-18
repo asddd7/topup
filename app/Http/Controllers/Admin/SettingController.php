@@ -34,7 +34,7 @@ class SettingController extends BaseAdminController
         | WEBSITE SETTINGS
         |--------------------------------------------------------------------------
         */
-        
+
             $request->validate([
 
                 'app_logo' =>
@@ -42,9 +42,6 @@ class SettingController extends BaseAdminController
 
                 'app_favicon' =>
                     'nullable|image|mimes:png,jpg,jpeg,ico,svg,webp|max:1024',
-
-                'usd_idr_rate' =>
-                    'nullable|numeric|gt:0',
 
             ]);
 
@@ -169,46 +166,5 @@ class SettingController extends BaseAdminController
 
         );
 
-    }
-
-    public function moogoldBalance(MooGoldService $mooGoldService)
-    {
-        try {
-
-            $response = $mooGoldService->balance();
-
-            $data = $response['data'] ?? $response;
-
-            $balance = (float) ($data['balance'] ?? 0);
-            $currency = $data['currency'] ?? 'USD';
-
-            $usdIdrRate = (float) (
-                Setting::where('setting_key', 'usd_idr_rate')
-                    ->value('setting_value') ?? 0
-            );
-
-            $balanceIdr = null;
-
-            if ($usdIdrRate > 0 && strtoupper($currency) === 'USD') {
-                $balanceIdr = $balance * $usdIdrRate;
-            }
-
-            return response()->json([
-                'success' => true,
-                'currency' => $currency,
-                'balance' => $balance,
-                'usd_idr_rate' => $usdIdrRate,
-                'balance_idr' => $balanceIdr,
-            ]);
-
-        } catch (\Throwable $e) {
-
-            report($e);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal mengambil saldo MooGold.',
-            ], 500);
-        }
     }
 }

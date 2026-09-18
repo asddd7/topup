@@ -360,36 +360,6 @@
                             </label>
                         </div>
 
-                        <div class="mb-4">
-
-                            <label class="form-label">
-                                Kurs USD ke IDR
-                            </label>
-
-                            <div class="input-group">
-
-                                <span class="input-group-text">
-                                    Rp
-                                </span>
-
-                                <input
-                                    type="number"
-                                    name="usd_idr_rate"
-                                    class="form-control"
-                                    min="1"
-                                    step="0.01"
-                                    value="{{ $settings['usd_idr_rate']->setting_value ?? '' }}"
-                                    placeholder="16500">
-
-                            </div>
-
-                            <small class="setting-file-help">
-                                Digunakan untuk menghitung perkiraan nilai saldo MooGold dalam Rupiah.
-                                Contoh: 16500 berarti 1 USD = Rp 16.500.
-                            </small>
-
-                        </div>
-
                         <hr>
 
                         <div class="setting-wallet-section">
@@ -397,11 +367,6 @@
                             <h5 class="setting-section-title">
                                 MooGold Wallet
                             </h5>
-
-                            <p class="setting-section-description">
-                                Kelola saldo wallet MooGold dan buat request reload saldo
-                                menggunakan USDT-TRC20.
-                            </p>
 
                             <div class="setting-wallet-card">
 
@@ -414,30 +379,12 @@
 
                                         <div class="setting-wallet-balance">
 
-                                            <div>
-                                                <span id="moogoldBalance">
-                                                    —
-                                                </span>
-
-                                                <small id="moogoldCurrency">
-                                                    USD
-                                                </small>
-                                            </div>
-
-                                        </div>
-
-                                        <div class="setting-wallet-idr">
-
-                                            <span>
-                                                Perkiraan Rupiah
+                                            <span id="moogoldBalance">
+                                                —
                                             </span>
 
-                                            <strong id="moogoldBalanceIdr">
-                                                —
-                                            </strong>
-
-                                            <small id="moogoldRate">
-                                                Kurs: —
+                                            <small id="moogoldCurrency">
+                                                IDR
                                             </small>
 
                                         </div>
@@ -643,7 +590,7 @@ document.addEventListener('DOMContentLoaded', function () {
     */
 
     const balanceUrl =
-        @json(route('admin.setting.moogold.balance'));
+        'http://127.0.0.1:8000/api/v1/admin/moogold/test-balance';
 
     const reloadUrl =
         @json(route('admin.setting.moogold.reload-balance'));
@@ -690,56 +637,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const copyButton =
         document.getElementById('copyMoogoldPaymentAddress');
 
-    const balanceIdrEl =
-        document.getElementById('moogoldBalanceIdr');
 
-    const rateEl =
-        document.getElementById('moogoldRate');
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | FORMAT BALANCE
-    |--------------------------------------------------------------------------
-    */
-
-    function formatRupiah(value) {
-
-        const number = Number(value);
-
-        if (Number.isNaN(number)) {
-            return '—';
-        }
-
-        return new Intl.NumberFormat('id-ID', {
-            style: 'currency',
-            currency: 'IDR',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }).format(number);
-    }
-
-    function formatBalance(value) {
-
-        const number = Number(value);
-
-        if (Number.isNaN(number)) {
-            return value;
-        }
-
-        return number.toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
-
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | GET BALANCE
-    |--------------------------------------------------------------------------
-    */
+        /*
+        |--------------------------------------------------------------------------
+        | GET BALANCE
+        |--------------------------------------------------------------------------
+        */
 
     async function loadMoogoldBalance() {
 
@@ -758,63 +661,54 @@ document.addEventListener('DOMContentLoaded', function () {
 
         }
 
+        balanceStatusEl.textContent =
+            'Menghubungkan ke MooGold...';
+
         try {
 
             const response = await fetch(balanceUrl, {
+
                 method: 'GET',
+
                 headers: {
                     'Accept': 'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
                 }
+
             });
 
             const result = await response.json();
 
             if (!response.ok || !result.success) {
+
                 throw new Error(
-                    result.message || 'Gagal mengambil saldo.'
+                    result.message ||
+                    'Gagal mengambil saldo MooGold.'
                 );
+
             }
+
+            const data = result.data || {};
 
             balanceEl.textContent =
-                formatBalance(result.balance);
+                formatBalance(data.balance);
 
             currencyEl.textContent =
-                result.currency || 'USD';
-
-            if (
-                result.balance_idr !== null &&
-                result.balance_idr !== undefined
-            ) {
-
-                balanceIdrEl.textContent =
-                    formatRupiah(result.balance_idr);
-
-            } else {
-
-                balanceIdrEl.textContent = '—';
-
-            }
-
-            if (Number(result.usd_idr_rate) > 0) {
-
-                rateEl.textContent =
-                    `Kurs: 1 USD = ${formatRupiah(result.usd_idr_rate)}`;
-
-            } else {
-
-                rateEl.textContent =
-                    'Kurs USD/IDR belum diatur.';
-
-            }
+                data.currency || 'IDR';
 
             balanceStatusEl.textContent =
+                result.message ||
                 'Saldo berhasil diperbarui.';
 
         } catch (error) {
 
+            balanceEl.textContent = '—';
+
+            currencyEl.textContent = 'IDR';
+
             balanceStatusEl.textContent =
-                error.message || 'Gagal mengambil saldo MooGold.';
+                error.message ||
+                'Gagal mengambil saldo MooGold.';
 
         } finally {
 
@@ -830,7 +724,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
         }
-
     }
 
 
