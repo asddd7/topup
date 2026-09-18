@@ -370,3 +370,192 @@
         width: 100%;
     }
 }
+
+/* =========================================================
+   MOOGOLD WALLET
+========================================================= */
+
+.admin-setting-page .setting-wallet-section {
+    margin-top: 1rem;
+}
+
+.admin-setting-page .setting-wallet-card {
+    padding: 1rem;
+
+    background: var(--theme-surface-soft);
+    border: 1px solid var(--theme-border);
+    border-radius: .85rem;
+}
+
+.admin-setting-page .setting-wallet-balance-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+
+    padding: 1rem;
+
+    background: var(--theme-surface);
+    border: 1px solid var(--theme-border);
+    border-radius: .75rem;
+}
+
+.admin-setting-page .setting-wallet-label {
+    display: block;
+
+    color: var(--theme-text-secondary);
+
+    font-size: .8rem;
+    font-weight: 600;
+}
+
+.admin-setting-page .setting-wallet-balance {
+    display: flex;
+    align-items: baseline;
+    gap: .4rem;
+
+    margin-top: .15rem;
+
+    color: var(--theme-text);
+
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.admin-setting-page .setting-wallet-balance small {
+    color: var(--theme-text-secondary);
+    font-size: .78rem;
+    font-weight: 600;
+}
+
+.admin-setting-page .setting-wallet-status {
+    display: block;
+
+    margin-top: .25rem;
+
+    color: var(--theme-text-muted);
+    font-size: .75rem;
+}
+
+.admin-setting-page .setting-wallet-refresh {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+
+    min-height: 40px;
+
+    border-radius: .65rem;
+}
+
+.admin-setting-page .setting-wallet-reload {
+    margin-top: 1rem;
+
+    padding-top: 1rem;
+
+    border-top: 1px solid var(--theme-border);
+}
+
+.admin-setting-page .setting-wallet-reload-button {
+    min-height: 44px;
+
+    border-radius: .7rem;
+}
+
+.admin-setting-page .setting-wallet-result {
+    margin-top: 1rem;
+
+    padding: 1rem;
+
+    background: var(--theme-primary-soft);
+    border: 1px solid var(--theme-border);
+    border-radius: .75rem;
+}
+
+.admin-setting-page .setting-wallet-result-title {
+    margin-bottom: 1rem;
+
+    color: var(--theme-primary);
+
+    font-size: .9rem;
+    font-weight: 700;
+}
+
+.admin-setting-page .setting-wallet-result-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: .75rem;
+}
+
+.admin-setting-page .setting-wallet-result-grid > div {
+    padding: .75rem;
+
+    background: var(--theme-surface);
+    border: 1px solid var(--theme-border);
+    border-radius: .6rem;
+}
+
+.admin-setting-page .setting-wallet-result-grid span {
+    display: block;
+
+    margin-bottom: .2rem;
+
+    color: var(--theme-text-secondary);
+    font-size: .72rem;
+}
+
+.admin-setting-page .setting-wallet-result-grid strong {
+    color: var(--theme-text);
+    font-size: .85rem;
+    word-break: break-word;
+}
+
+.admin-setting-page .setting-wallet-address {
+    margin-top: 1rem;
+}
+
+.admin-setting-page .setting-wallet-address label {
+    display: block;
+
+    margin-bottom: .4rem;
+
+    color: var(--theme-text);
+    font-size: .8rem;
+    font-weight: 600;
+}
+
+.admin-setting-page .setting-wallet-address .form-control {
+    font-family: monospace;
+    font-size: .8rem;
+}
+
+.admin-setting-page .setting-wallet-address small {
+    display: block;
+
+    margin-top: .4rem;
+
+    color: var(--theme-text-secondary);
+    font-size: .75rem;
+}
+
+
+/* =========================================================
+   MOOGOLD WALLET - MOBILE
+========================================================= */
+
+@media (max-width: 575.98px) {
+
+    .admin-setting-page .setting-wallet-balance-box {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-setting-page .setting-wallet-refresh {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .admin-setting-page .setting-wallet-result-grid {
+        grid-template-columns: 1fr;
+    }
+
+}

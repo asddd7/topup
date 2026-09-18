@@ -360,6 +360,167 @@
                             </label>
                         </div>
 
+                        <hr>
+
+                        <div class="setting-wallet-section">
+
+                            <h5 class="setting-section-title">
+                                MooGold Wallet
+                            </h5>
+
+                            <p class="setting-section-description">
+                                Kelola saldo wallet MooGold dan buat request reload saldo
+                                menggunakan USDT-TRC20.
+                            </p>
+
+                            <div class="setting-wallet-card">
+
+                                <div class="setting-wallet-balance-box">
+
+                                    <div>
+                                        <span class="setting-wallet-label">
+                                            Saldo Saat Ini
+                                        </span>
+
+                                        <div class="setting-wallet-balance">
+                                            <span id="moogoldBalance">
+                                                —
+                                            </span>
+
+                                            <small id="moogoldCurrency">
+                                                USD
+                                            </small>
+                                        </div>
+
+                                        <small
+                                            id="moogoldBalanceStatus"
+                                            class="setting-wallet-status">
+                                            Klik refresh untuk mengambil saldo terbaru.
+                                        </small>
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-primary setting-wallet-refresh"
+                                        id="refreshMoogoldBalance">
+
+                                        <i class="fa-solid fa-rotate"></i>
+
+                                        <span>Refresh Saldo</span>
+
+                                    </button>
+
+                                </div>
+
+
+                                <div class="setting-wallet-reload">
+
+                                    <label class="form-label">
+                                        Nominal Reload
+                                    </label>
+
+                                    <div class="row g-2">
+
+                                        <div class="col-md-8">
+
+                                            <input
+                                                type="number"
+                                                step="0.01"
+                                                min="0.01"
+                                                class="form-control"
+                                                id="moogoldReloadAmount"
+                                                placeholder="Contoh: 1000">
+
+                                        </div>
+
+                                        <div class="col-md-4">
+
+                                            <button
+                                                type="button"
+                                                class="btn btn-primary w-100 setting-wallet-reload-button"
+                                                id="reloadMoogoldBalance">
+
+                                                <i class="fa-solid fa-wallet me-2"></i>
+
+                                                Reload Saldo
+
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                    <small class="setting-file-help">
+                                        Payment method: USDT-TRC20.
+                                    </small>
+
+                                </div>
+
+
+                                <div
+                                    id="moogoldReloadResult"
+                                    class="setting-wallet-result d-none">
+
+                                    <div class="setting-wallet-result-title">
+                                        <i class="fa-solid fa-circle-check me-2"></i>
+                                        Request Reload Berhasil
+                                    </div>
+
+                                    <div class="setting-wallet-result-grid">
+
+                                        <div>
+                                            <span>Order ID</span>
+                                            <strong id="moogoldReloadOrderId">-</strong>
+                                        </div>
+
+                                        <div>
+                                            <span>Amount</span>
+                                            <strong id="moogoldReloadAmount">-</strong>
+                                        </div>
+
+                                        <div>
+                                            <span>Currency</span>
+                                            <strong id="moogoldReloadCurrency">-</strong>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="setting-wallet-address">
+
+                                        <label>
+                                            Payment Address
+                                        </label>
+
+                                        <div class="input-group">
+
+                                            <input
+                                                type="text"
+                                                class="form-control"
+                                                id="moogoldPaymentAddress"
+                                                readonly>
+
+                                            <button
+                                                type="button"
+                                                class="btn btn-outline-secondary"
+                                                id="copyMoogoldPaymentAddress">
+
+                                                <i class="fa-regular fa-copy"></i>
+
+                                            </button>
+
+                                        </div>
+
+                                        <small>
+                                            Kirim pembayaran USDT-TRC20 ke address di atas.
+                                        </small>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
                     </div>
 
                 </div>
@@ -385,32 +546,356 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    // buka tab terakhir
+    /*
+    |--------------------------------------------------------------------------
+    | LAST ACTIVE TAB
+    |--------------------------------------------------------------------------
+    */
+
     const activeTab = localStorage.getItem('setting-active-tab');
 
-    if(activeTab){
+    if (activeTab) {
+
         const trigger = document.querySelector(
             '[data-bs-target="' + activeTab + '"]'
         );
 
-        if(trigger){
-            bootstrap.Tab.getOrCreateInstance(trigger).show();
+        if (trigger) {
+
+            bootstrap.Tab
+                .getOrCreateInstance(trigger)
+                .show();
+
         }
+
     }
 
-    // simpan tab yang dipilih
-    document.querySelectorAll('[data-bs-toggle="pill"]').forEach(tab => {
+    document
+        .querySelectorAll('[data-bs-toggle="pill"]')
+        .forEach(tab => {
 
-        tab.addEventListener('shown.bs.tab', function(e){
+            tab.addEventListener('shown.bs.tab', function (e) {
 
-            localStorage.setItem(
-                'setting-active-tab',
-                e.target.dataset.bsTarget
-            );
+                localStorage.setItem(
+                    'setting-active-tab',
+                    e.target.dataset.bsTarget
+                );
+
+            });
 
         });
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | MOOGOLD WALLET
+    |--------------------------------------------------------------------------
+    */
+
+    const balanceUrl =
+        @json(route('admin.setting.moogold.balance'));
+
+    const reloadUrl =
+        @json(route('admin.setting.moogold.reload-balance'));
+
+    const csrfToken =
+        document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute('content');
+
+
+    const balanceEl =
+        document.getElementById('moogoldBalance');
+
+    const currencyEl =
+        document.getElementById('moogoldCurrency');
+
+    const balanceStatusEl =
+        document.getElementById('moogoldBalanceStatus');
+
+    const refreshButton =
+        document.getElementById('refreshMoogoldBalance');
+
+    const reloadButton =
+        document.getElementById('reloadMoogoldBalance');
+
+    const amountInput =
+        document.getElementById('moogoldReloadAmount');
+
+    const resultBox =
+        document.getElementById('moogoldReloadResult');
+
+    const resultOrderId =
+        document.getElementById('moogoldReloadOrderId');
+
+    const resultAmount =
+        document.getElementById('moogoldReloadAmount');
+
+    const resultCurrency =
+        document.getElementById('moogoldReloadCurrency');
+
+    const paymentAddress =
+        document.getElementById('moogoldPaymentAddress');
+
+    const copyButton =
+        document.getElementById('copyMoogoldPaymentAddress');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | FORMAT BALANCE
+    |--------------------------------------------------------------------------
+    */
+
+    function formatBalance(value) {
+
+        const number = Number(value);
+
+        if (Number.isNaN(number)) {
+            return value;
+        }
+
+        return number.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | GET BALANCE
+    |--------------------------------------------------------------------------
+    */
+
+    async function loadMoogoldBalance() {
+
+        if (!balanceEl) {
+            return;
+        }
+
+        refreshButton?.setAttribute('disabled', 'disabled');
+
+        if (refreshButton) {
+
+            refreshButton.innerHTML = `
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <span>Memuat...</span>
+            `;
+
+        }
+
+        try {
+
+            const response = await fetch(balanceUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                throw new Error(
+                    result.message || 'Gagal mengambil saldo.'
+                );
+            }
+
+            balanceEl.textContent =
+                formatBalance(result.balance);
+
+            currencyEl.textContent =
+                result.currency || 'USD';
+
+            balanceStatusEl.textContent =
+                'Saldo berhasil diperbarui.';
+
+        } catch (error) {
+
+            balanceStatusEl.textContent =
+                error.message || 'Gagal mengambil saldo MooGold.';
+
+        } finally {
+
+            refreshButton?.removeAttribute('disabled');
+
+            if (refreshButton) {
+
+                refreshButton.innerHTML = `
+                    <i class="fa-solid fa-rotate"></i>
+                    <span>Refresh Saldo</span>
+                `;
+
+            }
+
+        }
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | RELOAD BALANCE
+    |--------------------------------------------------------------------------
+    */
+
+    async function reloadMoogoldBalance() {
+
+        const amount = amountInput?.value?.trim();
+
+        if (!amount || Number(amount) <= 0) {
+
+            amountInput?.focus();
+
+            return;
+
+        }
+
+        reloadButton?.setAttribute('disabled', 'disabled');
+
+        if (reloadButton) {
+
+            reloadButton.innerHTML = `
+                <i class="fa-solid fa-spinner fa-spin me-2"></i>
+                Memproses...
+            `;
+
+        }
+
+        resultBox?.classList.add('d-none');
+
+        try {
+
+            const response = await fetch(reloadUrl, {
+
+                method: 'POST',
+
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+
+                body: JSON.stringify({
+                    amount: amount
+                })
+
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+
+                throw new Error(
+                    result.message ||
+                    'Gagal membuat request reload.'
+                );
+
+            }
+
+            const data = result.data || {};
+
+            resultOrderId.textContent =
+                data.order_id ?? '-';
+
+            resultAmount.textContent =
+                data.amount ?? '-';
+
+            resultCurrency.textContent =
+                data.wallet_currency ?? '-';
+
+            paymentAddress.value =
+                data.payment_address ?? '';
+
+            resultBox?.classList.remove('d-none');
+
+        } catch (error) {
+
+            alert(
+                error.message ||
+                'Gagal membuat request reload saldo.'
+            );
+
+        } finally {
+
+            reloadButton?.removeAttribute('disabled');
+
+            if (reloadButton) {
+
+                reloadButton.innerHTML = `
+                    <i class="fa-solid fa-wallet me-2"></i>
+                    Reload Saldo
+                `;
+
+            }
+
+        }
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | EVENTS
+    |--------------------------------------------------------------------------
+    */
+
+    refreshButton?.addEventListener(
+        'click',
+        loadMoogoldBalance
+    );
+
+    reloadButton?.addEventListener(
+        'click',
+        reloadMoogoldBalance
+    );
+
+
+    copyButton?.addEventListener('click', async function () {
+
+        const value =
+            paymentAddress?.value;
+
+        if (!value) {
+            return;
+        }
+
+        try {
+
+            await navigator.clipboard.writeText(value);
+
+            this.innerHTML =
+                '<i class="fa-solid fa-check"></i>';
+
+            setTimeout(() => {
+
+                this.innerHTML =
+                    '<i class="fa-regular fa-copy"></i>';
+
+            }, 1500);
+
+        } catch (error) {
+
+            paymentAddress.select();
+
+            document.execCommand('copy');
+
+        }
+
     });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | LOAD BALANCE ON PAGE LOAD
+    |--------------------------------------------------------------------------
+    */
+
+    loadMoogoldBalance();
 
 });
 </script>

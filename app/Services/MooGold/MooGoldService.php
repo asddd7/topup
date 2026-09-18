@@ -510,4 +510,15 @@ public function transactionHistory(
         $data
     );
 }
+
+public function reloadBalance(string|float $amount): array
+{
+    return $this->request(
+        'user/reload_balance',
+        [
+            'payment_method' => 'usdt-trc20-payment-gateway',
+            'amount' => $amount,
+        ]
+    );
+}
 }

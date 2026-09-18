@@ -9,6 +9,7 @@ use App\Models\Payment;
 use App\Models\Order;
 use App\Models\Banner;
 use App\Models\Setting;
+use App\Services\MooGold\MooGoldService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -166,4 +167,80 @@ class SettingController extends BaseAdminController
 
     }
 
+    public function moogoldBalance(MooGoldService $mooGoldService)
+    {
+        try {
+
+            $response = $mooGoldService->balance();
+
+            $data = $response['data'] ?? $response;
+
+            return response()->json([
+                'success' => true,
+                'currency' => $data['currency'] ?? 'USD',
+                'balance' => $data['balance'] ?? '0.00',
+            ]);
+
+        } catch (\Throwable $e) {
+
+            report($e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengambil saldo MooGold.',
+            ], 500);
+        }
+    }
+
+    public function reloadMoogoldBalance(
+        Request $request,
+        MooGoldService $mooGoldService
+    ) {
+        $validated = $request->validate([
+            'amount' => [
+                'required',
+                'numeric',
+                'gt:0',
+            ],
+        ]);
+
+        try {
+
+            $response = $mooGoldService->reloadBalance(
+                $validated['amount']
+            );
+
+            $data = $response['data'] ?? $response;
+
+            if (empty($data['payment_address'])) {
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'MooGold tidak mengembalikan payment address.',
+                    'response' => $response,
+                ], 422);
+
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Request reload saldo berhasil dibuat.',
+                'data' => [
+                    'order_id' => $data['order_id'] ?? null,
+                    'payment_address' => $data['payment_address'] ?? null,
+                    'amount' => $data['amount'] ?? null,
+                    'wallet_currency' => $data['wallet_currency'] ?? null,
+                ],
+            ]);
+
+        } catch (\Throwable $e) {
+
+            report($e);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal membuat reload saldo MooGold.',
+            ], 500);
+        }
+    }
 }
