@@ -4,18 +4,20 @@
 
 @section('content')
 
-<div class="container-fluid py-4">
+<div class="admin-setting-page">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center setting-page-header">
 
         <div>
 
             <h3 class="fw-bold mb-1">
-                <i class="fa-solid fa-gears me-2 text-primary"></i>
+                <i class="fa-solid fa-gears me-2"></i>
                 Pengaturan Website
             </h3>
 
-            <small class="text-muted">
+            <small>
                 Kelola seluruh konfigurasi website TopUp.
             </small>
 
@@ -43,11 +45,11 @@
         @csrf
         @method('PUT')
 
-        <div class="card shadow border-0 rounded-4">
+    <div class="card setting-card border-0">
 
             <div class="card-body">
 
-                <ul class="nav nav-pills mb-4" id="setting-tab">
+                <ul class="nav nav-pills setting-tabs mb-4" id="setting-tab">
 
                     <li class="nav-item">
                         <button
@@ -61,22 +63,6 @@
                             General
 
                         </button>
-                    </li>
-
-                    <li class="nav-item">
-
-                        <button
-                            type="button"
-                            class="nav-link"
-                            data-bs-toggle="pill"
-                            data-bs-target="#game">
-
-                            <i class="fa-solid fa-gamepad me-1"></i>
-
-                            Game
-
-                        </button>
-
                     </li>
 
                     <li class="nav-item">
@@ -142,9 +128,7 @@
                             <div class="col-md-6 mb-3">
 
                                 <label class="form-label">
-
                                     Nama Website
-
                                 </label>
 
                                 <input
@@ -155,101 +139,109 @@
 
                             </div>
 
-                            <hr>
+                        </div>
 
-                                <h5 class="fw-bold mb-3">
-                                    Logo Website
-                                </h5>
+                        <hr>
 
-                                <div class="row align-items-center">
+                        <h5 class="setting-section-title">
+                            Logo Website
+                        </h5>
 
-                                    <div class="col-md-3">
+                        <div class="row align-items-center">
 
-                                        @if(!empty($settings['app_logo']->setting_value ?? ''))
-                                            <img
-                                                src="{{ asset('storage/'.$settings['app_logo']->setting_value) }}"
-                                                class="img-fluid border rounded p-2"
-                                                style="max-height:120px;">
-                                        @else
-                                            <div class="border rounded p-4 text-center text-muted">
-                                                Belum ada logo
-                                            </div>
-                                        @endif
+                            <div class="col-md-3 mb-3 mb-md-0">
 
-                                    </div>
+                                <div class="setting-media-preview">
 
-                                    <div class="col-md-9">
+                                    @if(!empty($settings['app_logo']->setting_value ?? ''))
 
-                                        <label class="form-label">
-                                            Upload Logo
-                                        </label>
+                                        <img
+                                            src="{{ asset('storage/'.$settings['app_logo']->setting_value) }}"
+                                            style="max-height:120px;">
 
-                                        <input
-                                            type="file"
-                                            class="form-control"
-                                            name="app_logo"
-                                            accept=".png,.jpg,.jpeg,.svg,.webp">
+                                    @else
 
-                                        <small class="text-muted">
-                                            Disarankan PNG transparan ukuran 300x300.
-                                        </small>
+                                        <div class="setting-media-empty">
+                                            Belum ada logo
+                                        </div>
 
-                                    </div>
+                                    @endif
 
                                 </div>
 
-                                <hr>
+                            </div>
 
-                                    <h5 class="fw-bold mb-3">
-                                        Favicon Website
-                                    </h5>
+                            <div class="col-md-9">
 
-                                    <div class="row align-items-center">
+                                <label class="form-label">
+                                    Upload Logo
+                                </label>
 
-                                        <div class="col-md-3">
+                                <input
+                                    type="file"
+                                    class="form-control"
+                                    name="app_logo"
+                                    accept=".png,.jpg,.jpeg,.svg,.webp">
 
-                                            @if(!empty($settings['app_favicon']->setting_value ?? ''))
+                                <small class="setting-file-help">
+                                    Disarankan PNG transparan ukuran 300x300.
+                                </small>
 
-                                                <img
-                                                    src="{{ asset('storage/'.$settings['app_favicon']->setting_value) }}"
-                                                    class="img-fluid border rounded p-2"
-                                                    style="max-height:80px;">
-
-                                            @else
-
-                                                <div class="border rounded p-4 text-center text-muted">
-                                                    Belum ada favicon
-                                                </div>
-
-                                            @endif
-
-                                        </div>
-
-
-                                        <div class="col-md-9">
-
-                                            <label class="form-label">
-                                                Upload Favicon
-                                            </label>
-
-                                            <input
-                                                type="file"
-                                                class="form-control"
-                                                name="app_favicon"
-                                                accept=".png,.jpg,.jpeg,.ico,.svg,.webp">
-
-
-                                            <small class="text-muted">
-                                                Ukuran disarankan 32x32 atau 64x64 pixel.
-                                            </small>
-
-                                        </div>
-
-                                    </div>
+                            </div>
 
                         </div>
 
+                        <hr>
 
+                        <h5 class="setting-section-title">
+                            Favicon Website
+                        </h5>
+
+                        <div class="row align-items-center">
+
+                            <div class="col-md-3 mb-3 mb-md-0">
+
+                                <div class="setting-media-preview">
+
+                                    @if(!empty($settings['app_favicon']->setting_value ?? ''))
+
+                                        <img
+                                            src="{{ asset('storage/'.$settings['app_favicon']->setting_value) }}"
+                                            style="max-height:64px;">
+
+                                    @else
+
+                                        <div class="setting-media-empty">
+                                            Belum ada favicon
+                                        </div>
+
+                                    @endif
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-9">
+
+                                <label class="form-label">
+                                    Upload Favicon
+                                </label>
+
+                                <input
+                                    type="file"
+                                    class="form-control"
+                                    name="app_favicon"
+                                    accept=".png,.jpg,.jpeg,.ico,.svg,.webp">
+
+                                <small class="setting-file-help">
+                                    Ukuran disarankan 32x32 atau 64x64 pixel.
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </div>
 
                     {{-- CONTACT --}}
 
@@ -376,14 +368,10 @@
 
             <div class="card-footer bg-white">
 
-                <button
-                    class="btn btn-primary">
-
-                    <i class="fa-solid fa-floppy-disk me-2"></i>
-
-                    Simpan Pengaturan
-
-                </button>
+            <button class="btn btn-primary setting-save-button">
+                <i class="fa-solid fa-floppy-disk me-2"></i>
+                Simpan Pengaturan
+            </button>
 
             </div>
 
@@ -391,6 +379,7 @@
 
     </form>
 
+</div>
 </div>
 @push('scripts')
 <script>

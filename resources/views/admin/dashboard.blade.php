@@ -165,26 +165,6 @@
                 </a>
 
 
-                {{-- STOCK --}}
-
-                <a
-                    href="{{ route('admin.stock.index') }}"
-                    class="admin-shortcut-card"
-                >
-
-                    <div class="admin-shortcut-icon">
-
-                        <i class="fa-solid fa-boxes-stacked"></i>
-
-                    </div>
-
-                    <span class="admin-shortcut-label">
-                        Tambah Stock
-                    </span>
-
-                </a>
-
-
                 {{-- TOP SELLER --}}
 
                 <a

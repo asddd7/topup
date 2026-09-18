@@ -1,0 +1,372 @@
+/* =========================================================
+   ADMIN SETTING
+========================================================= */
+
+.admin-setting-page {
+    color: var(--theme-text);
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.admin-setting-page .setting-page-header {
+    margin-bottom: 1.5rem;
+}
+
+.admin-setting-page .setting-page-header h3 {
+    color: var(--theme-text);
+}
+
+.admin-setting-page .setting-page-header h3 i {
+    color: var(--theme-primary) !important;
+}
+
+.admin-setting-page .setting-page-header small {
+    color: var(--theme-text-secondary);
+}
+
+/* =========================================================
+   MAIN CARD
+========================================================= */
+
+.admin-setting-page .setting-card {
+    background: var(--theme-surface);
+    border: 1px solid var(--theme-border) !important;
+    border-radius: 1rem !important;
+    overflow: hidden;
+    box-shadow: var(--theme-shadow) !important;
+}
+
+.admin-setting-page .setting-card .card-body {
+    background: var(--theme-surface);
+    color: var(--theme-text);
+    padding: 1rem;
+}
+
+.admin-setting-page .setting-card .card-footer {
+    background: var(--theme-surface) !important;
+    border-top: 1px solid var(--theme-border);
+    padding: 1rem;
+}
+
+/* =========================================================
+   TABS
+========================================================= */
+
+.admin-setting-page .setting-tabs {
+    display: flex;
+    gap: .4rem;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: thin;
+    padding-bottom: .35rem;
+    margin-bottom: 1.5rem !important;
+}
+
+.admin-setting-page .setting-tabs .nav-item {
+    flex: 0 0 auto;
+}
+
+.admin-setting-page .setting-tabs .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+
+    min-height: 42px;
+    padding: .65rem .9rem;
+
+    border-radius: .7rem;
+    border: 1px solid transparent;
+
+    color: var(--theme-text-secondary);
+    background: transparent;
+
+    font-size: .9rem;
+    font-weight: 600;
+
+    white-space: nowrap;
+
+    transition:
+        color .2s ease,
+        background-color .2s ease,
+        border-color .2s ease;
+}
+
+.admin-setting-page .setting-tabs .nav-link:hover {
+    color: var(--theme-text);
+    background: var(--theme-primary-soft);
+}
+
+.admin-setting-page .setting-tabs .nav-link.active {
+    color: var(--theme-primary);
+    background: var(--theme-primary-soft);
+    border-color: var(--theme-border);
+}
+
+.admin-setting-page .setting-tabs .nav-link i {
+    font-size: .85rem;
+}
+
+/* =========================================================
+   TAB CONTENT
+========================================================= */
+
+.admin-setting-page .tab-content {
+    min-height: 280px;
+}
+
+.admin-setting-page .tab-pane {
+    color: var(--theme-text);
+}
+
+.admin-setting-page .setting-section {
+    margin-bottom: 1.75rem;
+}
+
+.admin-setting-page .setting-section:last-child {
+    margin-bottom: 0;
+}
+
+.admin-setting-page .setting-section-title {
+    color: var(--theme-text);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: .35rem;
+}
+
+.admin-setting-page .setting-section-description {
+    color: var(--theme-text-secondary);
+    font-size: .85rem;
+    margin-bottom: 1rem;
+}
+
+.admin-setting-page hr {
+    margin: 1.75rem 0;
+    border-color: var(--theme-border);
+    opacity: 1;
+}
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.admin-setting-page .form-label {
+    color: var(--theme-text);
+    font-size: .9rem;
+    font-weight: 600;
+    margin-bottom: .45rem;
+}
+
+.admin-setting-page .form-control,
+.admin-setting-page .form-select {
+    min-height: 44px;
+
+    background: var(--theme-input-bg);
+    color: var(--theme-text);
+
+    border: 1px solid var(--theme-border);
+    border-radius: .7rem;
+}
+
+.admin-setting-page textarea.form-control {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.admin-setting-page .form-control:focus,
+.admin-setting-page .form-select:focus {
+    background: var(--theme-input-bg);
+    color: var(--theme-text);
+
+    border-color: var(--theme-primary);
+
+    box-shadow: 0 0 0 3px rgba(79, 111, 206, .10);
+}
+
+.admin-setting-page .form-control::placeholder {
+    color: var(--theme-text-muted);
+}
+
+.admin-setting-page .form-text,
+.admin-setting-page small.text-muted {
+    color: var(--theme-text-secondary) !important;
+    font-size: .78rem;
+}
+
+/* =========================================================
+   FILE UPLOAD
+========================================================= */
+
+.admin-setting-page .setting-media-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 120px;
+    padding: 1rem;
+
+    background: var(--theme-surface-soft);
+    border: 1px solid var(--theme-border);
+    border-radius: .75rem;
+}
+
+.admin-setting-page .setting-media-preview img {
+    display: block;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.admin-setting-page .setting-media-empty {
+    color: var(--theme-text-muted);
+    font-size: .85rem;
+    text-align: center;
+}
+
+.admin-setting-page .setting-file-help {
+    display: block;
+    margin-top: .45rem;
+    color: var(--theme-text-secondary);
+    font-size: .78rem;
+}
+
+/* =========================================================
+   SWITCH
+========================================================= */
+
+.admin-setting-page .form-check {
+    padding: .9rem 1rem;
+    margin-bottom: .75rem;
+
+    background: var(--theme-surface-soft);
+    border: 1px solid var(--theme-border);
+    border-radius: .75rem;
+}
+
+.admin-setting-page .form-check:last-child {
+    margin-bottom: 0;
+}
+
+.admin-setting-page .form-switch {
+    padding-left: 3rem;
+}
+
+.admin-setting-page .form-switch .form-check-input {
+    margin-left: -2.2rem;
+    margin-top: .15rem;
+
+    width: 2.2rem;
+    height: 1.2rem;
+
+    background-color: var(--theme-border);
+    border-color: var(--theme-border);
+}
+
+.admin-setting-page .form-switch .form-check-input:checked {
+    background-color: var(--theme-primary);
+    border-color: var(--theme-primary);
+}
+
+.admin-setting-page .form-check-label {
+    color: var(--theme-text);
+    font-weight: 500;
+}
+
+/* =========================================================
+   ALERT
+========================================================= */
+
+.admin-setting-page .alert {
+    border-radius: .75rem;
+    border-width: 1px;
+}
+
+/* =========================================================
+   SAVE BUTTON
+========================================================= */
+
+.admin-setting-page .setting-save-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 44px;
+    padding: .7rem 1rem;
+
+    border-radius: .7rem;
+
+    font-weight: 600;
+}
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+[data-theme="dark"] .admin-setting-page .setting-card,
+[data-theme="dark"] .admin-setting-page .setting-card .card-body,
+[data-theme="dark"] .admin-setting-page .setting-card .card-footer {
+    background: var(--theme-surface);
+    color: var(--theme-text);
+}
+
+[data-theme="dark"] .admin-setting-page .form-control,
+[data-theme="dark"] .admin-setting-page .form-select {
+    background: var(--theme-input-bg);
+    color: var(--theme-text);
+}
+
+[data-theme="dark"] .admin-setting-page input[type="file"] {
+    color: var(--theme-text-secondary);
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (min-width: 768px) {
+
+    .admin-setting-page .setting-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .admin-setting-page .setting-card .card-footer {
+        padding: 1.25rem 1.5rem;
+    }
+
+    .admin-setting-page .setting-tabs {
+        overflow-x: visible;
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 575.98px) {
+
+    .admin-setting-page {
+        margin-left: -.25rem;
+        margin-right: -.25rem;
+    }
+
+    .admin-setting-page .setting-page-header h3 {
+        font-size: 1.15rem;
+    }
+
+    .admin-setting-page .setting-page-header small {
+        font-size: .78rem;
+    }
+
+    .admin-setting-page .setting-card {
+        border-radius: .8rem !important;
+    }
+
+    .admin-setting-page .setting-card .card-body {
+        padding: .9rem;
+    }
+
+    .admin-setting-page .setting-card .card-footer {
+        padding: .9rem;
+    }
+
+    .admin-setting-page .setting-save-button {
+        width: 100%;
+    }
+}
