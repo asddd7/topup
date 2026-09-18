@@ -304,7 +304,7 @@ Route::get(
 Route::post(
     'setting/moogold/reload-balance',
     [SettingController::class, 'reloadMoogoldBalance']
-)->name('setting.moogold.reload-balance');s
+)->name('setting.moogold.reload-balance');
 /*
 |--------------------------------------------------------------------------
 | DASHBOARD

@@ -34,13 +34,17 @@ class SettingController extends BaseAdminController
         | WEBSITE SETTINGS
         |--------------------------------------------------------------------------
         */
+        
             $request->validate([
 
-                'app_logo' => 
+                'app_logo' =>
                     'nullable|image|mimes:png,jpg,jpeg,svg,webp|max:2048',
 
                 'app_favicon' =>
                     'nullable|image|mimes:png,jpg,jpeg,ico,svg,webp|max:1024',
+
+                'usd_idr_rate' =>
+                    'nullable|numeric|gt:0',
 
             ]);
 
@@ -175,10 +179,26 @@ class SettingController extends BaseAdminController
 
             $data = $response['data'] ?? $response;
 
+            $balance = (float) ($data['balance'] ?? 0);
+            $currency = $data['currency'] ?? 'USD';
+
+            $usdIdrRate = (float) (
+                Setting::where('setting_key', 'usd_idr_rate')
+                    ->value('setting_value') ?? 0
+            );
+
+            $balanceIdr = null;
+
+            if ($usdIdrRate > 0 && strtoupper($currency) === 'USD') {
+                $balanceIdr = $balance * $usdIdrRate;
+            }
+
             return response()->json([
                 'success' => true,
-                'currency' => $data['currency'] ?? 'USD',
-                'balance' => $data['balance'] ?? '0.00',
+                'currency' => $currency,
+                'balance' => $balance,
+                'usd_idr_rate' => $usdIdrRate,
+                'balance_idr' => $balanceIdr,
             ]);
 
         } catch (\Throwable $e) {
@@ -188,58 +208,6 @@ class SettingController extends BaseAdminController
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal mengambil saldo MooGold.',
-            ], 500);
-        }
-    }
-
-    public function reloadMoogoldBalance(
-        Request $request,
-        MooGoldService $mooGoldService
-    ) {
-        $validated = $request->validate([
-            'amount' => [
-                'required',
-                'numeric',
-                'gt:0',
-            ],
-        ]);
-
-        try {
-
-            $response = $mooGoldService->reloadBalance(
-                $validated['amount']
-            );
-
-            $data = $response['data'] ?? $response;
-
-            if (empty($data['payment_address'])) {
-
-                return response()->json([
-                    'success' => false,
-                    'message' => 'MooGold tidak mengembalikan payment address.',
-                    'response' => $response,
-                ], 422);
-
-            }
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Request reload saldo berhasil dibuat.',
-                'data' => [
-                    'order_id' => $data['order_id'] ?? null,
-                    'payment_address' => $data['payment_address'] ?? null,
-                    'amount' => $data['amount'] ?? null,
-                    'wallet_currency' => $data['wallet_currency'] ?? null,
-                ],
-            ]);
-
-        } catch (\Throwable $e) {
-
-            report($e);
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal membuat reload saldo MooGold.',
             ], 500);
         }
     }
