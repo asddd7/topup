@@ -1284,3 +1284,83 @@
     }
 
 }
+
+/* =========================================================
+   TABLE SORTING
+========================================================= */
+
+.table-sortable {
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.table-sortable > span:first-child,
+.table-sortable {
+    transition: color .2s ease;
+}
+
+.table-sortable:hover {
+    color: var(--theme-primary);
+}
+
+.table-sortable {
+    position: relative;
+}
+
+.table-sortable > span:not(.table-sort-icons) {
+    display: inline-flex;
+    align-items: center;
+}
+
+.table-sort-icons {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0;
+    margin-left: 7px;
+    vertical-align: middle;
+    line-height: 1;
+}
+
+.sort-icon {
+    font-size: 8px;
+    line-height: 7px;
+    color: var(--theme-text-muted);
+    opacity: .45;
+    transition:
+        color .2s ease,
+        opacity .2s ease,
+        transform .2s ease;
+}
+
+.sort-icon-up {
+    margin-bottom: 1px;
+}
+
+.sort-icon-down {
+    margin-top: 1px;
+}
+
+.table-sortable:hover .sort-icon {
+    opacity: .8;
+}
+
+.table-sortable.sort-asc .sort-icon-up,
+.table-sortable.sort-desc .sort-icon-down {
+    color: var(--theme-primary);
+    opacity: 1;
+}
+
+.table-sortable.sort-asc .sort-icon-down,
+.table-sortable.sort-desc .sort-icon-up {
+    opacity: .25;
+}
+
+.table-sortable.sort-asc .sort-icon-up {
+    transform: translateY(-1px);
+}
+
+.table-sortable.sort-desc .sort-icon-down {
+    transform: translateY(1px);
+}

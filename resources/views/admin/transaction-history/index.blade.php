@@ -528,7 +528,13 @@
 
                             <tr>
 
-                                <th class="column-number px-3 py-3">
+                                {{-- NUMBER --}}
+
+                                <th
+                                    class="column-number px-3 py-3 table-sortable"
+                                    data-sort-key="number"
+                                    data-sort-type="number"
+                                >
 
                                     <div class="transaction-history-check-all">
 
@@ -540,42 +546,149 @@
 
                                         <span>#</span>
 
+                                        <span class="table-sort-icons">
+                                            <i class="fa-solid fa-chevron-up sort-icon sort-icon-up"></i>
+                                            <i class="fa-solid fa-chevron-down sort-icon sort-icon-down"></i>
+                                        </span>
+
                                     </div>
 
                                 </th>
 
-                                <th class="column-order py-3">
-                                    Order
+
+                                {{-- ORDER --}}
+
+                                <th
+                                    class="column-order py-3 table-sortable"
+                                    data-sort-key="order"
+                                    data-sort-type="text"
+                                >
+
+                                    <span>
+                                        Order
+                                    </span>
+
+                                    <span class="table-sort-icons">
+                                        <i class="fa-solid fa-chevron-up sort-icon sort-icon-up"></i>
+                                        <i class="fa-solid fa-chevron-down sort-icon sort-icon-down"></i>
+                                    </span>
+
                                 </th>
 
-                                <th class="column-game py-3">
-                                    Game
+
+                                {{-- GAME --}}
+
+                                <th
+                                    class="column-game py-3 table-sortable"
+                                    data-sort-key="game"
+                                    data-sort-type="text"
+                                >
+
+                                    <span>
+                                        Game
+                                    </span>
+
+                                    <span class="table-sort-icons">
+                                        <i class="fa-solid fa-chevron-up sort-icon sort-icon-up"></i>
+                                        <i class="fa-solid fa-chevron-down sort-icon sort-icon-down"></i>
+                                    </span>
+
                                 </th>
 
-                                <th class="column-item py-3">
-                                    Item
+
+                                {{-- ITEM --}}
+
+                                <th
+                                    class="column-item py-3 table-sortable"
+                                    data-sort-key="item"
+                                    data-sort-type="text"
+                                >
+
+                                    <span>
+                                        Item
+                                    </span>
+
+                                    <span class="table-sort-icons">
+                                        <i class="fa-solid fa-chevron-up sort-icon sort-icon-up"></i>
+                                        <i class="fa-solid fa-chevron-down sort-icon sort-icon-down"></i>
+                                    </span>
+
                                 </th>
 
-                                <th class="column-status py-3">
-                                    Status
+
+                                {{-- STATUS --}}
+
+                                <th
+                                    class="column-status py-3 table-sortable"
+                                    data-sort-key="status"
+                                    data-sort-type="text"
+                                >
+
+                                    <span>
+                                        Status
+                                    </span>
+
+                                    <span class="table-sort-icons">
+                                        <i class="fa-solid fa-chevron-up sort-icon sort-icon-up"></i>
+                                        <i class="fa-solid fa-chevron-down sort-icon sort-icon-down"></i>
+                                    </span>
+
                                 </th>
 
-                                <th class="column-amount py-3">
-                                    Amount
+
+                                {{-- AMOUNT --}}
+
+                                <th
+                                    class="column-amount py-3 table-sortable"
+                                    data-sort-key="amount"
+                                    data-sort-type="number"
+                                >
+
+                                    <span>
+                                        Amount
+                                    </span>
+
+                                    <span class="table-sort-icons">
+                                        <i class="fa-solid fa-chevron-up sort-icon sort-icon-up"></i>
+                                        <i class="fa-solid fa-chevron-down sort-icon sort-icon-down"></i>
+                                    </span>
+
                                 </th>
 
-                                <th class="column-date py-3">
-                                    Tanggal
+
+                                {{-- DATE --}}
+
+                                <th
+                                    class="column-date py-3 table-sortable"
+                                    data-sort-key="date"
+                                    data-sort-type="date"
+                                >
+
+                                    <span>
+                                        Tanggal
+                                    </span>
+
+                                    <span class="table-sort-icons">
+                                        <i class="fa-solid fa-chevron-up sort-icon sort-icon-up"></i>
+                                        <i class="fa-solid fa-chevron-down sort-icon sort-icon-down"></i>
+                                    </span>
+
                                 </th>
 
-                                <th class="column-action py-3 text-center">
+
+                                {{-- ACTION --}}
+
+                                <th
+                                    class="column-action py-3 text-center"
+                                >
+
                                     Detail
+
                                 </th>
 
                             </tr>
 
                         </thead>
-
 
                             <tbody>
 
@@ -951,7 +1064,16 @@
                                          MAIN ROW
                                     ================================================== --}}
 
-                                    <tr>
+                                    <tr
+                                        class="transaction-history-main-row"
+                                        data-number="{{ $rowNumber }}"
+                                        data-order="{{ $orderId }}"
+                                        data-game="{{ $gameName }}"
+                                        data-item="{{ $itemName }}"
+                                        data-status="{{ $orderStatusRaw }}"
+                                        data-amount="{{ is_numeric($amount) ? $amount : 0 }}"
+                                        data-date="{{ $orderDateRaw }}"
+                                    >
 
                                         {{-- NUMBER + CHECKBOX --}}
 
@@ -3519,6 +3641,358 @@ document.addEventListener('DOMContentLoaded', function () {
 
     }
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | TABLE SORTING
+    |--------------------------------------------------------------------------
+    */
+
+    const transactionTable =
+        document.querySelector(
+            '.transaction-history-table'
+        );
+
+    const transactionTableBody =
+        transactionTable
+            ? transactionTable.querySelector('tbody')
+            : null;
+
+    const sortableHeaders =
+        transactionTable
+            ? Array.from(
+                transactionTable.querySelectorAll(
+                    'thead th.table-sortable'
+                )
+            )
+            : [];
+
+    let currentSortKey = null;
+    let currentSortDirection = 'asc';
+
+
+    function normalizeSortValue(
+        value,
+        type
+    ) {
+
+        if (value === undefined || value === null) {
+            return '';
+        }
+
+
+        const stringValue =
+            String(value).trim();
+
+
+        if (type === 'number') {
+
+            const number =
+                Number(
+                    stringValue.replace(
+                        /[^\d.-]/g,
+                        ''
+                    )
+                );
+
+            return Number.isNaN(number)
+                ? 0
+                : number;
+
+        }
+
+
+        if (type === 'date') {
+
+            const timestamp =
+                Date.parse(
+                    stringValue
+                );
+
+            return Number.isNaN(timestamp)
+                ? 0
+                : timestamp;
+
+        }
+
+
+        return stringValue.toLowerCase();
+
+    }
+
+
+    function updateSortIcons(
+        activeHeader,
+        direction
+    ) {
+
+        sortableHeaders.forEach(
+            function (header) {
+
+                header.classList.remove(
+                    'sort-asc',
+                    'sort-desc'
+                );
+
+            }
+        );
+
+
+        if (!activeHeader) {
+            return;
+        }
+
+
+        activeHeader.classList.add(
+            direction === 'asc'
+                ? 'sort-asc'
+                : 'sort-desc'
+        );
+
+    }
+
+
+    function sortTransactions(
+        sortKey,
+        sortType,
+        direction
+    ) {
+
+        if (!transactionTableBody) {
+            return;
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Ambil pasangan:
+        |
+        | MAIN ROW
+        | DETAIL ROW
+        |--------------------------------------------------------------------------
+        */
+
+        const rows =
+            Array.from(
+                transactionTableBody.querySelectorAll(
+                    'tr.transaction-history-main-row'
+                )
+            );
+
+
+        const groupedRows =
+            rows.map(function (mainRow) {
+
+                const detailId =
+                    mainRow
+                        .querySelector(
+                            '.transaction-history-detail-button'
+                        )
+                        ?.getAttribute(
+                            'aria-controls'
+                        );
+
+
+                const detailRow =
+                    detailId
+                        ? document.getElementById(
+                            detailId
+                        )
+                        : null;
+
+
+                return {
+                    mainRow,
+                    detailRow
+                };
+
+            });
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | SORT
+        |--------------------------------------------------------------------------
+        */
+
+        groupedRows.sort(
+            function (a, b) {
+
+                const valueA =
+                    normalizeSortValue(
+                        a.mainRow.dataset[
+                            sortKey
+                        ],
+                        sortType
+                    );
+
+
+                const valueB =
+                    normalizeSortValue(
+                        b.mainRow.dataset[
+                            sortKey
+                        ],
+                        sortType
+                    );
+
+
+                let comparison = 0;
+
+
+                if (
+                    typeof valueA === 'number' &&
+                    typeof valueB === 'number'
+                ) {
+
+                    comparison =
+                        valueA - valueB;
+
+                } else {
+
+                    comparison =
+                        String(valueA)
+                            .localeCompare(
+                                String(valueB),
+                                'id',
+                                {
+                                    numeric: true,
+                                    sensitivity: 'base'
+                                }
+                            );
+
+                }
+
+
+                return direction === 'asc'
+                    ? comparison
+                    : -comparison;
+
+            }
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | REBUILD TABLE BODY
+        |--------------------------------------------------------------------------
+        */
+
+        const fragment =
+            document.createDocumentFragment();
+
+
+        groupedRows.forEach(
+            function (group) {
+
+                fragment.appendChild(
+                    group.mainRow
+                );
+
+
+                if (group.detailRow) {
+
+                    fragment.appendChild(
+                        group.detailRow
+                    );
+
+                }
+
+            }
+        );
+
+
+        transactionTableBody.appendChild(
+            fragment
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | UPDATE ICON
+        |--------------------------------------------------------------------------
+        */
+
+        const activeHeader =
+            sortableHeaders.find(
+                function (header) {
+
+                    return header.dataset.sortKey ===
+                        sortKey;
+
+                }
+            );
+
+
+        updateSortIcons(
+            activeHeader,
+            direction
+        );
+
+    }
+
+
+    sortableHeaders.forEach(
+        function (header) {
+
+            header.addEventListener(
+                'click',
+                function () {
+
+                    const sortKey =
+                        this.dataset.sortKey;
+
+                    const sortType =
+                        this.dataset.sortType ||
+                        'text';
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Header berbeda
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (
+                        currentSortKey !==
+                        sortKey
+                    ) {
+
+                        currentSortKey =
+                            sortKey;
+
+                        currentSortDirection =
+                            'asc';
+
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Header sama → toggle UP/DOWN
+                    |--------------------------------------------------------------------------
+                    */
+
+                    else {
+
+                        currentSortDirection =
+                            currentSortDirection ===
+                                'asc'
+                                ? 'desc'
+                                : 'asc';
+
+                    }
+
+
+                    sortTransactions(
+                        sortKey,
+                        sortType,
+                        currentSortDirection
+                    );
+
+                }
+            );
+
+        }
+    );
 
     /*
     |--------------------------------------------------------------------------
