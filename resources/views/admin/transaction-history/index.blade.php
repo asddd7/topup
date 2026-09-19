@@ -460,6 +460,55 @@
 
         </div>
 
+        {{-- =====================================================
+            BULK PRINT TOOLBAR
+        ====================================================== --}}
+
+        <div class="transaction-history-bulk-toolbar mb-3">
+
+            <div class="transaction-history-bulk-info">
+
+                <div class="transaction-history-bulk-select">
+
+                    <input
+                        type="checkbox"
+                        class="form-check-input"
+                        id="selectAllTransactions"
+                    >
+
+                    <label
+                        for="selectAllTransactions"
+                        class="transaction-history-bulk-select-label"
+                    >
+                        Pilih Semua
+                    </label>
+
+                </div>
+
+                <span
+                    class="transaction-history-selected-count"
+                    id="selectedTransactionCount"
+                >
+                    0 dipilih
+                </span>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="btn btn-primary btn-sm transaction-history-bulk-print-button"
+                id="bulkPrintReceiptButton"
+                disabled
+            >
+
+                <i class="fa-solid fa-print me-1"></i>
+
+                Cetak Dipilih
+
+            </button>
+
+        </div>
 
         {{-- =====================================================
              TABLE CARD
@@ -475,45 +524,57 @@
 
                         <table class="transaction-history-table table table-hover align-middle mb-0">
 
-                            <thead>
+                        <thead>
 
-                                <tr>
+                            <tr>
 
-                                    <th class="column-number px-3 py-3">
-                                        #
-                                    </th>
+                                <th class="column-number px-3 py-3">
 
-                                    <th class="column-order py-3">
-                                        Order
-                                    </th>
+                                    <div class="transaction-history-check-all">
 
-                                    <th class="column-game py-3">
-                                        Game
-                                    </th>
+                                        <input
+                                            type="checkbox"
+                                            class="form-check-input"
+                                            id="tableSelectAllTransactions"
+                                        >
 
-                                    <th class="column-item py-3">
-                                        Item
-                                    </th>
+                                        <span>#</span>
 
-                                    <th class="column-status py-3">
-                                        Status
-                                    </th>
+                                    </div>
 
-                                    <th class="column-amount py-3">
-                                        Amount
-                                    </th>
+                                </th>
 
-                                    <th class="column-date py-3">
-                                        Tanggal
-                                    </th>
+                                <th class="column-order py-3">
+                                    Order
+                                </th>
 
-                                    <th class="column-action py-3 text-center">
-                                        Detail
-                                    </th>
+                                <th class="column-game py-3">
+                                    Game
+                                </th>
 
-                                </tr>
+                                <th class="column-item py-3">
+                                    Item
+                                </th>
 
-                            </thead>
+                                <th class="column-status py-3">
+                                    Status
+                                </th>
+
+                                <th class="column-amount py-3">
+                                    Amount
+                                </th>
+
+                                <th class="column-date py-3">
+                                    Tanggal
+                                </th>
+
+                                <th class="column-action py-3 text-center">
+                                    Detail
+                                </th>
+
+                            </tr>
+
+                        </thead>
 
 
                             <tbody>
@@ -892,11 +953,31 @@
 
                                     <tr>
 
-                                        {{-- NUMBER --}}
+                                        {{-- NUMBER + CHECKBOX --}}
 
                                         <td class="px-3">
 
-                                            {{ $rowNumber }}
+                                            <div class="transaction-history-row-select">
+
+                                                <input
+                                                    type="checkbox"
+                                                    class="form-check-input transaction-history-select"
+                                                    value="{{ $index }}"
+                                                    data-order-id="{{ $orderId }}"
+                                                    data-status="{{ $orderStatusRaw }}"
+                                                    data-amount="{{ is_numeric($amount) ? $amount : '' }}"
+                                                    data-game="{{ $gameName }}"
+                                                    data-item="{{ $itemName }}"
+                                                    data-quantity="{{ $quantity }}"
+                                                    data-date="{{ $orderDate }}"
+                                                    data-currency="{{ $currency }}"
+                                                >
+
+                                                <span>
+                                                    {{ $rowNumber }}
+                                                </span>
+
+                                            </div>
 
                                         </td>
 
@@ -1505,6 +1586,147 @@
 
 </div>
 
+{{-- =====================================================
+     BULK RECEIPT MODAL
+====================================================== --}}
+
+<div
+    class="modal fade"
+    id="bulkReceiptModal"
+    tabindex="-1"
+    aria-labelledby="bulkReceiptModalLabel"
+    aria-hidden="true"
+>
+
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+
+        <div class="modal-content receipt-modal">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h5
+                        class="modal-title"
+                        id="bulkReceiptModalLabel"
+                    >
+
+                        <i class="fa-solid fa-layer-group me-2"></i>
+
+                        Cetak Receipt Terpilih
+
+                    </h5>
+
+                    <small class="text-muted">
+
+                        Periksa dan ubah harga setiap receipt sebelum mencetak.
+
+                    </small>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+
+            </div>
+
+
+            <div class="modal-body">
+
+                <div class="bulk-receipt-toolbar">
+
+                    <div>
+
+                        <span class="small text-muted">
+                            Jumlah receipt
+                        </span>
+
+                        <strong id="bulkReceiptCount">
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <div class="bulk-receipt-apply-price">
+
+                        <div class="input-group input-group-sm">
+
+                            <span class="input-group-text">
+                                Rp
+                            </span>
+
+                            <input
+                                type="number"
+                                id="bulkApplyPrice"
+                                class="form-control"
+                                min="0"
+                                step="1"
+                                placeholder="Harga semua"
+                            >
+
+                            <button
+                                type="button"
+                                class="btn btn-outline-primary"
+                                id="applyBulkPrice"
+                            >
+                                Terapkan
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="bulk-receipt-list"
+                    id="bulkReceiptList"
+                >
+
+                    {{-- Diisi oleh JavaScript --}}
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    data-bs-dismiss="modal"
+                >
+                    Batal
+                </button>
+
+
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="printBulkReceiptButton"
+                >
+
+                    <i class="fa-solid fa-print me-2"></i>
+
+                    Cetak Semua
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
 
 @push('scripts')
 
@@ -1513,13 +1735,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /*
     |--------------------------------------------------------------------------
-    | RECEIPT ELEMENTS
+    | ELEMENTS
     |--------------------------------------------------------------------------
     */
 
     const receiptModalElement =
         document.getElementById('receiptModal');
-
 
     const receiptModal =
         receiptModalElement
@@ -1529,36 +1750,98 @@ document.addEventListener('DOMContentLoaded', function () {
             : null;
 
 
+    const bulkReceiptModalElement =
+        document.getElementById('bulkReceiptModal');
+
+    const bulkReceiptModal =
+        bulkReceiptModalElement
+            ? bootstrap.Modal.getOrCreateInstance(
+                bulkReceiptModalElement
+            )
+            : null;
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | INDIVIDUAL RECEIPT
+    |--------------------------------------------------------------------------
+    */
+
     const receiptOrderId =
         document.getElementById('receiptOrderId');
-
 
     const receiptGame =
         document.getElementById('receiptGame');
 
-
     const receiptItem =
         document.getElementById('receiptItem');
-
 
     const receiptQuantity =
         document.getElementById('receiptQuantity');
 
-
     const receiptStatus =
         document.getElementById('receiptStatus');
-
 
     const receiptDate =
         document.getElementById('receiptDate');
 
-
     const receiptPrice =
         document.getElementById('receiptPrice');
 
-
     const printReceiptButton =
         document.getElementById('printReceiptButton');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | BULK RECEIPT
+    |--------------------------------------------------------------------------
+    */
+
+    const selectAllTransactions =
+        document.getElementById(
+            'selectAllTransactions'
+        );
+
+    const tableSelectAllTransactions =
+        document.getElementById(
+            'tableSelectAllTransactions'
+        );
+
+    const selectedTransactionCount =
+        document.getElementById(
+            'selectedTransactionCount'
+        );
+
+    const bulkPrintReceiptButton =
+        document.getElementById(
+            'bulkPrintReceiptButton'
+        );
+
+    const bulkReceiptList =
+        document.getElementById(
+            'bulkReceiptList'
+        );
+
+    const bulkReceiptCount =
+        document.getElementById(
+            'bulkReceiptCount'
+        );
+
+    const bulkApplyPrice =
+        document.getElementById(
+            'bulkApplyPrice'
+        );
+
+    const applyBulkPrice =
+        document.getElementById(
+            'applyBulkPrice'
+        );
+
+    const printBulkReceiptButton =
+        document.getElementById(
+            'printBulkReceiptButton'
+        );
 
 
     let currentReceipt = null;
@@ -1566,7 +1849,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /*
     |--------------------------------------------------------------------------
-    | FORMAT RUPIAH
+    | HELPERS
     |--------------------------------------------------------------------------
     */
 
@@ -1581,59 +1864,209 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
 
-        return new Intl.NumberFormat('id-ID', {
-
-            style: 'currency',
-
-            currency: 'IDR',
-
-            minimumFractionDigits: 0,
-
-            maximumFractionDigits: 2
-
-        }).format(number);
+        return new Intl.NumberFormat(
+            'id-ID',
+            {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            }
+        ).format(number);
 
     }
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | ESCAPE HTML
-    |--------------------------------------------------------------------------
-    */
-
     function escapeHtml(value) {
 
         return String(value ?? '')
-
             .replace(/&/g, '&amp;')
-
             .replace(/</g, '&lt;')
-
             .replace(/>/g, '&gt;')
-
             .replace(/"/g, '&quot;')
-
             .replace(/'/g, '&#039;');
 
     }
 
 
+    function getSelectedTransactions() {
+
+        return Array.from(
+            document.querySelectorAll(
+                '.transaction-history-select:checked'
+            )
+        ).map(function (checkbox) {
+
+            return {
+
+                orderId:
+                    checkbox.dataset.orderId || '-',
+
+                game:
+                    checkbox.dataset.game || '-',
+
+                item:
+                    checkbox.dataset.item || '-',
+
+                quantity:
+                    checkbox.dataset.quantity || '1',
+
+                status:
+                    checkbox.dataset.status || '-',
+
+                amount:
+                    checkbox.dataset.amount || '',
+
+                date:
+                    checkbox.dataset.date || '-',
+
+                currency:
+                    checkbox.dataset.currency || 'IDR'
+
+            };
+
+        });
+
+    }
+
+
     /*
     |--------------------------------------------------------------------------
-    | LAST ACTIVE TAB
+    | UPDATE SELECTION
     |--------------------------------------------------------------------------
     */
 
-    /*
-    | Halaman ini tidak memakai setting tabs.
-    | Bagian ini sengaja tidak diperlukan.
-    */
+    function updateBulkSelection() {
+
+        const checkboxes =
+            Array.from(
+                document.querySelectorAll(
+                    '.transaction-history-select'
+                )
+            );
+
+        const selected =
+            checkboxes.filter(
+                checkbox => checkbox.checked
+            );
+
+        const count =
+            selected.length;
+
+
+        if (selectedTransactionCount) {
+
+            selectedTransactionCount.textContent =
+                `${count} dipilih`;
+
+        }
+
+
+        if (bulkPrintReceiptButton) {
+
+            bulkPrintReceiptButton.disabled =
+                count === 0;
+
+        }
+
+
+        const allSelected =
+            checkboxes.length > 0 &&
+            selected.length === checkboxes.length;
+
+
+        const someSelected =
+            selected.length > 0 &&
+            selected.length < checkboxes.length;
+
+
+        [
+            selectAllTransactions,
+            tableSelectAllTransactions
+        ].forEach(function (checkbox) {
+
+            if (!checkbox) {
+                return;
+            }
+
+            checkbox.checked =
+                allSelected;
+
+            checkbox.indeterminate =
+                someSelected;
+
+        });
+
+    }
 
 
     /*
     |--------------------------------------------------------------------------
-    | OPEN RECEIPT
+    | CHECKBOX EVENTS
+    |--------------------------------------------------------------------------
+    */
+
+    document
+        .querySelectorAll(
+            '.transaction-history-select'
+        )
+        .forEach(function (checkbox) {
+
+            checkbox.addEventListener(
+                'change',
+                updateBulkSelection
+            );
+
+        });
+
+
+    function setAllTransactionsSelected(
+        checked
+    ) {
+
+        document
+            .querySelectorAll(
+                '.transaction-history-select'
+            )
+            .forEach(function (checkbox) {
+
+                checkbox.checked = checked;
+
+            });
+
+
+        updateBulkSelection();
+
+    }
+
+
+    selectAllTransactions?.addEventListener(
+        'change',
+        function () {
+
+            setAllTransactionsSelected(
+                this.checked
+            );
+
+        }
+    );
+
+
+    tableSelectAllTransactions?.addEventListener(
+        'change',
+        function () {
+
+            setAllTransactionsSelected(
+                this.checked
+            );
+
+        }
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | INDIVIDUAL RECEIPT MODAL
     |--------------------------------------------------------------------------
     */
 
@@ -1641,7 +2074,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .querySelectorAll(
             '.transaction-history-print-button'
         )
-        .forEach(button => {
+        .forEach(function (button) {
 
             button.addEventListener(
                 'click',
@@ -1671,7 +2104,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             this.dataset.date || '-',
 
                         currency:
-                            this.dataset.currency || 'IDR',
+                            this.dataset.currency || 'IDR'
 
                     };
 
@@ -1679,40 +2112,32 @@ document.addEventListener('DOMContentLoaded', function () {
                     receiptOrderId.textContent =
                         currentReceipt.orderId;
 
-
                     receiptGame.textContent =
                         currentReceipt.game;
-
 
                     receiptItem.textContent =
                         currentReceipt.item;
 
-
                     receiptQuantity.textContent =
                         currentReceipt.quantity;
 
-
                     receiptStatus.textContent =
                         currentReceipt.status;
-
 
                     receiptDate.textContent =
                         currentReceipt.date;
 
 
                     receiptPrice.value =
-                        currentReceipt.amount
-                        &&
+                        currentReceipt.amount &&
                         !Number.isNaN(
                             Number(
                                 currentReceipt.amount
                             )
                         )
-
                             ? Number(
                                 currentReceipt.amount
                             )
-
                             : '';
 
 
@@ -1726,7 +2151,199 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /*
     |--------------------------------------------------------------------------
-    | PRINT
+    | BUILD BULK EDITOR
+    |--------------------------------------------------------------------------
+    */
+
+    function renderBulkReceiptList() {
+
+        const selected =
+            getSelectedTransactions();
+
+
+        if (bulkReceiptCount) {
+
+            bulkReceiptCount.textContent =
+                selected.length;
+
+        }
+
+
+        if (!bulkReceiptList) {
+            return;
+        }
+
+
+        bulkReceiptList.innerHTML = '';
+
+
+        selected.forEach(function (
+            receipt,
+            index
+        ) {
+
+            const row =
+                document.createElement('div');
+
+
+            row.className =
+                'bulk-receipt-item';
+
+
+            row.dataset.index =
+                index;
+
+
+            row.innerHTML = `
+
+                <div class="bulk-receipt-item-number">
+                    ${index + 1}
+                </div>
+
+                <div class="bulk-receipt-item-info">
+
+                    <strong>
+                        ${escapeHtml(
+                            receipt.orderId
+                        )}
+                    </strong>
+
+                    <span>
+                        ${escapeHtml(
+                            receipt.game
+                        )}
+                    </span>
+
+                    <small>
+                        ${escapeHtml(
+                            receipt.item
+                        )}
+                        × ${escapeHtml(
+                            receipt.quantity
+                        )}
+                    </small>
+
+                </div>
+
+
+                <div class="bulk-receipt-item-date">
+
+                    ${escapeHtml(
+                        receipt.date
+                    )}
+
+                </div>
+
+
+                <div class="bulk-receipt-item-price">
+
+                    <div class="input-group input-group-sm">
+
+                        <span class="input-group-text">
+                            Rp
+                        </span>
+
+                        <input
+                            type="number"
+                            class="form-control bulk-receipt-price"
+                            min="0"
+                            step="1"
+                            value="${escapeHtml(
+                                receipt.amount
+                            )}"
+                            data-index="${index}"
+                        >
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            bulkReceiptList.appendChild(row);
+
+        });
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | OPEN BULK MODAL
+    |--------------------------------------------------------------------------
+    */
+
+    bulkPrintReceiptButton?.addEventListener(
+        'click',
+        function () {
+
+            const selected =
+                getSelectedTransactions();
+
+
+            if (selected.length === 0) {
+
+                return;
+
+            }
+
+
+            renderBulkReceiptList();
+
+            bulkReceiptModal?.show();
+
+        }
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | APPLY PRICE TO ALL
+    |--------------------------------------------------------------------------
+    */
+
+    applyBulkPrice?.addEventListener(
+        'click',
+        function () {
+
+            const value =
+                bulkApplyPrice?.value;
+
+
+            if (
+                !value ||
+                Number.isNaN(
+                    Number(value)
+                ) ||
+                Number(value) < 0
+            ) {
+
+                bulkApplyPrice?.focus();
+
+                return;
+
+            }
+
+
+            document
+                .querySelectorAll(
+                    '.bulk-receipt-price'
+                )
+                .forEach(function (input) {
+
+                    input.value =
+                        value;
+
+                });
+
+        }
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | INDIVIDUAL PRINT
     |--------------------------------------------------------------------------
     */
 
@@ -1758,30 +2375,556 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
 
-            const appName =
-                @json(setting('app_name'));
+            printReceipts(
+                [
+                    {
+                        ...currentReceipt,
+                        amount: price
+                    }
+                ]
+            );
 
 
-            const printWindow =
-                window.open(
-                    '',
-                    '_blank',
-                    'width=480,height=800'
-                );
+            receiptModal?.hide();
+
+        }
+    );
 
 
-            if (!printWindow) {
+    /*
+    |--------------------------------------------------------------------------
+    | BULK PRINT
+    |--------------------------------------------------------------------------
+    */
 
-                alert(
-                    'Popup diblokir browser. Izinkan popup untuk mencetak receipt.'
-                );
+    printBulkReceiptButton?.addEventListener(
+        'click',
+        function () {
 
+            const selected =
+                getSelectedTransactions();
+
+
+            if (selected.length === 0) {
                 return;
+            }
+
+
+            const priceInputs =
+                Array.from(
+                    document.querySelectorAll(
+                        '.bulk-receipt-price'
+                    )
+                );
+
+
+            const receipts = [];
+
+
+            for (
+                let index = 0;
+                index < selected.length;
+                index++
+            ) {
+
+                const priceInput =
+                    priceInputs[index];
+
+
+                const price =
+                    Number(
+                        priceInput?.value
+                    );
+
+
+                if (
+                    !priceInput ||
+                    priceInput.value === '' ||
+                    Number.isNaN(price) ||
+                    price < 0
+                ) {
+
+                    priceInput?.focus();
+
+                    return;
+
+                }
+
+
+                receipts.push({
+
+                    ...selected[index],
+
+                    amount:
+                        price
+
+                });
 
             }
 
 
-            const html = `
+            printReceipts(
+                receipts
+            );
+
+
+            bulkReceiptModal?.hide();
+
+        }
+    );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PRINT ENGINE
+    |--------------------------------------------------------------------------
+    */
+
+    function printReceipts(
+        receipts
+    ) {
+
+        if (
+            !Array.isArray(receipts) ||
+            receipts.length === 0
+        ) {
+
+            return;
+
+        }
+
+
+        const appName =
+            @json(setting('app_name'));
+
+
+        const appLogo =
+            @json(
+                setting('app_logo')
+                    ? asset(
+                        'storage/' .
+                        setting('app_logo')
+                    )
+                    : null
+            );
+
+
+        const whatsapp =
+            @json(
+                setting('whatsapp')
+            );
+
+
+        const email =
+            @json(
+                setting('email')
+            );
+
+
+        const address =
+            @json(
+                setting('address')
+            );
+
+
+        const printWindow =
+            window.open(
+                '',
+                '_blank',
+                'width=900,height=900'
+            );
+
+
+        if (!printWindow) {
+
+            alert(
+                'Popup diblokir browser. Izinkan popup untuk mencetak receipt.'
+            );
+
+            return;
+
+        }
+
+
+        const receiptHtml =
+            receipts
+                .map(function (
+                    receipt,
+                    index
+                ) {
+
+                    const quantity =
+                        Number(
+                            receipt.quantity
+                        ) || 1;
+
+
+                    const price =
+                        Number(
+                            receipt.amount
+                        ) || 0;
+
+
+                    const subtotal =
+                        price * quantity;
+
+
+                    return `
+
+                        <section
+                            class="print-receipt
+                            ${index < receipts.length - 1
+                                ? 'print-receipt-page'
+                                : ''}"
+                        >
+
+                            <div class="print-receipt-inner">
+
+
+                                <!-- HEADER -->
+
+                                <header
+                                    class="print-receipt-header"
+                                >
+
+                                    <div
+                                        class="print-brand"
+                                    >
+
+                                        ${
+                                            appLogo
+                                            ? `
+                                                <img
+                                                    src="${escapeHtml(appLogo)}"
+                                                    alt=""
+                                                    class="print-logo"
+                                                >
+                                            `
+                                            : ''
+                                        }
+
+
+                                        <div>
+
+                                            <div
+                                                class="print-store-name"
+                                            >
+
+                                                ${escapeHtml(
+                                                    appName ||
+                                                    'TopUp'
+                                                )}
+
+                                            </div>
+
+                                            <div
+                                                class="print-document-title"
+                                            >
+
+                                                BUKTI TRANSAKSI
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+
+                                    <div
+                                        class="print-status ${escapeHtml(
+                                            String(
+                                                receipt.status
+                                            ).toLowerCase()
+                                        )}"
+                                    >
+
+                                        ${escapeHtml(
+                                            receipt.status
+                                        )}
+
+                                    </div>
+
+                                </header>
+
+
+                                <!-- ORDER META -->
+
+                                <div
+                                    class="print-order-meta"
+                                >
+
+                                    <div>
+
+                                        <span>
+                                            Order ID
+                                        </span>
+
+                                        <strong>
+                                            ${escapeHtml(
+                                                receipt.orderId
+                                            )}
+                                        </strong>
+
+                                    </div>
+
+
+                                    <div>
+
+                                        <span>
+                                            Tanggal
+                                        </span>
+
+                                        <strong>
+                                            ${escapeHtml(
+                                                receipt.date
+                                            )}
+                                        </strong>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- PRODUCT -->
+
+                                <div
+                                    class="print-section-title"
+                                >
+
+                                    Detail Pembelian
+
+                                </div>
+
+
+                                <div
+                                    class="print-product-card"
+                                >
+
+                                    <div
+                                        class="print-game"
+                                    >
+
+                                        ${escapeHtml(
+                                            receipt.game
+                                        )}
+
+                                    </div>
+
+
+                                    <div
+                                        class="print-item"
+                                    >
+
+                                        ${escapeHtml(
+                                            receipt.item
+                                        )}
+
+                                    </div>
+
+                                </div>
+
+
+                                <table
+                                    class="print-item-table"
+                                >
+
+                                    <thead>
+
+                                        <tr>
+
+                                            <th>
+                                                Produk
+                                            </th>
+
+                                            <th
+                                                class="align-right"
+                                            >
+                                                Qty
+                                            </th>
+
+                                            <th
+                                                class="align-right"
+                                            >
+                                                Harga
+                                            </th>
+
+                                            <th
+                                                class="align-right"
+                                            >
+                                                Subtotal
+                                            </th>
+
+                                        </tr>
+
+                                    </thead>
+
+
+                                    <tbody>
+
+                                        <tr>
+
+                                            <td>
+
+                                                <strong>
+                                                    ${escapeHtml(
+                                                        receipt.item
+                                                    )}
+                                                </strong>
+
+                                                <small>
+                                                    ${escapeHtml(
+                                                        receipt.game
+                                                    )}
+                                                </small>
+
+                                            </td>
+
+                                            <td
+                                                class="align-right"
+                                            >
+
+                                                ${escapeHtml(
+                                                    receipt.quantity
+                                                )}
+
+                                            </td>
+
+                                            <td
+                                                class="align-right"
+                                            >
+
+                                                ${formatRupiah(
+                                                    price
+                                                )}
+
+                                            </td>
+
+                                            <td
+                                                class="align-right"
+                                            >
+
+                                                ${formatRupiah(
+                                                    subtotal
+                                                )}
+
+                                            </td>
+
+                                        </tr>
+
+                                    </tbody>
+
+                                </table>
+
+
+                                <!-- TOTAL -->
+
+                                <div
+                                    class="print-total-box"
+                                >
+
+                                    <span>
+                                        Total Pembayaran
+                                    </span>
+
+                                    <strong>
+                                        ${formatRupiah(
+                                            subtotal
+                                        )}
+                                    </strong>
+
+                                </div>
+
+
+                                <!-- FOOTER -->
+
+                                <footer
+                                    class="print-footer"
+                                >
+
+                                    <div
+                                        class="print-thank-you"
+                                    >
+
+                                        Terima kasih telah
+                                        melakukan transaksi.
+
+                                    </div>
+
+
+                                    <div
+                                        class="print-contact"
+                                    >
+
+                                        ${
+                                            whatsapp
+                                            ? `
+                                                <span>
+                                                    WhatsApp:
+                                                    ${escapeHtml(
+                                                        whatsapp
+                                                    )}
+                                                </span>
+                                            `
+                                            : ''
+                                        }
+
+
+                                        ${
+                                            email
+                                            ? `
+                                                <span>
+                                                    Email:
+                                                    ${escapeHtml(
+                                                        email
+                                                    )}
+                                                </span>
+                                            `
+                                            : ''
+                                        }
+
+
+                                        ${
+                                            address
+                                            ? `
+                                                <span>
+                                                    ${escapeHtml(
+                                                        address
+                                                    )}
+                                                </span>
+                                            `
+                                            : ''
+                                        }
+
+                                    </div>
+
+
+                                    <div
+                                        class="print-generated"
+                                    >
+
+                                        Receipt ini dicetak dari
+                                        ${escapeHtml(
+                                            appName ||
+                                            'TopUp'
+                                        )}
+
+                                    </div>
+
+                                </footer>
+
+
+                            </div>
+
+                        </section>
+
+                    `;
+
+                })
+                .join('');
+
+
+        const html = `
+
 <!DOCTYPE html>
 
 <html lang="id">
@@ -1796,23 +2939,33 @@ document.addEventListener('DOMContentLoaded', function () {
     >
 
     <title>
-        Receipt ${escapeHtml(currentReceipt.orderId)}
+        Receipt ${escapeHtml(
+            appName || 'TopUp'
+        )}
     </title>
 
 
     <style>
+
+        @page {
+            size: A4;
+            margin: 10mm;
+        }
+
 
         * {
             box-sizing: border-box;
         }
 
 
+        html,
         body {
-
             margin: 0;
+            padding: 0;
+        }
 
-            padding: 24px;
 
+        body {
             background: #ffffff;
 
             color: #111827;
@@ -1822,144 +2975,473 @@ document.addEventListener('DOMContentLoaded', function () {
                 Helvetica,
                 sans-serif;
 
-            font-size: 13px;
+            font-size: 12px;
 
+            -webkit-print-color-adjust:
+                exact;
+
+            print-color-adjust:
+                exact;
         }
 
 
-        .receipt {
+        .print-receipt {
+            width: 100%;
+        }
+
+
+        .print-receipt-page {
+            break-after: page;
+            page-break-after: always;
+        }
+
+
+        .print-receipt-inner {
 
             width: 100%;
 
-            max-width: 420px;
+            max-width: 760px;
 
             margin: 0 auto;
+
+            padding: 28px 30px;
+
+            border: 1px solid #d9dee7;
+
+            border-radius: 12px;
+
+            background: #ffffff;
 
         }
 
 
-        .receipt-header {
+        .print-receipt-header {
 
-            text-align: center;
+            display: flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
+            gap: 20px;
 
             padding-bottom: 18px;
 
             border-bottom:
-                1px dashed #9ca3af;
+                2px solid #1f2937;
 
         }
 
 
-        .receipt-app-name {
+        .print-brand {
+
+            display: flex;
+
+            align-items:
+                center;
+
+            gap: 12px;
+
+        }
+
+
+        .print-logo {
+
+            width: 48px;
+
+            height: 48px;
+
+            object-fit: contain;
+
+        }
+
+
+        .print-store-name {
+
+            color: #111827;
+
+            font-size: 21px;
+
+            font-weight: 800;
+
+            line-height: 1.1;
+
+        }
+
+
+        .print-document-title {
+
+            margin-top: 4px;
+
+            color: #6b7280;
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            letter-spacing:
+                .14em;
+
+        }
+
+
+        .print-status {
+
+            display: inline-flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            min-width: 92px;
+
+            padding: 7px 12px;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 999px;
+
+            color: #374151;
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+            text-transform:
+                uppercase;
+
+        }
+
+
+        .print-status.completed,
+        .print-status.success,
+        .print-status.successful {
+
+            border-color:
+                #86efac;
+
+            background:
+                #f0fdf4;
+
+            color:
+                #166534;
+
+        }
+
+
+        .print-status.processing,
+        .print-status.process {
+
+            border-color:
+                #93c5fd;
+
+            background:
+                #eff6ff;
+
+            color:
+                #1d4ed8;
+
+        }
+
+
+        .print-status.refunded,
+        .print-status.refund {
+
+            border-color:
+                #fde68a;
+
+            background:
+                #fffbeb;
+
+            color:
+                #92400e;
+
+        }
+
+
+        .print-order-meta {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr;
+
+            gap: 12px;
+
+            margin-top: 18px;
+
+        }
+
+
+        .print-order-meta > div {
+
+            padding: 11px 13px;
+
+            border:
+                1px solid #e5e7eb;
+
+            border-radius: 8px;
+
+            background: #f9fafb;
+
+        }
+
+
+        .print-order-meta span {
+
+            display: block;
 
             margin-bottom: 4px;
 
-            font-size: 20px;
+            color: #6b7280;
 
-            font-weight: 700;
+            font-size: 10px;
 
         }
 
 
-        .receipt-title {
+        .print-order-meta strong {
 
-            color: #6b7280;
+            display: block;
+
+            color: #111827;
 
             font-size: 12px;
 
-            font-weight: 600;
-
-            text-transform: uppercase;
-
-            letter-spacing: .08em;
-
         }
 
 
-        .receipt-info {
+        .print-section-title {
 
-            padding: 18px 0;
-
-            border-bottom:
-                1px dashed #9ca3af;
-
-        }
-
-
-        .receipt-row {
-
-            display: flex;
-
-            justify-content:
-                space-between;
-
-            gap: 18px;
+            margin-top: 24px;
 
             margin-bottom: 9px;
 
-        }
+            color: #111827;
 
+            font-size: 11px;
 
-        .receipt-row:last-child {
+            font-weight: 800;
 
-            margin-bottom: 0;
+            text-transform:
+                uppercase;
 
-        }
-
-
-        .receipt-label {
-
-            color: #6b7280;
+            letter-spacing:
+                .08em;
 
         }
 
 
-        .receipt-value {
+        .print-product-card {
 
-            max-width: 65%;
+            padding: 14px;
 
-            text-align: right;
+            border-left:
+                4px solid #4f6fce;
 
-            font-weight: 600;
+            border-radius: 6px;
 
-            overflow-wrap:
-                anywhere;
+            background: #f7f9fd;
 
         }
 
 
-        .receipt-total {
+        .print-game {
 
-            display: flex;
+            color: #111827;
 
-            align-items: center;
-
-            justify-content:
-                space-between;
-
-            padding: 18px 0;
-
-            font-size: 17px;
+            font-size: 14px;
 
             font-weight: 700;
 
         }
 
 
-        .receipt-footer {
+        .print-item {
 
-            padding-top: 18px;
+            margin-top: 3px;
 
-            border-top:
-                1px dashed #9ca3af;
+            color: #64748b;
 
-            text-align: center;
+            font-size: 12px;
+
+        }
+
+
+        .print-item-table {
+
+            width: 100%;
+
+            margin-top: 14px;
+
+            border-collapse:
+                collapse;
+
+        }
+
+
+        .print-item-table th {
+
+            padding: 9px 8px;
+
+            border-bottom:
+                1px solid #d1d5db;
 
             color: #6b7280;
 
+            font-size: 10px;
+
+            font-weight: 700;
+
+            text-transform:
+                uppercase;
+
+        }
+
+
+        .print-item-table td {
+
+            padding: 12px 8px;
+
+            border-bottom:
+                1px solid #e5e7eb;
+
+            vertical-align:
+                top;
+
+        }
+
+
+        .print-item-table td strong {
+
+            display: block;
+
+            color: #111827;
+
+            font-size: 12px;
+
+        }
+
+
+        .print-item-table td small {
+
+            display: block;
+
+            margin-top: 3px;
+
+            color: #6b7280;
+
+            font-size: 10px;
+
+        }
+
+
+        .align-right {
+
+            text-align: right;
+
+        }
+
+
+        .print-total-box {
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            gap: 20px;
+
+            margin-top: 18px;
+
+            padding: 15px 16px;
+
+            border-radius: 8px;
+
+            background: #111827;
+
+            color: #ffffff;
+
+        }
+
+
+        .print-total-box span {
+
             font-size: 11px;
 
-            line-height: 1.6;
+            font-weight: 600;
+
+        }
+
+
+        .print-total-box strong {
+
+            font-size: 17px;
+
+            font-weight: 800;
+
+        }
+
+
+        .print-footer {
+
+            margin-top: 22px;
+
+            padding-top: 14px;
+
+            border-top:
+                1px dashed #cbd5e1;
+
+            text-align: center;
+
+        }
+
+
+        .print-thank-you {
+
+            color: #111827;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+        }
+
+
+        .print-contact {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            justify-content:
+                center;
+
+            gap: 4px 14px;
+
+            margin-top: 7px;
+
+            color: #64748b;
+
+            font-size: 9px;
+
+        }
+
+
+        .print-generated {
+
+            margin-top: 9px;
+
+            color: #94a3b8;
+
+            font-size: 8px;
 
         }
 
@@ -1968,18 +3450,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
             body {
 
+                background:
+                    #ffffff;
+
+            }
+
+
+            .print-receipt-inner {
+
+                max-width: none;
+
+                border: 0;
+
+                border-radius: 0;
+
                 padding: 0;
 
             }
 
-
-            .receipt {
-
-                max-width: none;
-
-            }
-
         }
+
 
     </style>
 
@@ -1988,230 +3478,58 @@ document.addEventListener('DOMContentLoaded', function () {
 
 <body>
 
-    <div class="receipt">
-
-
-        <div class="receipt-header">
-
-            <div class="receipt-app-name">
-
-                ${escapeHtml(
-                    appName || 'TopUp'
-                )}
-
-            </div>
-
-
-            <div class="receipt-title">
-
-                Bukti Transaksi
-
-            </div>
-
-        </div>
-
-
-        <div class="receipt-info">
-
-
-            <div class="receipt-row">
-
-                <span class="receipt-label">
-
-                    Order ID
-
-                </span>
-
-
-                <span class="receipt-value">
-
-                    ${escapeHtml(
-                        currentReceipt.orderId
-                    )}
-
-                </span>
-
-            </div>
-
-
-            <div class="receipt-row">
-
-                <span class="receipt-label">
-
-                    Game
-
-                </span>
-
-
-                <span class="receipt-value">
-
-                    ${escapeHtml(
-                        currentReceipt.game
-                    )}
-
-                </span>
-
-            </div>
-
-
-            <div class="receipt-row">
-
-                <span class="receipt-label">
-
-                    Item
-
-                </span>
-
-
-                <span class="receipt-value">
-
-                    ${escapeHtml(
-                        currentReceipt.item
-                    )}
-
-                </span>
-
-            </div>
-
-
-            <div class="receipt-row">
-
-                <span class="receipt-label">
-
-                    Quantity
-
-                </span>
-
-
-                <span class="receipt-value">
-
-                    ${escapeHtml(
-                        currentReceipt.quantity
-                    )}
-
-                </span>
-
-            </div>
-
-
-            <div class="receipt-row">
-
-                <span class="receipt-label">
-
-                    Status
-
-                </span>
-
-
-                <span class="receipt-value">
-
-                    ${escapeHtml(
-                        currentReceipt.status
-                    )}
-
-                </span>
-
-            </div>
-
-
-            <div class="receipt-row">
-
-                <span class="receipt-label">
-
-                    Tanggal
-
-                </span>
-
-
-                <span class="receipt-value">
-
-                    ${escapeHtml(
-                        currentReceipt.date
-                    )}
-
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <div class="receipt-total">
-
-            <span>
-
-                Total
-
-            </span>
-
-
-            <span>
-
-                ${formatRupiah(price)}
-
-            </span>
-
-        </div>
-
-
-        <div class="receipt-footer">
-
-            Terima kasih telah melakukan transaksi.
-
-            <br>
-
-            Receipt ini merupakan bukti transaksi
-            dari website
-
-            ${escapeHtml(
-                appName || 'TopUp'
-            )}.
-
-        </div>
-
-    </div>
-
-
-    <script>
-
-        window.onload = function () {
-
-            window.print();
-
-            window.onafterprint = function () {
-
-                window.close();
-
-            };
-
-        };
-
-    <\/script>
-
+    ${receiptHtml}
 
 </body>
 
 </html>
-            `;
+        `;
 
 
-            printWindow.document.open();
+        printWindow.document.open();
 
-            printWindow.document.write(
-                html
-            );
+        printWindow.document.write(
+            html
+        );
 
-            printWindow.document.close();
+        printWindow.document.close();
 
 
-            receiptModal?.hide();
+        /*
+        |--------------------------------------------------------------------------
+        | AUTO PRINT
+        |--------------------------------------------------------------------------
+        */
 
-        }
-    );
+        printWindow.onload =
+            function () {
+
+                setTimeout(
+                    function () {
+
+                        printWindow.focus();
+
+                        printWindow.print();
+
+                    },
+                    350
+                );
+
+            };
+
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | INITIAL STATE
+    |--------------------------------------------------------------------------
+    */
+
+    updateBulkSelection();
 
 });
 </script>
 
 @endpush
-
 @endsection

@@ -849,3 +849,438 @@
     }
 
 }
+
+/* =========================================================
+   BULK PRINT TOOLBAR
+========================================================= */
+
+.transaction-history-page
+.transaction-history-bulk-toolbar {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 1rem;
+
+    padding: .75rem 1rem;
+
+    background:
+        var(--theme-surface);
+
+    border:
+        1px solid var(--theme-border);
+
+    border-radius:
+        .75rem;
+
+}
+
+
+.transaction-history-page
+.transaction-history-bulk-info {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: .85rem;
+
+}
+
+
+.transaction-history-page
+.transaction-history-bulk-select {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: .45rem;
+
+}
+
+
+.transaction-history-page
+.transaction-history-bulk-select-label {
+
+    color:
+        var(--theme-text);
+
+    font-size: .82rem;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+}
+
+
+.transaction-history-page
+.transaction-history-selected-count {
+
+    color:
+        var(--theme-text-secondary);
+
+    font-size: .75rem;
+
+}
+
+
+.transaction-history-page
+.transaction-history-bulk-print-button {
+
+    min-width: 125px;
+
+}
+
+
+/* =========================================================
+   ROW CHECKBOX
+========================================================= */
+
+.transaction-history-page
+.transaction-history-row-select {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: .7rem;
+
+}
+
+
+.transaction-history-page
+.transaction-history-check-all {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: .7rem;
+
+}
+
+
+.transaction-history-page
+.transaction-history-select,
+.transaction-history-page
+#selectAllTransactions,
+.transaction-history-page
+#tableSelectAllTransactions {
+
+    cursor: pointer;
+
+}
+
+
+/* =========================================================
+   BULK RECEIPT MODAL
+========================================================= */
+
+.transaction-history-page
+.bulk-receipt-toolbar {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 1rem;
+
+    margin-bottom: 1rem;
+
+    padding: .8rem;
+
+    background:
+        var(--theme-surface-soft);
+
+    border:
+        1px solid var(--theme-border);
+
+    border-radius:
+        .75rem;
+
+}
+
+
+.transaction-history-page
+.bulk-receipt-toolbar > div:first-child {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: .15rem;
+
+}
+
+
+.transaction-history-page
+.bulk-receipt-toolbar strong {
+
+    color:
+        var(--theme-text);
+
+    font-size: 1rem;
+
+}
+
+
+.transaction-history-page
+.bulk-receipt-list {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: .6rem;
+
+    max-height: 55vh;
+
+    overflow-y: auto;
+
+    padding-right: .2rem;
+
+}
+
+
+.transaction-history-page
+.bulk-receipt-item {
+
+    display: grid;
+
+    grid-template-columns:
+        32px
+        minmax(0, 1fr)
+        150px
+        150px;
+
+    align-items: center;
+
+    gap: .75rem;
+
+    padding: .8rem;
+
+    background:
+        var(--theme-surface-soft);
+
+    border:
+        1px solid var(--theme-border);
+
+    border-radius:
+        .7rem;
+
+}
+
+
+.transaction-history-page
+.bulk-receipt-item-number {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 28px;
+
+    height: 28px;
+
+    border-radius:
+        50%;
+
+    background:
+        var(--theme-primary-soft);
+
+    color:
+        var(--theme-primary);
+
+    font-size: .75rem;
+
+    font-weight: 700;
+
+}
+
+
+.transaction-history-page
+.bulk-receipt-item-info {
+
+    display: flex;
+
+    flex-direction: column;
+
+    min-width: 0;
+
+}
+
+
+.transaction-history-page
+.bulk-receipt-item-info strong {
+
+    color:
+        var(--theme-text);
+
+    font-size: .82rem;
+
+}
+
+
+.transaction-history-page
+.bulk-receipt-item-info span {
+
+    margin-top: .15rem;
+
+    color:
+        var(--theme-text);
+
+    font-size: .78rem;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+}
+
+
+.transaction-history-page
+.bulk-receipt-item-info small {
+
+    margin-top: .15rem;
+
+    color:
+        var(--theme-text-secondary);
+
+    font-size: .7rem;
+
+}
+
+
+.transaction-history-page
+.bulk-receipt-item-date {
+
+    color:
+        var(--theme-text-secondary);
+
+    font-size: .72rem;
+
+    white-space: nowrap;
+
+}
+
+
+.transaction-history-page
+.bulk-receipt-item-price {
+
+    min-width: 0;
+
+}
+
+
+.transaction-history-page
+.bulk-receipt-item-price .form-control {
+
+    background:
+        var(--theme-input-bg);
+
+    color:
+        var(--theme-text);
+
+    border-color:
+        var(--theme-border);
+
+}
+
+
+.transaction-history-page
+.bulk-receipt-item-price .input-group-text {
+
+    background:
+        var(--theme-surface);
+
+    color:
+        var(--theme-text-secondary);
+
+    border-color:
+        var(--theme-border);
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 767.98px) {
+
+    .transaction-history-page
+    .transaction-history-bulk-toolbar {
+
+        align-items: stretch;
+
+        flex-direction: column;
+
+    }
+
+
+    .transaction-history-page
+    .transaction-history-bulk-info {
+
+        justify-content:
+            space-between;
+
+    }
+
+
+    .transaction-history-page
+    .transaction-history-bulk-print-button {
+
+        width: 100%;
+
+    }
+
+
+    .transaction-history-page
+    .bulk-receipt-toolbar {
+
+        align-items: stretch;
+
+        flex-direction: column;
+
+    }
+
+
+    .transaction-history-page
+    .bulk-receipt-item {
+
+        grid-template-columns:
+            30px
+            minmax(0, 1fr);
+
+    }
+
+
+    .transaction-history-page
+    .bulk-receipt-item-date {
+
+        grid-column:
+            2;
+
+    }
+
+
+    .transaction-history-page
+    .bulk-receipt-item-price {
+
+        grid-column:
+            2;
+
+    }
+
+}
