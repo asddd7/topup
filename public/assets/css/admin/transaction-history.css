@@ -722,3 +722,130 @@
         padding: 9px 10px;
     }
 }
+
+/* =========================================================
+   RECEIPT MODAL
+========================================================= */
+
+.transaction-history-page .receipt-modal {
+    background: var(--theme-surface);
+    border: 1px solid var(--theme-border);
+    color: var(--theme-text);
+    border-radius: .9rem;
+}
+
+.transaction-history-page .receipt-modal .modal-header {
+    border-bottom: 1px solid var(--theme-border);
+}
+
+.transaction-history-page .receipt-modal .modal-footer {
+    border-top: 1px solid var(--theme-border);
+}
+
+.transaction-history-page .receipt-modal .modal-title {
+    color: var(--theme-text);
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.transaction-history-page .receipt-editor {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+}
+
+.transaction-history-page .receipt-editor-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+
+    padding: .7rem .8rem;
+
+    background: var(--theme-surface-soft);
+    border: 1px solid var(--theme-border);
+    border-radius: .65rem;
+}
+
+.transaction-history-page .receipt-editor-row span {
+    color: var(--theme-text-secondary);
+    font-size: .8rem;
+}
+
+.transaction-history-page .receipt-editor-row strong {
+    max-width: 65%;
+
+    color: var(--theme-text);
+
+    font-size: .8rem;
+    text-align: right;
+
+    overflow-wrap: anywhere;
+}
+
+.transaction-history-page .receipt-price-editor {
+    margin-top: .25rem;
+    padding-top: 1rem;
+
+    border-top: 1px solid var(--theme-border);
+}
+
+.transaction-history-page .receipt-price-editor small {
+    display: block;
+
+    margin-top: .4rem;
+
+    color: var(--theme-text-secondary);
+
+    font-size: .72rem;
+}
+
+.transaction-history-page .receipt-price-editor .input-group-text {
+    background: var(--theme-surface-soft);
+    color: var(--theme-text-secondary);
+    border-color: var(--theme-border);
+}
+
+.transaction-history-page .receipt-price-editor .form-control {
+    background: var(--theme-input-bg);
+    color: var(--theme-text);
+    border-color: var(--theme-border);
+}
+
+.transaction-history-page .receipt-price-editor .form-control:focus {
+    background: var(--theme-input-bg);
+    color: var(--theme-text);
+
+    border-color: var(--theme-primary);
+
+    box-shadow: 0 0 0 3px rgba(79, 111, 206, .10);
+}
+
+
+/* =========================================================
+   PRINT BUTTON
+========================================================= */
+
+.transaction-history-page
+.transaction-history-print-button {
+
+    transition:
+        color .2s ease,
+        background-color .2s ease,
+        border-color .2s ease;
+
+}
+
+@media (max-width: 575.98px) {
+
+    .transaction-history-page .receipt-editor-row {
+        flex-direction: column;
+        gap: .25rem;
+    }
+
+    .transaction-history-page .receipt-editor-row strong {
+        max-width: 100%;
+        text-align: left;
+    }
+
+}
