@@ -17,13 +17,18 @@
             <div>
 
                 <h3 class="transaction-history-title">
+
                     <i class="fa-solid fa-clock-rotate-left me-2 text-primary"></i>
+
                     History Pembelian
+
                 </h3>
 
                 <p class="transaction-history-description">
+
                     Lihat riwayat transaksi pembelian dari MooGold berdasarkan
                     tanggal dan status.
+
                 </p>
 
             </div>
@@ -35,8 +40,11 @@
                     href="{{ route('admin.dashboard') }}"
                     class="btn btn-outline-secondary"
                 >
+
                     <i class="fa-solid fa-arrow-left me-1"></i>
+
                     Kembali
+
                 </a>
 
             </div>
@@ -124,8 +132,6 @@
                     action="{{ route('admin.transaction-history.index') }}"
                 >
 
-                    {{-- Selalu kembali ke halaman 1 ketika filter berubah --}}
-
                     <input
                         type="hidden"
                         name="page"
@@ -135,9 +141,7 @@
 
                     <div class="row g-3 align-items-end">
 
-                        {{-- =================================================
-                             START DATE
-                        ================================================== --}}
+                        {{-- START DATE --}}
 
                         <div class="col-12 col-md-4">
 
@@ -160,9 +164,7 @@
                         </div>
 
 
-                        {{-- =================================================
-                             END DATE
-                        ================================================== --}}
+                        {{-- END DATE --}}
 
                         <div class="col-12 col-md-4">
 
@@ -185,9 +187,7 @@
                         </div>
 
 
-                        {{-- =================================================
-                             STATUS
-                        ================================================== --}}
+                        {{-- STATUS --}}
 
                         <div class="col-12 col-md-4">
 
@@ -210,21 +210,21 @@
 
                                 <option
                                     value="processing"
-                                    {{ $status === 'processing' ? 'selected' : '' }}
+                                    {{ $status == 'processing' ? 'selected' : '' }}
                                 >
                                     Processing
                                 </option>
 
                                 <option
                                     value="completed"
-                                    {{ $status === 'completed' ? 'selected' : '' }}
+                                    {{ $status == 'completed' ? 'selected' : '' }}
                                 >
                                     Completed
                                 </option>
 
                                 <option
                                     value="refunded"
-                                    {{ $status === 'refunded' ? 'selected' : '' }}
+                                    {{ $status == 'refunded' ? 'selected' : '' }}
                                 >
                                     Refunded
                                 </option>
@@ -234,9 +234,7 @@
                         </div>
 
 
-                        {{-- =================================================
-                             LIMIT
-                        ================================================== --}}
+                        {{-- LIMIT --}}
 
                         <div class="col-12 col-md-4">
 
@@ -257,7 +255,7 @@
 
                                     <option
                                         value="{{ $option }}"
-                                        {{ (int) $limit === $option ? 'selected' : '' }}
+                                        {{ (int) $limit == $option ? 'selected' : '' }}
                                     >
                                         {{ $option }} data
                                     </option>
@@ -269,9 +267,7 @@
                         </div>
 
 
-                        {{-- =================================================
-                             ACTION
-                        ================================================== --}}
+                        {{-- ACTION --}}
 
                         <div class="col-12 col-md-8">
 
@@ -326,7 +322,7 @@
 
             /*
             |--------------------------------------------------------------------------
-            | Helper untuk mengambil value dari response MooGold
+            | VALUE HELPER
             |--------------------------------------------------------------------------
             */
 
@@ -347,18 +343,21 @@
                         $value !== null &&
                         $value !== ''
                     ) {
+
                         return $value;
+
                     }
 
                 }
 
                 return $default;
+
             };
 
 
             /*
             |--------------------------------------------------------------------------
-            | Pagination
+            | PAGINATION
             |--------------------------------------------------------------------------
             */
 
@@ -369,29 +368,30 @@
             $hasPreviousPage =
                 $currentPage > 1;
 
-            /*
-            |--------------------------------------------------------------------------
-            | Karena API response yang diberikan belum mempunyai
-            | total_pages / has_more, sementara menggunakan jumlah
-            | data dibandingkan limit.
-            |--------------------------------------------------------------------------
-            */
-
             $hasNextPage =
                 $orderCount >= $limit;
 
 
             /*
             |--------------------------------------------------------------------------
-            | Query pagination
+            | QUERY PARAMS
             |--------------------------------------------------------------------------
             */
 
             $queryParams = [
-                'start_date' => $startDate,
-                'end_date'   => $endDate,
-                'status'     => $status,
-                'limit'      => $limit,
+
+                'start_date' =>
+                    $startDate,
+
+                'end_date' =>
+                    $endDate,
+
+                'status' =>
+                    $status,
+
+                'limit' =>
+                    $limit,
+
             ];
 
         @endphp
@@ -422,7 +422,6 @@
                     <strong>
                         {{ \Carbon\Carbon::parse($endDate)->format('d/m/Y') }}
                     </strong>
-
 
                     @if($status)
 
@@ -472,10 +471,6 @@
 
                 @if($orderCollection->isNotEmpty())
 
-                    {{-- =================================================
-                         TABLE
-                    ================================================== --}}
-
                     <div class="transaction-history-table-wrapper table-responsive">
 
                         <table class="transaction-history-table table table-hover align-middle mb-0">
@@ -492,8 +487,12 @@
                                         Order
                                     </th>
 
-                                    <th class="column-partner py-3">
-                                        Partner Order
+                                    <th class="column-game py-3">
+                                        Game
+                                    </th>
+
+                                    <th class="column-item py-3">
+                                        Item
                                     </th>
 
                                     <th class="column-status py-3">
@@ -502,10 +501,6 @@
 
                                     <th class="column-amount py-3">
                                         Amount
-                                    </th>
-
-                                    <th class="column-customer py-3">
-                                        Customer
                                     </th>
 
                                     <th class="column-date py-3">
@@ -545,18 +540,172 @@
 
                                         /*
                                         |--------------------------------------------------------------------------
-                                        | PARTNER ORDER ID
+                                        | ITEMS
                                         |--------------------------------------------------------------------------
                                         */
 
-                                        $partnerOrderId = $getValue(
-                                            $order,
-                                            [
-                                                'partner_order_id',
-                                                'partnerOrderId',
-                                                'external_order_id',
-                                            ]
-                                        );
+                                        $items = collect(
+                                            data_get(
+                                                $order,
+                                                'items',
+                                                []
+                                            )
+                                        )->values();
+
+
+                                        $firstItem =
+                                            $items->first();
+
+
+                                        /*
+                                        |--------------------------------------------------------------------------
+                                        | PRODUCT
+                                        |--------------------------------------------------------------------------
+                                        */
+
+                                        $productName = '-';
+
+                                        $quantity = 1;
+
+                                        $itemPrice = null;
+
+
+                                        if (is_array($firstItem)) {
+
+                                            $productName =
+                                                trim(
+                                                    (string) (
+                                                        $firstItem['product']
+                                                        ?? '-'
+                                                    )
+                                                );
+
+
+                                            $quantity =
+                                                $firstItem['quantity']
+                                                ?? 1;
+
+
+                                            $itemPrice =
+                                                $firstItem['price']
+                                                ?? null;
+
+                                        }
+
+
+                                        /*
+                                        |--------------------------------------------------------------------------
+                                        | GAME
+                                        |--------------------------------------------------------------------------
+                                        */
+
+                                        $gameName =
+                                            $getValue(
+                                                $order,
+                                                [
+                                                    'game',
+                                                    'game_name',
+                                                ],
+                                                null
+                                            );
+
+
+                                        /*
+                                        |--------------------------------------------------------------------------
+                                        | ITEM
+                                        |--------------------------------------------------------------------------
+                                        */
+
+                                        $itemName =
+                                            $getValue(
+                                                $order,
+                                                [
+                                                    'item',
+                                                    'item_name',
+                                                ],
+                                                null
+                                            );
+
+
+                                        /*
+                                        |--------------------------------------------------------------------------
+                                        | PARSE PRODUCT
+                                        |--------------------------------------------------------------------------
+                                        |
+                                        | Example:
+                                        |
+                                        | Mobile Legends (Indonesia) - Weekly Pass
+                                        |
+                                        */
+
+                                        if (
+                                            (
+                                                $gameName === null ||
+                                                $gameName === ''
+                                            ) ||
+                                            (
+                                                $itemName === null ||
+                                                $itemName === ''
+                                            )
+                                        ) {
+
+                                            if (
+                                                $productName !== '-' &&
+                                                is_string($productName)
+                                            ) {
+
+                                                $separatorPosition =
+                                                    strrpos(
+                                                        $productName,
+                                                        ' - '
+                                                    );
+
+
+                                                if (
+                                                    $separatorPosition !== false
+                                                ) {
+
+                                                    $gameName =
+                                                        trim(
+                                                            substr(
+                                                                $productName,
+                                                                0,
+                                                                $separatorPosition
+                                                            )
+                                                        );
+
+
+                                                    $itemName =
+                                                        trim(
+                                                            substr(
+                                                                $productName,
+                                                                $separatorPosition + 3
+                                                            )
+                                                        );
+
+                                                } else {
+
+                                                    $gameName =
+                                                        $productName;
+
+                                                    $itemName =
+                                                        '-';
+
+                                                }
+
+                                            } else {
+
+                                                $gameName =
+                                                    $gameName
+                                                    ?: '-';
+
+                                                $itemName =
+                                                    $itemName
+                                                    ?: '-';
+
+                                            }
+
+                                        }
 
 
                                         /*
@@ -565,20 +714,24 @@
                                         |--------------------------------------------------------------------------
                                         */
 
-                                        $orderStatusRaw = $getValue(
-                                            $order,
-                                            [
-                                                'status',
-                                                'order_status',
-                                                'transaction_status',
-                                            ]
-                                        );
+                                        $orderStatusRaw =
+                                            $getValue(
+                                                $order,
+                                                [
+                                                    'status',
+                                                    'order_status',
+                                                    'transaction_status',
+                                                ]
+                                            );
 
-                                        $orderStatus = strtolower(
-                                            trim(
-                                                (string) $orderStatusRaw
-                                            )
-                                        );
+
+                                        $orderStatus =
+                                            strtolower(
+                                                trim(
+                                                    (string)
+                                                    $orderStatusRaw
+                                                )
+                                            );
 
 
                                         /*
@@ -587,33 +740,32 @@
                                         |--------------------------------------------------------------------------
                                         */
 
-                                        $amount = $getValue(
-                                            $order,
-                                            [
-                                                'amount',
-                                                'gross_amount',
-                                                'total',
-                                                'price',
-                                            ]
-                                        );
+                                        $amount =
+                                            $getValue(
+                                                $order,
+                                                [
+                                                    'total',
+                                                    'amount',
+                                                    'gross_amount',
+                                                    'price',
+                                                ]
+                                            );
 
 
                                         /*
                                         |--------------------------------------------------------------------------
-                                        | CUSTOMER
+                                        | CURRENCY
                                         |--------------------------------------------------------------------------
                                         */
 
-                                        $customer = $getValue(
-                                            $order,
-                                            [
-                                                'customer',
-                                                'customer_name',
-                                                'username',
-                                                'user_id',
-                                                'User ID',
-                                            ]
-                                        );
+                                        $currency =
+                                            $getValue(
+                                                $order,
+                                                [
+                                                    'currency',
+                                                ],
+                                                'IDR'
+                                            );
 
 
                                         /*
@@ -622,16 +774,50 @@
                                         |--------------------------------------------------------------------------
                                         */
 
-                                        $orderDate = $getValue(
-                                            $order,
-                                            [
-                                                'created_at',
-                                                'order_date',
-                                                'order_created_at',
-                                                'transaction_time',
-                                                'date',
-                                            ]
-                                        );
+                                        $orderDateRaw =
+                                            $getValue(
+                                                $order,
+                                                [
+                                                    'date_created',
+                                                    'created_at',
+                                                    'order_date',
+                                                    'order_created_at',
+                                                    'transaction_time',
+                                                    'date',
+                                                ]
+                                            );
+
+
+                                        $orderDate =
+                                            '-';
+
+
+                                        if (
+                                            $orderDateRaw !== '-' &&
+                                            $orderDateRaw !== null &&
+                                            $orderDateRaw !== ''
+                                        ) {
+
+                                            try {
+
+                                                $orderDate =
+                                                    \Carbon\Carbon::parse(
+                                                        $orderDateRaw
+                                                    )->format(
+                                                        'd/m/Y H:i:s'
+                                                    );
+
+                                            } catch (
+                                                \Throwable $e
+                                            ) {
+
+                                                $orderDate =
+                                                    (string)
+                                                    $orderDateRaw;
+
+                                            }
+
+                                        }
 
 
                                         /*
@@ -640,31 +826,37 @@
                                         |--------------------------------------------------------------------------
                                         */
 
-                                        $statusClass = match ($orderStatus) {
+                                        $statusClass =
+                                            match ($orderStatus) {
 
-                                            'completed',
-                                            'complete',
-                                            'success',
-                                            'successful'
-                                                => 'bg-success-subtle text-success',
+                                                'completed',
+                                                'complete',
+                                                'success',
+                                                'successful'
 
-                                            'processing',
-                                            'process'
-                                                => 'bg-primary-subtle text-primary',
+                                                    => 'bg-success-subtle text-success',
 
-                                            'refunded',
-                                            'refund'
-                                                => 'bg-warning-subtle text-warning-emphasis',
+                                                'processing',
+                                                'process'
 
-                                            'failed',
-                                            'cancelled',
-                                            'canceled'
-                                                => 'bg-danger-subtle text-danger',
+                                                    => 'bg-primary-subtle text-primary',
 
-                                            default
-                                                => 'bg-secondary-subtle text-secondary',
+                                                'refunded',
+                                                'refund'
 
-                                        };
+                                                    => 'bg-warning-subtle text-warning-emphasis',
+
+                                                'failed',
+                                                'cancelled',
+                                                'canceled'
+
+                                                    => 'bg-danger-subtle text-danger',
+
+                                                default
+
+                                                    => 'bg-secondary-subtle text-secondary',
+
+                                            };
 
 
                                         /*
@@ -709,7 +901,7 @@
                                         </td>
 
 
-                                        {{-- ORDER ID --}}
+                                        {{-- ORDER --}}
 
                                         <td>
 
@@ -722,15 +914,41 @@
                                         </td>
 
 
-                                        {{-- PARTNER ORDER ID --}}
+                                        {{-- GAME --}}
 
                                         <td>
 
-                                            <code class="transaction-history-partner-id">
+                                            <span class="transaction-history-game">
 
-                                                {{ $partnerOrderId }}
+                                                {{ $gameName }}
 
-                                            </code>
+                                            </span>
+
+                                        </td>
+
+
+                                        {{-- ITEM --}}
+
+                                        <td>
+
+                                            <span class="transaction-history-item">
+
+                                                {{ $itemName }}
+
+                                                @if(
+                                                    is_numeric($quantity) &&
+                                                    (int) $quantity > 1
+                                                )
+
+                                                    <small class="d-block text-muted">
+
+                                                        Qty: {{ $quantity }}
+
+                                                    </small>
+
+                                                @endif
+
+                                            </span>
 
                                         </td>
 
@@ -756,11 +974,10 @@
 
                                             <span class="transaction-history-amount">
 
-                                                @if(
-                                                    is_numeric($amount)
-                                                )
+                                                @if(is_numeric($amount))
 
-                                                    Rp
+                                                    {{ strtoupper($currency) === 'IDR' ? 'Rp' : $currency }}
+
                                                     {{ number_format(
                                                         (float) $amount,
                                                         0,
@@ -773,19 +990,6 @@
                                                     {{ $amount }}
 
                                                 @endif
-
-                                            </span>
-
-                                        </td>
-
-
-                                        {{-- CUSTOMER --}}
-
-                                        <td>
-
-                                            <span class="transaction-history-customer">
-
-                                                {{ $customer }}
 
                                             </span>
 
@@ -808,6 +1012,7 @@
                                         {{-- DETAIL --}}
 
                                         <td class="text-center">
+
                                             <div class="d-inline-flex gap-1">
 
                                                 <button
@@ -819,24 +1024,41 @@
                                                     aria-controls="{{ $detailId }}"
                                                     title="Lihat detail"
                                                 >
+
                                                     <i class="fa-solid fa-eye"></i>
+
                                                 </button>
+
 
                                                 <button
                                                     type="button"
                                                     class="transaction-history-print-button btn btn-sm btn-outline-secondary"
+
                                                     data-order-id="{{ $orderId }}"
-                                                    data-partner-order-id="{{ $partnerOrderId }}"
+
                                                     data-status="{{ $orderStatusRaw }}"
+
                                                     data-amount="{{ is_numeric($amount) ? $amount : '' }}"
-                                                    data-customer="{{ $customer }}"
+
+                                                    data-game="{{ $gameName }}"
+
+                                                    data-item="{{ $itemName }}"
+
+                                                    data-quantity="{{ $quantity }}"
+
                                                     data-date="{{ $orderDate }}"
+
+                                                    data-currency="{{ $currency }}"
+
                                                     title="Cetak receipt"
                                                 >
+
                                                     <i class="fa-solid fa-print"></i>
+
                                                 </button>
 
                                             </div>
+
                                         </td>
 
                                     </tr>
@@ -932,9 +1154,7 @@
 
                     <div class="d-flex justify-content-between align-items-center gap-2">
 
-                        {{-- =================================================
-                             PREVIOUS
-                        ================================================== --}}
+                        {{-- PREVIOUS --}}
 
                         <div>
 
@@ -947,7 +1167,8 @@
                                             array_merge(
                                                 $queryParams,
                                                 [
-                                                    'page' => $currentPage - 1,
+                                                    'page' =>
+                                                        $currentPage - 1,
                                                 ]
                                             )
                                         )
@@ -984,9 +1205,7 @@
                         </div>
 
 
-                        {{-- =================================================
-                             CURRENT PAGE
-                        ================================================== --}}
+                        {{-- CURRENT PAGE --}}
 
                         <div class="text-muted small">
 
@@ -999,9 +1218,7 @@
                         </div>
 
 
-                        {{-- =================================================
-                             NEXT
-                        ================================================== --}}
+                        {{-- NEXT --}}
 
                         <div>
 
@@ -1014,7 +1231,8 @@
                                             array_merge(
                                                 $queryParams,
                                                 [
-                                                    'page' => $currentPage + 1,
+                                                    'page' =>
+                                                        $currentPage + 1,
                                                 ]
                                             )
                                         )
@@ -1056,199 +1274,252 @@
 
             @endif
 
-
-            {{-- =====================================================
-                RECEIPT MODAL
-            ====================================================== --}}
-
-            <div
-                class="modal fade"
-                id="receiptModal"
-                tabindex="-1"
-                aria-labelledby="receiptModalLabel"
-                aria-hidden="true"
-            >
-                <div class="modal-dialog modal-dialog-centered">
-
-                    <div class="modal-content receipt-modal">
-
-                        <div class="modal-header">
-
-                            <div>
-
-                                <h5
-                                    class="modal-title"
-                                    id="receiptModalLabel"
-                                >
-                                    <i class="fa-solid fa-receipt me-2"></i>
-                                    Cetak Receipt
-                                </h5>
-
-                                <small class="text-muted">
-                                    Atur harga yang akan ditampilkan pada receipt.
-                                </small>
-
-                            </div>
-
-                            <button
-                                type="button"
-                                class="btn-close"
-                                data-bs-dismiss="modal"
-                                aria-label="Close"
-                            ></button>
-
-                        </div>
-
-
-                        <div class="modal-body">
-
-                            <div class="receipt-editor">
-
-                                <div class="receipt-editor-row">
-
-                                    <span>
-                                        Order ID
-                                    </span>
-
-                                    <strong id="receiptOrderId">
-                                        -
-                                    </strong>
-
-                                </div>
-
-
-                                <div class="receipt-editor-row">
-
-                                    <span>
-                                        Partner Order
-                                    </span>
-
-                                    <strong id="receiptPartnerOrderId">
-                                        -
-                                    </strong>
-
-                                </div>
-
-
-                                <div class="receipt-editor-row">
-
-                                    <span>
-                                        Customer
-                                    </span>
-
-                                    <strong id="receiptCustomer">
-                                        -
-                                    </strong>
-
-                                </div>
-
-
-                                <div class="receipt-editor-row">
-
-                                    <span>
-                                        Status
-                                    </span>
-
-                                    <strong id="receiptStatus">
-                                        -
-                                    </strong>
-
-                                </div>
-
-
-                                <div class="receipt-editor-row">
-
-                                    <span>
-                                        Tanggal
-                                    </span>
-
-                                    <strong id="receiptDate">
-                                        -
-                                    </strong>
-
-                                </div>
-
-
-                                <div class="receipt-price-editor">
-
-                                    <label
-                                        for="receiptPrice"
-                                        class="form-label"
-                                    >
-                                        Harga Receipt
-                                    </label>
-
-                                    <div class="input-group">
-
-                                        <span class="input-group-text">
-                                            Rp
-                                        </span>
-
-                                        <input
-                                            type="number"
-                                            id="receiptPrice"
-                                            class="form-control"
-                                            min="0"
-                                            step="1"
-                                            placeholder="50000"
-                                        >
-
-                                    </div>
-
-                                    <small>
-                                        Harga ini hanya digunakan untuk cetakan receipt.
-                                        Tidak mengubah transaksi MooGold.
-                                    </small>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="modal-footer">
-
-                            <button
-                                type="button"
-                                class="btn btn-outline-secondary"
-                                data-bs-dismiss="modal"
-                            >
-                                Batal
-                            </button>
-
-                            <button
-                                type="button"
-                                class="btn btn-primary"
-                                id="printReceiptButton"
-                            >
-                                <i class="fa-solid fa-print me-2"></i>
-                                Cetak Receipt
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
         </div>
 
     </div>
 
 </div>
+
+
+{{-- =====================================================
+     RECEIPT MODAL
+====================================================== --}}
+
+<div
+    class="modal fade"
+    id="receiptModal"
+    tabindex="-1"
+    aria-labelledby="receiptModalLabel"
+    aria-hidden="true"
+>
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content receipt-modal">
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h5
+                        class="modal-title"
+                        id="receiptModalLabel"
+                    >
+
+                        <i class="fa-solid fa-receipt me-2"></i>
+
+                        Cetak Receipt
+
+                    </h5>
+
+
+                    <small class="text-muted">
+
+                        Atur harga yang akan ditampilkan pada receipt.
+
+                    </small>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+
+            </div>
+
+
+            <div class="modal-body">
+
+                <div class="receipt-editor">
+
+
+                    {{-- ORDER --}}
+
+                    <div class="receipt-editor-row">
+
+                        <span>
+                            Order ID
+                        </span>
+
+                        <strong id="receiptOrderId">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    {{-- GAME --}}
+
+                    <div class="receipt-editor-row">
+
+                        <span>
+                            Game
+                        </span>
+
+                        <strong id="receiptGame">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    {{-- ITEM --}}
+
+                    <div class="receipt-editor-row">
+
+                        <span>
+                            Item
+                        </span>
+
+                        <strong id="receiptItem">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    {{-- QUANTITY --}}
+
+                    <div class="receipt-editor-row">
+
+                        <span>
+                            Quantity
+                        </span>
+
+                        <strong id="receiptQuantity">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    {{-- STATUS --}}
+
+                    <div class="receipt-editor-row">
+
+                        <span>
+                            Status
+                        </span>
+
+                        <strong id="receiptStatus">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    {{-- DATE --}}
+
+                    <div class="receipt-editor-row">
+
+                        <span>
+                            Tanggal
+                        </span>
+
+                        <strong id="receiptDate">
+                            -
+                        </strong>
+
+                    </div>
+
+
+                    {{-- PRICE --}}
+
+                    <div class="receipt-price-editor">
+
+                        <label
+                            for="receiptPrice"
+                            class="form-label"
+                        >
+                            Harga Receipt
+                        </label>
+
+
+                        <div class="input-group">
+
+                            <span class="input-group-text">
+                                Rp
+                            </span>
+
+                            <input
+                                type="number"
+                                id="receiptPrice"
+                                class="form-control"
+                                min="0"
+                                step="1"
+                                placeholder="50000"
+                            >
+
+                        </div>
+
+
+                        <small>
+
+                            Harga ini hanya digunakan untuk
+                            cetakan receipt. Tidak mengubah
+                            transaksi MooGold.
+
+                        </small>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    data-bs-dismiss="modal"
+                >
+
+                    Batal
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="printReceiptButton"
+                >
+
+                    <i class="fa-solid fa-print me-2"></i>
+
+                    Cetak Receipt
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
 @push('scripts')
+
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
     /*
     |--------------------------------------------------------------------------
-    | RECEIPT
+    | RECEIPT ELEMENTS
     |--------------------------------------------------------------------------
     */
 
     const receiptModalElement =
         document.getElementById('receiptModal');
+
 
     const receiptModal =
         receiptModalElement
@@ -1257,23 +1528,34 @@ document.addEventListener('DOMContentLoaded', function () {
             )
             : null;
 
+
     const receiptOrderId =
         document.getElementById('receiptOrderId');
 
-    const receiptPartnerOrderId =
-        document.getElementById('receiptPartnerOrderId');
 
-    const receiptCustomer =
-        document.getElementById('receiptCustomer');
+    const receiptGame =
+        document.getElementById('receiptGame');
+
+
+    const receiptItem =
+        document.getElementById('receiptItem');
+
+
+    const receiptQuantity =
+        document.getElementById('receiptQuantity');
+
 
     const receiptStatus =
         document.getElementById('receiptStatus');
 
+
     const receiptDate =
         document.getElementById('receiptDate');
 
+
     const receiptPrice =
         document.getElementById('receiptPrice');
+
 
     const printReceiptButton =
         document.getElementById('printReceiptButton');
@@ -1284,137 +1566,224 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /*
     |--------------------------------------------------------------------------
-    | NUMBER FORMAT
+    | FORMAT RUPIAH
     |--------------------------------------------------------------------------
     */
 
-function formatRupiah(value) {
+    function formatRupiah(value) {
 
-    const number = Number(value);
+        const number = Number(value);
 
-    if (Number.isNaN(number)) {
-        return 'Rp -';
+        if (Number.isNaN(number)) {
+
+            return 'Rp -';
+
+        }
+
+
+        return new Intl.NumberFormat('id-ID', {
+
+            style: 'currency',
+
+            currency: 'IDR',
+
+            minimumFractionDigits: 0,
+
+            maximumFractionDigits: 2
+
+        }).format(number);
+
     }
 
-    return new Intl.NumberFormat('id-ID', {
-        style: 'currency',
-        currency: 'IDR',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2
-    }).format(number);
 
-}
+    /*
+    |--------------------------------------------------------------------------
+    | ESCAPE HTML
+    |--------------------------------------------------------------------------
+    */
+
+    function escapeHtml(value) {
+
+        return String(value ?? '')
+
+            .replace(/&/g, '&amp;')
+
+            .replace(/</g, '&lt;')
+
+            .replace(/>/g, '&gt;')
+
+            .replace(/"/g, '&quot;')
+
+            .replace(/'/g, '&#039;');
+
+    }
 
 
-function escapeHtml(value) {
+    /*
+    |--------------------------------------------------------------------------
+    | LAST ACTIVE TAB
+    |--------------------------------------------------------------------------
+    */
 
-    return String(value ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-
-}
+    /*
+    | Halaman ini tidak memakai setting tabs.
+    | Bagian ini sengaja tidak diperlukan.
+    */
 
 
-document
-    .querySelectorAll('.transaction-history-print-button')
-    .forEach(button => {
+    /*
+    |--------------------------------------------------------------------------
+    | OPEN RECEIPT
+    |--------------------------------------------------------------------------
+    */
 
-        button.addEventListener('click', function () {
+    document
+        .querySelectorAll(
+            '.transaction-history-print-button'
+        )
+        .forEach(button => {
 
-            currentReceipt = {
-                orderId:
-                    this.dataset.orderId || '-',
+            button.addEventListener(
+                'click',
+                function () {
 
-                partnerOrderId:
-                    this.dataset.partnerOrderId || '-',
+                    currentReceipt = {
 
-                status:
-                    this.dataset.status || '-',
+                        orderId:
+                            this.dataset.orderId || '-',
 
-                amount:
-                    this.dataset.amount || '',
+                        game:
+                            this.dataset.game || '-',
 
-                customer:
-                    this.dataset.customer || '-',
+                        item:
+                            this.dataset.item || '-',
 
-                date:
-                    this.dataset.date || '-'
-            };
+                        quantity:
+                            this.dataset.quantity || '1',
 
-            receiptOrderId.textContent =
-                currentReceipt.orderId;
+                        status:
+                            this.dataset.status || '-',
 
-            receiptPartnerOrderId.textContent =
-                currentReceipt.partnerOrderId;
+                        amount:
+                            this.dataset.amount || '',
 
-            receiptCustomer.textContent =
-                currentReceipt.customer;
+                        date:
+                            this.dataset.date || '-',
 
-            receiptStatus.textContent =
-                currentReceipt.status;
+                        currency:
+                            this.dataset.currency || 'IDR',
 
-            receiptDate.textContent =
-                currentReceipt.date;
+                    };
 
-            receiptPrice.value =
-                currentReceipt.amount
-                && !Number.isNaN(
-                    Number(currentReceipt.amount)
-                )
-                    ? Number(currentReceipt.amount)
-                    : '';
 
-            receiptModal?.show();
+                    receiptOrderId.textContent =
+                        currentReceipt.orderId;
+
+
+                    receiptGame.textContent =
+                        currentReceipt.game;
+
+
+                    receiptItem.textContent =
+                        currentReceipt.item;
+
+
+                    receiptQuantity.textContent =
+                        currentReceipt.quantity;
+
+
+                    receiptStatus.textContent =
+                        currentReceipt.status;
+
+
+                    receiptDate.textContent =
+                        currentReceipt.date;
+
+
+                    receiptPrice.value =
+                        currentReceipt.amount
+                        &&
+                        !Number.isNaN(
+                            Number(
+                                currentReceipt.amount
+                            )
+                        )
+
+                            ? Number(
+                                currentReceipt.amount
+                            )
+
+                            : '';
+
+
+                    receiptModal?.show();
+
+                }
+            );
 
         });
 
-    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | PRINT
+    |--------------------------------------------------------------------------
+    */
+
+    printReceiptButton?.addEventListener(
+        'click',
+        function () {
+
+            if (!currentReceipt) {
+                return;
+            }
 
 
-printReceiptButton?.addEventListener(
-    'click',
-    function () {
+            const price =
+                Number(
+                    receiptPrice.value
+                );
 
-        if (!currentReceipt) {
-            return;
-        }
 
-        const price =
-            Number(receiptPrice.value);
+            if (
+                !receiptPrice.value ||
+                Number.isNaN(price) ||
+                price < 0
+            ) {
 
-        if (
-            !receiptPrice.value ||
-            Number.isNaN(price) ||
-            price < 0
-        ) {
-            receiptPrice.focus();
-            return;
-        }
+                receiptPrice.focus();
 
-        const appName =
-            @json(setting('app_name'));
+                return;
 
-        const printWindow =
-            window.open(
-                '',
-                '_blank',
-                'width=480,height=800'
-            );
+            }
 
-        if (!printWindow) {
 
-            alert(
-                'Popup diblokir browser. Izinkan popup untuk mencetak receipt.'
-            );
+            const appName =
+                @json(setting('app_name'));
 
-            return;
-        }
 
-        const html = `
+            const printWindow =
+                window.open(
+                    '',
+                    '_blank',
+                    'width=480,height=800'
+                );
+
+
+            if (!printWindow) {
+
+                alert(
+                    'Popup diblokir browser. Izinkan popup untuk mencetak receipt.'
+                );
+
+                return;
+
+            }
+
+
+            const html = `
 <!DOCTYPE html>
+
 <html lang="id">
 
 <head>
@@ -1430,185 +1799,360 @@ printReceiptButton?.addEventListener(
         Receipt ${escapeHtml(currentReceipt.orderId)}
     </title>
 
+
     <style>
+
         * {
             box-sizing: border-box;
         }
 
+
         body {
+
             margin: 0;
+
             padding: 24px;
+
             background: #ffffff;
+
             color: #111827;
-            font-family: Arial, Helvetica, sans-serif;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
             font-size: 13px;
+
         }
+
 
         .receipt {
+
             width: 100%;
+
             max-width: 420px;
+
             margin: 0 auto;
+
         }
+
 
         .receipt-header {
+
             text-align: center;
+
             padding-bottom: 18px;
-            border-bottom: 1px dashed #9ca3af;
+
+            border-bottom:
+                1px dashed #9ca3af;
+
         }
+
 
         .receipt-app-name {
+
             margin-bottom: 4px;
+
             font-size: 20px;
+
             font-weight: 700;
+
         }
+
 
         .receipt-title {
+
             color: #6b7280;
+
             font-size: 12px;
+
             font-weight: 600;
+
             text-transform: uppercase;
+
             letter-spacing: .08em;
+
         }
+
 
         .receipt-info {
+
             padding: 18px 0;
-            border-bottom: 1px dashed #9ca3af;
+
+            border-bottom:
+                1px dashed #9ca3af;
+
         }
+
 
         .receipt-row {
+
             display: flex;
-            justify-content: space-between;
+
+            justify-content:
+                space-between;
+
             gap: 18px;
+
             margin-bottom: 9px;
+
         }
+
 
         .receipt-row:last-child {
+
             margin-bottom: 0;
+
         }
+
 
         .receipt-label {
+
             color: #6b7280;
+
         }
+
 
         .receipt-value {
+
             max-width: 65%;
+
             text-align: right;
+
             font-weight: 600;
-            overflow-wrap: anywhere;
+
+            overflow-wrap:
+                anywhere;
+
         }
+
 
         .receipt-total {
+
             display: flex;
+
             align-items: center;
-            justify-content: space-between;
+
+            justify-content:
+                space-between;
+
             padding: 18px 0;
+
             font-size: 17px;
+
             font-weight: 700;
+
         }
+
 
         .receipt-footer {
+
             padding-top: 18px;
-            border-top: 1px dashed #9ca3af;
+
+            border-top:
+                1px dashed #9ca3af;
+
             text-align: center;
+
             color: #6b7280;
+
             font-size: 11px;
+
             line-height: 1.6;
+
         }
+
 
         @media print {
+
             body {
+
                 padding: 0;
+
             }
 
+
             .receipt {
+
                 max-width: none;
+
             }
+
         }
+
     </style>
 
 </head>
+
 
 <body>
 
     <div class="receipt">
 
+
         <div class="receipt-header">
 
             <div class="receipt-app-name">
-                ${escapeHtml(appName || 'TopUp')}
+
+                ${escapeHtml(
+                    appName || 'TopUp'
+                )}
+
             </div>
 
+
             <div class="receipt-title">
+
                 Bukti Transaksi
+
             </div>
 
         </div>
+
 
         <div class="receipt-info">
 
+
             <div class="receipt-row">
+
                 <span class="receipt-label">
+
                     Order ID
+
                 </span>
+
 
                 <span class="receipt-value">
-                    ${escapeHtml(currentReceipt.orderId)}
+
+                    ${escapeHtml(
+                        currentReceipt.orderId
+                    )}
+
                 </span>
+
             </div>
 
+
             <div class="receipt-row">
+
                 <span class="receipt-label">
-                    Partner Order
+
+                    Game
+
                 </span>
+
 
                 <span class="receipt-value">
-                    ${escapeHtml(currentReceipt.partnerOrderId)}
+
+                    ${escapeHtml(
+                        currentReceipt.game
+                    )}
+
                 </span>
+
             </div>
 
+
             <div class="receipt-row">
+
                 <span class="receipt-label">
-                    Customer
+
+                    Item
+
                 </span>
+
 
                 <span class="receipt-value">
-                    ${escapeHtml(currentReceipt.customer)}
+
+                    ${escapeHtml(
+                        currentReceipt.item
+                    )}
+
                 </span>
+
             </div>
 
+
             <div class="receipt-row">
+
                 <span class="receipt-label">
+
+                    Quantity
+
+                </span>
+
+
+                <span class="receipt-value">
+
+                    ${escapeHtml(
+                        currentReceipt.quantity
+                    )}
+
+                </span>
+
+            </div>
+
+
+            <div class="receipt-row">
+
+                <span class="receipt-label">
+
                     Status
+
                 </span>
 
+
                 <span class="receipt-value">
-                    ${escapeHtml(currentReceipt.status)}
+
+                    ${escapeHtml(
+                        currentReceipt.status
+                    )}
+
                 </span>
+
             </div>
 
+
             <div class="receipt-row">
+
                 <span class="receipt-label">
+
                     Tanggal
+
                 </span>
 
+
                 <span class="receipt-value">
-                    ${escapeHtml(currentReceipt.date)}
+
+                    ${escapeHtml(
+                        currentReceipt.date
+                    )}
+
                 </span>
+
             </div>
 
         </div>
+
 
         <div class="receipt-total">
 
             <span>
+
                 Total
+
             </span>
 
+
             <span>
+
                 ${formatRupiah(price)}
+
             </span>
 
         </div>
+
 
         <div class="receipt-footer">
 
@@ -1617,11 +2161,16 @@ printReceiptButton?.addEventListener(
             <br>
 
             Receipt ini merupakan bukti transaksi
-            dari website ${escapeHtml(appName || 'TopUp')}.
+            dari website
+
+            ${escapeHtml(
+                appName || 'TopUp'
+            )}.
 
         </div>
 
     </div>
+
 
     <script>
 
@@ -1630,28 +2179,39 @@ printReceiptButton?.addEventListener(
             window.print();
 
             window.onafterprint = function () {
+
                 window.close();
+
             };
 
         };
 
     <\/script>
 
+
 </body>
 
 </html>
-        `;
+            `;
 
-        printWindow.document.open();
-        printWindow.document.write(html);
-        printWindow.document.close();
 
-        receiptModal?.hide();
+            printWindow.document.open();
 
-    }
-);
+            printWindow.document.write(
+                html
+            );
+
+            printWindow.document.close();
+
+
+            receiptModal?.hide();
+
+        }
+    );
 
 });
 </script>
+
 @endpush
+
 @endsection
