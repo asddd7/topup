@@ -2,6 +2,11 @@
 
 namespace App\Integrations\MooGold;
 
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+
+use RuntimeException;
+
 class MooGoldService
 {
     public function __construct(
@@ -233,4 +238,44 @@ class MooGoldService
         );
 
     }
+
+public function transactionHistory(
+    string $startDate,
+    string $endDate,
+    ?string $status = null,
+    int $page = 1,
+    int $limit = 20
+): array {
+
+    $data = [
+        'start_date' => $startDate,
+        'end_date'   => $endDate,
+        'page'       => max($page, 1),
+        'limit'      => min(max($limit, 1), 100),
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | STATUS
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        $status !== null &&
+        $status !== ''
+    ) {
+        $data['status'] = $status;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | REQUEST
+    |--------------------------------------------------------------------------
+    */
+
+    return $this->client->request(
+        'order/transaction_history',
+        $data
+    );
+}
 }
