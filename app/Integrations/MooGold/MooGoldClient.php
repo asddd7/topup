@@ -16,11 +16,14 @@ class MooGoldClient
 
     protected int $timeout;
 
+    protected string $account;
+
     public function __construct(
         ?string $baseUrl = null,
         ?string $partnerId = null,
         ?string $secretKey = null,
-        ?int $timeout = null
+        ?int $timeout = null,
+        ?string $account = null
     ) {
         $this->baseUrl =
             rtrim(
@@ -29,27 +32,56 @@ class MooGoldClient
                 '/'
             );
 
+        $accountName =
+            $account
+                ?? config(
+                    'moogold.default_account',
+                    'primary'
+                );
+
+        $accountConfig =
+            config(
+                'moogold.accounts.' .
+                $accountName
+            );
+
+        if (!is_array($accountConfig)) {
+
+            throw new RuntimeException(
+                "MooGold account [{$accountName}] tidak ditemukan."
+            );
+
+        }
+
         $this->partnerId =
             (string) (
                 $partnerId
-                    ?? config('moogold.partner_id')
+                    ?? ($accountConfig['partner_id'] ?? '')
             );
 
         $this->secretKey =
             (string) (
                 $secretKey
-                    ?? config('moogold.secret_key')
+                    ?? ($accountConfig['secret_key'] ?? '')
             );
+
+        $this->account = $accountName;
 
         $this->timeout =
             (int) (
                 $timeout
-                    ?? config('moogold.timeout', 30)
+                    ?? config(
+                        'moogold.timeout',
+                        30
+                    )
             );
 
         Log::info(
             'MooGold client configuration check',
             [
+                'account' =>
+                    $accountName,
+
                 'base_url' =>
                     $this->baseUrl,
 
@@ -57,17 +89,13 @@ class MooGoldClient
                     $this->partnerId !== '',
 
                 'partner_id_length' =>
-                    strlen(
-                        $this->partnerId
-                    ),
+                    strlen($this->partnerId),
 
                 'secret_key_present' =>
                     $this->secretKey !== '',
 
                 'secret_key_length' =>
-                    strlen(
-                        $this->secretKey
-                    ),
+                    strlen($this->secretKey),
             ]
         );
     }

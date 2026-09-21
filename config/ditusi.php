@@ -4,17 +4,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | MOO GOLD
+    | DITUSI
     |--------------------------------------------------------------------------
     */
 
     'base_url' => env(
-        'MOOGOLD_BASE_URL',
-        'https://moogold.com/wp-json/v1/api'
+        'DITUSI_BASE_URL',
+        'https://api.ditusi.co.id/api/dev/v1'
+    ),
+
+    'access_token_url' => env(
+        'DITUSI_ACCESS_TOKEN_URL',
+        'https://api.ditusi.co.id/api/v1/access-token'
     ),
 
     'timeout' => (int) env(
-        'MOOGOLD_TIMEOUT',
+        'DITUSI_TIMEOUT',
         30
     ),
 
@@ -25,7 +30,7 @@ return [
     */
 
     'default_account' => env(
-        'MOOGOLD_DEFAULT_ACCOUNT',
+        'DITUSI_DEFAULT_ACCOUNT',
         'primary'
     ),
 
@@ -39,12 +44,16 @@ return [
 
         'primary' => [
 
-            'partner_id' => env(
-                'MOOGOLD_PARTNER_ID'
+            'client_id' => env(
+                'DITUSI_CLIENT_ID'
             ),
 
-            'secret_key' => env(
-                'MOOGOLD_SECRET_KEY'
+            'client_key' => env(
+                'DITUSI_CLIENT_KEY'
+            ),
+
+            'webhook_token' => env(
+                'DITUSI_WEBHOOK_TOKEN'
             ),
 
         ],
@@ -52,12 +61,16 @@ return [
 
         'secondary' => [
 
-            'partner_id' => env(
-                'MOOGOLD_SECONDARY_PARTNER_ID'
+            'client_id' => env(
+                'DITUSI_SECONDARY_CLIENT_ID'
             ),
 
-            'secret_key' => env(
-                'MOOGOLD_SECONDARY_SECRET_KEY'
+            'client_key' => env(
+                'DITUSI_SECONDARY_CLIENT_KEY'
+            ),
+
+            'webhook_token' => env(
+                'DITUSI_SECONDARY_WEBHOOK_TOKEN'
             ),
 
         ],

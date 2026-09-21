@@ -2,630 +2,68 @@
 
 namespace App\Integrations\Midtrans;
 
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
-use Midtrans\Config;
-use Midtrans\Snap;
-use Midtrans\Transaction;
-use RuntimeException;
-use Throwable;
-
 class MidtransService
 {
-    public function __construct()
-    {
-        Config::$serverKey =
-            (string) config(
-                'midtrans.server_key'
-            );
-
-        Config::$isProduction =
-            (bool) config(
-                'midtrans.is_production',
-                false
-            );
-
-        Config::$isSanitized = true;
-
-        Config::$is3ds = true;
+    public function __construct(
+        protected MidtransClient $client
+    ) {
     }
 
 
-    /**
-     * =========================================================
-     * CREATE SNAP TOKEN
-     * =========================================================
-     */
     public function createSnapToken(
         array $params
     ): string {
 
-        $this->ensureConfigured();
-
-
-        try {
-
-            $snapToken =
-                Snap::getSnapToken(
-                    $params
-                );
-
-
-            if (
-                empty($snapToken)
-            ) {
-
-                throw new RuntimeException(
-                    'Midtrans tidak mengembalikan Snap Token.'
-                );
-            }
-
-
-            Log::info(
-                'Midtrans Snap token berhasil dibuat.',
-                [
-
-                    'order_id' =>
-                        data_get(
-                            $params,
-                            'transaction_details.order_id'
-                        ),
-
-                    'gross_amount' =>
-                        data_get(
-                            $params,
-                            'transaction_details.gross_amount'
-                        ),
-
-                ]
-            );
-
-
-            return $snapToken;
-
-        } catch (Throwable $e) {
-
-            Log::error(
-                'Gagal membuat Midtrans Snap token.',
-                [
-
-                    'order_id' =>
-                        data_get(
-                            $params,
-                            'transaction_details.order_id'
-                        ),
-
-                    'error' =>
-                        $e->getMessage(),
-
-                ]
-            );
-
-
-            if (
-                $e instanceof RuntimeException
-            ) {
-
-                throw $e;
-            }
-
-
-            throw new RuntimeException(
-                'Gagal membuat Snap token Midtrans.',
-                previous: $e
-            );
-        }
+        return $this->client->createSnapToken(
+            $params
+        );
     }
 
 
-    /**
-     * =========================================================
-     * GET SNAP REDIRECT URL
-     * =========================================================
-     */
     public function getSnapRedirectUrl(
         array $params
     ): string {
 
-        $this->ensureConfigured();
-
-
-        try {
-
-            $redirectUrl =
-                Snap::getSnapUrl(
-                    $params
-                );
-
-
-            if (
-                empty($redirectUrl)
-            ) {
-
-                throw new RuntimeException(
-                    'Midtrans tidak mengembalikan Snap Redirect URL.'
-                );
-            }
-
-
-            return $redirectUrl;
-
-        } catch (Throwable $e) {
-
-            Log::error(
-                'Gagal membuat Midtrans Snap redirect URL.',
-                [
-
-                    'order_id' =>
-                        data_get(
-                            $params,
-                            'transaction_details.order_id'
-                        ),
-
-                    'error' =>
-                        $e->getMessage(),
-
-                ]
-            );
-
-
-            if (
-                $e instanceof RuntimeException
-            ) {
-
-                throw $e;
-            }
-
-
-            throw new RuntimeException(
-                'Gagal membuat Snap redirect Midtrans.',
-                previous: $e
-            );
-        }
+        return $this->client->getSnapRedirectUrl(
+            $params
+        );
     }
 
 
-    /**
-     * =========================================================
-     * GET TRANSACTION STATUS
-     * =========================================================
-     *
-     * Return:
-     *
-     * - array  => transaksi ditemukan
-     * - null   => transaksi belum ditemukan di Midtrans
-     *
-     * Exception selain transaction not found akan tetap dilempar.
-     *
-     */
     public function getTransactionStatus(
         string $orderId
     ): ?array {
 
-        $this->ensureConfigured();
-
-        try {
-
-            $response =
-                Transaction::status(
-                    $orderId
-                );
-
-            Log::info(
-                'Midtrans transaction status berhasil diambil.',
-                [
-                    'order_id' =>
-                        $orderId,
-
-                    'transaction_status' =>
-                        $response
-                            ->transaction_status
-                        ?? null,
-                ]
-            );
-
-            return (array) $response;
-
-        } catch (Throwable $e) {
-
-            /*
-            |--------------------------------------------------------------------------
-            | EXTRACT ORIGINAL ERROR
-            |--------------------------------------------------------------------------
-            */
-
-            $message =
-                $e->getMessage();
-
-            $code =
-                (int) $e->getCode();
-
-            /*
-            |--------------------------------------------------------------------------
-            | MIDTRANS SDK ERROR
-            |--------------------------------------------------------------------------
-            |
-            | Midtrans SDK dapat menyimpan HTTP status code
-            | pada exception.
-            |
-            */
-
-            $isNotFound =
-                $code === 404
-                ||
-                str_contains(
-                    strtolower($message),
-                    '404'
-                )
-                ||
-                str_contains(
-                    strtolower($message),
-                    'transaction not found'
-                )
-                ||
-                str_contains(
-                    strtolower($message),
-                    'not found'
-                );
-
-            /*
-            |--------------------------------------------------------------------------
-            | TRANSACTION NOT FOUND
-            |--------------------------------------------------------------------------
-            */
-
-            if ($isNotFound) {
-
-                Log::info(
-                    'Midtrans transaction belum ditemukan.',
-                    [
-                        'order_id' =>
-                            $orderId,
-
-                        'http_code' =>
-                            $code,
-
-                        'error' =>
-                            $message,
-                    ]
-                );
-
-                return null;
-            }
-
-            /*
-            |--------------------------------------------------------------------------
-            | REAL ERROR
-            |--------------------------------------------------------------------------
-            */
-
-            Log::error(
-                'Gagal mengambil Midtrans transaction status.',
-                [
-                    'order_id' =>
-                        $orderId,
-
-                    'error_code' =>
-                        $code,
-
-                    'error' =>
-                        $message,
-
-                    'exception' =>
-                        get_class($e),
-                ]
-            );
-
-            throw new RuntimeException(
-                'Gagal mengambil status transaksi Midtrans: '
-                . $message,
-                previous: $e
-            );
-        }
+        return $this->client->getTransactionStatus(
+            $orderId
+        );
     }
 
 
-    /**
-     * =========================================================
-     * GET CLIENT KEY
-     * =========================================================
-     */
     public function clientKey(): ?string
     {
-        return config(
-            'midtrans.client_key'
-        );
+        return $this->client->clientKey();
     }
 
 
-    /**
-     * =========================================================
-     * CHECK ENVIRONMENT
-     * =========================================================
-     */
     public function isProduction(): bool
     {
-        return (bool) config(
-            'midtrans.is_production',
-            false
+        return $this->client->isProduction();
+    }
+
+
+    public function verifySignature(
+        array $payload
+    ): bool {
+
+        return $this->client->verifySignature(
+            $payload
         );
     }
 
 
-    /**
-     * =========================================================
-     * ENSURE CONFIGURED
-     * =========================================================
-     */
-    protected function ensureConfigured(): void
-    {
-        if (
-            empty(
-                config(
-                    'midtrans.server_key'
-                )
-            )
-        ) {
-
-            throw new RuntimeException(
-                'MIDTRANS_SERVER_KEY belum dikonfigurasi.'
-            );
-        }
-    }
-
-/**
- * =========================================================
- * VERIFY WEBHOOK SIGNATURE
- * =========================================================
- *
- * Formula Midtrans:
- *
- * SHA512(
- *     order_id
- *     + status_code
- *     + gross_amount
- *     + ServerKey
- * )
- */
-public function verifySignature(
-    array $payload
-): bool {
-
-    $orderId =
-        (string) data_get(
-            $payload,
-            'order_id'
-        );
-
-    $statusCode =
-        (string) data_get(
-            $payload,
-            'status_code'
-        );
-
-    $grossAmount =
-        (string) data_get(
-            $payload,
-            'gross_amount'
-        );
-
-    $signatureKey =
-        (string) data_get(
-            $payload,
-            'signature_key'
-        );
-
-    $serverKey =
-        (string) config(
-            'midtrans.server_key'
-        );
-
-    if (
-        $orderId === ''
-        ||
-        $statusCode === ''
-        ||
-        $grossAmount === ''
-        ||
-        $signatureKey === ''
-    ) {
-
-        Log::warning(
-            'Midtrans signature tidak dapat diverifikasi karena field tidak lengkap.',
-            [
-                'has_order_id' =>
-                    $orderId !== '',
-
-                'has_status_code' =>
-                    $statusCode !== '',
-
-                'has_gross_amount' =>
-                    $grossAmount !== '',
-
-                'has_signature_key' =>
-                    $signatureKey !== '',
-            ]
-        );
-
-        return false;
-    }
-
-    $expectedSignature =
-        hash(
-            'sha512',
-            $orderId
-            . $statusCode
-            . $grossAmount
-            . $serverKey
-        );
-
-    $isValid =
-        hash_equals(
-            $expectedSignature,
-            $signatureKey
-        );
-
-    Log::info(
-        'Midtrans signature verification.',
-        [
-            'order_id' =>
-                $orderId,
-
-            'status_code' =>
-                $statusCode,
-
-            'gross_amount' =>
-                $grossAmount,
-
-            'server_key_present' =>
-                $serverKey !== '',
-
-            'server_key_prefix' =>
-                substr(
-                    $serverKey,
-                    0,
-                    12
-                ),
-
-            'is_production' =>
-                $this->isProduction(),
-
-            'signature_valid' =>
-                $isValid,
-
-            'expected_signature_prefix' =>
-                substr(
-                    $expectedSignature,
-                    0,
-                    12
-                ),
-
-            'received_signature_prefix' =>
-                substr(
-                    $signatureKey,
-                    0,
-                    12
-                ),
-        ]
-    );
-
-    return $isValid;
-}
-
-    /**
-     * =========================================================
-     * GET ACTIVE SNAP PAYMENT CHANNELS
-     * =========================================================
-     *
-     * Mengambil daftar payment channel yang benar-benar aktif
-     * pada Snap Preference Midtrans.
-     */
     public function getSnapPaymentChannels(): array
     {
-        $cacheKey =
-            'midtrans:snap-payment-channels';
-
-        return Cache::remember(
-            $cacheKey,
-            now()->addMinutes(5),
-            function () {
-
-                $serverKey =
-                    (string) config(
-                        'midtrans.server_key'
-                    );
-
-                if ($serverKey === '') {
-                    throw new RuntimeException(
-                        'Midtrans Server Key belum dikonfigurasi.'
-                    );
-                }
-
-
-                $baseUrl =
-                    (bool) config(
-                        'midtrans.is_production',
-                        false
-                    )
-                        ? 'https://app.midtrans.com'
-                        : 'https://app.sandbox.midtrans.com';
-
-
-                $response =
-                    Http::withBasicAuth(
-                        $serverKey,
-                        ''
-                    )
-                    ->acceptJson()
-                    ->timeout(15)
-                    ->get(
-                        $baseUrl
-                        . '/snap/v3/merchant-preferences'
-                    );
-
-
-                if (
-                    !$response->successful()
-                ) {
-
-                    throw new RuntimeException(
-                        'Gagal mengambil payment channels dari Midtrans.'
-                    );
-
-                }
-
-
-                $channels =
-                    $response->json(
-                        'payment_channels'
-                    );
-
-
-                if (
-                    !is_array($channels)
-                ) {
-                    return [];
-                }
-
-
-                return collect(
-                    $channels
-                )
-                    ->filter(
-                        function ($channel) {
-
-                            return
-                                is_array($channel)
-                                &&
-                                !empty(
-                                    $channel['name']
-                                )
-                                &&
-                                (
-                                    $channel['enabled']
-                                    ?? false
-                                ) === true;
-
-                        }
-                    )
-                    ->map(
-                        function ($channel) {
-
-                            return [
-                                'name' =>
-                                    (string)
-                                    $channel['name'],
-
-                                'enabled' =>
-                                    true,
-                            ];
-
-                        }
-                    )
-                    ->values()
-                    ->all();
-            }
-        );
+        return $this->client->getSnapPaymentChannels();
     }
 }
