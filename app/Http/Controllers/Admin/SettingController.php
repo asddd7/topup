@@ -9,7 +9,7 @@ use App\Models\Payment;
 use App\Models\Order;
 use App\Models\Banner;
 use App\Models\Setting;
-use App\Services\MooGold\MooGoldService;
+use App\Integrations\MooGold\MooGoldService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 

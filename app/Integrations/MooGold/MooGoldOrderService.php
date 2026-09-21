@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services\MooGold;
+namespace App\Integrations\MooGold;
 
-use App\Jobs\CheckMooGoldOrderStatus;
+use App\Jobs\Providers\MooGold\CheckMooGoldOrderStatus;
 use App\Models\MooGoldOrder;
 use App\Models\OrderDetail;
 use Illuminate\Support\Facades\DB;

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Admin\BaseAdminController;
-use App\Services\MooGold\MooGoldService;
+use App\Integrations\MooGold\MooGoldService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use RuntimeException;

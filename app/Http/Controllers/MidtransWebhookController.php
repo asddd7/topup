@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\ProcessMooGoldOrder;
-use App\Jobs\ProcessDitusiOrder;
+use App\Jobs\Providers\MooGold\ProcessMooGoldOrder;
+use App\Jobs\Providers\Ditusi\ProcessDitusiOrder;
 use App\Models\MidtransTransaction;
 use App\Models\Order;
-use App\Services\Midtrans\MidtransOrderService;
-use App\Services\Midtrans\MidtransService;
+use App\Integrations\Midtrans\MidtransOrderService;
+use App\Integrations\Midtrans\MidtransService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

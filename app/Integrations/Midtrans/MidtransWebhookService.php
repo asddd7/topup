@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services\Midtrans;
+namespace App\Integrations\Midtrans;
 
-use App\Jobs\ProcessMooGoldOrder;
+use App\Jobs\Providers\MooGold\ProcessMooGoldOrder;
 use App\Models\MidtransTransaction;
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;

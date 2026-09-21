@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\MooGold;
+namespace App\Integrations\MooGold;
 
 use App\Models\MooGoldProductMapping;
 use Illuminate\Support\Facades\DB;

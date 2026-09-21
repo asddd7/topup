@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Providers\Ditusi;
 
 use App\Models\DitusiOrder;
-use App\Services\Ditusi\DitusiOrderService;
+use App\Integrations\Ditusi\DitusiOrderService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

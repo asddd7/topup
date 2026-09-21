@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api\V1\Admin;
 
-use App\Jobs\ProcessMooGoldOrder;
+use App\Jobs\Providers\MooGold\ProcessMooGoldOrder;
 use App\Models\Item;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderResource;
-use App\Services\MooGold\MooGoldService;
+use App\Integrations\MooGold\MooGoldService;
 use App\Models\Order;
 use App\Services\TopUp\TopUpService;
 use Illuminate\Http\JsonResponse;

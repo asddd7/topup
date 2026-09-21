@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Midtrans;
+namespace App\Integrations\Midtrans;
 
 use App\Models\MidtransTransaction;
 use App\Models\Order;

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
-use App\Services\Midtrans\MidtransOrderService;
-use App\Services\Midtrans\MidtransService;
+use App\Integrations\Midtrans\MidtransOrderService;
+use App\Integrations\Midtrans\MidtransService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 

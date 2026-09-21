@@ -7,7 +7,7 @@ use App\Models\ItemCategory;
 use App\Models\Item;
 use App\Models\MooGoldProductMapping;
 use App\Models\MooGoldProductVariation;
-use App\Services\MooGold\MooGoldService;
+use App\Integrations\MooGold\MooGoldService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

@@ -7,7 +7,7 @@ use App\Models\Game;
 use App\Models\Item;
 use App\Models\ItemCategory;
 use App\Models\MooGoldProductMapping;
-use App\Services\MooGold\MooGoldProductMappingService;
+use AApp\Integrations\MooGold\MooGoldProductMappingService;
 use Illuminate\Http\Request;
 use Throwable;
 

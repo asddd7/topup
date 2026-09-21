@@ -263,7 +263,7 @@ Route::post(
     '/admin/order/{order}/moogold/send',
     function (
         \App\Models\Order $order,
-        \App\Services\MooGold\MooGoldOrderService $service
+        \App\Integrations\MooGold\MooGoldOrderService $service
     ) {
 
         return response()->json(

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Ditusi;
+namespace App\Integrations\Ditusi;
 
 use App\Models\DitusiOrder;
 use App\Models\OrderDetail;
@@ -568,7 +568,7 @@ protected function scheduleStatusCheck(
         return;
     }
 
-    \App\Jobs\CheckDitusiOrderStatus::dispatch(
+    \App\Jobs\Providers\Ditusi\CheckDitusiOrderStatus::dispatch(
         $ditusiOrder->id
     )->delay(
         now()->addMinutes(2)

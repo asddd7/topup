@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Midtrans;
+namespace App\Integrations\Midtrans;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;

@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Providers\MooGold;
 
 use App\Models\OrderDetail;
-use App\Services\MooGold\MooGoldOrderService;
+use App\Integrations\MooGold\MooGoldOrderService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;

@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\ProcessMooGoldOrder;
+use App\Jobs\Providers\MooGold\ProcessMooGoldOrder;
 use App\Models\MidtransTransaction;
 use App\Models\Order;
 use App\Models\PaymentLog;
-use App\Services\Midtrans\MidtransService;
+use App\Integrations\Midtrans\MidtransService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

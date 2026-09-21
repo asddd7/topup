@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Services\MooGold\MooGoldService;
-use App\Services\MooGold\MooGoldCatalogService;
+use App\Integrations\MooGold\MooGoldService;
+use App\Integrations\MooGold\MooGoldCatalogService;
 use Illuminate\Http\JsonResponse;
 
 class MooGoldController extends Controller

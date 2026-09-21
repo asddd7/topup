@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Services\MooGold\MooGoldService;
+use App\Integrations\MooGold\MooGoldService;
 use RuntimeException;
 use App\Models\Game;
 use App\Models\Item;
 use App\Models\Payment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Services\Midtrans\MidtransService;
+use App\Integrations\Midtrans\MidtransService;
 use App\Services\PromotionService;
 
 class GameController extends Controller

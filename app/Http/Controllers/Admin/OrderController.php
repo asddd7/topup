@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Admin\BaseAdminController;
-use App\Services\MooGold\MooGoldService;
-use App\Jobs\ProcessMooGoldOrder;
+use App\Integrations\MooGold\MooGoldService;
+use App\Jobs\Providers\MooGold\ProcessMooGoldOrder;
 use App\Models\Discount;
 use App\Models\Item;
 use App\Models\Notification;
 use App\Models\Order;
 use App\Models\User;
-use App\Services\MooGold\MooGoldOrderService;
+use App\Integrations\MooGold\MooGoldOrderService;
 use Illuminate\Http\Request;
 use App\Services\TopUp\TopUpService;
 use Illuminate\Support\Facades\DB;

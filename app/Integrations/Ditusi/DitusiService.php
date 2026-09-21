@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Ditusi;
+namespace App\Integrations\Ditusi;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;

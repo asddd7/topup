@@ -7,7 +7,7 @@ use App\Models\Item;
 use App\Models\Notification;
 use App\Models\Order;
 use App\Models\User;
-use App\Services\MooGold\MooGoldService;
+use App\Integrations\MooGold\MooGoldService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 

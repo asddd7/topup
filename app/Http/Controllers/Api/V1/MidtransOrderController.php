@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use App\Services\Midtrans\MidtransOrderService;
+use App\Integrations\Midtrans\MidtransOrderService;
 use Illuminate\Http\JsonResponse;
 use Throwable;
 

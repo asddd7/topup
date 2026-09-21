@@ -31,12 +31,18 @@ return Application::configure(basePath: dirname(__DIR__))
             Route::prefix('api/v1')
                 ->middleware('api')
                 ->group(
-                    base_path('routes/api/v1/midtrans.php')
+                    base_path('routes/api/v1/integrations/midtrans.php')
                 );
             Route::prefix('api/v1')
                 ->middleware('api')
                 ->group(
-                    base_path('routes/api/v1/ditusi.php')
+                    base_path('routes/api/v1/integrations/ditusi.php')
+                );
+
+            Route::prefix('api/v1')
+                ->middleware('api')
+                ->group(
+                    base_path('routes/api/v1/integrations/moogold.php')
                 );
         },
     )
