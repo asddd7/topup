@@ -2,6 +2,7 @@
 
 namespace App\Integrations\Midtrans;
 
+use App\Exceptions\InvalidMidtransSignatureException;
 use App\Models\MidtransTransaction;
 use App\Models\Order;
 use App\Services\TopUp\TopUpFulfillmentService;
@@ -12,16 +13,12 @@ use RuntimeException;
 class MidtransWebhookService
 {
     public function __construct(
+        protected MidtransService $midtrans,
         protected MidtransOrderService $midtransOrderService,
         protected TopUpFulfillmentService $fulfillmentService
     ) {
     }
 
-    /**
-     * =========================================================
-     * HANDLE WEBHOOK
-     * =========================================================
-     */
     public function handle(
         array $payload
     ): array {
@@ -61,6 +58,22 @@ class MidtransWebhookService
         ) {
             throw new RuntimeException(
                 'Webhook Midtrans tidak memiliki transaction_status.'
+            );
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | VALIDATE SIGNATURE
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            !$this->midtrans->verifySignature(
+                $payload
+            )
+        ) {
+            throw new InvalidMidtransSignatureException(
+                'Signature webhook Midtrans tidak valid.'
             );
         }
 

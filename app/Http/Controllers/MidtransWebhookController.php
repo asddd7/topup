@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\InvalidMidtransSignatureException;
 use App\Integrations\Midtrans\MidtransWebhookService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -152,31 +153,38 @@ class MidtransWebhookController extends Controller
 
 
         try {
-
-            /*
-            |--------------------------------------------------------------------------
-            | HANDLE WEBHOOK
-            |--------------------------------------------------------------------------
-            */
-
-            $result =
-                $this->webhookService->handle(
-                    $payload
-                );
+            $result = $this->webhookService->handle($payload);
 
             return response()->json([
-                'success' =>
-                    true,
-
-                'status' =>
-                    $result['status'],
-
-                'order_id' =>
-                    $result['order_id'],
-
-                'became_paid' =>
-                    $result['became_paid'],
+                'success' => true,
+                'status' => $result['status'],
+                'order_id' => $result['order_id'],
+                'became_paid' => $result['became_paid'],
             ]);
+
+        } catch (InvalidMidtransSignatureException $e) {
+
+            Log::warning(
+                'Midtrans webhook ditolak karena signature tidak valid.',
+                [
+                    'midtrans_order_id' =>
+                        $midtransOrderId,
+
+                    'transaction_status' =>
+                        $transactionStatus,
+
+                    'error' =>
+                        $e->getMessage(),
+                ]
+            );
+
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Invalid signature.',
+                ],
+                403
+            );
 
         } catch (Throwable $e) {
 
@@ -196,15 +204,6 @@ class MidtransWebhookController extends Controller
                         get_class($e),
                 ]
             );
-
-            /*
-            |--------------------------------------------------------------------------
-            | NON-2XX
-            |--------------------------------------------------------------------------
-            |
-            | Agar Midtrans dapat melakukan retry notification.
-            |--------------------------------------------------------------------------
-            */
 
             return response()->json(
                 [
