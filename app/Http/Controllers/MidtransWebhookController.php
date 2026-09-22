@@ -2,25 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Jobs\Providers\MooGold\ProcessMooGoldOrder;
-use App\Jobs\Providers\Ditusi\ProcessDitusiOrder;
-use App\Models\MidtransTransaction;
-use App\Models\Order;
-use App\Integrations\Midtrans\MidtransOrderService;
 use App\Integrations\Midtrans\MidtransService;
+use App\Integrations\Midtrans\MidtransWebhookService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use RuntimeException;
 use Throwable;
 
 class MidtransWebhookController extends Controller
 {
     public function __construct(
         protected MidtransService $midtrans,
-        protected MidtransOrderService $midtransOrderService
+        protected MidtransWebhookService $webhookService
     ) {
     }
 
@@ -29,46 +22,27 @@ class MidtransWebhookController extends Controller
      * HANDLE MIDTRANS WEBHOOK
      * =========================================================
      *
-     * Payment flow:
-     *
      * Midtrans
+     *      ↓
+     * Controller
      *      ↓
      * verify signature
      *      ↓
-     * find MidtransTransaction
+     * MidtransWebhookService
      *      ↓
-     * validate gross amount
-     *      ↓
-     * save notification
-     *      ↓
-     * settlement / capture
-     *      ↓
-     * Order = Paid
+     * update payment + order
      *      ↓
      * COMMIT
      *      ↓
-     * ProcessMooGoldOrder
+     * TopUpFulfillmentService
+     *      ↓
+     * ProviderRegistry
+     *      ↓
+     * Provider Job
      */
     public function handle(
         Request $request
     ): JsonResponse {
-
-        Log::info(
-            '=== MIDTRANS WEBHOOK MASUK KE LARAVEL ===',
-            [
-                'method' => $request->method(),
-                'url' => $request->fullUrl(),
-                'scheme' => $request->getScheme(),
-                'secure' => $request->isSecure(),
-                'host' => $request->getHost(),
-                'headers' => [
-                    'x_forwarded_proto' =>
-                        $request->header('X-Forwarded-Proto'),
-                    'x_forwarded_for' =>
-                        $request->header('X-Forwarded-For'),
-                ],
-            ]
-        );
 
         $payload = $request->all();
 
@@ -89,6 +63,44 @@ class MidtransWebhookController extends Controller
                     )
                 )
             );
+
+        /*
+        |--------------------------------------------------------------------------
+        | LOG WEBHOOK MASUK
+        |--------------------------------------------------------------------------
+        */
+
+        Log::info(
+            '=== MIDTRANS WEBHOOK MASUK KE LARAVEL ===',
+            [
+                'method' =>
+                    $request->method(),
+
+                'url' =>
+                    $request->fullUrl(),
+
+                'scheme' =>
+                    $request->getScheme(),
+
+                'secure' =>
+                    $request->isSecure(),
+
+                'host' =>
+                    $request->getHost(),
+
+                'headers' => [
+                    'x_forwarded_proto' =>
+                        $request->header(
+                            'X-Forwarded-Proto'
+                        ),
+
+                    'x_forwarded_for' =>
+                        $request->header(
+                            'X-Forwarded-For'
+                        ),
+                ],
+            ]
+        );
 
         Log::info(
             'Midtrans webhook diterima.',
@@ -113,7 +125,9 @@ class MidtransWebhookController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        if ($midtransOrderId === '') {
+        if (
+            $midtransOrderId === ''
+        ) {
             return response()->json(
                 [
                     'success' => false,
@@ -124,7 +138,9 @@ class MidtransWebhookController extends Controller
             );
         }
 
-        if ($transactionStatus === '') {
+        if (
+            $transactionStatus === ''
+        ) {
             return response()->json(
                 [
                     'success' => false,
@@ -168,470 +184,17 @@ class MidtransWebhookController extends Controller
         }
 
         try {
+
             /*
             |--------------------------------------------------------------------------
-            | PROCESS PAYMENT
+            | HANDLE WEBHOOK
             |--------------------------------------------------------------------------
             */
 
             $result =
-                DB::transaction(
-                    function () use (
-                        $payload,
-                        $midtransOrderId,
-                        $transactionStatus
-                    ) {
-                        /*
-                        |--------------------------------------------------------------------------
-                        | LOCK MIDTRANS TRANSACTION
-                        |--------------------------------------------------------------------------
-                        */
-
-                        $transaction =
-                            MidtransTransaction::query()
-                                ->where(
-                                    'midtrans_order_id',
-                                    $midtransOrderId
-                                )
-                                ->lockForUpdate()
-                                ->first();
-
-                        if (!$transaction) {
-                            Log::warning(
-                                'Midtrans webhook untuk transaction yang tidak ditemukan.',
-                                [
-                                    'midtrans_order_id' =>
-                                        $midtransOrderId,
-                                ]
-                            );
-
-                            throw new RuntimeException(
-                                'Midtrans transaction tidak ditemukan.'
-                            );
-                        }
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | LOCK ORDER
-                        |--------------------------------------------------------------------------
-                        */
-
-                        $order =
-                            Order::query()
-                                ->lockForUpdate()
-                                ->find(
-                                    $transaction->order_id
-                                );
-
-                        if (!$order) {
-                            throw new RuntimeException(
-                                'Order terkait Midtrans transaction tidak ditemukan.'
-                            );
-                        }
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | VALIDATE GROSS AMOUNT
-                        |--------------------------------------------------------------------------
-                        */
-
-                        $payloadGrossAmount =
-                            (float) data_get(
-                                $payload,
-                                'gross_amount'
-                            );
-
-                        $transactionGrossAmount =
-                            (float) $transaction->gross_amount;
-
-                        if (
-                            round($payloadGrossAmount, 2)
-                            !==
-                            round($transactionGrossAmount, 2)
-                        ) {
-                            Log::error(
-                                'Midtrans gross amount tidak sesuai.',
-                                [
-                                    'order_id' =>
-                                        $order->id,
-
-                                    'midtrans_order_id' =>
-                                        $midtransOrderId,
-
-                                    'payload_gross_amount' =>
-                                        $payloadGrossAmount,
-
-                                    'transaction_gross_amount' =>
-                                        $transactionGrossAmount,
-                                ]
-                            );
-
-                            throw new RuntimeException(
-                                'Gross amount Midtrans tidak sesuai.'
-                            );
-                        }
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | SAVE WEBHOOK
-                        |--------------------------------------------------------------------------
-                        */
-
-                        $transaction->update([
-                            'transaction_id' =>
-                                data_get(
-                                    $payload,
-                                    'transaction_id'
-                                ),
-
-                            'transaction_status' =>
-                                $transactionStatus,
-
-                            'payment_type' =>
-                                data_get(
-                                    $payload,
-                                    'payment_type'
-                                ),
-
-                            'fraud_status' =>
-                                data_get(
-                                    $payload,
-                                    'fraud_status'
-                                ),
-
-                            'notification_payload' =>
-                                $payload,
-
-                            'response_payload' =>
-                                $payload,
-                        ]);
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | SUCCESS
-                        |--------------------------------------------------------------------------
-                        */
-
-                        $isSuccessful =
-                            $this->midtransOrderService
-                                ->isSuccessfulTransactionStatus(
-                                    $transactionStatus,
-                                    data_get(
-                                        $payload,
-                                        'fraud_status'
-                                    )
-                                );
-
-                        if ($isSuccessful) {
-                            /*
-                            |--------------------------------------------------------------------------
-                            | PAID TIME
-                            |--------------------------------------------------------------------------
-                            */
-
-                            if (!$transaction->paid_at) {
-                                $transaction->update([
-                                    'paid_at' =>
-                                        now(),
-                                ]);
-                            }
-
-                            /*
-                            |--------------------------------------------------------------------------
-                            | ORDER → PAID
-                            |--------------------------------------------------------------------------
-                            */
-
-                            if ($order->status === 'Paid') {
-                                return [
-                                    'status' =>
-                                        'success',
-
-                                    'order_id' =>
-                                        $order->id,
-
-                                    'became_paid' =>
-                                        false,
-                                ];
-                            }
-
-                            if (
-                                in_array(
-                                    $order->status,
-                                    [
-                                        'Pending',
-                                        'Waiting Payment',
-                                    ],
-                                    true
-                                )
-                            ) {
-                                $order->update([
-                                    'status' =>
-                                        'Paid',
-                                ]);
-
-                                return [
-                                    'status' =>
-                                        'success',
-
-                                    'order_id' =>
-                                        $order->id,
-
-                                    'became_paid' =>
-                                        true,
-                                ];
-                            }
-
-                            /*
-                            |--------------------------------------------------------------------------
-                            | PAYMENT SUCCEEDED BUT ORDER ALREADY MOVED
-                            |--------------------------------------------------------------------------
-                            */
-
-                            Log::warning(
-                                'Midtrans payment berhasil tetapi status Order sudah berubah.',
-                                [
-                                    'order_id' =>
-                                        $order->id,
-
-                                    'order_status' =>
-                                        $order->status,
-
-                                    'midtrans_order_id' =>
-                                        $midtransOrderId,
-
-                                    'transaction_status' =>
-                                        $transactionStatus,
-                                ]
-                            );
-
-                            return [
-                                'status' =>
-                                    'success',
-
-                                'order_id' =>
-                                    $order->id,
-
-                                'became_paid' =>
-                                    false,
-                            ];
-                        }
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | PENDING
-                        |--------------------------------------------------------------------------
-                        */
-
-                        if (
-                            $this->midtransOrderService
-                                ->isPendingTransactionStatus(
-                                    $transactionStatus
-                                )
-                        ) {
-                            return [
-                                'status' =>
-                                    'pending',
-
-                                'order_id' =>
-                                    $order->id,
-
-                                'became_paid' =>
-                                    false,
-                            ];
-                        }
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | CLOSED
-                        |--------------------------------------------------------------------------
-                        */
-
-                        if (
-                            $this->midtransOrderService
-                                ->isClosedTransactionStatus(
-                                    $transactionStatus
-                                )
-                        ) {
-                            if (
-                                $transactionStatus ===
-                                'expire'
-                            ) {
-                                $transaction->update([
-                                    'expired_at' =>
-                                        now(),
-                                ]);
-                            }
-
-                            return [
-                                'status' =>
-                                    'closed',
-
-                                'order_id' =>
-                                    $order->id,
-
-                                'became_paid' =>
-                                    false,
-                            ];
-                        }
-
-                        /*
-                        |--------------------------------------------------------------------------
-                        | UNKNOWN STATUS
-                        |--------------------------------------------------------------------------
-                        */
-
-                        Log::warning(
-                            'Midtrans webhook mengirim status yang tidak dikenali.',
-                            [
-                                'midtrans_order_id' =>
-                                    $midtransOrderId,
-
-                                'transaction_status' =>
-                                    $transactionStatus,
-                            ]
-                        );
-
-                        return [
-                            'status' =>
-                                'unknown',
-
-                            'order_id' =>
-                                $order->id,
-
-                            'became_paid' =>
-                                false,
-                        ];
-                    }
+                $this->webhookService->handle(
+                    $payload
                 );
-
-            /*
-            |--------------------------------------------------------------------------
-            | DISPATCH MOOGOLD ONLY AFTER COMMIT
-            |--------------------------------------------------------------------------
-            */
-
-            if (
-                $result['status'] === 'success'
-                &&
-                $result['became_paid'] === true
-            ) {
-                $order =
-                    Order::query()
-                        ->with([
-                            'details.item',
-                        ])
-                        ->findOrFail(
-                            $result['order_id']
-                        );
-
-                /*
-                |--------------------------------------------------------------------------
-                | FINAL SAFETY CHECK
-                |--------------------------------------------------------------------------
-                */
-
-                if ($order->status !== 'Paid') {
-                    Log::warning(
-                        'ProcessMooGoldOrder tidak didispatch karena Order bukan Paid.',
-                        [
-                            'order_id' =>
-                                $order->id,
-
-                            'status' =>
-                                $order->status,
-                        ]
-                    );
-
-                    return response()->json([
-                        'success' =>
-                            true,
-
-                        'status' =>
-                            'success',
-                    ]);
-                }
-
-                foreach ($order->details as $detail) {
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | MOOGOLD
-                    |--------------------------------------------------------------------------
-                    */
-
-                    ProcessMooGoldOrder::dispatch(
-                        $detail->id
-                    );
-
-                    Log::info(
-                        'ProcessMooGoldOrder didispatch setelah Order menjadi Paid.',
-                        [
-                            'order_id' =>
-                                $order->id,
-
-                            'order_detail_id' =>
-                                $detail->id,
-                        ]
-                    );
-
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | DITUSI
-                    |--------------------------------------------------------------------------
-                    */
-
-                    $item = $detail->item;
-
-                    if (
-                        $item &&
-                        (bool) $item->ditusi_enabled &&
-                        filled($item->ditusi_product_code)
-                    ) {
-                        ProcessDitusiOrder::dispatch(
-                            $detail->id
-                        );
-
-                        Log::info(
-                            'ProcessDitusiOrder didispatch setelah Order menjadi Paid.',
-                            [
-                                'order_id' =>
-                                    $order->id,
-
-                                'order_detail_id' =>
-                                    $detail->id,
-
-                                'item_id' =>
-                                    $item->id,
-
-                                'ditusi_product_code' =>
-                                    $item->ditusi_product_code,
-                            ]
-                        );
-                    } else {
-                        Log::info(
-                            'ProcessDitusiOrder tidak didispatch karena item belum aktif DITUSI atau product code kosong.',
-                            [
-                                'order_id' =>
-                                    $order->id,
-
-                                'order_detail_id' =>
-                                    $detail->id,
-
-                                'item_id' =>
-                                    $item?->id,
-
-                                'ditusi_enabled' =>
-                                    $item?->ditusi_enabled,
-
-                                'ditusi_product_code' =>
-                                    $item?->ditusi_product_code,
-                            ]
-                        );
-                    }
-                }
-            }
 
             return response()->json([
                 'success' =>
@@ -639,9 +202,16 @@ class MidtransWebhookController extends Controller
 
                 'status' =>
                     $result['status'],
+
+                'order_id' =>
+                    $result['order_id'],
+
+                'became_paid' =>
+                    $result['became_paid'],
             ]);
 
         } catch (Throwable $e) {
+
             Log::error(
                 'Gagal memproses Midtrans webhook.',
                 [
@@ -664,7 +234,7 @@ class MidtransWebhookController extends Controller
             | NON-2XX
             |--------------------------------------------------------------------------
             |
-            | Supaya Midtrans dapat melakukan retry notification.
+            | Agar Midtrans dapat melakukan retry notification.
             |--------------------------------------------------------------------------
             */
 
