@@ -42,6 +42,11 @@ class TopUpFulfillmentService
 
         foreach ($order->details as $detail) {
 
+            $detail->setRelation(
+                'order',
+                $order
+            );
+
             $results[] =
                 $this->dispatchDetail(
                     $detail
@@ -58,17 +63,63 @@ class TopUpFulfillmentService
         OrderDetail $detail
     ): array {
 
+        $detail->loadMissing([
+            'order',
+            'item',
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | ORDER STATUS
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            !$detail->order
+            ||
+            !in_array(
+                $detail->order->status,
+                [
+                    'Paid',
+                    'Processing',
+                ],
+                true
+            )
+        ) {
+            Log::warning(
+                'Fulfillment tidak didispatch karena Order belum dalam status fulfillment.',
+                [
+                    'order_id' =>
+                        $detail->order_id,
+
+                    'order_detail_id' =>
+                        $detail->id,
+
+                    'status' =>
+                        $detail->order?->status,
+                ]
+            );
+
+            return [
+                'success' =>
+                    false,
+
+                'order_detail_id' =>
+                    $detail->id,
+
+                'provider' =>
+                    null,
+
+                'status' =>
+                    'invalid_order_status',
+            ];
+        }
+
         $provider =
             $this->registry
                 ->resolveForOrderDetail(
                     $detail
                 );
-
-        /*
-        |--------------------------------------------------------------------------
-        | NO PROVIDER
-        |--------------------------------------------------------------------------
-        */
 
         if (!$provider) {
 
@@ -97,12 +148,6 @@ class TopUpFulfillmentService
                     'no_provider',
             ];
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | DISPATCH PROVIDER
-        |--------------------------------------------------------------------------
-        */
 
         $provider->dispatch(
             $detail
