@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Integrations\Midtrans\MidtransService;
 use App\Integrations\Midtrans\MidtransWebhookService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,8 +10,8 @@ use Throwable;
 
 class MidtransWebhookController extends Controller
 {
+
     public function __construct(
-        protected MidtransService $midtrans,
         protected MidtransWebhookService $webhookService
     ) {
     }
@@ -151,37 +150,6 @@ class MidtransWebhookController extends Controller
             );
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | VERIFY SIGNATURE
-        |--------------------------------------------------------------------------
-        */
-
-        if (
-            !$this->midtrans->verifySignature(
-                $payload
-            )
-        ) {
-            Log::warning(
-                'Midtrans webhook signature tidak valid.',
-                [
-                    'order_id' =>
-                        $midtransOrderId,
-
-                    'transaction_status' =>
-                        $transactionStatus,
-                ]
-            );
-
-            return response()->json(
-                [
-                    'success' => false,
-                    'message' =>
-                        'Invalid signature.',
-                ],
-                403
-            );
-        }
 
         try {
 
