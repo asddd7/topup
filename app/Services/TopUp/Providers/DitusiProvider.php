@@ -3,6 +3,7 @@
 namespace App\Services\TopUp\Providers;
 
 use App\Integrations\Ditusi\DitusiOrderService;
+use App\Jobs\Providers\Ditusi\ProcessDitusiOrder;
 use App\Models\OrderDetail;
 use App\Services\TopUp\Contracts\TopUpProvider;
 use Illuminate\Database\Eloquent\Model;
@@ -37,6 +38,15 @@ class DitusiProvider implements TopUpProvider
             trim(
                 (string) $item->ditusi_product_code
             ) !== '';
+    }
+
+    public function dispatch(
+        OrderDetail $orderDetail
+    ): void {
+
+        ProcessDitusiOrder::dispatch(
+            $orderDetail->id
+        );
     }
 
     public function create(

@@ -13,15 +13,23 @@ interface TopUpProvider
     public function key(): string;
 
     /**
-     * Menentukan apakah provider dapat memproses
-     * OrderDetail tertentu.
+     * Apakah provider mendukung OrderDetail ini.
      */
     public function supports(
         OrderDetail $orderDetail
     ): bool;
 
     /**
-     * Membuat transaksi provider.
+     * Dispatch fulfillment.
+     */
+    public function dispatch(
+        OrderDetail $orderDetail
+    ): void;
+
+    /**
+     * Membuat transaksi provider secara langsung.
+     *
+     * Biasanya digunakan oleh job/provider handler.
      */
     public function create(
         OrderDetail $orderDetail

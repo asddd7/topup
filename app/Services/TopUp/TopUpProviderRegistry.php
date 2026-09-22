@@ -75,4 +75,47 @@ class TopUpProviderRegistry
             "Top-up provider [{$key}] tidak ditemukan."
         );
     }
+
+    /**
+     * Resolve tepat satu provider untuk OrderDetail.
+     *
+     * Return null jika tidak ada provider yang cocok.
+     *
+     * Throw exception jika lebih dari satu provider cocok,
+     * karena kita tidak boleh mengirim satu OrderDetail
+     * ke lebih dari satu provider secara otomatis.
+     */
+    public function resolveForOrderDetail(
+        OrderDetail $orderDetail
+    ): ?TopUpProvider {
+
+        $providers =
+            $this->forOrderDetail(
+                $orderDetail
+            );
+
+        if (count($providers) === 0) {
+            return null;
+        }
+
+        if (count($providers) > 1) {
+
+            $providerNames =
+                array_map(
+                    fn (TopUpProvider $provider) =>
+                        $provider->key(),
+                    $providers
+                );
+
+            throw new InvalidArgumentException(
+                'OrderDetail #' .
+                $orderDetail->id .
+                ' memiliki lebih dari satu provider aktif: ' .
+                implode(', ', $providerNames) .
+                '.'
+            );
+        }
+
+        return $providers[0];
+    }
 }
