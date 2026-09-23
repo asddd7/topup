@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Admin\BaseAdminController;
+use App\Services\ActivityLogService;
 use App\Services\TopUp\TopUpFulfillmentService;
 use App\Integrations\MooGold\MooGoldService;
 use App\Models\Discount;
@@ -17,11 +18,11 @@ use Illuminate\Support\Facades\DB;
 
 class OrderController extends BaseAdminController
 {
-
     public function __construct(
-        protected ActivityLogService $activity,
+        ActivityLogService $activity,
         protected TopUpFulfillmentService $fulfillment
     ) {
+        parent::__construct($activity);
     }
 
     /**

@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\Api\V1\MidtransNotificationController;
 use App\Http\Controllers\Api\V1\MidtransOrderController;
 use App\Http\Controllers\MidtransWebhookController;
 
@@ -22,20 +21,22 @@ use App\Http\Controllers\MidtransWebhookController;
 | MIDTRANS SERVER NOTIFICATION
 |--------------------------------------------------------------------------
 |
-| Endpoint ini menerima notification dari Midtrans.
+| Endpoint kompatibilitas.
+|
+| Endpoint lama tetap tersedia tetapi menggunakan
+| MidtransWebhookController yang sama.
 |
 */
 
-Route::post(
-    '/midtrans/notification',
-    [
-        MidtransNotificationController::class,
-        'handle',
-    ]
-)->name(
-    'midtrans.notification'
-);
-
+    Route::post(
+        '/midtrans/notification',
+        [
+            MidtransWebhookController::class,
+            'handle',
+        ]
+    )->name(
+        'midtrans.notification'
+    );
 
 /*
 |--------------------------------------------------------------------------
@@ -68,15 +69,25 @@ Route::post(
 |
 | Midtrans
 |     ↓
-| webhook
+| MidtransWebhookController
+|     ↓
+| MidtransWebhookService
 |     ↓
 | verifikasi signature
 |     ↓
-| validasi transaksi
+| update transaksi
 |     ↓
 | Order = Paid
 |     ↓
-| dispatch ProcessMooGoldOrder
+| COMMIT
+|     ↓
+| TopUpFulfillmentService
+|     ↓
+| ProviderRegistry
+|     ↓
+| MooGoldProvider
+|     ↓
+| ProcessMooGoldOrder
 |
 */
 
