@@ -1,5 +1,6 @@
 /* =========================================================
-   TOPUP THEME
+   TOPUP THEME — v2
+   Central color & design-token system for the whole site
 ========================================================= */
 
 :root {
@@ -10,29 +11,70 @@
 
     --theme-primary: #4f6fce;
     --theme-primary-hover: #405eaf;
+    --theme-primary-active: #34508f;
     --theme-primary-soft: #eef2fb;
+    --theme-primary-rgb: 79, 111, 206;
 
     /* =====================================================
-       LIGHT
+       SEMANTIC (success / warning / danger / info)
+    ===================================================== */
+
+    --theme-success: #16a34a;
+    --theme-success-soft: #eafaf0;
+    --theme-success-rgb: 22, 163, 74;
+
+    --theme-warning: #d97706;
+    --theme-warning-soft: #fef6e7;
+    --theme-warning-rgb: 217, 119, 6;
+
+    --theme-danger: #dc2626;
+    --theme-danger-hover: #b91c1c;
+    --theme-danger-soft: #fdecec;
+    --theme-danger-rgb: 220, 38, 38;
+
+    --theme-info: #0891b2;
+    --theme-info-soft: #e6f8fb;
+    --theme-info-rgb: 8, 145, 178;
+
+    /* =====================================================
+       LIGHT (base surfaces)
     ===================================================== */
 
     --theme-bg: #f6f8fc;
     --theme-surface: #ffffff;
     --theme-surface-soft: #f9faff;
+    --theme-surface-hover: #f1f4fa;
 
     --theme-text: #1e293b;
     --theme-text-secondary: #64748b;
     --theme-text-muted: #94a3b8;
+    --theme-text-on-primary: #ffffff;
 
     --theme-border: #e3e8f0;
     --theme-border-soft: #edf0f5;
+    --theme-border-strong: #cbd5e1;
 
+    --theme-shadow-sm:
+        0 2px 8px rgba(30, 41, 59, 0.04);
     --theme-shadow:
         0 6px 24px rgba(30, 41, 59, 0.05);
+    --theme-shadow-lg:
+        0 16px 40px rgba(30, 41, 59, 0.08);
 
     --theme-input-bg: #ffffff;
-
     --theme-footer: #1e293b;
+    --theme-footer-text: #cbd5e1;
+
+    /* =====================================================
+       LAYOUT TOKENS
+    ===================================================== */
+
+    --theme-radius-sm: 6px;
+    --theme-radius: 10px;
+    --theme-radius-lg: 16px;
+
+    --theme-transition-fast: 0.15s ease;
+    --theme-transition: 0.25s ease;
 }
 
 
@@ -44,25 +86,51 @@
 
     --theme-primary: #6b86d6;
     --theme-primary-hover: #7d96df;
+    --theme-primary-active: #90a5e6;
     --theme-primary-soft: #1a2440;
+    --theme-primary-rgb: 107, 134, 214;
+
+    --theme-success: #34d17c;
+    --theme-success-soft: #10291b;
+    --theme-success-rgb: 52, 209, 124;
+
+    --theme-warning: #f0a942;
+    --theme-warning-soft: #2c2210;
+    --theme-warning-rgb: 240, 169, 66;
+
+    --theme-danger: #f0605a;
+    --theme-danger-hover: #f47b76;
+    --theme-danger-soft: #2c1414;
+    --theme-danger-rgb: 240, 96, 90;
+
+    --theme-info: #38bcd8;
+    --theme-info-soft: #0f2830;
+    --theme-info-rgb: 56, 188, 216;
 
     --theme-bg: #0d1117;
     --theme-surface: #151a21;
     --theme-surface-soft: #11161d;
+    --theme-surface-hover: #1b212a;
 
     --theme-text: #e5e7eb;
     --theme-text-secondary: #aab3c2;
     --theme-text-muted: #7f8a9a;
+    --theme-text-on-primary: #0d1117;
 
     --theme-border: #252c36;
     --theme-border-soft: #1d232c;
+    --theme-border-strong: #3a4352;
 
+    --theme-shadow-sm:
+        0 2px 10px rgba(0, 0, 0, 0.25);
     --theme-shadow:
         0 8px 30px rgba(0, 0, 0, 0.22);
+    --theme-shadow-lg:
+        0 20px 48px rgba(0, 0, 0, 0.35);
 
     --theme-input-bg: #11161d;
-
     --theme-footer: #090d12;
+    --theme-footer-text: #8b94a3;
 }
 
 
@@ -77,8 +145,8 @@ body {
     color: var(--theme-text);
 
     transition:
-        background-color 0.25s ease,
-        color 0.25s ease;
+        background-color var(--theme-transition),
+        color var(--theme-transition);
 }
 
 
@@ -88,7 +156,9 @@ body {
 
 .card,
 .modal-content,
-.dropdown-menu {
+.dropdown-menu,
+.offcanvas,
+.popover {
 
     background-color: var(--theme-surface);
 
@@ -96,10 +166,22 @@ body {
 
     color: var(--theme-text);
 
+    box-shadow: var(--theme-shadow-sm);
+
     transition:
-        background-color 0.25s ease,
-        border-color 0.25s ease,
-        color 0.25s ease;
+        background-color var(--theme-transition),
+        border-color var(--theme-transition),
+        color var(--theme-transition),
+        box-shadow var(--theme-transition);
+}
+
+.card:hover {
+    box-shadow: var(--theme-shadow);
+}
+
+.card-soft,
+.bg-surface-soft {
+    background-color: var(--theme-surface-soft) !important;
 }
 
 
@@ -111,9 +193,149 @@ body {
     color: var(--theme-text) !important;
 }
 
-
 .text-muted {
     color: var(--theme-text-secondary) !important;
+}
+
+.text-subtle {
+    color: var(--theme-text-muted) !important;
+}
+
+.text-primary {
+    color: var(--theme-primary) !important;
+}
+
+.text-success {
+    color: var(--theme-success) !important;
+}
+
+.text-warning {
+    color: var(--theme-warning) !important;
+}
+
+.text-danger {
+    color: var(--theme-danger) !important;
+}
+
+.text-info {
+    color: var(--theme-info) !important;
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.btn-primary {
+
+    background-color: var(--theme-primary);
+    border-color: var(--theme-primary);
+    color: var(--theme-text-on-primary);
+
+    transition:
+        background-color var(--theme-transition-fast),
+        border-color var(--theme-transition-fast),
+        box-shadow var(--theme-transition-fast),
+        transform var(--theme-transition-fast);
+}
+
+.btn-primary:hover {
+    background-color: var(--theme-primary-hover);
+    border-color: var(--theme-primary-hover);
+}
+
+.btn-primary:active {
+    background-color: var(--theme-primary-active);
+    border-color: var(--theme-primary-active);
+    transform: translateY(1px);
+}
+
+.btn-primary:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 3px rgba(var(--theme-primary-rgb), 0.25);
+}
+
+.btn-danger {
+    background-color: var(--theme-danger);
+    border-color: var(--theme-danger);
+}
+
+.btn-danger:hover {
+    background-color: var(--theme-danger-hover);
+    border-color: var(--theme-danger-hover);
+}
+
+.btn-outline-primary {
+    color: var(--theme-primary);
+    border-color: var(--theme-primary);
+    background: transparent;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--theme-primary);
+    color: var(--theme-text-on-primary);
+}
+
+
+/* =========================================================
+   BADGES / STATUS PILLS
+========================================================= */
+
+.badge-soft-success {
+    background-color: var(--theme-success-soft);
+    color: var(--theme-success);
+}
+
+.badge-soft-warning {
+    background-color: var(--theme-warning-soft);
+    color: var(--theme-warning);
+}
+
+.badge-soft-danger {
+    background-color: var(--theme-danger-soft);
+    color: var(--theme-danger);
+}
+
+.badge-soft-info {
+    background-color: var(--theme-info-soft);
+    color: var(--theme-info);
+}
+
+.badge-soft-primary {
+    background-color: var(--theme-primary-soft);
+    color: var(--theme-primary);
+}
+
+
+/* =========================================================
+   ALERTS
+========================================================= */
+
+.alert-success {
+    background-color: var(--theme-success-soft);
+    border-color: rgba(var(--theme-success-rgb), 0.25);
+    color: var(--theme-success);
+}
+
+.alert-warning {
+    background-color: var(--theme-warning-soft);
+    border-color: rgba(var(--theme-warning-rgb), 0.25);
+    color: var(--theme-warning);
+}
+
+.alert-danger {
+    background-color: var(--theme-danger-soft);
+    border-color: rgba(var(--theme-danger-rgb), 0.25);
+    color: var(--theme-danger);
+}
+
+.alert-info {
+    background-color: var(--theme-info-soft);
+    border-color: rgba(var(--theme-info-rgb), 0.25);
+    color: var(--theme-info);
 }
 
 
@@ -129,6 +351,13 @@ body {
     border-color: var(--theme-border);
 
     color: var(--theme-text);
+
+    border-radius: var(--theme-radius-sm);
+
+    transition:
+        background-color var(--theme-transition-fast),
+        border-color var(--theme-transition-fast),
+        box-shadow var(--theme-transition-fast);
 }
 
 
@@ -148,7 +377,25 @@ body {
 
     box-shadow:
         0 0 0 3px
-        rgba(79, 111, 206, 0.10);
+        rgba(var(--theme-primary-rgb), 0.10);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+    background-color: var(--theme-surface-soft);
+    color: var(--theme-text-muted);
+}
+
+.form-label {
+    color: var(--theme-text);
+}
+
+.invalid-feedback {
+    color: var(--theme-danger);
+}
+
+.is-invalid {
+    border-color: var(--theme-danger) !important;
 }
 
 
@@ -164,6 +411,10 @@ body {
     color: var(--theme-text);
 
     border-color: var(--theme-border);
+}
+
+.table > tbody > tr:hover {
+    background-color: var(--theme-surface-hover);
 }
 
 
@@ -186,7 +437,12 @@ body {
 ========================================================= */
 
 a {
-    transition: color 0.2s ease;
+    color: var(--theme-primary);
+    transition: color var(--theme-transition-fast);
+}
+
+a:hover {
+    color: var(--theme-primary-hover);
 }
 
 
@@ -203,28 +459,66 @@ hr {
 
 
 /* =========================================================
-   DARK SCROLLBAR
+   NAVBAR / FOOTER
 ========================================================= */
 
-[data-theme="dark"] ::-webkit-scrollbar {
+.navbar,
+.site-header {
+    background-color: var(--theme-surface);
+    border-bottom: 1px solid var(--theme-border);
+}
+
+.footer,
+.site-footer {
+    background-color: var(--theme-footer);
+    color: var(--theme-footer-text);
+}
+
+
+/* =========================================================
+   SCROLLBAR (light + dark)
+========================================================= */
+
+::-webkit-scrollbar {
     width: 8px;
     height: 8px;
 }
 
+::-webkit-scrollbar-track {
+    background: var(--theme-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--theme-border-strong);
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--theme-text-muted);
+}
 
 [data-theme="dark"] ::-webkit-scrollbar-track {
     background: #0d1117;
 }
 
-
 [data-theme="dark"] ::-webkit-scrollbar-thumb {
-
     background: #303846;
-
-    border-radius: 999px;
 }
-
 
 [data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
     background: #3b4555;
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
 }
