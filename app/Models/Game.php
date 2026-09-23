@@ -16,6 +16,8 @@ protected $fillable = [
     'slug',
     'game_logo',
     'publisher',
+    'moogold_server_id',
+    'moogold_server_name',
     'player_fields',
 
     'login_guide',

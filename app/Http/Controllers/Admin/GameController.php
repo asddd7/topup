@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Admin\BaseAdminController;
+use App\Integrations\MooGold\MooGoldService;
 use App\Models\Item;
 use App\Models\Game;
 use App\Models\ItemCategory;
@@ -14,22 +15,34 @@ class GameController extends BaseAdminController
     public function index()
     {
         $games = Game::with('itemCategories')
-        ->latest()
-        ->get();
+            ->latest()
+            ->get();
 
         $categories = ItemCategory::query()
             ->orderBy('category_name')
             ->get();
 
+        $items = Item::query()
+            ->whereNotNull('moogold_product_id')
+            ->where('moogold_product_id', '>', 0)
+            ->orderBy('item_name')
+            ->get([
+                'id',
+                'game_id',
+                'item_name',
+                'moogold_product_id',
+            ])
+            ->groupBy('game_id');
+
         return view(
             'admin.game.index',
             compact(
                 'games',
-                'categories'
+                'categories',
+                'items'
             )
         );
     }
-
 
     public function create()
     {
@@ -49,9 +62,13 @@ class GameController extends BaseAdminController
 
         $request->validate([
 
-            'game_name'=>'required',
-            'publisher'=>'nullable',
-            'game_logo'=>'nullable|image|max:2048',
+            'game_name' => 'required',
+            'publisher' => 'nullable',
+            'game_logo' => 'nullable|image|max:2048',
+
+            'moogold_server_id' => 'nullable|string|max:255',
+            'moogold_server_name' => 'nullable|string|max:255',
+
             'player_fields.*.type' => 'nullable|in:text,number,email,select',
             'category_ids' => ['nullable', 'array'],
             'category_ids.*' => ['integer', 'exists:item_categories,id'],
@@ -90,6 +107,8 @@ class GameController extends BaseAdminController
 
                     'type'        => $field['type'] ?? 'text',
 
+                    'source'      => 'manual',
+
                     'options'     => $field['options'] ?? '',
 
                     'required'    => isset($field['required'])
@@ -102,17 +121,19 @@ class GameController extends BaseAdminController
 
         $game = Game::create([
 
-            'game_name'=>$request->game_name,
+            'game_name'   => $request->game_name,
 
-            'publisher'=>$request->publisher,
+            'publisher'   => $request->publisher,
 
-            'player_input_type'=>$request->player_input_type,
+            'game_logo'   => $logo,
 
-            'game_logo'=>$logo,
+            'moogold_server_id'   => $request->moogold_server_id,
 
-            'player_fields'=>$playerFields,
+            'moogold_server_name' => $request->moogold_server_name,
 
-            'is_active'=>true
+            'player_fields' => $playerFields,
+
+            'is_active'   => true,
 
         ]);
 
@@ -143,11 +164,26 @@ class GameController extends BaseAdminController
             ->orderBy('category_name')
             ->get();
 
+        $items = Item::query()
+            ->where('game_id', $game->id)
+            ->whereNotNull('moogold_product_id')
+            ->where('moogold_product_id', '>', 0)
+            ->orderBy('item_name')
+            ->get([
+                'id',
+                'item_name',
+                'moogold_product_id',
+            ]);
+
         $game->load('itemCategories');
 
         return view(
             'admin.game.edit',
-            compact('game', 'categories')
+            compact(
+                'game',
+                'categories',
+                'items'
+            )
         );
     }
 
@@ -158,17 +194,20 @@ class GameController extends BaseAdminController
 
         $request->validate([
 
-            'game_name'=>'required',
+            'game_name' => 'required',
 
-            'publisher'=>'nullable',
+            'publisher' => 'nullable',
 
-            'player_input_type'=>'nullable',
+            'game_logo' => 'nullable|image|max:2048',
 
-            'game_logo'=>'nullable|image|max:2048',
+            'moogold_server_id' => 'nullable|string|max:255',
+
+            'moogold_server_name' => 'nullable|string|max:255',
 
             'player_fields.*.type' => 'nullable|in:text,number,email,select',
 
             'category_ids' => ['nullable', 'array'],
+
             'category_ids.*' => ['integer', 'exists:item_categories,id'],
 
         ]);
@@ -204,6 +243,8 @@ class GameController extends BaseAdminController
                 'placeholder' => $field['placeholder'] ?? '',
 
                 'type'        => $field['type'] ?? 'text',
+            
+                'source'      => 'manual',
 
                 'options'     => $field['options'] ?? '',
 
@@ -215,15 +256,19 @@ class GameController extends BaseAdminController
 
         $game->update([
 
-            'game_name'=>$request->game_name,
+            'game_name' => $request->game_name,
 
-            'publisher'=>$request->publisher,
+            'publisher' => $request->publisher,
 
-            'player_fields'=>$playerFields,
+            'player_fields' => $playerFields,
 
-            'game_logo'=>$logo,
+            'game_logo' => $logo,
 
-            'is_active'=>$request->has('is_active')
+            'moogold_server_id' => $request->moogold_server_id,
+
+            'moogold_server_name' => $request->moogold_server_name,
+
+            'is_active' => $request->has('is_active'),
 
         ]);
 
@@ -247,19 +292,82 @@ class GameController extends BaseAdminController
 
     }
 
+    public function moogoldServers(
+        Game $game,
+        Item $item,
+        MooGoldService $mooGold
+    ) {
+        if ((int) $item->game_id !== (int) $game->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Item bukan milik game ini.',
+            ], 403);
+        }
+
+        if (
+            empty($item->moogold_product_id) ||
+            (int) $item->moogold_product_id <= 0
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Item belum memiliki MooGold Product ID.',
+            ], 422);
+        }
+
+        try {
+
+            $response = $mooGold->serverList(
+                (int) $item->moogold_product_id
+            );
+
+            $servers = [];
+
+            foreach ($response as $name => $id) {
+
+                $servers[] = [
+                    'id' => (string) $id,
+                    'name' => (string) $name,
+                ];
+
+            }
+
+            return response()->json([
+                'success' => true,
+                'product_id' => (int) $item->moogold_product_id,
+                'servers' => $servers,
+            ]);
+
+        } catch (\Throwable $e) {
+
+            \Log::error(
+                'Gagal mengambil MooGold server list.',
+                [
+                    'game_id' => $game->id,
+                    'item_id' => $item->id,
+                    'moogold_product_id' => $item->moogold_product_id,
+                    'message' => $e->getMessage(),
+                ]
+            );
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengambil server dari MooGold.',
+            ], 500);
+        }
+    }    
 
 
     public function destroy(Game $game)
     {
-$old = $game->toArray();
-$this->activity->log(
-    'Game',
-    'Delete',
-    'Delete game : '.$game->game_name,
-    $game,
-    $old,
-    null
-);
+        $old = $game->toArray();
+        $this->activity->log(
+            'Game',
+            'Delete',
+            'Delete game : '.$game->game_name,
+            $game,
+            $old,
+            null
+        );
         $game->delete();
 
 

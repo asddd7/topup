@@ -245,248 +245,197 @@ let fieldIndexCreate = 0;
 
 function addPlayerFieldCreate(){
 
-let i = fieldIndexCreate++;
+    let i = fieldIndexCreate++;
 
 
-document
-.getElementById('playerFieldsCreate')
-.insertAdjacentHTML(
-'beforeend',
+    document
+        .getElementById('playerFieldsCreate')
+        .insertAdjacentHTML(
+            'beforeend',
 
-`
+            `
 
-<div class="card mb-3 player-field">
+            <div class="card mb-3 player-field">
 
-<div class="card-body">
+                <div class="card-body">
 
+                    <div class="row g-3">
 
-<div class="row">
 
+                        <div class="col-12 col-md-3">
 
-<div class="col-md-3">
+                            <label class="form-label">
+                                Nama Field
+                            </label>
 
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="player_fields[${i}][name]"
+                                placeholder="uid">
 
-<label>
+                        </div>
 
-Nama Field
 
-</label>
+                        <div class="col-12 col-md-3">
 
+                            <label class="form-label">
+                                Label
+                            </label>
 
-<input
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="player_fields[${i}][label]"
+                                placeholder="UID Player">
 
-type="text"
+                        </div>
 
-class="form-control"
 
-name="player_fields[${i}][name]"
+                        <div class="col-12 col-md-3">
 
-placeholder="uid"
+                            <label class="form-label">
+                                Placeholder
+                            </label>
 
->
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="player_fields[${i}][placeholder]"
+                                placeholder="Masukkan UID">
 
-</div>
+                        </div>
 
 
+                        <div class="col-12 col-md-3">
 
+                            <label class="form-label">
+                                Options
+                            </label>
 
-<div class="col-md-3">
+                            <input
+                                type="text"
+                                class="form-control"
+                                name="player_fields[${i}][options]"
+                                placeholder="Asia,America,Europe">
 
+                            <small class="text-muted">
+                                Pisahkan dengan koma
+                            </small>
 
-<label>
+                        </div>
 
-Label
 
-</label>
+                        <div class="col-12 col-md-3">
 
+                            <label class="form-label">
+                                Tipe
+                            </label>
 
-<input
+                            <select
+                                class="form-select"
+                                name="player_fields[${i}][type]">
 
-type="text"
+                                <option value="text">
+                                    Text
+                                </option>
 
-class="form-control"
+                                <option value="number">
+                                    Number
+                                </option>
 
-name="player_fields[${i}][label]"
+                                <option value="email">
+                                    Email
+                                </option>
 
-placeholder="UID Player"
+                                <option value="select">
+                                    Select
+                                </option>
 
->
+                            </select>
 
-</div>
+                        </div>
 
 
+                        <div class="col-12 col-md-3">
 
+                            <label class="form-label">
+                                Source
+                            </label>
 
-<div class="col-md-3">
+                            <select
+                                class="form-select"
+                                name="player_fields[${i}][source]">
 
+                                <option value="manual">
+                                    Manual
+                                </option>
 
-<label>
+                                <option value="moogold_server_list">
+                                    MooGold Server List
+                                </option>
 
-Placeholder
+                            </select>
 
-</label>
+                            <small class="text-muted">
+                                Sumber pilihan field
+                            </small>
 
+                        </div>
 
-<input
 
-type="text"
+                        <div class="col-12 col-md-1 d-flex align-items-end">
 
-class="form-control"
+                            <button
+                                type="button"
+                                class="btn btn-danger remove-field">
 
-name="player_fields[${i}][placeholder]"
+                                <i class="fa fa-trash"></i>
 
-placeholder="Masukkan UID"
+                            </button>
 
->
+                        </div>
 
-</div>
 
+                    </div>
 
-<div class="col-md-3">
 
-<label>Options</label>
+                    <div class="form-check mt-3">
 
-<input
-type="text"
-class="form-control"
-name="player_fields[${i}][options]"
-placeholder="Asia,America,Europe">
+                        <input
+                            type="checkbox"
+                            class="form-check-input"
+                            name="player_fields[${i}][required]"
+                            value="1"
+                            checked>
 
-<small class="text-muted">
-Pisahkan dengan koma
-</small>
+                        <label class="form-check-label">
 
-</div>
+                            Wajib Diisi
 
+                        </label>
 
-<div class="col-md-2">
+                    </div>
 
 
-<label>
+                </div>
 
-Tipe
+            </div>
 
-</label>
-
-
-<select
-
-class="form-select"
-
-name="player_fields[${i}][type]">
-
-
-<option value="text">
-
-Text
-
-</option>
-
-
-<option value="number">
-
-Number
-
-</option>
-
-
-<option value="email">
-
-Email
-
-</option>
-
-
-<option value="select">
-
-Select
-
-</option>
-
-</select>
-
-
-</div>
-
-
-
-
-<div class="col-md-1 d-flex align-items-end">
-
-
-<button
-
-type="button"
-
-class="btn btn-danger remove-field">
-
-
-<i class="fa fa-trash"></i>
-
-
-</button>
-
-
-</div>
-
-
-</div>
-
-
-
-
-<div class="form-check mt-3">
-
-
-<input
-
-type="checkbox"
-
-class="form-check-input"
-
-name="player_fields[${i}][required]"
-
-value="1"
-
-checked>
-
-
-<label class="form-check-label">
-
-Wajib Diisi
-
-</label>
-
-
-</div>
-
-
-</div>
-
-</div>
-
-
-`
-
-);
+            `
+        );
 
 }
 
 
+document.addEventListener('click', function(e){
 
-document.addEventListener('click',function(e){
+    if(e.target.closest('.remove-field')){
 
+        e.target.closest('.player-field').remove();
 
-if(e.target.closest('.remove-field')){
-
-
-e.target.closest('.player-field').remove();
-
-
-}
-
+    }
 
 });
-
 
 </script>

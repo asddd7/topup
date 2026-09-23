@@ -382,6 +382,11 @@ Route::get(
 |--------------------------------------------------------------------------
 */
 
+Route::get(
+    '/game/{game}/moogold-servers/{item}',
+    [GameController::class, 'moogoldServers']
+)->name('game.moogold-servers');
+
 Route::resource(
     'game',
     GameController::class

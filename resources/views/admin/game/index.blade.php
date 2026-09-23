@@ -246,7 +246,10 @@ class="btn btn-info btn-sm">
 
 @foreach($games as $game)
 
-@include('admin.game.edit')
+    @include('admin.game.edit', [
+        'game' => $game,
+        'items' => $items->get($game->id, collect())
+    ])
 
 @endforeach
 
