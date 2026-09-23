@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Admin;
 
-use App\Jobs\Providers\MooGold\ProcessMooGoldOrder;
+use App\Services\TopUp\TopUpFulfillmentService;
 use App\Models\Item;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -15,6 +15,12 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
+
+
+    public function __construct(
+        protected TopUpFulfillmentService $fulfillment
+    ) {
+    }
 /**
  * POST /api/v1/admin/orders/{order}/payment/approve
  *
@@ -123,23 +129,6 @@ public function approvePayment(
                     'logged_at' =>
                         now(),
                 ]);
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | AMBIL DETAIL ORDER
-            |--------------------------------------------------------------------------
-            */
-
-            $lockedOrder->load('details');
-
-            $details =
-                $lockedOrder
-                    ->details
-                    ->pluck('id')
-                    ->values()
-                    ->all();
-
         });
 
 
@@ -149,13 +138,13 @@ public function approvePayment(
         |--------------------------------------------------------------------------
         */
 
-        foreach ($details as $detailId) {
+        $order->refresh();
 
-            ProcessMooGoldOrder::dispatch(
-                $detailId
-            );
+        if ($order->status === 'Paid') {
+
+            $this->fulfillment
+                ->dispatchOrder($order);
         }
-
 
         /*
         |--------------------------------------------------------------------------

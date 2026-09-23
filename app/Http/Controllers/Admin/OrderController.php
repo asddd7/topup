@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Admin\BaseAdminController;
+use App\Services\TopUp\TopUpFulfillmentService;
 use App\Integrations\MooGold\MooGoldService;
-use App\Jobs\Providers\MooGold\ProcessMooGoldOrder;
 use App\Models\Discount;
 use App\Models\Item;
 use App\Models\Notification;
@@ -17,6 +17,13 @@ use Illuminate\Support\Facades\DB;
 
 class OrderController extends BaseAdminController
 {
+
+    public function __construct(
+        protected ActivityLogService $activity,
+        protected TopUpFulfillmentService $fulfillment
+    ) {
+    }
+
     /**
      * =========================================================
      * ORDER INDEX
@@ -359,15 +366,13 @@ public function approve(Order $order)
         |
         */
 
-        $order->load('details');
+        $order->refresh();
 
-        foreach ($order->details as $detail) {
+        if ($order->status === 'Paid') {
 
-            ProcessMooGoldOrder::dispatch(
-                $detail->id
-            );
+            $this->fulfillment
+                ->dispatchOrder($order);
         }
-
 
         return back()->with(
             'success',
@@ -432,13 +437,8 @@ public function confirm(Order $order)
     |--------------------------------------------------------------------------
     */
 
-    foreach ($order->details as $detail) {
-
-        ProcessMooGoldOrder::dispatch(
-            $detail->id
-        );
-    }
-
+    $this->fulfillment
+        ->dispatchOrder($order);
 
     /*
     |--------------------------------------------------------------------------
