@@ -350,6 +350,12 @@ public function validatePlayer(
 ): JsonResponse {
 
     $validated = $request->validate([
+        'game_id' => [
+            'required',
+            'integer',
+            'exists:games,id',
+        ],
+
         'item_id' => [
             'required',
             'integer',
@@ -361,12 +367,6 @@ public function validatePlayer(
             'string',
             'max:100',
         ],
-
-        'server_id' => [
-            'nullable',
-            'string',
-            'max:100',
-        ],
     ]);
 
     /*
@@ -375,8 +375,9 @@ public function validatePlayer(
     |--------------------------------------------------------------------------
     */
 
-    $item = Item::query()
+    $item = Item::with('game')
         ->where('id', $validated['item_id'])
+        ->where('game_id', $validated['game_id'])
         ->where('is_active', 1)
         ->first();
 
@@ -387,6 +388,25 @@ public function validatePlayer(
         ], 404);
     }
 
+    $game = $item->game;
+
+    if (!$game) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Game untuk produk ini tidak ditemukan.',
+        ], 404);
+    }
+
+    $serverId = trim(
+        (string) ($game->moogold_server_id ?? '')
+    );
+
+    if ($serverId === '') {
+        return response()->json([
+            'success' => false,
+            'message' => 'Server MooGold belum dikonfigurasi untuk game ini.',
+        ], 422);
+    }
     /*
     |--------------------------------------------------------------------------
     | MOO GOLD MAPPING
@@ -445,13 +465,12 @@ $productId =
     */
 
     $playerData = [
-        'User ID' => (string) $validated['user_id'],
-    ];
+        'User ID' =>
+            (string) $validated['user_id'],
 
-    if (!empty($validated['server_id'])) {
-        $playerData['Server ID'] =
-            (string) $validated['server_id'];
-    }
+        'Server ID' =>
+            $serverId,
+    ];
 
     try {
 
@@ -491,7 +510,7 @@ $productId =
                     $validated['user_id'],
 
                 'server_id' =>
-                    $validated['server_id'] ?? null,
+                    $serverId,
 
                 'response' =>
                     $result,

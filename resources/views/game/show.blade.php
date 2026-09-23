@@ -63,6 +63,12 @@
     window.gameShowConfig = {
         gameId: @json($game->id),
 
+        moogoldServerId:
+            @json($game->moogold_server_id),
+
+        moogoldServerName:
+            @json($game->moogold_server_name),
+
         voucherCalculateUrl:
             @json(route('voucher.calculate')),
 

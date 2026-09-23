@@ -145,7 +145,14 @@ public function store(
         ->where('is_active', 1)
         ->firstOrFail();
 
-
+    if (
+        !empty($item->moogold_product_id) &&
+        empty($item->game->moogold_server_id)
+    ) {
+        throw new \RuntimeException(
+            'Server MooGold belum dikonfigurasi untuk game ini.'
+        );
+    }
 /*
 |--------------------------------------------------------------------------
 | 3. Validate dynamic player fields

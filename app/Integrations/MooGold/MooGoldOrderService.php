@@ -70,7 +70,7 @@ class MooGoldOrderService
         */
 
         $orderDetail->loadMissing([
-            'order',
+            'order.game',
             'item',
         ]);
 
@@ -134,14 +134,18 @@ class MooGoldOrderService
             ?? null;
 
         $server =
-            $playerData['server']
-            ?? $playerData['server_id']
-            ?? $playerData['Server ID']
+            $order->game?->moogold_server_id
             ?? null;
 
         if (empty($userId)) {
             throw new RuntimeException(
                 'Player UID / User ID belum tersedia.'
+            );
+        }
+
+        if (empty($server)) {
+            throw new RuntimeException(
+                'Server MooGold belum dikonfigurasi untuk game ini.'
             );
         }
 
@@ -1684,9 +1688,7 @@ class MooGoldOrderService
             ?? null;
 
         $server =
-            $playerData['server']
-            ?? $playerData['server_id']
-            ?? $playerData['Server ID']
+            $order->game?->moogold_server_id
             ?? null;
 
         if (empty($userId)) {

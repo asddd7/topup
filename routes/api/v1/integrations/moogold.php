@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
 
-use App\Integrations\Moogold\MooGoldService;
+use App\Integrations\MooGold\MooGoldService;
 use App\Http\Controllers\Api\V1\Admin\MooGoldController;
 
 
@@ -104,6 +104,71 @@ Route::prefix('admin/moogold')->group(function () {
         }
     );
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | TEST SERVER LIST
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/test-server-list/{productId}',
+        function (
+            int $productId,
+            MooGoldService $mooGold
+        ) {
+
+            try {
+
+                $result =
+                    $mooGold->serverList(
+                        $productId
+                    );
+
+                return response()->json([
+
+                    'success' => true,
+
+                    'product_id' =>
+                        $productId,
+
+                    'message' =>
+                        'Server list berhasil diambil dari MooGold.',
+
+                    'servers' =>
+                        $result,
+
+                ]);
+
+            } catch (\Throwable $e) {
+
+                \Log::error(
+                    'Test MooGold server list gagal.',
+                    [
+                        'product_id' =>
+                            $productId,
+
+                        'message' =>
+                            $e->getMessage(),
+                    ]
+                );
+
+                return response()->json([
+
+                    'success' => false,
+
+                    'product_id' =>
+                        $productId,
+
+                    'message' =>
+                        $e->getMessage(),
+
+                ], 500);
+
+            }
+
+        }
+    );
 
     /*
     |--------------------------------------------------------------------------
