@@ -626,17 +626,16 @@ async function validatePlayerForCheckout(
 
                     body: JSON.stringify({
 
+                        game_id:
+                            gameConfig.gameId,
+
                         item_id:
                             itemId,
 
                         user_id:
-                            userId,
-
-                        server_id:
-                            serverId
+                            userId
 
                     })
-
                 }
             );
 
@@ -2646,14 +2645,26 @@ const initialPayment =
 
 if (initialPayment) {
 
-    selectedPaymentIdType =
-        parseInt(
-            initialPayment.value
+    selectedPaymentType =
+        initialPayment.dataset.paymentType
+        || initialPayment.value
+        || null;
+
+
+    const input =
+        document.getElementById(
+            'midtrans_payment_type'
         );
 
+
+    if (input) {
+
+        input.value =
+            selectedPaymentType || '';
+
+    }
+
 }
-
-
 /* =========================================================
    DEBUG
 ========================================================= */
