@@ -130,7 +130,47 @@
                         </small>
 
                     </div>
-                    
+                                            
+                        <hr>
+
+                        <h6 class="fw-bold mb-3">
+                            <i class="fa-solid fa-cloud me-2"></i>
+                            MooGold Player Fields
+                        </h6>
+
+                        <div class="mb-3">
+
+                            <label class="form-label fw-semibold">
+                                Product ID MooGold
+                            </label>
+
+                            <div class="input-group">
+
+                                <input
+                                    type="text"
+                                    id="createMooGoldProductId"
+                                    class="form-control"
+                                    placeholder="Contoh: 4168026"
+                                >
+
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-success"
+                                    id="loadMooGoldFieldsCreate"
+                                >
+                                    <i class="fa-solid fa-download me-1"></i>
+                                    Ambil Field
+                                </button>
+
+                            </div>
+
+                            <small class="text-muted">
+                                Hanya digunakan untuk mengambil field player dari MooGold.
+                                Product ID tidak disimpan ke tabel games.
+                            </small>
+
+                        </div>
+
                     <hr>
 
                     <h6 class="fw-bold mb-3">
@@ -241,6 +281,387 @@
 <script>
 
 let fieldIndexCreate = 0;
+
+const loadMooGoldFieldsCreate =
+    document.getElementById(
+        'loadMooGoldFieldsCreate'
+    );
+
+const createMooGoldProductId =
+    document.getElementById(
+        'createMooGoldProductId'
+    );
+
+const playerFieldsCreate =
+    document.getElementById(
+        'playerFieldsCreate'
+    );
+
+
+function normalizeMooGoldCreateField(field) {
+
+    const normalized =
+        String(field || '')
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '_')
+            .replace(/^_+|_+$/g, '');
+
+
+    if (
+        [
+            'uid',
+            'user_id',
+            'userid',
+            'role_id',
+            'player_id',
+            'account_id',
+            'game_id'
+        ].includes(normalized)
+    ) {
+        return 'user_id';
+    }
+
+
+    if (
+        [
+            'server',
+            'server_id',
+            'zone',
+            'zone_id',
+            'region',
+            'region_id',
+            'world',
+            'world_id'
+        ].includes(normalized)
+    ) {
+        return 'server';
+    }
+
+
+    return normalized || 'player_field';
+}
+
+loadMooGoldFieldsCreate?.addEventListener(
+    'click',
+    async function () {
+
+        const productId =
+            createMooGoldProductId.value.trim();
+
+
+        if (!productId) {
+
+            if (window.Swal) {
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Product ID Kosong',
+                    text:
+                        'Masukkan Product ID MooGold terlebih dahulu.'
+                });
+
+            } else {
+
+                alert(
+                    'Masukkan Product ID MooGold terlebih dahulu.'
+                );
+
+            }
+
+            return;
+        }
+
+
+        const originalHtml =
+            this.innerHTML;
+
+        this.disabled = true;
+
+        this.innerHTML = `
+            <span
+                class="spinner-border spinner-border-sm me-1"
+            ></span>
+            Mengambil Field...
+        `;
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `/api/v1/admin/moogold/product/${productId}`,
+                    {
+                        headers: {
+                            Accept:
+                                'application/json',
+                            'X-Requested-With':
+                                'XMLHttpRequest'
+                        },
+                        credentials:
+                            'same-origin'
+                    }
+                );
+
+
+            const data =
+                await response.json();
+
+
+            if (
+                !response.ok ||
+                !data.success
+            ) {
+
+                throw new Error(
+                    data.message ||
+                    'Gagal mengambil product MooGold.'
+                );
+
+            }
+
+
+            const fields =
+                data?.data?.fields ?? [];
+
+
+            playerFieldsCreate.innerHTML = '';
+
+
+            fields.forEach(
+                function (moogoldField, index) {
+
+                    const originalField =
+                        String(
+                            moogoldField || ''
+                        ).trim();
+
+                    if (!originalField) {
+                        return;
+                    }
+
+
+                    const internalName =
+                        normalizeMooGoldCreateField(
+                            originalField
+                        );
+
+
+                    const card =
+                        document.createElement(
+                            'div'
+                        );
+
+                    card.className =
+                        'card mb-3 player-field';
+
+
+                    card.innerHTML = `
+                        <div class="card-body">
+
+                            <div class="row g-3">
+
+                                <div class="col-md-3">
+                                    <label class="form-label">
+                                        Nama Field
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        name="player_fields[${index}][name]"
+                                        value="${internalName}"
+                                    >
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label class="form-label">
+                                        Label
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        name="player_fields[${index}][label]"
+                                        value="${originalField}"
+                                    >
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label class="form-label">
+                                        Placeholder
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        name="player_fields[${index}][placeholder]"
+                                        value="Masukkan ${originalField}"
+                                    >
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label class="form-label">
+                                        Options
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        name="player_fields[${index}][options]"
+                                        value=""
+                                        placeholder="Kosongkan jika tidak ada"
+                                    >
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label class="form-label">
+                                        Tipe
+                                    </label>
+
+                                    <select
+                                        class="form-select"
+                                        name="player_fields[${index}][type]"
+                                    >
+                                        <option value="text" selected>
+                                            Text
+                                        </option>
+
+                                        <option value="number">
+                                            Number
+                                        </option>
+
+                                        <option value="email">
+                                            Email
+                                        </option>
+
+                                        <option value="select">
+                                            Select
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label class="form-label">
+                                        Source
+                                    </label>
+
+                                    <select
+                                        class="form-select"
+                                        name="player_fields[${index}][source]"
+                                    >
+                                        <option value="manual" selected>
+                                            Manual
+                                        </option>
+
+                                        <option value="moogold_server_list">
+                                            MooGold Server List
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-1 d-flex align-items-end">
+                                    <button
+                                        type="button"
+                                        class="btn btn-danger remove-field"
+                                    >
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </div>
+
+                            </div>
+
+                            <div class="form-check mt-3">
+
+                                <input
+                                    type="checkbox"
+                                    class="form-check-input"
+                                    name="player_fields[${index}][required]"
+                                    value="1"
+                                    checked
+                                >
+
+                                <label class="form-check-label">
+                                    Wajib Diisi
+                                </label>
+
+                            </div>
+
+                            <input
+                                type="hidden"
+                                name="player_fields[${index}][moogold_field]"
+                                value="${originalField}"
+                            >
+
+                        </div>
+                    `;
+
+
+                    playerFieldsCreate.appendChild(
+                        card
+                    );
+
+                }
+            );
+
+
+            fieldIndexCreate =
+                fields.length;
+
+
+            if (window.Swal) {
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Field Berhasil Diambil',
+                    text:
+                        `${fields.length} field ditemukan.`,
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+
+            }
+
+
+        } catch (error) {
+
+            console.error(
+                '[MooGold Fields Create]',
+                error
+            );
+
+
+            if (window.Swal) {
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal',
+                    text:
+                        error.message ||
+                        'Gagal mengambil field MooGold.'
+                });
+
+            } else {
+
+                alert(
+                    error.message ||
+                    'Gagal mengambil field MooGold.'
+                );
+
+            }
+
+
+        } finally {
+
+            this.disabled = false;
+
+            this.innerHTML =
+                originalHtml;
+
+        }
+
+    }
+);
 
 
 function addPlayerFieldCreate(){

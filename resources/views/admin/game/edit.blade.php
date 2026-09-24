@@ -285,6 +285,21 @@ Field Input Player
 
 </h6>
 
+<div class="mb-3">
+    <button
+        type="button"
+        class="btn btn-outline-success btn-sm"
+        id="loadMooGoldFields{{ $game->id }}"
+    >
+        <i class="fa-solid fa-download me-1"></i>
+        Ambil Field dari MooGold
+    </button>
+
+    <small class="text-muted d-block mt-1">
+        Field akan diambil dari Product ID MooGold pada item sumber.
+    </small>
+</div>
+
 <div id="playerFields{{ $game->id }}">
 
 @php
@@ -697,6 +712,480 @@ const moogoldServerName{{ $game->id }} =
         'moogoldServerName{{ $game->id }}'
     );
 
+const loadMooGoldFields{{ $game->id }} =
+    document.getElementById(
+        'loadMooGoldFields{{ $game->id }}'
+    );
+
+const playerFieldsContainer{{ $game->id }} =
+    document.getElementById(
+        'playerFields{{ $game->id }}'
+    );
+
+/*
+|--------------------------------------------------------------------------
+| MOO GOLD PLAYER FIELDS
+|--------------------------------------------------------------------------
+*/
+
+function normalizeMooGoldFieldName(field) {
+
+    const normalized =
+        String(field || '')
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '_')
+            .replace(/^_+|_+$/g, '');
+
+    /*
+    |--------------------------------------------------------------------------
+    | USER ID ALIASES
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        [
+            'uid',
+            'user_id',
+            'userid',
+            'role_id',
+            'player_id',
+            'account_id',
+            'game_id'
+        ].includes(normalized)
+    ) {
+        return 'user_id';
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | SERVER ALIASES
+    |--------------------------------------------------------------------------
+    */
+
+    if (
+        [
+            'server',
+            'server_id',
+            'zone',
+            'zone_id',
+            'region',
+            'region_id',
+            'world',
+            'world_id'
+        ].includes(normalized)
+    ) {
+        return 'server';
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | GENERIC FIELD
+    |--------------------------------------------------------------------------
+    */
+
+    return normalized || 'player_field';
+}
+
+function getMooGoldFieldType(field) {
+
+    const normalized =
+        String(field || '')
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '_');
+
+    if (
+        normalized === 'server' ||
+        normalized === 'server_id' ||
+        normalized === 'zone' ||
+        normalized === 'zone_id'
+    ) {
+        return 'text';
+    }
+
+    return 'text';
+}
+
+function renderMooGoldFields{{ $game->id }}(fields) {
+
+    playerFieldsContainer{{ $game->id }}.innerHTML = '';
+
+    if (!Array.isArray(fields) || fields.length === 0) {
+
+        playerFieldsContainer{{ $game->id }}.innerHTML = `
+            <div class="alert alert-warning">
+                <i class="fa-solid fa-triangle-exclamation me-1"></i>
+                MooGold tidak mengembalikan field player untuk product ini.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    fields.forEach(function (moogoldField, index) {
+
+        const originalField =
+            String(moogoldField || '').trim();
+
+        if (!originalField) {
+            return;
+        }
+
+
+        const internalName =
+            normalizeMooGoldFieldName(originalField);
+
+        const type =
+            getMooGoldFieldType(originalField);
+
+        const placeholder =
+            `Masukkan ${originalField}`;
+
+
+        const wrapper =
+            document.createElement('div');
+
+        wrapper.className =
+            'card mb-3 player-field';
+
+
+        wrapper.innerHTML = `
+            <div class="card-body">
+
+                <div class="row g-3">
+
+                    <div class="col-12 col-md-2">
+
+                        <label class="form-label">
+                            Nama Field
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="player_fields[${index}][name]"
+                            value="${internalName}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-12 col-md-2">
+
+                        <label class="form-label">
+                            Label
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="player_fields[${index}][label]"
+                            value="${originalField}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-12 col-md-2">
+
+                        <label class="form-label">
+                            Placeholder
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="player_fields[${index}][placeholder]"
+                            value="${placeholder}"
+                        >
+
+                    </div>
+
+
+                    <div class="col-12 col-md-2">
+
+                        <label class="form-label">
+                            Options
+                        </label>
+
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="player_fields[${index}][options]"
+                            value=""
+                            placeholder="Kosongkan jika tidak ada"
+                        >
+
+                    </div>
+
+
+                    <div class="col-12 col-md-2">
+
+                        <label class="form-label">
+                            Tipe
+                        </label>
+
+                        <select
+                            class="form-select"
+                            name="player_fields[${index}][type]"
+                        >
+                            <option
+                                value="text"
+                                ${type === 'text' ? 'selected' : ''}
+                            >
+                                Text
+                            </option>
+
+                            <option value="number">
+                                Number
+                            </option>
+
+                            <option value="email">
+                                Email
+                            </option>
+
+                            <option value="select">
+                                Select
+                            </option>
+                        </select>
+
+                    </div>
+
+
+                    <div class="col-12 col-md-1">
+
+                        <label class="form-label">
+                            Source
+                        </label>
+
+                        <select
+                            class="form-select"
+                            name="player_fields[${index}][source]"
+                        >
+                            <option value="manual" selected>
+                                Manual
+                            </option>
+
+                            <option value="moogold_server_list">
+                                MooGold Server List
+                            </option>
+                        </select>
+
+                    </div>
+
+
+                    <div class="col-12 col-md-1 d-flex align-items-end">
+
+                        <button
+                            type="button"
+                            class="btn btn-danger remove-field"
+                        >
+                            <i class="fa fa-trash"></i>
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-check mt-3">
+
+                    <input
+                        type="checkbox"
+                        class="form-check-input"
+                        name="player_fields[${index}][required]"
+                        value="1"
+                        checked
+                    >
+
+                    <label class="form-check-label">
+                        Wajib Diisi
+                    </label>
+
+                </div>
+
+
+                <input
+                    type="hidden"
+                    name="player_fields[${index}][moogold_field]"
+                    value="${originalField}"
+                >
+
+            </div>
+        `;
+
+
+        playerFieldsContainer{{ $game->id }}
+            .appendChild(wrapper);
+
+    });
+
+
+    fieldIndex{{ $game->id }} =
+        fields.length;
+}
+
+
+if (loadMooGoldFields{{ $game->id }}) {
+
+    loadMooGoldFields{{ $game->id }}
+        .addEventListener(
+            'click',
+            async function () {
+
+                const selectedOption =
+                    moogoldItem{{ $game->id }}
+                        ?.options[
+                            moogoldItem{{ $game->id }}
+                                .selectedIndex
+                        ];
+
+                const productId =
+                    selectedOption
+                        ?.dataset
+                        ?.productId;
+
+
+                if (!productId) {
+
+                    if (window.Swal) {
+
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Pilih Item',
+                            text:
+                                'Pilih item MooGold sumber terlebih dahulu.'
+                        });
+
+                    } else {
+
+                        alert(
+                            'Pilih item MooGold sumber terlebih dahulu.'
+                        );
+
+                    }
+
+                    return;
+                }
+
+
+                const originalHtml =
+                    this.innerHTML;
+
+                this.disabled = true;
+
+                this.innerHTML = `
+                    <span
+                        class="spinner-border spinner-border-sm me-1"
+                    ></span>
+                    Mengambil Field...
+                `;
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            `/api/v1/admin/moogold/product/${productId}`,
+                            {
+                                method: 'GET',
+                                headers: {
+                                    'Accept':
+                                        'application/json',
+                                    'X-Requested-With':
+                                        'XMLHttpRequest'
+                                },
+                                credentials:
+                                    'same-origin'
+                            }
+                        );
+
+
+                    const data =
+                        await response.json();
+
+
+                    if (
+                        !response.ok ||
+                        !data.success
+                    ) {
+
+                        throw new Error(
+                            data.message ||
+                            'Gagal mengambil data product MooGold.'
+                        );
+
+                    }
+
+
+                    const fields =
+                        data?.data?.fields ?? [];
+
+
+                    renderMooGoldFields{{ $game->id }}(
+                        fields
+                    );
+
+
+                    if (window.Swal) {
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Field Berhasil Diambil',
+                            text:
+                                `${fields.length} field ditemukan dari MooGold.`,
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+
+                    }
+
+
+                } catch (error) {
+
+                    console.error(
+                        '[MooGold Fields] Error:',
+                        error
+                    );
+
+
+                    if (window.Swal) {
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal Mengambil Field',
+                            text:
+                                error.message ||
+                                'Terjadi kesalahan.'
+                        });
+
+                    } else {
+
+                        alert(
+                            error.message ||
+                            'Gagal mengambil field MooGold.'
+                        );
+
+                    }
+
+
+                } finally {
+
+                    this.disabled = false;
+
+                    this.innerHTML =
+                        originalHtml;
+
+                }
+
+            }
+        );
+
+}
 
 /*
 |--------------------------------------------------------------------------

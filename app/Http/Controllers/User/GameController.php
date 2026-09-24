@@ -367,6 +367,12 @@ public function validatePlayer(
             'string',
             'max:100',
         ],
+
+        'server' => [
+            'nullable',
+            'string',
+            'max:100',
+        ],
     ]);
 
     /*
@@ -397,16 +403,9 @@ public function validatePlayer(
         ], 404);
     }
 
-    $serverId = trim(
-        (string) ($game->moogold_server_id ?? '')
+    $zoneId = trim(
+        (string) ($validated['server'] ?? '')
     );
-
-    if ($serverId === '') {
-        return response()->json([
-            'success' => false,
-            'message' => 'Server MooGold belum dikonfigurasi untuk game ini.',
-        ], 422);
-    }
     /*
     |--------------------------------------------------------------------------
     | MOO GOLD MAPPING
@@ -465,12 +464,12 @@ $productId =
     */
 
     $playerData = [
-        'User ID' =>
-            (string) $validated['user_id'],
-
-        'Server ID' =>
-            $serverId,
+        'User ID' => (string) $validated['user_id'],
     ];
+
+    if ($zoneId !== '') {
+        $playerData['Server ID'] = $zoneId;
+    }
 
     try {
 
@@ -509,8 +508,8 @@ $productId =
                 'user_id' =>
                     $validated['user_id'],
 
-                'server_id' =>
-                    $serverId,
+                'zone_id' =>
+                    $zoneId,
 
                 'response' =>
                     $result,
