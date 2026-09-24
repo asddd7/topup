@@ -70,6 +70,8 @@ class GameController extends BaseAdminController
             'moogold_server_name' => 'nullable|string|max:255',
 
             'player_fields.*.type' => 'nullable|in:text,number,email,select,server',
+            'player_fields.*.source' => 'nullable|in:manual,moogold_server_list',
+
             'category_ids' => ['nullable', 'array'],
             'category_ids.*' => ['integer', 'exists:item_categories,id'],
 
@@ -99,19 +101,19 @@ class GameController extends BaseAdminController
 
                 $playerFields[] = [
 
-                    'name'        => $field['name'] ?? '',
+                    'name'          => $field['name'] ?? '',
 
-                    'label'       => $field['label'] ?? '',
+                    'label'         => $field['label'] ?? '',
 
-                    'placeholder' => $field['placeholder'] ?? '',
+                    'placeholder'   => $field['placeholder'] ?? '',
 
-                    'type'        => $field['type'] ?? 'text',
+                    'type'          => $field['type'] ?? 'text',
 
-                    'source'      => $field['source'] ?? 'manual',
+                    'source'        => $field['source'] ?? 'manual',
 
-                    'options'     => $field['options'] ?? '',
+                    'options'       => $field['options'] ?? '',
 
-                    'required'    => isset($field['required']),
+                    'required'      => isset($field['required']),
 
                     'moogold_field' => $field['moogold_field'] ?? null,
 
@@ -207,6 +209,7 @@ class GameController extends BaseAdminController
             'moogold_server_name' => 'nullable|string|max:255',
 
             'player_fields.*.type' => 'nullable|in:text,number,email,select,server',
+            'player_fields.*.source' => 'nullable|in:manual,moogold_server_list',
 
             'category_ids' => ['nullable', 'array'],
 
@@ -258,23 +261,25 @@ class GameController extends BaseAdminController
 
         }
 
-        $game->update([
+        $playerFields[] = [
 
-            'game_name' => $request->game_name,
+            'name'          => $field['name'] ?? '',
 
-            'publisher' => $request->publisher,
+            'label'         => $field['label'] ?? '',
 
-            'player_fields' => $playerFields,
+            'placeholder'   => $field['placeholder'] ?? '',
 
-            'game_logo' => $logo,
+            'type'          => $field['type'] ?? 'text',
 
-            'moogold_server_id' => $request->moogold_server_id,
+            'source'        => $field['source'] ?? 'manual',
 
-            'moogold_server_name' => $request->moogold_server_name,
+            'options'       => $field['options'] ?? '',
 
-            'is_active' => $request->has('is_active'),
+            'required'      => isset($field['required']),
 
-        ]);
+            'moogold_field' => $field['moogold_field'] ?? null,
+
+        ];
 
         $game->itemCategories()->sync(
             $request->input('category_ids', [])

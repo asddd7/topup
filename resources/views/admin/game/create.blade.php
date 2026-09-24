@@ -297,6 +297,37 @@ const playerFieldsCreate =
         'playerFieldsCreate'
     );
 
+function getMooGoldCreateFieldType(field) {
+
+    const normalized =
+        String(field || '')
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '_');
+
+    if (
+        normalized === 'server' ||
+        normalized === 'server_id'
+    ) {
+        return 'server';
+    }
+
+    if (
+        normalized === 'uid' ||
+        normalized === 'user_id' ||
+        normalized === 'userid' ||
+        normalized === 'role_id' ||
+        normalized === 'player_id' ||
+        normalized === 'account_id'
+    ) {
+        return 'text';
+    }
+
+    return 'text';
+}
+
+const type =
+    getMooGoldCreateFieldType(originalField);
 
 function normalizeMooGoldCreateField(field) {
 
@@ -523,7 +554,10 @@ loadMooGoldFieldsCreate?.addEventListener(
                                         class="form-select"
                                         name="player_fields[${index}][type]"
                                     >
-                                        <option value="text" selected>
+                                        <option
+                                            value="text"
+                                            ${type === 'text' ? 'selected' : ''}
+                                        >
                                             Text
                                         </option>
 
@@ -539,10 +573,13 @@ loadMooGoldFieldsCreate?.addEventListener(
                                             Select
                                         </option>
 
-                                        <option value="server">
+                                        <option
+                                            value="server"
+                                            ${type === 'server' ? 'selected' : ''}
+                                        >
                                             Server
                                         </option>
-                                        
+
                                     </select>
                                 </div>
 
@@ -762,25 +799,31 @@ function addPlayerFieldCreate(){
                                 class="form-select"
                                 name="player_fields[${i}][type]">
 
-                                <option value="text">
-                                    Text
-                                </option>
+                                    <option
+                                        value="text"
+                                        ${type === 'text' ? 'selected' : ''}
+                                    >
+                                        Text
+                                    </option>
 
-                                <option value="number">
-                                    Number
-                                </option>
+                                    <option value="number">
+                                        Number
+                                    </option>
 
-                                <option value="email">
-                                    Email
-                                </option>
+                                    <option value="email">
+                                        Email
+                                    </option>
 
-                                <option value="select">
-                                    Select
-                                </option>
+                                    <option value="select">
+                                        Select
+                                    </option>
 
-                                <option value="server">
-                                    Server
-                                </option>
+                                    <option
+                                        value="server"
+                                        ${type === 'server' ? 'selected' : ''}
+                                    >
+                                        Server
+                                    </option>
 
                             </select>
 

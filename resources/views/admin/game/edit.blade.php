@@ -374,50 +374,77 @@ Pisahkan dengan koma
 </div>
 <div class="col-md-2">
 
-<label>Tipe</label>
+    <label>Tipe</label>
 
-<select
-    class="form-select"
-    name="player_fields[{{ $i }}][type]"
->
-    <option
-        value="text"
-        {{ ($field['type'] ?? '') === 'text' ? 'selected' : '' }}
+    <select
+        class="form-select"
+        name="player_fields[{{ $i }}][type]"
     >
-        Text
-    </option>
 
-    <option
-        value="number"
-        {{ ($field['type'] ?? '') === 'number' ? 'selected' : '' }}
-    >
-        Number
-    </option>
+        <option
+            value="text"
+            {{ ($field['type'] ?? '') === 'text' ? 'selected' : '' }}
+        >
+            Text
+        </option>
 
-    <option
-        value="email"
-        {{ ($field['type'] ?? '') === 'email' ? 'selected' : '' }}
-    >
-        Email
-    </option>
+        <option
+            value="number"
+            {{ ($field['type'] ?? '') === 'number' ? 'selected' : '' }}
+        >
+            Number
+        </option>
 
-    <option
-        value="select"
-        {{ ($field['type'] ?? '') === 'select' ? 'selected' : '' }}
-    >
-        Select
-    </option>
+        <option
+            value="email"
+            {{ ($field['type'] ?? '') === 'email' ? 'selected' : '' }}
+        >
+            Email
+        </option>
 
-    <option
-        value="server"
-        {{ ($field['type'] ?? '') === 'server' ? 'selected' : '' }}
-    >
-        Server
-    </option>
-</select>
+        <option
+            value="select"
+            {{ ($field['type'] ?? '') === 'select' ? 'selected' : '' }}
+        >
+            Select
+        </option>
+
+        <option
+            value="server"
+            {{ ($field['type'] ?? '') === 'server' ? 'selected' : '' }}
+        >
+            Server
+        </option>
+
+    </select>
 
 </div>
+<div class="col-md-2">
 
+    <label>Source</label>
+
+    <select
+        class="form-select"
+        name="player_fields[{{ $i }}][source]"
+    >
+
+        <option
+            value="manual"
+            {{ ($field['source'] ?? 'manual') === 'manual' ? 'selected' : '' }}
+        >
+            Manual
+        </option>
+
+        <option
+            value="moogold_server_list"
+            {{ ($field['source'] ?? '') === 'moogold_server_list' ? 'selected' : '' }}
+        >
+            MooGold Server List
+        </option>
+
+    </select>
+
+</div>
 <div class="col-md-1 d-flex align-items-end">
 
 <button

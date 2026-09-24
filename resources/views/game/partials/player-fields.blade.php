@@ -21,12 +21,6 @@
 
     @php
 
-        /*
-        |--------------------------------------------------------------------------
-        | FIELD NAME
-        |--------------------------------------------------------------------------
-        */
-
         $fieldName = trim(
             (string) ($field['name'] ?? '')
         );
@@ -35,23 +29,11 @@
             continue;
         }
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | MOO GOLD FIELD
-        |--------------------------------------------------------------------------
-        */
-
         $moogoldField = trim(
             (string) ($field['moogold_field'] ?? '')
         );
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | NORMALIZE FIELD NAME
-        |--------------------------------------------------------------------------
-        */
+        $fieldType = $field['type'] ?? 'text';
 
         $fieldNameLower = strtolower(
             preg_replace(
@@ -61,13 +43,6 @@
             )
         );
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | NORMALIZE MOO GOLD FIELD
-        |--------------------------------------------------------------------------
-        */
-
         $moogoldFieldLower = strtolower(
             preg_replace(
                 '/[^a-zA-Z0-9]/',
@@ -75,14 +50,6 @@
                 $moogoldField
             )
         );
-
-        $fieldType = $field['type'] ?? 'text';
-
-        /*
-        |--------------------------------------------------------------------------
-        | USER ID DETECTION
-        |--------------------------------------------------------------------------
-        */
 
         $isUserId =
             in_array(
@@ -116,13 +83,6 @@
                 true
             );
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | SERVER ID DETECTION
-        |--------------------------------------------------------------------------
-        */
-
         $isServerId =
             $fieldType === 'server'
             ||
@@ -149,9 +109,7 @@
 
     <div class="player-field">
 
-        <label
-            for="player_{{ $fieldName }}"
-        >
+        <label for="player_{{ $fieldName }}">
 
             {{ $field['label'] ?? $fieldName }}
 
@@ -162,7 +120,11 @@
         </label>
 
 
-        @if(($field['type'] ?? '') === 'server')
+        {{-- =================================================
+             SERVER
+        ================================================== --}}
+
+        @if($fieldType === 'server')
 
             <div class="input-group">
 
@@ -190,13 +152,13 @@
                 data-moogold-key="{{ $moogoldField }}"
                 data-moogold-field="server-id"
             >
-        
+
 
         {{-- =================================================
              SELECT
         ================================================== --}}
 
-        @if(($field['type'] ?? '') === 'select')
+        @elseif($fieldType === 'select')
 
             <select
                 id="player_{{ $fieldName }}"
@@ -231,7 +193,6 @@
                     Pilih {{ $field['label'] ?? $fieldName }}
                 </option>
 
-
                 @foreach(
                     array_filter(
                         array_map(
@@ -261,7 +222,7 @@
         @else
 
             <input
-                type="{{ $field['type'] ?? 'text' }}"
+                type="{{ $fieldType }}"
                 id="player_{{ $fieldName }}"
                 name="{{ $fieldName }}"
                 class="
@@ -269,7 +230,7 @@
                     {{ $isUserId ? 'moogold-user-id' : '' }}
                     {{ $isServerId ? 'moogold-server-id' : '' }}
                 "
-                data-type="{{ $field['type'] ?? 'text' }}"
+                data-type="{{ $fieldType }}"
                 data-field-name="{{ $fieldName }}"
 
                 @if($moogoldField !== '')
