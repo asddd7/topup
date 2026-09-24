@@ -538,6 +538,11 @@ loadMooGoldFieldsCreate?.addEventListener(
                                         <option value="select">
                                             Select
                                         </option>
+
+                                        <option value="server">
+                                            Server
+                                        </option>
+                                        
                                     </select>
                                 </div>
 
@@ -771,6 +776,10 @@ function addPlayerFieldCreate(){
 
                                 <option value="select">
                                     Select
+                                </option>
+
+                                <option value="server">
+                                    Server
                                 </option>
 
                             </select>

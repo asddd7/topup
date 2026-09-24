@@ -377,29 +377,43 @@ Pisahkan dengan koma
 <label>Tipe</label>
 
 <select
-class="form-select"
-name="player_fields[{{ $i }}][type]">
+    class="form-select"
+    name="player_fields[{{ $i }}][type]"
+>
+    <option
+        value="text"
+        {{ ($field['type'] ?? '') === 'text' ? 'selected' : '' }}
+    >
+        Text
+    </option>
 
-<option value="text"
-{{ ($field['type'] ?? '')=='text'?'selected':'' }}>
-Text
-</option>
+    <option
+        value="number"
+        {{ ($field['type'] ?? '') === 'number' ? 'selected' : '' }}
+    >
+        Number
+    </option>
 
-<option value="number"
-{{ ($field['type'] ?? '')=='number'?'selected':'' }}>
-Number
-</option>
+    <option
+        value="email"
+        {{ ($field['type'] ?? '') === 'email' ? 'selected' : '' }}
+    >
+        Email
+    </option>
 
-<option value="email"
-{{ ($field['type'] ?? '')=='email'?'selected':'' }}>
-Email
-</option>
+    <option
+        value="select"
+        {{ ($field['type'] ?? '') === 'select' ? 'selected' : '' }}
+    >
+        Select
+    </option>
 
-<option value="select"
-{{ ($field['type'] ?? '')=='select'?'selected':'' }}>
-Select
-</option>
-
+    <option
+        value="server"
+        {{ ($field['type'] ?? '') === 'server' ? 'selected' : '' }}
+    >
+        Server
+    </option>
 </select>
 
 </div>
@@ -432,6 +446,12 @@ value="1"
 Wajib Diisi
 
 </label>
+
+<input
+    type="hidden"
+    name="player_fields[{{ $i }}][moogold_field]"
+    value="{{ $field['moogold_field'] ?? '' }}"
+>
 
 </div>
 
@@ -635,6 +655,10 @@ name="player_fields[${i}][type]">
 
 <option value="select">Select</option>
 
+<option value="server">
+    Server
+</option>
+
 </select>
 
 </div>
@@ -799,15 +823,14 @@ function getMooGoldFieldType(field) {
 
     if (
         normalized === 'server' ||
-        normalized === 'server_id' ||
-        normalized === 'zone' ||
-        normalized === 'zone_id'
+        normalized === 'server_id'
     ) {
-        return 'text';
+        return 'server';
     }
 
     return 'text';
 }
+
 
 function renderMooGoldFields{{ $game->id }}(fields) {
 
@@ -940,16 +963,32 @@ function renderMooGoldFields{{ $game->id }}(fields) {
                                 Text
                             </option>
 
-                            <option value="number">
+                            <option
+                                value="number"
+                                ${type === 'number' ? 'selected' : ''}
+                            >
                                 Number
                             </option>
 
-                            <option value="email">
+                            <option
+                                value="email"
+                                ${type === 'email' ? 'selected' : ''}
+                            >
                                 Email
                             </option>
 
-                            <option value="select">
+                            <option
+                                value="select"
+                                ${type === 'select' ? 'selected' : ''}
+                            >
                                 Select
+                            </option>
+
+                            <option
+                                value="server"
+                                ${type === 'server' ? 'selected' : ''}
+                            >
+                                Server
                             </option>
                         </select>
 

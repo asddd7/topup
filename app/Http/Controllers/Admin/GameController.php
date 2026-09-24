@@ -69,7 +69,7 @@ class GameController extends BaseAdminController
             'moogold_server_id' => 'nullable|string|max:255',
             'moogold_server_name' => 'nullable|string|max:255',
 
-            'player_fields.*.type' => 'nullable|in:text,number,email,select',
+            'player_fields.*.type' => 'nullable|in:text,number,email,select,server',
             'category_ids' => ['nullable', 'array'],
             'category_ids.*' => ['integer', 'exists:item_categories,id'],
 
@@ -107,11 +107,13 @@ class GameController extends BaseAdminController
 
                     'type'        => $field['type'] ?? 'text',
 
-                    'source'      => 'manual',
+                    'source'      => $field['source'] ?? 'manual',
 
                     'options'     => $field['options'] ?? '',
 
-                    'required'    => isset($field['required'])
+                    'required'    => isset($field['required']),
+
+                    'moogold_field' => $field['moogold_field'] ?? null,
 
                 ];
 
@@ -204,7 +206,7 @@ class GameController extends BaseAdminController
 
             'moogold_server_name' => 'nullable|string|max:255',
 
-            'player_fields.*.type' => 'nullable|in:text,number,email,select',
+            'player_fields.*.type' => 'nullable|in:text,number,email,select,server',
 
             'category_ids' => ['nullable', 'array'],
 
@@ -234,23 +236,25 @@ class GameController extends BaseAdminController
 
             }
 
-            $playerFields[]=[
+                $playerFields[] = [
 
-                'name'        => $field['name'] ?? '',
+                    'name'          => $field['name'] ?? '',
 
-                'label'       => $field['label'] ?? '',
+                    'label'         => $field['label'] ?? '',
 
-                'placeholder' => $field['placeholder'] ?? '',
+                    'placeholder'   => $field['placeholder'] ?? '',
 
-                'type'        => $field['type'] ?? 'text',
-            
-                'source'      => 'manual',
+                    'type'          => $field['type'] ?? 'text',
 
-                'options'     => $field['options'] ?? '',
+                    'source'        => $field['source'] ?? 'manual',
 
-                'required'    => isset($field['required'])
+                    'options'       => $field['options'] ?? '',
 
-            ];
+                    'required'      => isset($field['required']),
+
+                    'moogold_field' => $field['moogold_field'] ?? null,
+
+                ];
 
         }
 

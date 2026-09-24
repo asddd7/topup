@@ -76,6 +76,7 @@
             )
         );
 
+        $fieldType = $field['type'] ?? 'text';
 
         /*
         |--------------------------------------------------------------------------
@@ -123,17 +124,13 @@
         */
 
         $isServerId =
+            $fieldType === 'server'
+            ||
             in_array(
                 $fieldNameLower,
                 [
                     'server',
                     'serverid',
-                    'zone',
-                    'zoneid',
-                    'region',
-                    'regionid',
-                    'world',
-                    'worldid',
                 ],
                 true
             )
@@ -143,12 +140,6 @@
                 [
                     'server',
                     'serverid',
-                    'zone',
-                    'zoneid',
-                    'region',
-                    'regionid',
-                    'world',
-                    'worldid',
                 ],
                 true
             );
@@ -170,6 +161,36 @@
 
         </label>
 
+
+        @if(($field['type'] ?? '') === 'server')
+
+            <div class="input-group">
+
+                <input
+                    type="text"
+                    class="form-control"
+                    value="{{ $game->moogold_server_name ?? 'Server belum dikonfigurasi' }}"
+                    readonly
+                >
+
+                <span class="input-group-text">
+                    <i class="fa-solid fa-lock"></i>
+                </span>
+
+            </div>
+
+            <input
+                type="hidden"
+                name="{{ $fieldName }}"
+                value="{{ $game->moogold_server_id ?? '' }}"
+                class="player-input moogold-server-id"
+                data-type="server"
+                data-field-name="{{ $fieldName }}"
+                data-moogold-source="moogold"
+                data-moogold-key="{{ $moogoldField }}"
+                data-moogold-field="server-id"
+            >
+        
 
         {{-- =================================================
              SELECT
