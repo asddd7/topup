@@ -344,23 +344,94 @@
 
 <script>
 
-document
-    .getElementById('pay-button')
-    .addEventListener(
-        'click',
-        function () {
+document.addEventListener('DOMContentLoaded', function () {
 
-            const button =
-                this;
+    const button =
+        document.getElementById('pay-button');
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | RESULT URL
+    |--------------------------------------------------------------------------
+    */
+
+    const resultUrl =
+        @json(
+            route(
+                'midtrans.result',
+                [
+                    'order' => $order->id,
+                ]
+            )
+        );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PAYMENT BUTTON
+    |--------------------------------------------------------------------------
+    */
+
+    if (!button) {
+        return;
+    }
+
+
+    button.addEventListener('click', function () {
+
+        /*
+        |--------------------------------------------------------------------------
+        | CEGAH DOUBLE CLICK
+        |--------------------------------------------------------------------------
+        */
+
+        if (button.disabled) {
+            return;
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CEK MIDTRANS SNAP
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            typeof window.snap === 'undefined' ||
+            typeof window.snap.pay !== 'function'
+        ) {
 
             button.disabled =
-                true;
-
+                false;
 
             button.innerHTML =
-                '<i class="fa-solid fa-spinner fa-spin me-1"></i> Membuka pembayaran...';
+                '<i class="fa-solid fa-triangle-exclamation me-1"></i> Pembayaran tidak tersedia';
 
+            return;
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | LOADING
+        |--------------------------------------------------------------------------
+        */
+
+        button.disabled =
+            true;
+
+        button.innerHTML =
+            '<i class="fa-solid fa-spinner fa-spin me-1"></i> Membuka pembayaran...';
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | OPEN MIDTRANS SNAP
+        |--------------------------------------------------------------------------
+        */
+
+        try {
 
             window.snap.pay(
                 @json($transaction->snap_token),
@@ -368,16 +439,13 @@ document
 
                     /*
                     |--------------------------------------------------------------------------
-                    | FILTER PAYMENT
+                    | PAYMENT FILTER
                     |--------------------------------------------------------------------------
                     |
-                    | Ini menjadi lapisan tambahan.
+                    | Backend sudah membuat Snap token dengan payment type
+                    | yang dipilih customer.
                     |
-                    | Backend sudah membuat token dengan:
-                    |
-                    | enabled_payments = [paymentType]
-                    |
-                    | Di frontend kita filter lagi.
+                    | Filter ini menjadi lapisan tambahan di frontend.
                     |
                     */
 
@@ -386,53 +454,53 @@ document
                     ],
 
 
+                    /*
+                    |--------------------------------------------------------------------------
+                    | SUCCESS
+                    |--------------------------------------------------------------------------
+                    */
+
                     onSuccess: function () {
 
                         window.location.href =
-                            @json(
-                                route(
-                                    'midtrans.result',
-                                    [
-                                        'order' =>
-                                            $order->id,
-                                    ]
-                                )
-                            );
+                            resultUrl;
 
                     },
 
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | PENDING
+                    |--------------------------------------------------------------------------
+                    */
 
                     onPending: function () {
 
                         window.location.href =
-                            @json(
-                                route(
-                                    'midtrans.result',
-                                    [
-                                        'order' =>
-                                            $order->id,
-                                    ]
-                                )
-                            );
+                            resultUrl;
 
                     },
 
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | ERROR
+                    |--------------------------------------------------------------------------
+                    */
 
                     onError: function () {
 
                         window.location.href =
-                            @json(
-                                route(
-                                    'midtrans.result',
-                                    [
-                                        'order' =>
-                                            $order->id,
-                                    ]
-                                )
-                            );
+                            resultUrl;
 
                     },
 
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | CLOSE
+                    |--------------------------------------------------------------------------
+                    */
 
                     onClose: function () {
 
@@ -441,13 +509,13 @@ document
                         | Customer menutup Snap.
                         |--------------------------------------------------------------------------
                         |
+                        | Jangan ubah status order menjadi Cancelled.
                         | Order tetap Waiting Payment.
                         |
                         */
 
                         button.disabled =
                             false;
-
 
                         button.innerHTML =
                             '<i class="fa-solid fa-lock me-1"></i> Bayar Rp {{ number_format($order->total_price, 0, ',', '.') }} dengan {{ $paymentName }}';
@@ -457,8 +525,25 @@ document
                 }
             );
 
+        } catch (error) {
+
+            console.error(
+                'Midtrans Snap error:',
+                error
+            );
+
+
+            button.disabled =
+                false;
+
+            button.innerHTML =
+                '<i class="fa-solid fa-lock me-1"></i> Bayar Rp {{ number_format($order->total_price, 0, ',', '.') }} dengan {{ $paymentName }}';
+
         }
-    );
+
+    });
+
+});
 
 </script>
 
