@@ -555,12 +555,16 @@ async function validatePlayerForCheckout(
     itemId,
     userId,
     serverId
-)
-{
+) {
+
     renderPlayerValidation(
         'loading'
     );
 
+
+    /* -----------------------------------------------------
+       CSRF
+    ----------------------------------------------------- */
 
     const csrf =
         document.querySelector(
@@ -575,32 +579,116 @@ async function validatePlayerForCheckout(
             'CSRF token tidak ditemukan.'
         );
 
-
         return {
             status: 'error',
             message: 'CSRF token tidak ditemukan.'
         };
-
     }
 
 
-    if (
-        !gameConfig.validatePlayerUrl
-    ) {
+    /* -----------------------------------------------------
+       VALIDATION URL
+    ----------------------------------------------------- */
+
+    if (!gameConfig.validatePlayerUrl) {
 
         renderPlayerValidation(
             'error',
             'URL validasi player tidak tersedia.'
         );
 
-
         return {
             status: 'error',
             message:
                 'URL validasi player tidak tersedia.'
         };
+    }
+
+
+    /* -----------------------------------------------------
+       PLAYER DATA
+    ----------------------------------------------------- */
+
+    const playerData = {};
+
+
+    document
+        .querySelectorAll(
+            '#checkoutForm .player-input[data-field-name]'
+        )
+        .forEach(function(input) {
+
+            const fieldName =
+                input.dataset.fieldName;
+
+            if (!fieldName) {
+                return;
+            }
+
+            playerData[fieldName] =
+                input.value?.trim() || '';
+
+        });
+
+
+    /*
+     * Pastikan field MooGold utama tersedia.
+     *
+     * Ini penting karena nama field di database/game
+     * bisa berbeda, tetapi backend kita membutuhkan
+     * data player berdasarkan moogold_field.
+     */
+
+    if (userId) {
+
+        const userIdInput =
+            document.querySelector(
+                '[data-moogold-field="user-id"]'
+            );
+
+        if (
+            userIdInput &&
+            userIdInput.dataset.fieldName
+        ) {
+
+            playerData[
+                userIdInput.dataset.fieldName
+            ] = userId;
+
+        }
 
     }
+
+
+    if (serverId) {
+
+        const serverIdInput =
+            document.querySelector(
+                '[data-moogold-field="server-id"]'
+            );
+
+        if (
+            serverIdInput &&
+            serverIdInput.dataset.fieldName
+        ) {
+
+            playerData[
+                serverIdInput.dataset.fieldName
+            ] = serverId;
+
+        }
+
+    }
+
+
+    console.log(
+        '=== PLAYER VALIDATION REQUEST ===',
+        {
+            game_id: gameConfig.gameId,
+            item_id: itemId,
+            player_data: playerData
+        }
+    );
 
 
     try {
@@ -620,7 +708,10 @@ async function validatePlayerForCheckout(
                             'application/json',
 
                         'X-CSRF-TOKEN':
-                            csrf.content
+                            csrf.content,
+
+                        'X-Requested-With':
+                            'XMLHttpRequest'
 
                     },
 
@@ -632,31 +723,76 @@ async function validatePlayerForCheckout(
                         item_id:
                             itemId,
 
-                        user_id:
-                            userId
+                        player_data:
+                            playerData
 
                     })
                 }
             );
 
 
-        let data = {};
+        /* -------------------------------------------------
+           BACA RESPONSE SEBAGAI TEXT DAHULU
+        ------------------------------------------------- */
+
+        const responseText =
+            await response.text();
+
+
+        console.log(
+            '=== PLAYER VALIDATION RESPONSE ===',
+            {
+                status: response.status,
+                ok: response.ok,
+                contentType:
+                    response.headers.get(
+                        'content-type'
+                    ),
+                body:
+                    responseText
+            }
+        );
+
+
+        /* -------------------------------------------------
+           RESPONSE BUKAN JSON
+        ------------------------------------------------- */
+
+        let data;
 
         try {
 
             data =
-                await response.json();
+                JSON.parse(
+                    responseText
+                );
 
         } catch (jsonError) {
 
-            data = {};
+            console.error(
+                'Player validation response bukan JSON:',
+                responseText
+            );
+
+
+            renderPlayerValidation(
+                'error',
+                `Server mengembalikan response tidak valid (HTTP ${response.status}).`
+            );
+
+
+            return {
+                status: 'error',
+                message:
+                    `Server mengembalikan response tidak valid (HTTP ${response.status}).`
+            };
 
         }
 
 
-        /* =================================================
-           VALIDATION UNAVAILABLE
-        ================================================= */
+        /* -------------------------------------------------
+           VALIDATION TIDAK TERSEDIA
+        ------------------------------------------------- */
 
         if (
             response.ok &&
@@ -673,8 +809,7 @@ async function validatePlayerForCheckout(
                 validationAvailable: false,
 
                 nickname:
-                    data.data.nickname ||
-                    null,
+                    data.data.nickname || null,
 
                 userId:
                     userId,
@@ -682,10 +817,14 @@ async function validatePlayerForCheckout(
                 serverId:
                     serverId,
 
+                playerData:
+                    playerData,
+
                 itemId:
                     itemId,
 
-                requiresValidation: true
+                requiresValidation:
+                    true
 
             };
 
@@ -698,25 +837,19 @@ async function validatePlayerForCheckout(
 
 
             return {
-
                 status: 'unavailable',
 
                 message:
                     data.message ||
-                    'Validasi player tidak tersedia untuk produk ini.',
-
-                nickname:
-                    data.data.nickname ||
-                    null
-
+                    'Validasi player tidak tersedia untuk produk ini.'
             };
 
         }
 
 
-        /* =================================================
+        /* -------------------------------------------------
            INVALID
-        ================================================= */
+        ------------------------------------------------- */
 
         if (
             !response.ok ||
@@ -726,7 +859,7 @@ async function validatePlayerForCheckout(
 
             const message =
                 data.message ||
-                'User ID atau Server ID tidak valid.';
+                'Data player tidak valid.';
 
 
             playerValidation = {
@@ -737,7 +870,8 @@ async function validatePlayerForCheckout(
 
                 validationAvailable: true,
 
-                nickname: null,
+                nickname:
+                    data.data?.nickname || null,
 
                 userId:
                     userId,
@@ -745,10 +879,14 @@ async function validatePlayerForCheckout(
                 serverId:
                     serverId,
 
+                playerData:
+                    playerData,
+
                 itemId:
                     itemId,
 
-                requiresValidation: true
+                requiresValidation:
+                    true
 
             };
 
@@ -760,25 +898,17 @@ async function validatePlayerForCheckout(
 
 
             return {
-
                 status: 'invalid',
-
                 message:
                     message
-
             };
 
         }
 
 
-        /* =================================================
-           VALID
-        ================================================= */
-
-        const nickname =
-            data.data.nickname ||
-            'Player ditemukan';
-
+        /* -------------------------------------------------
+           SUCCESS
+        ------------------------------------------------- */
 
         playerValidation = {
 
@@ -789,7 +919,7 @@ async function validatePlayerForCheckout(
             validationAvailable: true,
 
             nickname:
-                nickname,
+                data.data.nickname || null,
 
             userId:
                 userId,
@@ -797,42 +927,33 @@ async function validatePlayerForCheckout(
             serverId:
                 serverId,
 
+            playerData:
+                playerData,
+
             itemId:
                 itemId,
 
-            requiresValidation: true
+            requiresValidation:
+                true
 
         };
-
-
-        const nicknameInput =
-            document.getElementById(
-                'player_nickname'
-            );
-
-
-        if (nicknameInput) {
-
-            nicknameInput.value =
-                nickname;
-
-        }
 
 
         renderPlayerValidation(
             'success',
-            nickname
+            data.data.nickname
+                ? `Nickname: ${data.data.nickname}`
+                : 'Data player berhasil diverifikasi.'
         );
 
 
         return {
-
             status: 'valid',
 
             nickname:
-                nickname
-
+                data.data.nickname || null
         };
+
 
     } catch (error) {
 
@@ -854,12 +975,9 @@ async function validatePlayerForCheckout(
 
 
         return {
-
             status: 'error',
-
             message:
                 message
-
         };
 
     }
@@ -2633,6 +2751,30 @@ document
     });
 
 
+    function collectPlayerData() {
+
+    const playerData = {};
+
+    document
+        .querySelectorAll(
+            '#checkoutForm .player-input[data-field-name]'
+        )
+        .forEach(function(input) {
+
+            const fieldName =
+                input.dataset.fieldName;
+
+            if (!fieldName) {
+                return;
+            }
+
+            playerData[fieldName] =
+                input.value?.trim() || '';
+
+        });
+
+    return playerData;
+}
 /* =========================================================
    INITIAL PAYMENT
 ========================================================= */

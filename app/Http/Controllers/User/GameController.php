@@ -348,7 +348,6 @@ public function validatePlayer(
     Request $request,
     MooGoldService $mooGold
 ): JsonResponse {
-
     $validated = $request->validate([
         'game_id' => [
             'required',
@@ -362,24 +361,17 @@ public function validatePlayer(
             'exists:items,id',
         ],
 
-        'user_id' => [
+        'player_data' => [
             'required',
-            'string',
-            'max:100',
+            'array',
         ],
 
-        'server' => [
+        'player_data.*' => [
             'nullable',
             'string',
             'max:100',
         ],
     ]);
-
-    /*
-    |--------------------------------------------------------------------------
-    | ITEM
-    |--------------------------------------------------------------------------
-    */
 
     $item = Item::with('game')
         ->where('id', $validated['item_id'])
@@ -403,18 +395,12 @@ public function validatePlayer(
         ], 404);
     }
 
-    $zoneId = trim(
-        (string) ($validated['server'] ?? '')
-    );
     /*
     |--------------------------------------------------------------------------
-    | MOO GOLD MAPPING
+    | Produk tidak menggunakan MooGold
     |--------------------------------------------------------------------------
     */
-
-    if (
-        empty($item->moogold_product_id)
-    ) {
+    if (empty($item->moogold_product_id)) {
         return response()->json([
             'success' => true,
             'message' => 'Produk ini tidak memerlukan validasi MooGold.',
@@ -426,101 +412,139 @@ public function validatePlayer(
         ]);
     }
 
-/*
-|--------------------------------------------------------------------------
-| PRODUCT ID UNTUK VALIDATION
-|--------------------------------------------------------------------------
-|
-| Product ID untuk validation dapat berbeda dengan
-| product / variation yang digunakan saat create order.
-|
-*/
-
-$productId =
-    $this->getValidationProductId(
-        $item
-    );
+    /*
+    |--------------------------------------------------------------------------
+    | Tentukan product ID untuk validasi
+    |--------------------------------------------------------------------------
+    */
+    $productId = $this->getValidationProductId($item);
 
     if (!$productId) {
-
-    return response()->json([
-        'success' => true,
-
-        'message' =>
-            'Validasi player tidak tersedia untuk produk ini.',
-
-        'data' => [
-            'valid' => null,
-            'validation_available' => false,
-            'nickname' => null,
-        ],
-    ]);
-}
+        return response()->json([
+            'success' => true,
+            'message' => 'Validasi player tidak tersedia untuk produk ini.',
+            'data' => [
+                'valid' => null,
+                'validation_available' => false,
+                'nickname' => null,
+            ],
+        ]);
+    }
 
     /*
     |--------------------------------------------------------------------------
-    | PLAYER DATA
+    | Bangun payload MooGold secara dynamic dari player_fields
+    |--------------------------------------------------------------------------
+    |
+    | Contoh Game 15:
+    |
+    | player_data:
+    | [
+    |     'user_id' => '00088624',
+    |     'region'  => 'SEA',
+    | ]
+    |
+    | player_fields:
+    | user_id -> User ID
+    | region  -> Region
+    |
+    | Hasil:
+    |
+    | [
+    |     'User ID' => '00088624',
+    |     'Region'  => 'SEA',
+    | ]
+    |
     |--------------------------------------------------------------------------
     */
 
-    $playerData = [
-        'User ID' => (string) $validated['user_id'],
-    ];
+    $playerData = $validated['player_data'];
 
-    if ($zoneId !== '') {
-        $playerData['Server ID'] = $zoneId;
+    $moogoldPlayerData = [];
+
+    foreach (($game->player_fields ?? []) as $field) {
+        $fieldName = $field['name'] ?? null;
+        $moogoldField = $field['moogold_field'] ?? null;
+
+        if (!$fieldName || !$moogoldField) {
+            continue;
+        }
+
+        if (!array_key_exists($fieldName, $playerData)) {
+            continue;
+        }
+
+        $value = trim((string) $playerData[$fieldName]);
+
+        if ($value === '') {
+            continue;
+        }
+
+        $moogoldPlayerData[$moogoldField] = $value;
     }
 
-    try {
+    /*
+    |--------------------------------------------------------------------------
+    | Pastikan field wajib sudah terisi
+    |--------------------------------------------------------------------------
+    */
+    foreach (($game->player_fields ?? []) as $field) {
+        $fieldName = $field['name'] ?? null;
+        $label = $field['label'] ?? $fieldName;
+        $required = (bool) ($field['required'] ?? false);
 
+        if (!$required || !$fieldName) {
+            continue;
+        }
+
+        $value = trim((string) ($playerData[$fieldName] ?? ''));
+
+        if ($value === '') {
+            return response()->json([
+                'success' => false,
+                'message' => "{$label} wajib diisi.",
+                'data' => [
+                    'valid' => false,
+                    'validation_available' => true,
+                    'nickname' => null,
+                ],
+            ], 422);
+        }
+    }
+
+    if (empty($moogoldPlayerData)) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Data player tidak ditemukan.',
+            'data' => [
+                'valid' => false,
+                'validation_available' => true,
+                'nickname' => null,
+            ],
+        ], 422);
+    }
+
+    \Log::info('=== PLAYER VALIDATION MOO GOLD ===', [
+        'game_id' => $game->id,
+        'item_id' => $item->id,
+        'order_product_id' => $item->moogold_product_id,
+        'order_variation_id' => $item->moogold_variation_id,
+        'validation_product_id' => $productId,
+        'player_data' => $playerData,
+        'moogold_player_data' => $moogoldPlayerData,
+    ]);
+
+    try {
         $result = $mooGold->validateProduct(
             $productId,
-            $playerData
+            $moogoldPlayerData
         );
 
-        \Log::info(
-            'MooGold player validation',
-            [
-                'item_id' =>
-                    $item->id,
-
-                /*
-                |--------------------------------------------------------------------------
-                | Product asli item
-                |--------------------------------------------------------------------------
-                */
-
-                'order_product_id' =>
-                    $item->moogold_product_id,
-
-                'order_variation_id' =>
-                    $item->moogold_variation_id,
-
-                /*
-                |--------------------------------------------------------------------------
-                | Product yang dipakai khusus validation
-                |--------------------------------------------------------------------------
-                */
-
-                'validation_product_id' =>
-                    $productId,
-
-                'user_id' =>
-                    $validated['user_id'],
-
-                'zone_id' =>
-                    $zoneId,
-
-                'response' =>
-                    $result,
-            ]
-        );
-
-        /*
-        |--------------------------------------------------------------------------
-        | STATUS
-        |--------------------------------------------------------------------------
-        */
+        \Log::info('MooGold player validation response', [
+            'item_id' => $item->id,
+            'validation_product_id' => $productId,
+            'response' => $result,
+        ]);
 
         $status =
             data_get($result, 'status')
@@ -537,14 +561,9 @@ $productId =
 
         /*
         |--------------------------------------------------------------------------
-        | VALIDATION UNAVAILABLE
+        | MooGold tidak menyediakan validation
         |--------------------------------------------------------------------------
-        |
-        | MooGold mengembalikan status false tetapi pesan menunjukkan
-        | bahwa fitur validation memang tidak tersedia.
-        |
         */
-
         $validationUnavailable =
             str_contains(
                 strtolower($message),
@@ -552,68 +571,45 @@ $productId =
             );
 
         if ($validationUnavailable) {
-
             return response()->json([
                 'success' => true,
-
-                'message' =>
-                    'Validasi player tidak tersedia untuk produk ini.',
-
+                'message' => 'Validasi player tidak tersedia untuk produk ini.',
                 'data' => [
                     'valid' => null,
-
-                    'validation_available' =>
-                        false,
-
-                    'nickname' =>
-                        null,
-
-                    'raw' =>
-                        $result,
+                    'validation_available' => false,
+                    'nickname' => null,
+                    'raw' => $result,
                 ],
             ]);
         }
 
         /*
         |--------------------------------------------------------------------------
-        | EXPLICIT INVALID
+        | Player tidak valid
         |--------------------------------------------------------------------------
         */
-
         if (
             $status === false ||
             $status === 0 ||
             $status === 'false'
         ) {
-
             return response()->json([
                 'success' => false,
-
-                'message' =>
-                    $message
-                    ?: 'User ID atau Server ID tidak valid.',
-
+                'message' => $message ?: 'Data player tidak valid.',
                 'data' => [
                     'valid' => false,
-
-                    'validation_available' =>
-                        true,
-
-                    'nickname' =>
-                        null,
-
-                    'raw' =>
-                        $result,
+                    'validation_available' => true,
+                    'nickname' => null,
+                    'raw' => $result,
                 ],
             ], 422);
         }
 
         /*
         |--------------------------------------------------------------------------
-        | NICKNAME
+        | Ambil nickname jika tersedia
         |--------------------------------------------------------------------------
         */
-                
         $nickname =
             data_get($result, 'nickname')
             ??
@@ -631,60 +627,33 @@ $productId =
             ??
             null;
 
-        /*
-        |--------------------------------------------------------------------------
-        | VALID
-        |--------------------------------------------------------------------------
-        */
-
         return response()->json([
             'success' => true,
-
-            'message' =>
-                'ID pemain berhasil divalidasi.',
-
+            'message' => 'ID pemain berhasil divalidasi.',
             'data' => [
                 'valid' => true,
-
-                'validation_available' =>
-                    true,
-
-                'nickname' =>
-                    $nickname,
-
-                'raw' =>
-                    $result,
+                'validation_available' => true,
+                'nickname' => $nickname,
+                'raw' => $result,
             ],
         ]);
-
     } catch (RuntimeException $exception) {
-
-        \Log::warning(
-            'MooGold player validation gagal',
-            [
-                'item_id' =>
-                    $item->id,
-
-                'message' =>
-                    $exception->getMessage(),
-            ]
-        );
+        \Log::warning('MooGold player validation gagal', [
+            'item_id' => $item->id,
+            'validation_product_id' => $productId,
+            'player_data' => $playerData,
+            'moogold_player_data' => $moogoldPlayerData,
+            'message' => $exception->getMessage(),
+        ]);
 
         return response()->json([
             'success' => false,
-
-            'message' =>
-                $exception->getMessage()
-                ?: 'User ID atau Server ID tidak valid.',
-
+            'message' => $exception->getMessage()
+                ?: 'Data player tidak valid.',
             'data' => [
                 'valid' => false,
-
-                'validation_available' =>
-                    true,
-
-                'nickname' =>
-                    null,
+                'validation_available' => true,
+                'nickname' => null,
             ],
         ], 422);
     }

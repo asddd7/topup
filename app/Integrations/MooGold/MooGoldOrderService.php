@@ -4,6 +4,7 @@ namespace App\Integrations\MooGold;
 
 use App\Jobs\Providers\MooGold\CheckMooGoldOrderStatus;
 use App\Models\MooGoldOrder;
+use App\Models\Order;
 use App\Models\OrderDetail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -14,14 +15,6 @@ class MooGoldOrderService
 {
     /**
      * Creation lease.
-     *
-     * Selama record masih berstatus "creating" dan
-     * last_attempt_at masih baru, worker lain TIDAK boleh
-     * menjalankan create_order().
-     *
-     * HTTP timeout MooGold saat ini 30 detik.
-     * 120 detik memberikan buffer yang cukup untuk kondisi
-     * worker / network.
      */
     protected int $creationLeaseSeconds = 120;
 
@@ -31,34 +24,10 @@ class MooGoldOrderService
     }
 
     /**
-     * =========================================================
-     * CREATE MOOGOLD ORDER
-     * =========================================================
-     *
-     * IDEMPOTENCY:
-     *
-     * 1 OrderDetail
-     *      =
-     * 1 MooGoldOrder
-     *      =
-     * 1 Partner Order ID
-     *
-     * Partner Order ID:
-     *
-     * MG-{order_id}-{order_detail_id}
-     *
-     * Contoh:
-     *
-     * MG-26-26
-     *
-     * RULE:
-     *
-     * - Jangan pernah generate Partner Order ID baru saat retry.
-     * - Selalu recovery berdasarkan Partner Order ID.
-     * - Jangan HTTP retry otomatis pada create_order.
-     * - Timeout/error dianggap UNKNOWN sampai recovery memastikan
-     *   transaksi memang tidak ditemukan.
-    */
+     * ============================================================
+     * CREATE MOO GOLD ORDER
+     * ============================================================
+     */
     public function createFromOrderDetail(
         OrderDetail $orderDetail
     ): MooGoldOrder {
@@ -77,12 +46,6 @@ class MooGoldOrderService
         $order = $orderDetail->order;
         $item = $orderDetail->item;
 
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDATION
-        |--------------------------------------------------------------------------
-        */
-
         if (!$order) {
             throw new RuntimeException(
                 'Order tidak ditemukan.'
@@ -94,6 +57,12 @@ class MooGoldOrderService
                 'Item pada OrderDetail tidak ditemukan.'
             );
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | VALIDATE MAPPING
+        |--------------------------------------------------------------------------
+        */
 
         if (
             empty($item->moogold_category_id) ||
@@ -127,25 +96,36 @@ class MooGoldOrderService
             );
         }
 
-        $userId =
-            $playerData['uid']
-            ?? $playerData['user_id']
-            ?? $playerData['User ID']
-            ?? null;
+        /*
+        |--------------------------------------------------------------------------
+        | RESOLVE MOO GOLD PLAYER DATA
+        |--------------------------------------------------------------------------
+        |
+        | Mapping sekarang berdasarkan:
+        |
+        | game.player_fields[].name
+        | game.player_fields[].moogold_field
+        |
+        | Contoh:
+        |
+        | name = region
+        | moogold_field = Region
+        |
+        | akan menjadi:
+        |
+        | 'Region' => 'SEA'
+        |
+        */
 
-        $server =
-            $order->game?->moogold_server_id
-            ?? null;
-
-        if (empty($userId)) {
-            throw new RuntimeException(
-                'Player UID / User ID belum tersedia.'
+        $moogoldPlayerData =
+            $this->resolveMooGoldPlayerData(
+                $order,
+                $playerData
             );
-        }
 
-        if (empty($server)) {
+        if (empty($moogoldPlayerData)) {
             throw new RuntimeException(
-                'Server MooGold belum dikonfigurasi untuk game ini.'
+                'Player data MooGold tidak tersedia untuk order ini.'
             );
         }
 
@@ -169,29 +149,49 @@ class MooGoldOrderService
 
         $requestPayload = [
             'category' =>
-                (string) $item->moogold_category_id,
+                (string)
+                    $item->moogold_category_id,
 
             'product-id' =>
-                (string) $item->moogold_variation_id,
+                (string)
+                    $item->moogold_variation_id,
 
             'quantity' =>
-                (string) $orderDetail->qty,
+                (string)
+                    $orderDetail->qty,
 
-            'User ID' =>
-                (string) $userId,
+            ...$moogoldPlayerData,
         ];
-
-    if (
-        $server !== null &&
-        $server !== ''
-    ) {
-        $requestPayload['Server ID'] =
-            (string) $server;
-    }
 
         /*
         |--------------------------------------------------------------------------
-        | FIND / CREATE LOCAL MAPPING
+        | LOG PLAYER MAPPING
+        |--------------------------------------------------------------------------
+        */
+
+        Log::info(
+            'MooGold player field mapping.',
+            [
+                'order_id' =>
+                    $order->id,
+
+                'order_detail_id' =>
+                    $orderDetail->id,
+
+                'game_id' =>
+                    $order->game?->id,
+
+                'player_data' =>
+                    $playerData,
+
+                'moogold_player_data' =>
+                    $moogoldPlayerData,
+            ]
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | LOCAL MOO GOLD ORDER
         |--------------------------------------------------------------------------
         */
 
@@ -233,159 +233,154 @@ class MooGoldOrderService
 
         /*
         |--------------------------------------------------------------------------
-        | =========================================================
-        | STEP 1 — SHORT DB LOCK / CLAIM
-        | =========================================================
-        |
-        | Tidak ada HTTP request di dalam transaction.
-        |
-        | Transaction hanya digunakan untuk:
-        |
-        | - lock row
-        | | check existing MooGold ID
-        | | recovery/claim state
-        | | mark creating
-        |
+        | SHORT DB LOCK / CLAIM
         |--------------------------------------------------------------------------
         */
 
-        $claim = DB::transaction(
-            function () use (
-                $mooGoldOrder,
-                $partnerOrderId,
-                $requestPayload
-            ) {
+        $claim =
+            DB::transaction(
+                function () use (
+                    $mooGoldOrder,
+                    $partnerOrderId,
+                    $requestPayload
+                ) {
 
-                $lockedOrder =
-                    MooGoldOrder::query()
-                        ->where(
-                            'id',
-                            $mooGoldOrder->id
+                    $lockedOrder =
+                        MooGoldOrder::query()
+                            ->where(
+                                'id',
+                                $mooGoldOrder->id
+                            )
+                            ->lockForUpdate()
+                            ->first();
+
+                    if (!$lockedOrder) {
+                        throw new RuntimeException(
+                            'MooGoldOrder tidak ditemukan saat locking.'
+                        );
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | FORCE DETERMINISTIC PARTNER ID
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (
+                        $lockedOrder->external_order_id
+                        !==
+                        $partnerOrderId
+                    ) {
+                        $lockedOrder->external_order_id =
+                            $partnerOrderId;
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | ALREADY CREATED
+                    |--------------------------------------------------------------------------
+                    */
+
+                    if (
+                        !empty(
+                            $lockedOrder->moogold_order_id
                         )
-                        ->lockForUpdate()
-                        ->first();
+                    ) {
+                        return [
+                            'action' =>
+                                'existing',
 
-                if (!$lockedOrder) {
-                    throw new RuntimeException(
-                        'MooGoldOrder tidak ditemukan saat locking.'
-                    );
-                }
+                            'order' =>
+                                $lockedOrder->fresh(),
+                        ];
+                    }
 
-                /*
-                |--------------------------------------------------------------------------
-                | ALWAYS USE DETERMINISTIC PARTNER ID
-                |--------------------------------------------------------------------------
-                */
+                    /*
+                    |--------------------------------------------------------------------------
+                    | CREATION LEASE
+                    |--------------------------------------------------------------------------
+                    */
 
-                if (
-                    $lockedOrder->external_order_id !==
-                    $partnerOrderId
-                ) {
-                    $lockedOrder->external_order_id =
-                        $partnerOrderId;
-                }
+                    if (
+                        $this->isCreationLeaseActive(
+                            $lockedOrder
+                        )
+                    ) {
+                        Log::warning(
+                            'MooGold order masih dalam creation lease. Create kedua dibatalkan.',
+                            [
+                                'moo_gold_order_id' =>
+                                    $lockedOrder->id,
 
-                /*
-                |--------------------------------------------------------------------------
-                | ALREADY CREATED
-                |--------------------------------------------------------------------------
-                */
+                                'partner_order_id' =>
+                                    $partnerOrderId,
 
-                if (
-                    !empty(
-                        $lockedOrder->moogold_order_id
-                    )
-                ) {
+                                'last_attempt_at' =>
+                                    $lockedOrder->last_attempt_at,
+                            ]
+                        );
+
+                        return [
+                            'action' =>
+                                'in_progress',
+
+                            'order' =>
+                                $lockedOrder->fresh(),
+                        ];
+                    }
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | UPDATE SNAPSHOT
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $lockedOrder->request_payload =
+                        $requestPayload;
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | CLAIM
+                    |--------------------------------------------------------------------------
+                    */
+
+                    $lockedOrder->moogold_status =
+                        'creating';
+
+                    $lockedOrder->error_message =
+                        null;
+
+                    $lockedOrder->last_attempt_at =
+                        now();
+
+                    $lockedOrder->attempts =
+                        (
+                            (int)
+                            $lockedOrder->attempts
+                        ) + 1;
+
+                    $lockedOrder->save();
 
                     return [
-                        'action' => 'existing',
-                        'order' => $lockedOrder->fresh(),
+                        'action' =>
+                            'create',
+
+                        'order' =>
+                            $lockedOrder->fresh(),
                     ];
                 }
-
-                /*
-                |--------------------------------------------------------------------------
-                | RECENT CREATE IN PROGRESS
-                |--------------------------------------------------------------------------
-                |
-                | Worker lain mungkin sedang berada di:
-                |
-                | createOrder()
-                |
-                | Jangan membuat order kedua.
-                */
-
-                if (
-                    $this->isCreationLeaseActive(
-                        $lockedOrder
-                    )
-                ) {
-
-                    Log::warning(
-                        'MooGold order masih dalam creation lease. '
-                        . 'Create kedua dibatalkan.',
-                        [
-                            'moo_gold_order_id' =>
-                                $lockedOrder->id,
-
-                            'partner_order_id' =>
-                                $partnerOrderId,
-
-                            'last_attempt_at' =>
-                                $lockedOrder->last_attempt_at,
-                        ]
-                    );
-
-                    return [
-                        'action' => 'in_progress',
-                        'order' => $lockedOrder->fresh(),
-                    ];
-                }
-
-                /*
-                |--------------------------------------------------------------------------
-                | UPDATE SNAPSHOT
-                |--------------------------------------------------------------------------
-                */
-
-                $lockedOrder->request_payload =
-                    $requestPayload;
-
-                /*
-                |--------------------------------------------------------------------------
-                | CLAIM CREATE
-                |--------------------------------------------------------------------------
-                */
-
-                $lockedOrder->moogold_status =
-                    'creating';
-
-                $lockedOrder->error_message =
-                    null;
-
-                $lockedOrder->last_attempt_at =
-                    now();
-
-                $lockedOrder->attempts =
-                    ((int) $lockedOrder->attempts) + 1;
-
-                $lockedOrder->save();
-
-                return [
-                    'action' => 'create',
-                    'order' => $lockedOrder->fresh(),
-                ];
-            }
-        );
+            );
 
         /*
         |--------------------------------------------------------------------------
-        | EXISTING ORDER
+        | EXISTING
         |--------------------------------------------------------------------------
         */
 
-        if ($claim['action'] === 'existing') {
-
+        if (
+            $claim['action'] ===
+            'existing'
+        ) {
             $result =
                 $claim['order']->fresh();
 
@@ -398,70 +393,49 @@ class MooGoldOrderService
 
         /*
         |--------------------------------------------------------------------------
-        | ANOTHER WORKER IS CREATING
+        | IN PROGRESS
         |--------------------------------------------------------------------------
         */
 
-        if ($claim['action'] === 'in_progress') {
-
-            /*
-            |--------------------------------------------------------------------------
-            | Jangan create.
-            |
-            | Kita lempar exception agar queue dapat retry.
-            |--------------------------------------------------------------------------
-            */
-
+        if (
+            $claim['action'] ===
+            'in_progress'
+        ) {
             throw new RuntimeException(
-                'MooGold order sedang diproses oleh worker lain. '
-                . 'Create order kedua dibatalkan.'
+                'MooGold order sedang diproses oleh worker lain. Create order kedua dibatalkan.'
             );
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | CREATE REQUEST
+        |--------------------------------------------------------------------------
+        */
 
-            /*
-            |--------------------------------------------------------------------------
-            | STEP 2 — CREATE FIRST REQUEST
-            |--------------------------------------------------------------------------
-            |
-            | Record ini baru pertama kali diproses dan belum memiliki
-            | MooGold Order ID.
-            |
-            | Recovery Partner Order ID tidak dijadikan syarat wajib di sini,
-            | karena endpoint tersebut dapat membutuhkan permission khusus
-            | dari akun MooGold.
-            |
-            | Proteksi duplicate tetap menggunakan:
-            |
-            | - deterministic Partner Order ID
-            | - unique OrderDetail
-            | - DB lock
-            | - creation lease
-            |
-            */
+        $mooGoldOrder =
+            $claim['order']->fresh();
 
-            $mooGoldOrder =
-                $claim['order']->fresh();
+        Log::info(
+            'MooGold create_order akan dijalankan.',
+            [
+                'moo_gold_order_id' =>
+                    $mooGoldOrder->id,
 
-            Log::info(
-                'MooGold create_order akan dijalankan.',
-                [
-                    'moo_gold_order_id' =>
-                        $mooGoldOrder->id,
+                'partner_order_id' =>
+                    $partnerOrderId,
 
-                    'partner_order_id' =>
-                        $partnerOrderId,
+                'attempts' =>
+                    $mooGoldOrder->attempts,
 
-                    'attempts' =>
-                        $mooGoldOrder->attempts,
-                ]
-            );
+                'player_data' =>
+                    $moogoldPlayerData,
+            ]
+        );
 
         /*
         |--------------------------------------------------------------------------
-        | =========================================================
-        | STEP 3 — CREATE MOO GOLD
-        | =========================================================
+        | CREATE
+        |--------------------------------------------------------------------------
         */
 
         try {
@@ -469,43 +443,23 @@ class MooGoldOrderService
             $response =
                 $this->mooGold->createOrder(
                     (int)
-                    $item->moogold_category_id,
+                        $item->moogold_category_id,
 
                     $partnerOrderId,
 
                     (string)
-                    $item->moogold_variation_id,
+                        $item->moogold_variation_id,
 
                     (int)
-                    $orderDetail->qty,
+                        $orderDetail->qty,
 
-                    (string)
-                    $userId,
-
-                    $server !== null &&
-                    $server !== ''
-                        ? (string) $server
-                        : null
+                    $moogoldPlayerData
                 );
 
         } catch (Throwable $createError) {
 
-            /*
-            |--------------------------------------------------------------------------
-            | =====================================================
-            | CRITICAL RECOVERY
-            | =====================================================
-            |
-            | Jangan langsung failed.
-            |
-            | MooGold mungkin sudah membuat order tetapi response
-            | tidak sampai Laravel.
-            |--------------------------------------------------------------------------
-            */
-
             Log::warning(
-                'Create MooGold mengalami error. '
-                . 'Recovery Partner Order ID dijalankan.',
+                'Create MooGold mengalami error. Recovery Partner Order ID dijalankan.',
                 [
                     'moo_gold_order_id' =>
                         $mooGoldOrder->id,
@@ -526,36 +480,10 @@ class MooGoldOrderService
                     );
 
                 if ($recovered) {
-
-                    Log::warning(
-                        'Order MooGold ditemukan setelah create error.',
-                        [
-                            'moo_gold_order_id' =>
-                                $recovered->id,
-
-                            'moogold_order_id' =>
-                                $recovered->moogold_order_id,
-
-                            'partner_order_id' =>
-                                $recovered->external_order_id,
-                        ]
-                    );
-
                     return $recovered->fresh();
                 }
 
             } catch (Throwable $recoveryError) {
-
-                /*
-                |--------------------------------------------------------------------------
-                | UNKNOWN
-                |--------------------------------------------------------------------------
-                |
-                | Kita TIDAK tahu apakah create berhasil.
-                |
-                | Status harus UNKNOWN.
-                |--------------------------------------------------------------------------
-                */
 
                 $mooGoldOrder->update([
                     'moogold_status' =>
@@ -566,8 +494,7 @@ class MooGoldOrderService
                 ]);
 
                 Log::error(
-                    'Recovery setelah create error juga gagal. '
-                    . 'Transaksi dianggap UNKNOWN.',
+                    'Recovery setelah create error juga gagal.',
                     [
                         'moo_gold_order_id' =>
                             $mooGoldOrder->id,
@@ -585,17 +512,6 @@ class MooGoldOrderService
 
                 throw $createError;
             }
-
-            /*
-            |--------------------------------------------------------------------------
-            | CREATE ERROR + RECOVERY CONFIRMED NOT FOUND
-            |--------------------------------------------------------------------------
-            |
-            | Tetap UNKNOWN.
-            |
-            | Queue retry akan menggunakan Partner Order ID yang SAMA.
-            |--------------------------------------------------------------------------
-            */
 
             $mooGoldOrder->update([
                 'moogold_status' =>
@@ -626,10 +542,7 @@ class MooGoldOrderService
 
         /*
         |--------------------------------------------------------------------------
-        | RESPONSE WITHOUT ORDER ID
-        |--------------------------------------------------------------------------
-        |
-        | Jangan langsung failed.
+        | NO ORDER ID
         |--------------------------------------------------------------------------
         */
 
@@ -682,15 +595,13 @@ class MooGoldOrderService
             }
 
             throw new RuntimeException(
-                'MooGold tidak mengembalikan Order ID '
-                . 'dan transaksi belum dapat direcovery berdasarkan '
-                . 'Partner Order ID.'
+                'MooGold tidak mengembalikan Order ID dan transaksi belum dapat direcovery berdasarkan Partner Order ID.'
             );
         }
 
         /*
         |--------------------------------------------------------------------------
-        | SAVE SUCCESSFUL CREATE
+        | SAVE SUCCESS
         |--------------------------------------------------------------------------
         */
 
@@ -714,7 +625,7 @@ class MooGoldOrderService
 
         /*
         |--------------------------------------------------------------------------
-        | SYNC MAIN ORDER
+        | MAIN ORDER
         |--------------------------------------------------------------------------
         */
 
@@ -736,6 +647,7 @@ class MooGoldOrderService
         $this->syncMainOrderStatus(
             $order->fresh()
         );
+
         /*
         |--------------------------------------------------------------------------
         | STATUS CHECK
@@ -748,12 +660,6 @@ class MooGoldOrderService
         $this->scheduleStatusCheck(
             $fresh
         );
-
-        /*
-        |--------------------------------------------------------------------------
-        | LOG
-        |--------------------------------------------------------------------------
-        */
 
         Log::info(
             'MooGold order berhasil dibuat.',
@@ -784,28 +690,572 @@ class MooGoldOrderService
         return $fresh;
     }
 
+    /**
+     * ============================================================
+     * RESOLVE MOO GOLD PLAYER DATA
+     * ============================================================
+     *
+     * Mengubah:
+     *
+     * player_data:
+     *
+     * [
+     *     'user_id' => '00088624',
+     *     'region'  => 'SEA',
+     * ]
+     *
+     * berdasarkan game.player_fields menjadi:
+     *
+     * [
+     *     'User ID' => '00088624',
+     *     'Region'  => 'SEA',
+     * ]
+     *
+     * atau untuk game server:
+     *
+     * [
+     *     'User ID'   => '1963315211',
+     *     'Server ID' => '19248',
+     * ]
+     *
+     * ============================================================
+     */
+    protected function resolveMooGoldPlayerData(
+        Order $order,
+        array $playerData
+    ): array {
+
+        $game =
+            $order->game;
+
+        if (!$game) {
+            throw new RuntimeException(
+                'Game pada order tidak ditemukan.'
+            );
+        }
+
+        $playerFields =
+            $game->player_fields ?? [];
+
+        if (!is_array($playerFields)) {
+            throw new RuntimeException(
+                'Player fields game tidak valid.'
+            );
+        }
+
+        $result = [];
+
+        foreach ($playerFields as $field) {
+
+            if (!is_array($field)) {
+                continue;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | LOCAL FIELD NAME
+            |--------------------------------------------------------------------------
+            */
+
+            $localName =
+                trim(
+                    (string) (
+                        $field['name']
+                        ?? ''
+                    )
+                );
+
+            /*
+            |--------------------------------------------------------------------------
+            | MOO GOLD FIELD NAME
+            |--------------------------------------------------------------------------
+            */
+
+            $mooGoldField =
+                trim(
+                    (string) (
+                        $field['moogold_field']
+                        ?? ''
+                    )
+                );
+
+            /*
+            |--------------------------------------------------------------------------
+            | FIELD TANPA MAPPING
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                $localName === '' ||
+                $mooGoldField === ''
+            ) {
+                continue;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | GET VALUE FROM ORDER PLAYER DATA
+            |--------------------------------------------------------------------------
+            */
+
+            $value = null;
+
+            if (
+                array_key_exists(
+                    $localName,
+                    $playerData
+                )
+            ) {
+                $value =
+                    $playerData[$localName];
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | READONLY FIELD
+            |--------------------------------------------------------------------------
+            |
+            | Contoh:
+            |
+            | name          = region
+            | input_mode    = readonly
+            | moogold_field = Region
+            |
+            | Jika player_data tidak memiliki region,
+            | gunakan games.moogold_server_id.
+            |
+            */
+
+            $inputMode =
+                strtolower(
+                    trim(
+                        (string) (
+                            $field['input_mode']
+                            ?? 'input'
+                        )
+                    )
+                );
+
+            if (
+                $inputMode === 'readonly' &&
+                (
+                    $value === null ||
+                    $value === ''
+                )
+            ) {
+                $value =
+                    $game->moogold_server_id;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | LEGACY ALIAS
+            |--------------------------------------------------------------------------
+            |
+            | Untuk menjaga kompatibilitas dengan order lama,
+            | jika local name tidak ditemukan, coba alias.
+            |
+            */
+
+            if (
+                $value === null ||
+                $value === ''
+            ) {
+
+                $normalizedLocalName =
+                    strtolower(
+                        trim(
+                            (string)
+                                preg_replace(
+                                    '/[^a-zA-Z0-9]+/',
+                                    '_',
+                                    $localName
+                                )
+                        )
+                    );
+
+                $aliases = match (
+                    $normalizedLocalName
+                ) {
+
+                    'uid',
+                    'userid',
+                    'user_id',
+                    'player_id',
+                    'account_id'
+                        => [
+                            'uid',
+                            'user_id',
+                            'User ID',
+                            'userid',
+                            'player_id',
+                            'account_id',
+                        ],
+
+                    'server',
+                    'server_id'
+                        => [
+                            'server',
+                            'server_id',
+                            'Server',
+                            'Server ID',
+                        ],
+
+                    'region',
+                    'region_id'
+                        => [
+                            'region',
+                            'region_id',
+                            'Region',
+                            'Region ID',
+                        ],
+
+                    default
+                        => [
+                            $localName,
+                        ],
+                };
+
+                foreach ($aliases as $alias) {
+
+                    if (
+                        array_key_exists(
+                            $alias,
+                            $playerData
+                        ) &&
+                        $playerData[$alias] !== null &&
+                        $playerData[$alias] !== ''
+                    ) {
+                        $value =
+                            $playerData[$alias];
+
+                        break;
+                    }
+                }
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | REQUIRED
+            |--------------------------------------------------------------------------
+            */
+
+            $required =
+                (bool) (
+                    $field['required']
+                    ?? false
+                );
+
+            if (
+                $required &&
+                (
+                    $value === null ||
+                    $value === ''
+                )
+            ) {
+                throw new RuntimeException(
+                    'MooGold field "' .
+                    $mooGoldField .
+                    '" belum memiliki nilai.'
+                );
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | SKIP OPTIONAL EMPTY FIELD
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                $value === null ||
+                $value === ''
+            ) {
+                continue;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | MOO GOLD FIELD
+            |--------------------------------------------------------------------------
+            |
+            | INILAH BAGIAN UTAMA.
+            |
+            | Tidak peduli apakah:
+            |
+            | Server ID
+            | Region
+            | Zone
+            | Role ID
+            | atau field lainnya.
+            |
+            | Nama field mengikuti moogold_field.
+            |
+            */
+
+            $result[$mooGoldField] =
+                (string) $value;
+        }
+
+        return $result;
+    }
 
     /**
-     * =========================================================
+     * ============================================================
      * BUILD PARTNER ORDER ID
-     * =========================================================
+     * ============================================================
      */
     protected function buildPartnerOrderId(
         int $orderId,
         int $orderDetailId
     ): string {
-
-        return 'MG-' .
+        return
+            'MG-' .
             $orderId .
             '-' .
             $orderDetailId;
     }
 
+    /**
+     * ============================================================
+     * RESOLVE USER ID
+     * ============================================================
+     *
+     * Dipertahankan untuk kompatibilitas dengan code lama.
+     * ============================================================
+     */
+    protected function resolveUserId(
+        array $playerData
+    ): ?string {
+
+        $userId =
+            $playerData['uid']
+            ?? $playerData['user_id']
+            ?? $playerData['User ID']
+            ?? $playerData['userid']
+            ?? $playerData['role_id']
+            ?? $playerData['player_id']
+            ?? $playerData['account_id']
+            ?? null;
+
+        if (
+            $userId === null ||
+            $userId === ''
+        ) {
+            return null;
+        }
+
+        return (string) $userId;
+    }
 
     /**
-     * =========================================================
-     * CREATION LEASE CHECK
-     * =========================================================
+     * ============================================================
+     * RESOLVE SERVER
+     * ============================================================
+     *
+     * Method lama dipertahankan untuk kompatibilitas.
+     *
+     * Catatan:
+     *
+     * Untuk create_order baru, method ini TIDAK lagi dipakai
+     * untuk menentukan nama field API.
+     *
+     * Nama field sekarang berasal dari:
+     *
+     * game.player_fields[].moogold_field
+     *
+     * ============================================================
+     */
+    protected function resolveServer(
+        Order $order,
+        array $playerData
+    ): ?string {
+
+        $game =
+            $order->game;
+
+        $playerFields =
+            $game?->player_fields
+            ?? [];
+
+        foreach ($playerFields as $field) {
+
+            if (
+                !$this->isServerPlayerField(
+                    $field
+                )
+            ) {
+                continue;
+            }
+
+            $fieldName =
+                trim(
+                    (string) (
+                        $field['name']
+                        ?? ''
+                    )
+                );
+
+            $inputMode =
+                strtolower(
+                    trim(
+                        (string) (
+                            $field['input_mode']
+                            ?? 'input'
+                        )
+                    )
+                );
+
+            /*
+            |--------------------------------------------------------------------------
+            | READONLY
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                $inputMode ===
+                'readonly'
+            ) {
+                return !empty(
+                    $game?->moogold_server_id
+                )
+                    ? (string)
+                        $game->moogold_server_id
+                    : null;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | INPUT
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                $fieldName !== '' &&
+                array_key_exists(
+                    $fieldName,
+                    $playerData
+                ) &&
+                $playerData[$fieldName] !== ''
+            ) {
+                return (string)
+                    $playerData[$fieldName];
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | LEGACY ALIASES
+            |--------------------------------------------------------------------------
+            */
+
+            $server =
+                $playerData['server']
+                ?? $playerData['server_id']
+                ?? $playerData['Server']
+                ?? $playerData['Server ID']
+                ?? null;
+
+            if (
+                $server !== null &&
+                $server !== ''
+            ) {
+                return (string) $server;
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | LEGACY FALLBACK
+        |--------------------------------------------------------------------------
+        */
+
+        $server =
+            $playerData['server']
+            ?? $playerData['server_id']
+            ?? $playerData['Server']
+            ?? $playerData['Server ID']
+            ?? null;
+
+        if (
+            $server !== null &&
+            $server !== ''
+        ) {
+            return (string) $server;
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | GAME-LEVEL FALLBACK
+        |--------------------------------------------------------------------------
+        */
+
+        return !empty(
+            $game?->moogold_server_id
+        )
+            ? (string)
+                $game->moogold_server_id
+            : null;
+    }
+
+    /**
+     * ============================================================
+     * SERVER FIELD DETECTION
+     * ============================================================
+     */
+    protected function isServerPlayerField(
+        array $field
+    ): bool {
+
+        $type =
+            strtolower(
+                trim(
+                    (string) (
+                        $field['type']
+                        ?? ''
+                    )
+                )
+            );
+
+        if ($type === 'server') {
+            return true;
+        }
+
+        $moogoldField =
+            strtolower(
+                trim(
+                    (string) (
+                        $field['moogold_field']
+                        ?? ''
+                    )
+                )
+            );
+
+        $moogoldField =
+            trim(
+                (string)
+                    preg_replace(
+                        '/[^a-z0-9]+/',
+                        '_',
+                        $moogoldField
+                    ),
+                '_'
+            );
+
+        return in_array(
+            $moogoldField,
+            [
+                'server',
+                'server_id',
+                'region',
+                'region_id',
+            ],
+            true
+        );
+    }
+
+    /**
+     * ============================================================
+     * CREATION LEASE
+     * ============================================================
      */
     protected function isCreationLeaseActive(
         MooGoldOrder $mooGoldOrder
@@ -826,7 +1276,8 @@ class MooGoldOrderService
             return false;
         }
 
-        return $mooGoldOrder->last_attempt_at
+        return $mooGoldOrder
+            ->last_attempt_at
             ->gt(
                 now()->subSeconds(
                     $this->creationLeaseSeconds
@@ -834,17 +1285,10 @@ class MooGoldOrderService
             );
     }
 
-
     /**
-     * =========================================================
+     * ============================================================
      * RECOVER BY PARTNER ORDER ID
-     * =========================================================
-     *
-     * IMPORTANT:
-     *
-     * null = endpoint berhasil dan transaksi tidak ditemukan.
-     *
-     * exception = endpoint recovery gagal / kondisi UNKNOWN.
+     * ============================================================
      */
     protected function recoverByPartnerOrderId(
         MooGoldOrder $mooGoldOrder
@@ -853,7 +1297,8 @@ class MooGoldOrderService
         $partnerOrderId =
             trim(
                 (string)
-                $mooGoldOrder->external_order_id
+                    $mooGoldOrder
+                        ->external_order_id
             );
 
         if ($partnerOrderId === '') {
@@ -873,33 +1318,16 @@ class MooGoldOrderService
             ]
         );
 
-        /*
-        |--------------------------------------------------------------------------
-        | CALL MOO GOLD
-        |--------------------------------------------------------------------------
-        */
-
         $response =
-            $this->mooGold->orderByPartnerOrderId(
-                $partnerOrderId
-            );
-
-        /*
-        |--------------------------------------------------------------------------
-        | EXTRACT ORDER ID
-        |--------------------------------------------------------------------------
-        */
+            $this->mooGold
+                ->orderByPartnerOrderId(
+                    $partnerOrderId
+                );
 
         $moogoldOrderId =
             $this->extractOrderId(
                 $response
             );
-
-        /*
-        |--------------------------------------------------------------------------
-        | NOT FOUND
-        |--------------------------------------------------------------------------
-        */
 
         if (
             $moogoldOrderId === null ||
@@ -923,22 +1351,10 @@ class MooGoldOrderService
             return null;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | STATUS
-        |--------------------------------------------------------------------------
-        */
-
         $status =
             $this->extractStatus(
                 $response
             );
-
-        /*
-        |--------------------------------------------------------------------------
-        | SAVE RECOVERED ORDER
-        |--------------------------------------------------------------------------
-        */
 
         $mooGoldOrder->update([
             'external_order_id' =>
@@ -960,12 +1376,6 @@ class MooGoldOrderService
             'error_message' =>
                 null,
         ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | SYNC MAIN ORDER
-        |--------------------------------------------------------------------------
-        */
 
         $order =
             $mooGoldOrder->order;
@@ -992,35 +1402,6 @@ class MooGoldOrderService
             );
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | LOG
-        |--------------------------------------------------------------------------
-        */
-
-        Log::info(
-            'MooGold order berhasil direcovery.',
-            [
-                'moo_gold_order_id' =>
-                    $mooGoldOrder->id,
-
-                'moogold_order_id' =>
-                    $moogoldOrderId,
-
-                'partner_order_id' =>
-                    $partnerOrderId,
-
-                'status' =>
-                    $status,
-            ]
-        );
-
-        /*
-        |--------------------------------------------------------------------------
-        | STATUS CHECK
-        |--------------------------------------------------------------------------
-        */
-
         $fresh =
             $mooGoldOrder->fresh();
 
@@ -1031,11 +1412,10 @@ class MooGoldOrderService
         return $fresh;
     }
 
-
     /**
-     * =========================================================
+     * ============================================================
      * SCHEDULE STATUS CHECK
-     * =========================================================
+     * ============================================================
      */
     protected function scheduleStatusCheck(
         MooGoldOrder $mooGoldOrder
@@ -1052,7 +1432,8 @@ class MooGoldOrderService
         if (
             $this->isFinalStatus(
                 (string)
-                $mooGoldOrder->moogold_status
+                    $mooGoldOrder
+                        ->moogold_status
             )
         ) {
             return;
@@ -1082,11 +1463,10 @@ class MooGoldOrderService
         );
     }
 
-
     /**
-     * =========================================================
+     * ============================================================
      * CHECK STATUS
-     * =========================================================
+     * ============================================================
      */
     public function checkStatus(
         MooGoldOrder $mooGoldOrder
@@ -1102,17 +1482,12 @@ class MooGoldOrderService
             );
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | FINAL STATUS
-        |--------------------------------------------------------------------------
-        */
-
         $currentStatus =
             strtolower(
                 trim(
                     (string)
-                    $mooGoldOrder->moogold_status
+                        $mooGoldOrder
+                            ->moogold_status
                 )
             );
 
@@ -1124,28 +1499,17 @@ class MooGoldOrderService
             return $mooGoldOrder->fresh();
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | REQUEST STATUS
-        |--------------------------------------------------------------------------
-        */
-
         $response =
             $this->mooGold->order(
                 (int)
-                $mooGoldOrder->moogold_order_id
+                    $mooGoldOrder
+                        ->moogold_order_id
             );
 
         $status =
             $this->extractStatus(
                 $response
             );
-
-        /*
-        |--------------------------------------------------------------------------
-        | SAVE RESPONSE
-        |--------------------------------------------------------------------------
-        */
 
         $mooGoldOrder->response_payload =
             $response;
@@ -1155,12 +1519,6 @@ class MooGoldOrderService
 
         $order =
             $mooGoldOrder->order;
-
-        /*
-        |--------------------------------------------------------------------------
-        | MAP STATUS
-        |--------------------------------------------------------------------------
-        */
 
         switch ($status) {
 
@@ -1227,19 +1585,7 @@ class MooGoldOrderService
                 break;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | SAVE
-        |--------------------------------------------------------------------------
-        */
-
         $mooGoldOrder->save();
-
-        /*
-        |--------------------------------------------------------------------------
-        | MAIN ORDER
-        |--------------------------------------------------------------------------
-        */
 
         if ($order) {
 
@@ -1254,12 +1600,6 @@ class MooGoldOrderService
 
             $order->save();
 
-            /*
-            |--------------------------------------------------------------------------
-            | AGGREGATE SEMUA MOO GOLD ORDER
-            |--------------------------------------------------------------------------
-            */
-
             $this->syncMainOrderStatus(
                 $order->fresh()
             );
@@ -1269,38 +1609,13 @@ class MooGoldOrderService
     }
 
     /**
-     * =========================================================
+     * ============================================================
      * SYNC MAIN ORDER STATUS
-     * =========================================================
-     *
-     * Status Order ditentukan berdasarkan SELURUH
-     * MooGoldOrder milik Order.
-     *
-     * Rule:
-     *
-     * Ada failed/refunded
-     *      -> Cancelled
-     *
-     * Ada pending/processing/sending/creating/unknown
-     *      -> Processing
-     *
-     * Semua detail sudah ada MooGoldOrder
-     * dan semuanya success
-     *      -> Completed
-     *
-     * Jika belum semua detail mempunyai MooGoldOrder
-     *      -> Processing jika sudah ada fulfillment aktif
-     *      -> Paid jika belum ada fulfillment aktif
+     * ============================================================
      */
     protected function syncMainOrderStatus(
-        \App\Models\Order $order
+        Order $order
     ): void {
-
-        /*
-        |--------------------------------------------------------------------------
-        | LOAD SEMUA FULFILLMENT
-        |--------------------------------------------------------------------------
-        */
 
         $order->loadMissing([
             'details.mooGoldOrder',
@@ -1309,22 +1624,9 @@ class MooGoldOrderService
         $details =
             $order->details;
 
-        /*
-        |--------------------------------------------------------------------------
-        | ORDER TANPA DETAIL
-        |--------------------------------------------------------------------------
-        */
-
         if ($details->isEmpty()) {
-
             return;
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | AMBIL MOO GOLD ORDERS
-        |--------------------------------------------------------------------------
-        */
 
         $mooGoldOrders =
             $details
@@ -1334,21 +1636,9 @@ class MooGoldOrderService
                 )
                 ->filter();
 
-        /*
-        |--------------------------------------------------------------------------
-        | BELUM SEMUA DETAIL MEMPUNYAI FULFILLMENT
-        |--------------------------------------------------------------------------
-        */
-
         $allDetailsHaveMooGoldOrder =
             $mooGoldOrders->count() ===
             $details->count();
-
-        /*
-        |--------------------------------------------------------------------------
-        | NORMALIZE STATUS
-        |--------------------------------------------------------------------------
-        */
 
         $statuses =
             $mooGoldOrders
@@ -1357,7 +1647,8 @@ class MooGoldOrderService
                         strtolower(
                             trim(
                                 (string)
-                                $mooGoldOrder->moogold_status
+                                    $mooGoldOrder
+                                        ->moogold_status
                             )
                         )
                 );
@@ -1365,10 +1656,6 @@ class MooGoldOrderService
         /*
         |--------------------------------------------------------------------------
         | FAILED / REFUNDED
-        |--------------------------------------------------------------------------
-        |
-        | Satu detail gagal berarti Order keseluruhan
-        | tidak boleh dianggap Completed.
         |--------------------------------------------------------------------------
         */
 
@@ -1396,7 +1683,7 @@ class MooGoldOrderService
 
         /*
         |--------------------------------------------------------------------------
-        | PROCESSING / UNKNOWN / CREATING
+        | ACTIVE / UNKNOWN
         |--------------------------------------------------------------------------
         */
 
@@ -1427,21 +1714,17 @@ class MooGoldOrderService
 
         /*
         |--------------------------------------------------------------------------
-        | SEMUA DETAIL HARUS SUDAH TER-CREATE
+        | NOT ALL FULFILLMENT CREATED
         |--------------------------------------------------------------------------
         */
 
-        if (!$allDetailsHaveMooGoldOrder) {
+        if (
+            !$allDetailsHaveMooGoldOrder
+        ) {
 
-            /*
-            |--------------------------------------------------------------------------
-            | Belum semua fulfillment dibuat.
-            |
-            | Jangan menyatakan Completed.
-            |--------------------------------------------------------------------------
-            */
-
-            if ($mooGoldOrders->isNotEmpty()) {
+            if (
+                $mooGoldOrders->isNotEmpty()
+            ) {
 
                 $order->status =
                     'Processing';
@@ -1454,7 +1737,7 @@ class MooGoldOrderService
 
         /*
         |--------------------------------------------------------------------------
-        | SEMUA HARUS FINAL SUCCESS
+        | ALL SUCCESS
         |--------------------------------------------------------------------------
         */
 
@@ -1493,7 +1776,9 @@ class MooGoldOrderService
         |--------------------------------------------------------------------------
         */
 
-        if ($mooGoldOrders->isNotEmpty()) {
+        if (
+            $mooGoldOrders->isNotEmpty()
+        ) {
 
             $order->status =
                 'Processing';
@@ -1503,9 +1788,9 @@ class MooGoldOrderService
     }
 
     /**
-     * =========================================================
-     * MAP MOOGOLD STATUS
-     * =========================================================
+     * ============================================================
+     * MAP ORDER STATUS
+     * ============================================================
      */
     protected function mapOrderStatus(
         string $status
@@ -1533,11 +1818,10 @@ class MooGoldOrderService
         };
     }
 
-
     /**
-     * =========================================================
+     * ============================================================
      * FINAL STATUS
-     * =========================================================
+     * ============================================================
      */
     protected function isFinalStatus(
         string $status
@@ -1560,32 +1844,23 @@ class MooGoldOrderService
         );
     }
 
-
     /**
-     * =========================================================
-     * EXTRACT MOOGOLD ORDER ID
-     * =========================================================
+     * ============================================================
+     * EXTRACT ORDER ID
+     * ============================================================
      */
     protected function extractOrderId(
         array $response
     ): ?string {
 
         $orderId =
-
             $response['order_id']
-
             ?? $response['orderId']
-
             ?? $response['order']['order_id']
-
             ?? $response['order']['id']
-
             ?? $response['data']['order_id']
-
             ?? $response['data']['orderId']
-
             ?? $response['data']['order']['order_id']
-
             ?? null;
 
         if (
@@ -1598,30 +1873,22 @@ class MooGoldOrderService
         return (string) $orderId;
     }
 
-
     /**
-     * =========================================================
-     * EXTRACT MOOGOLD STATUS
-     * =========================================================
+     * ============================================================
+     * EXTRACT STATUS
+     * ============================================================
      */
     protected function extractStatus(
         array $response
     ): string {
 
         $status =
-
             $response['order_status']
-
             ?? $response['status']
-
             ?? $response['order']['order_status']
-
             ?? $response['order']['status']
-
             ?? $response['data']['order_status']
-
             ?? $response['data']['status']
-
             ?? 'processing';
 
         return strtolower(
@@ -1631,18 +1898,17 @@ class MooGoldOrderService
         );
     }
 
-
     /**
-     * =========================================================
+     * ============================================================
      * BUILD ORDER PAYLOAD
-     * =========================================================
+     * ============================================================
      */
     public function buildOrderPayload(
         OrderDetail $orderDetail
     ): array {
 
         $orderDetail->loadMissing([
-            'order',
+            'order.game',
             'item',
         ]);
 
@@ -1664,13 +1930,21 @@ class MooGoldOrderService
             );
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | PLAYER DATA
+        |--------------------------------------------------------------------------
+        */
+
         $playerData =
             $order->player_data;
 
         if (!is_array($playerData)) {
+
             $playerData =
                 json_decode(
-                    (string) $playerData,
+                    (string)
+                        $playerData,
                     true
                 );
         }
@@ -1681,51 +1955,48 @@ class MooGoldOrderService
             );
         }
 
-        $userId =
-            $playerData['uid']
-            ?? $playerData['user_id']
-            ?? $playerData['User ID']
-            ?? null;
+        /*
+        |--------------------------------------------------------------------------
+        | DYNAMIC MOO GOLD PLAYER DATA
+        |--------------------------------------------------------------------------
+        */
 
-        $server =
-            $order->game?->moogold_server_id
-            ?? null;
+        $moogoldPlayerData =
+            $this->resolveMooGoldPlayerData(
+                $order,
+                $playerData
+            );
 
-        if (empty($userId)) {
+        if (empty($moogoldPlayerData)) {
             throw new RuntimeException(
-                'Player UID belum tersedia.'
+                'Player data MooGold tidak tersedia.'
             );
         }
+
+        /*
+        |--------------------------------------------------------------------------
+        | BUILD DATA
+        |--------------------------------------------------------------------------
+        */
 
         $data = [
 
             'category' =>
                 (string)
-                $item->moogold_category_id,
+                    $item->moogold_category_id,
 
             'product-id' =>
                 (string)
-                $item->moogold_variation_id,
+                    $item->moogold_variation_id,
 
             'quantity' =>
                 (string)
-                $orderDetail->qty,
+                    $orderDetail->qty,
 
-            'User ID' =>
-                (string)
-                $userId,
+            ...$moogoldPlayerData,
         ];
 
-        if (
-            $server !== null &&
-            $server !== ''
-        ) {
-            $data['Server ID'] =
-                (string) $server;
-        }
-
         return [
-
             'path' =>
                 'order/create_order',
 
@@ -1739,7 +2010,4 @@ class MooGoldOrderService
                 $data,
         ];
     }
-
-
 }
-

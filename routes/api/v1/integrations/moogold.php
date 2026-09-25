@@ -357,6 +357,224 @@ Route::prefix('admin/moogold')->group(function () {
             ]
         );
 
+
+            Route::post(
+        '/test-create-order',
+        function (
+            Request $request,
+            MooGoldService $mooGold
+        ) {
+
+            $validated = $request->validate([
+                'category_id' => [
+                    'required',
+                    'integer',
+                ],
+
+                'variation_id' => [
+                    'required',
+                    'integer',
+                ],
+
+                'quantity' => [
+                    'required',
+                    'integer',
+                    'min:1',
+                ],
+
+                'user_id' => [
+                    'required',
+                    'string',
+                    'max:100',
+                ],
+
+                'server' => [
+                    'nullable',
+                    'string',
+                    'max:100',
+                ],
+
+                'partner_order_id' => [
+                    'required',
+                    'string',
+                    'max:100',
+                ],
+            ]);
+
+
+            try {
+
+                $result =
+                    $mooGold->createOrder(
+                        (int) $validated['category_id'],
+                        (int) $validated['variation_id'],
+                        (int) $validated['quantity'],
+                        (string) $validated['user_id'],
+                        $validated['server'] ?? null,
+                        (string) $validated['partner_order_id']
+                    );
+
+
+                \Log::info(
+                    'TEST MooGold create_order berhasil dipanggil.',
+                    [
+                        'category_id' =>
+                            $validated['category_id'],
+
+                        'variation_id' =>
+                            $validated['variation_id'],
+
+                        'quantity' =>
+                            $validated['quantity'],
+
+                        'user_id' =>
+                            $validated['user_id'],
+
+                        'server' =>
+                            $validated['server'] ?? null,
+
+                        'partner_order_id' =>
+                            $validated['partner_order_id'],
+
+                        'response' =>
+                            $result,
+                    ]
+                );
+
+
+                return response()->json([
+                    'success' => true,
+
+                    'message' =>
+                        'Request create_order berhasil dikirim ke MooGold.',
+
+                    'request' => [
+                        'category_id' =>
+                            (int) $validated['category_id'],
+
+                        'variation_id' =>
+                            (int) $validated['variation_id'],
+
+                        'quantity' =>
+                            (int) $validated['quantity'],
+
+                        'user_id' =>
+                            $validated['user_id'],
+
+                        'server' =>
+                            $validated['server'] ?? null,
+
+                        'partner_order_id' =>
+                            $validated['partner_order_id'],
+                    ],
+
+                    'data' =>
+                        $result,
+                ]);
+
+            } catch (\Throwable $e) {
+
+                \Log::error(
+                    'TEST MooGold create_order gagal.',
+                    [
+                        'category_id' =>
+                            $validated['category_id'],
+
+                        'variation_id' =>
+                            $validated['variation_id'],
+
+                        'quantity' =>
+                            $validated['quantity'],
+
+                        'user_id' =>
+                            $validated['user_id'],
+
+                        'server' =>
+                            $validated['server'] ?? null,
+
+                        'partner_order_id' =>
+                            $validated['partner_order_id'],
+
+                        'message' =>
+                            $e->getMessage(),
+                    ]
+                );
+
+
+                return response()->json([
+                    'success' => false,
+
+                    'message' =>
+                        $e->getMessage(),
+
+                ], 500);
+
+            }
+
+        }
+    );
     });
+
+    /*
+    |--------------------------------------------------------------------------
+    | TEST ORDER DETAIL BY MOO GOLD ORDER ID
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get(
+        '/test-order/{orderId}',
+        function (
+            int $orderId,
+            MooGoldService $mooGold
+        ) {
+
+            try {
+
+                $result =
+                    $mooGold->order(
+                        $orderId
+                    );
+
+                return response()->json([
+
+                    'success' => true,
+
+                    'order_id' =>
+                        $orderId,
+
+                    'data' =>
+                        $result,
+
+                ]);
+
+            } catch (\Throwable $e) {
+
+                \Log::error(
+                    'Test MooGold order detail gagal.',
+                    [
+                        'order_id' =>
+                            $orderId,
+
+                        'message' =>
+                            $e->getMessage(),
+                    ]
+                );
+
+                return response()->json([
+
+                    'success' => false,
+
+                    'order_id' =>
+                        $orderId,
+
+                    'message' =>
+                        $e->getMessage(),
+
+                ], 500);
+
+            }
+
+        }
+    );
 
 });

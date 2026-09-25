@@ -4,7 +4,6 @@ namespace App\Integrations\MooGold;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-
 use RuntimeException;
 
 class MooGoldService
@@ -56,11 +55,9 @@ class MooGoldService
         return $this->client->request(
             'product/list_product',
             [
-                'category_id' =>
-                    $categoryId,
+                'category_id' => $categoryId,
             ]
         );
-
     }
 
 
@@ -77,11 +74,9 @@ class MooGoldService
         return $this->client->request(
             'product/product_detail',
             [
-                'product_id' =>
-                    $productId,
+                'product_id' => $productId,
             ]
         );
-
     }
 
 
@@ -98,11 +93,9 @@ class MooGoldService
         return $this->client->request(
             'product/server_list',
             [
-                'product_id' =>
-                    $productId,
+                'product_id' => $productId,
             ]
         );
-
     }
 
 
@@ -121,14 +114,12 @@ class MooGoldService
             'product/validate',
             [
                 'data' => [
-                    'product-id' =>
-                        $productId,
+                    'product-id' => $productId,
 
                     ...$data,
                 ],
             ]
         );
-
     }
 
 
@@ -136,6 +127,37 @@ class MooGoldService
     |--------------------------------------------------------------------------
     | CREATE ORDER
     |--------------------------------------------------------------------------
+    |
+    | Field player sekarang bersifat DINAMIS.
+    |
+    | Contoh:
+    |
+    | [
+    |     'User ID' => '00088624',
+    |     'Region'  => 'SEA',
+    | ]
+    |
+    | Akan dikirim ke MooGold sebagai:
+    |
+    | {
+    |     "User ID": "00088624",
+    |     "Region": "SEA"
+    | }
+    |
+    | Untuk game yang menggunakan Server ID:
+    |
+    | [
+    |     'User ID'   => '1963315211',
+    |     'Server ID' => '19248',
+    | ]
+    |
+    | Akan tetap dikirim sebagai:
+    |
+    | {
+    |     "User ID": "1963315211",
+    |     "Server ID": "19248"
+    | }
+    |
     */
 
     public function createOrder(
@@ -143,9 +165,14 @@ class MooGoldService
         string $externalId,
         string $variationId,
         int $quantity,
-        string $userId,
-        ?string $server = null
+        array $playerData
     ): array {
+
+        /*
+        |--------------------------------------------------------------------------
+        | BASE ORDER DATA
+        |--------------------------------------------------------------------------
+        */
 
         $data = [
 
@@ -158,31 +185,74 @@ class MooGoldService
             'quantity' =>
                 (string) $quantity,
 
-            'User ID' =>
-                (string) $userId,
-
         ];
 
 
         /*
         |--------------------------------------------------------------------------
-        | SERVER ID
+        | PLAYER DATA
         |--------------------------------------------------------------------------
         |
-        | JANGAN diubah menjadi "Server".
+        | Player fields sudah dimapping sebelumnya berdasarkan:
+        |
+        | game.player_fields[].moogold_field
+        |
+        | Jadi jangan hardcode:
+        |
+        |     User ID
+        |     Server ID
+        |     Region
+        |
+        | di sini.
         |
         */
 
-        if (
-            $server !== null &&
-            $server !== ''
-        ) {
+        foreach ($playerData as $field => $value) {
 
-            $data['Server ID'] =
-                (string) $server;
+            /*
+            |--------------------------------------------------------------------------
+            | Abaikan field tanpa nama
+            |--------------------------------------------------------------------------
+            */
 
+            if (
+                $field === null ||
+                $field === ''
+            ) {
+                continue;
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Abaikan value kosong
+            |--------------------------------------------------------------------------
+            */
+
+            if (
+                $value === null ||
+                $value === ''
+            ) {
+                continue;
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Semua field dikirim sebagai string
+            |--------------------------------------------------------------------------
+            */
+
+            $data[(string) $field] =
+                (string) $value;
         }
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | REQUEST
+        |--------------------------------------------------------------------------
+        */
 
         return $this->client->request(
             'order/create_order',
@@ -194,7 +264,6 @@ class MooGoldService
                     $externalId,
             ]
         );
-
     }
 
 
@@ -211,11 +280,9 @@ class MooGoldService
         return $this->client->request(
             'order/order_detail',
             [
-                'order_id' =>
-                    $orderId,
+                'order_id' => $orderId,
             ]
         );
-
     }
 
 
@@ -236,46 +303,66 @@ class MooGoldService
                     $partnerOrderId,
             ]
         );
-
     }
 
-public function transactionHistory(
-    string $startDate,
-    string $endDate,
-    ?string $status = null,
-    int $page = 1,
-    int $limit = 20
-): array {
-
-    $data = [
-        'start_date' => $startDate,
-        'end_date'   => $endDate,
-        'page'       => max($page, 1),
-        'limit'      => min(max($limit, 1), 100),
-    ];
 
     /*
     |--------------------------------------------------------------------------
-    | STATUS
+    | TRANSACTION HISTORY
     |--------------------------------------------------------------------------
     */
 
-    if (
-        $status !== null &&
-        $status !== ''
-    ) {
-        $data['status'] = $status;
+    public function transactionHistory(
+        string $startDate,
+        string $endDate,
+        ?string $status = null,
+        int $page = 1,
+        int $limit = 20
+    ): array {
+
+        $data = [
+
+            'start_date' =>
+                $startDate,
+
+            'end_date' =>
+                $endDate,
+
+            'page' =>
+                max($page, 1),
+
+            'limit' =>
+                min(
+                    max($limit, 1),
+                    100
+                ),
+        ];
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | STATUS
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            $status !== null &&
+            $status !== ''
+        ) {
+            $data['status'] =
+                $status;
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | REQUEST
+        |--------------------------------------------------------------------------
+        */
+
+        return $this->client->request(
+            'order/transaction_history',
+            $data
+        );
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | REQUEST
-    |--------------------------------------------------------------------------
-    */
-
-    return $this->client->request(
-        'order/transaction_history',
-        $data
-    );
-}
 }
