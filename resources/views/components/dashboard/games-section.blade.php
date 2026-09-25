@@ -24,67 +24,6 @@
 
 
         {{-- =====================================================
-                    SEARCH GAME
-        ====================================================== --}}
-
-        @if($games->count() > 0)
-
-            <div class="dashboard-game-search">
-
-                <label
-                    for="gameSearchInput"
-                    class="dashboard-search-label"
-                >
-                    Cari Game
-                </label>
-
-
-                <div class="dashboard-search-box">
-
-                    <input
-                        type="text"
-                        id="gameSearchInput"
-                        class="dashboard-search-input"
-                        placeholder="Cari game favoritmu..."
-                        autocomplete="off"
-                    >
-
-
-                    <button
-                        type="button"
-                        id="clearGameSearch"
-                        class="dashboard-search-button"
-                        aria-label="Cari game"
-                    >
-
-                        <i class="fa-solid fa-magnifying-glass"></i>
-
-                    </button>
-
-                </div>
-
-
-                <div
-                    class="dashboard-search-info"
-                    id="gameSearchInfo"
-                >
-
-                    Menampilkan
-
-                    <strong id="gameResultCount">
-                        {{ $games->count() }}
-                    </strong>
-
-                    game
-
-                </div>
-
-            </div>
-
-        @endif
-
-
-        {{-- =====================================================
              DIVIDER
         ====================================================== --}}
 
@@ -114,11 +53,11 @@
 
                 @foreach($games as $game)
 
-            <div
-                class="game-search-item"
-                data-game-name="{{ $game->game_name }}"
-                data-game-publisher="{{ $game->publisher ?? '' }}"
-            >
+                    <div
+                        class="game-search-item"
+                        data-game-name="{{ $game->game_name }}"
+                        data-game-publisher="{{ $game->publisher ?? '' }}"
+                    >
 
                         @include(
                             'components.dashboard.game-card',
@@ -128,45 +67,6 @@
                     </div>
 
                 @endforeach
-
-            </div>
-
-
-            {{-- =================================================
-                 SEARCH EMPTY STATE
-            ================================================== --}}
-
-            <div
-                class="game-search-empty"
-                id="gameSearchEmpty"
-                style="display: none;"
-            >
-
-                <div class="game-search-empty-icon">
-
-                    <i class="fa-solid fa-gamepad"></i>
-
-                </div>
-
-                <h3>
-                    Game tidak ditemukan
-                </h3>
-
-                <p>
-                    Coba gunakan nama game yang berbeda.
-                </p>
-
-                <button
-                    type="button"
-                    id="resetGameSearch"
-                    class="btn btn-outline-primary"
-                >
-
-                    <i class="fa-solid fa-rotate-left me-1"></i>
-
-                    Tampilkan Semua Game
-
-                </button>
 
             </div>
 
@@ -186,7 +86,6 @@
     </div>
 
 </section>
-
 
 {{-- =========================================================
      SEARCH SCRIPT

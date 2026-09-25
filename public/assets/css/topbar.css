@@ -11,16 +11,39 @@
 
     width: 100%;
 
+    /*
+     * Jangan gunakan background solid.
+     * Harus semi-transparent agar backdrop blur terlihat.
+     */
     background:
-        var(--theme-surface);
+        color-mix(
+            in srgb,
+            var(--theme-surface) 78%,
+            transparent
+        );
+
+    /*
+     * Efek glass untuk seluruh topbar.
+     */
+    -webkit-backdrop-filter:
+        blur(18px)
+        saturate(125%);
+
+    backdrop-filter:
+        blur(18px)
+        saturate(125%);
 
     border-bottom:
         1px solid
-        var(--theme-border);
+        color-mix(
+            in srgb,
+            var(--theme-border) 65%,
+            transparent
+        );
 
     box-shadow:
         0 4px 18px
-        rgba(15, 23, 42, 0.05);
+        rgba(15, 23, 42, 0.06);
 
     transition:
         background-color 0.25s ease,
@@ -1351,4 +1374,490 @@
         font-size: 10px;
     }
 
+}
+
+
+/* =========================================================
+   GAME SEARCH
+========================================================= */
+
+.topup-game-search {
+    width: 100%;
+
+    padding:
+        8px
+        16px
+        10px;
+
+    /*
+     * Transparan tipis agar tetap menyatu
+     * dengan topbar.
+     */
+    background:
+        color-mix(
+            in srgb,
+            var(--theme-surface) 72%,
+            transparent
+        );
+
+    border-top:
+        1px solid
+        color-mix(
+            in srgb,
+            var(--theme-border) 45%,
+            transparent
+        );
+
+    border-bottom:
+        1px solid
+        color-mix(
+            in srgb,
+            var(--theme-border) 45%,
+            transparent
+        );
+
+    -webkit-backdrop-filter:
+        blur(14px);
+
+    backdrop-filter:
+        blur(14px);
+
+    box-shadow:
+        0 3px 12px
+        rgba(15, 23, 42, 0.04);
+}
+
+
+/* =========================================================
+   SEARCH CONTAINER
+========================================================= */
+
+.topup-game-search-container {
+    width: 100%;
+
+    max-width: 900px;
+
+    margin:
+        0 auto;
+}
+
+
+/* =========================================================
+   LABEL
+========================================================= */
+
+.topup-search-label {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color:
+        var(--theme-text-secondary);
+
+    font-size: 11px;
+
+    line-height: 1.4;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   SEARCH BOX
+========================================================= */
+
+.topup-search-box {
+    position: relative;
+
+    width: 100%;
+}
+
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+.topup-search-input {
+    width: 100%;
+
+    min-height: 42px;
+
+    margin: 0;
+
+    padding:
+        8px
+        44px
+        8px
+        13px;
+
+    border:
+        1px solid
+        color-mix(
+            in srgb,
+            var(--theme-border) 75%,
+            transparent
+        );
+
+    border-radius: 8px;
+
+    outline: none;
+
+    background:
+        color-mix(
+            in srgb,
+            var(--theme-input-bg) 82%,
+            transparent
+        );
+
+    color:
+        var(--theme-text);
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+    box-shadow:
+        0 1px 3px
+        rgba(15, 23, 42, 0.04);
+
+    transition:
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.topup-search-input::placeholder {
+    color:
+        var(--theme-text-muted);
+}
+
+
+.topup-search-input:hover {
+    border-color:
+        color-mix(
+            in srgb,
+            var(--theme-primary) 55%,
+            var(--theme-border)
+        );
+}
+
+
+.topup-search-input:focus {
+    border-color:
+        var(--theme-primary);
+
+    background:
+        var(--theme-input-bg);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(37, 99, 235, 0.08);
+}
+
+
+/* =========================================================
+   SEARCH ACTION
+========================================================= */
+
+.topup-search-action {
+    position: absolute;
+
+    top: 50%;
+    right: 6px;
+
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    transform:
+        translateY(-50%);
+}
+
+
+/* =========================================================
+   SEARCH ICON
+========================================================= */
+
+.topup-search-icon {
+    color:
+        var(--theme-text-muted);
+
+    font-size: 13px;
+
+    pointer-events: none;
+
+    transition:
+        color 0.2s ease;
+}
+
+
+.topup-search-box:focus-within .topup-search-icon {
+    color:
+        var(--theme-primary);
+}
+
+
+/* =========================================================
+   CLEAR BUTTON
+========================================================= */
+
+.topup-search-button {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    width: 28px;
+    height: 28px;
+
+    padding: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    transform:
+        translate(-50%, -50%);
+
+    border: 0;
+
+    border-radius: 50%;
+
+    background:
+        var(--theme-surface-soft);
+
+    color:
+        var(--theme-text-secondary);
+
+    font-size: 11px;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.topup-search-button:hover {
+    background:
+        var(--theme-primary-soft);
+
+    color:
+        var(--theme-primary);
+
+    transform:
+        translate(-50%, -50%)
+        scale(1.05);
+}
+
+
+.topup-search-button:focus {
+    outline: none;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(37, 99, 235, 0.08);
+}
+
+
+/*
+ * Saat tombol clear tampil,
+ * icon search disembunyikan.
+ */
+.topup-search-box:has(.topup-search-button:not([hidden])) .topup-search-icon {
+    display: none;
+}
+
+
+/* =========================================================
+   SEARCH INFO
+========================================================= */
+
+.topup-search-info {
+    margin-top: 4px;
+
+    color:
+        var(--theme-text-muted);
+
+    font-size: 10px;
+
+    line-height: 1.4;
+
+    text-align: left;
+}
+
+
+.topup-search-info strong {
+    color:
+        var(--theme-primary);
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+[data-theme="dark"] .topup-game-search {
+    background:
+        color-mix(
+            in srgb,
+            var(--theme-surface) 65%,
+            transparent
+        );
+
+    border-top-color:
+        rgba(255, 255, 255, 0.06);
+
+    border-bottom-color:
+        rgba(255, 255, 255, 0.06);
+
+    box-shadow:
+        0 3px 14px
+        rgba(0, 0, 0, 0.16);
+}
+
+
+[data-theme="dark"] .topup-search-input {
+    background:
+        color-mix(
+            in srgb,
+            var(--theme-input-bg) 78%,
+            transparent
+        );
+
+    border-color:
+        rgba(255, 255, 255, 0.08);
+}
+
+
+[data-theme="dark"] .topup-search-input:focus {
+    background:
+        var(--theme-input-bg);
+}
+
+
+[data-theme="dark"] .topup-search-button {
+    background:
+        rgba(255, 255, 255, 0.06);
+
+    color:
+        var(--theme-text-secondary);
+}
+
+
+[data-theme="dark"] .topup-search-button:hover {
+    background:
+        rgba(37, 99, 235, 0.18);
+
+    color:
+        var(--theme-primary);
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 767px) {
+
+    .topup-game-search {
+        padding:
+            7px
+            11px
+            8px;
+    }
+
+
+    .topup-game-search-container {
+        max-width: none;
+    }
+
+
+    .topup-search-label {
+        margin-bottom: 4px;
+
+        font-size: 10px;
+    }
+
+
+    .topup-search-input {
+        min-height: 40px;
+
+        padding:
+            7px
+            42px
+            7px
+            12px;
+
+        border-radius: 8px;
+
+        font-size: 11px;
+    }
+
+
+    .topup-search-action {
+        right: 5px;
+
+        width: 30px;
+        height: 30px;
+    }
+
+
+    .topup-search-button {
+        width: 27px;
+        height: 27px;
+
+        font-size: 10px;
+    }
+
+
+    .topup-search-icon {
+        font-size: 12px;
+    }
+
+
+    .topup-search-info {
+        margin-top: 3px;
+
+        font-size: 9px;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .topup-game-search {
+        padding:
+            6px
+            9px
+            7px;
+    }
+
+
+    .topup-search-input {
+        min-height: 39px;
+
+        padding-left: 11px;
+
+        font-size: 11px;
+    }
+
+
+    .topup-search-info {
+        font-size: 9px;
+    }
 }
