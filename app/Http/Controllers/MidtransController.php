@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Integrations\Midtrans\MidtransOrderService;
 use App\Integrations\Midtrans\MidtransService;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 
 class MidtransController extends Controller
@@ -268,4 +269,152 @@ public function payment(
             ]
         );
     }
+
+/**
+ * =========================================================
+ * LIVE ORDER STATUS
+ * =========================================================
+ */
+public function status(
+    Request $request,
+    Order $order
+): JsonResponse {
+
+    /*
+    |--------------------------------------------------------------------------
+    | REFRESH ORDER DARI DATABASE
+    |--------------------------------------------------------------------------
+    */
+
+    $order =
+        Order::query()
+            ->findOrFail(
+                $order->id
+            );
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | AUTHORIZATION
+    |--------------------------------------------------------------------------
+    |
+    | USER LOGIN
+    |--------------------------------------------------------------------------
+    */
+
+    if ($order->user_id) {
+
+        if (
+            !auth()->check() ||
+            (int) auth()->id() !==
+            (int) $order->user_id
+        ) {
+
+            abort(
+                403,
+                'Anda tidak memiliki akses ke order ini.'
+            );
+        }
+
+    }
+    else {
+
+        /*
+        |--------------------------------------------------------------------------
+        | GUEST
+        |--------------------------------------------------------------------------
+        */
+
+        $token =
+            trim(
+                (string)
+                $request->query('token')
+            );
+
+
+        if (
+            $token === '' ||
+            !$order->guest_token ||
+            !hash_equals(
+                (string) $order->guest_token,
+                $token
+            )
+        ) {
+
+            abort(
+                403,
+                'Token order tidak valid.'
+            );
+        }
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | LATEST MIDTRANS TRANSACTION
+    |--------------------------------------------------------------------------
+    */
+
+    $transaction =
+        $order
+            ->midtransTransactions()
+            ->latest('id')
+            ->first();
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | RESPONSE
+    |--------------------------------------------------------------------------
+    */
+
+    return response()
+        ->json([
+
+            'success' =>
+                true,
+
+            'order_status' =>
+                (string)
+                $order->status,
+
+            'transaction_status' =>
+                strtolower(
+                    trim(
+                        (string)
+                        (
+                            $transaction
+                                ?->transaction_status
+                            ?? ''
+                        )
+                    )
+                ),
+
+            'payment_type' =>
+                $transaction
+                    ?->payment_type,
+
+            'paid_at' =>
+                $transaction?->paid_at
+                    ?->format(
+                        'd M Y H:i'
+                    ),
+
+            'expired_at' =>
+                $transaction?->expired_at
+                    ?->format(
+                        'd M Y H:i'
+                    ),
+
+        ])
+        ->header(
+            'Cache-Control',
+            'no-store, no-cache, must-revalidate, max-age=0'
+        )
+        ->header(
+            'Pragma',
+            'no-cache'
+        );
+}
+
 }

@@ -58,13 +58,6 @@ Route::get(
     'midtrans.payment'
 );
 
-Route::post(
-    '/games/validate-player',
-    [
-        GameController::class,
-        'validatePlayer',
-    ]
-)->name('games.validate-player');
 
 Route::get(
     '/midtrans/result/{order}',
@@ -74,6 +67,16 @@ Route::get(
     ]
 )->name(
     'midtrans.result'
+);
+
+Route::get(
+    '/midtrans/status/{order}',
+    [
+        MidtransController::class,
+        'status',
+    ]
+)->name(
+    'midtrans.status'
 );
 
 

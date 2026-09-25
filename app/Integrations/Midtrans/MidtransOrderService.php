@@ -892,11 +892,47 @@ protected function resolveExistingAttempt(
 
         /*
         |--------------------------------------------------------------------------
+        | CALLBACK FINISH URL
+        |--------------------------------------------------------------------------
+        |
+        | Guest order harus membawa guest token sampai halaman result.
+        | Kalau token hilang setelah redirect dari Snap, endpoint live status
+        | tidak bisa melakukan authorization terhadap guest.
+        |--------------------------------------------------------------------------
+        */
+
+        $finishUrl =
+            route(
+                'midtrans.result',
+                [
+                    'order' =>
+                        $order->id,
+                ]
+            );
+
+
+        if (
+            !$order->user_id &&
+            $order->guest_token
+        ) {
+
+            $finishUrl .=
+                '?' .
+                http_build_query([
+                    'token' =>
+                        $order->guest_token,
+                ]);
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
         | SNAP PARAMS
         |--------------------------------------------------------------------------
         */
 
         $params = [
+
             'transaction_details' => [
                 'order_id' =>
                     $transaction->midtrans_order_id,
@@ -913,16 +949,10 @@ protected function resolveExistingAttempt(
 
             'callbacks' => [
                 'finish' =>
-                    route(
-                        'midtrans.result',
-                        [
-                            'order' =>
-                                $order->id,
-                        ]
-                    ),
+                    $finishUrl,
             ],
-        ];
 
+        ];
 
         /*
         |--------------------------------------------------------------------------
