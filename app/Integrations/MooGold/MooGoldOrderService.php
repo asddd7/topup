@@ -1413,37 +1413,69 @@ class MooGoldOrderService
     }
 
     /**
-     * ============================================================
+     * =========================================================
      * SCHEDULE STATUS CHECK
-     * ============================================================
+     * =========================================================
      */
     protected function scheduleStatusCheck(
         MooGoldOrder $mooGoldOrder
     ): void {
+
+        /*
+        |--------------------------------------------------------------------------
+        | TIDAK ADA MOO GOLD ORDER ID
+        |--------------------------------------------------------------------------
+        */
 
         if (
             empty(
                 $mooGoldOrder->moogold_order_id
             )
         ) {
+
             return;
         }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | SUDAH FINAL
+        |--------------------------------------------------------------------------
+        */
 
         if (
             $this->isFinalStatus(
                 (string)
-                    $mooGoldOrder
-                        ->moogold_status
+                $mooGoldOrder->moogold_status
             )
         ) {
+
             return;
         }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | FIRST STATUS CHECK
+        |--------------------------------------------------------------------------
+        |
+        | Jangan tunggu 2 menit.
+        |
+        | Setelah create_order berhasil, beri MooGold sedikit
+        | waktu untuk memproses order kemudian cek kembali.
+        |--------------------------------------------------------------------------
+        */
+
+        $nextCheck =
+            now()->addSeconds(10);
+
 
         CheckMooGoldOrderStatus::dispatch(
             $mooGoldOrder->id
         )->delay(
-            now()->addMinutes(2)
+            $nextCheck
         );
+
 
         Log::info(
             'Status check MooGold dijadwalkan.',
@@ -1459,9 +1491,13 @@ class MooGoldOrderService
 
                 'status' =>
                     $mooGoldOrder->moogold_status,
+
+                'next_check' =>
+                    $nextCheck,
             ]
         );
     }
+
 
     /**
      * ============================================================

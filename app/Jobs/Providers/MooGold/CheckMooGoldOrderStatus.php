@@ -5,7 +5,7 @@ namespace App\Jobs\Providers\MooGold;
 use App\Models\MooGoldOrder;
 use App\Integrations\MooGold\MooGoldOrderService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -15,44 +15,49 @@ use Throwable;
 
 class CheckMooGoldOrderStatus implements
     ShouldQueue,
-    ShouldBeUnique
+    ShouldBeUniqueUntilProcessing
 {
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
 
+
     /**
      * =========================================================
      * RETRY CONFIGURATION
      * =========================================================
+     *
+     * Retry hanya berlaku jika handle() melempar exception.
+     *
+     * Ini TIDAK menentukan interval normal pengecekan.
      */
     public int $tries = 5;
 
+
     public array $backoff = [
+        30,
         60,
         120,
         300,
-        600,
     ];
+
 
     /**
      * =========================================================
      * UNIQUE LOCK
      * =========================================================
      *
-     * Satu MooGoldOrder hanya boleh mempunyai satu
-     * CheckMooGoldOrderStatus aktif.
+     * Satu order hanya mempunyai satu status check
+     * pada saat yang sama.
      *
-     * Ini mencegah:
+     * Lock dilepas saat job mulai diproses.
      *
-     * Check #1
-     * Check #2
-     * Check #3
-     *
-     * berjalan bersamaan untuk transaksi yang sama.
+     * Ini cocok karena job ini akan menjadwalkan
+     * pengecekan berikutnya.
      */
     public int $uniqueFor = 1800;
+
 
     /**
      * =========================================================
@@ -64,6 +69,7 @@ class CheckMooGoldOrderStatus implements
     ) {
     }
 
+
     /**
      * =========================================================
      * UNIQUE ID
@@ -74,6 +80,7 @@ class CheckMooGoldOrderStatus implements
         return 'check-moogold-order-status-' .
             $this->mooGoldOrderId;
     }
+
 
     /**
      * =========================================================
@@ -97,7 +104,16 @@ class CheckMooGoldOrderStatus implements
                 $this->mooGoldOrderId
             );
 
-        if (!$mooGoldOrder) {
+
+        /*
+        |--------------------------------------------------------------------------
+        | NOT FOUND
+        |--------------------------------------------------------------------------
+        */
+
+        if (
+            !$mooGoldOrder
+        ) {
 
             Log::warning(
                 'CheckMooGoldOrderStatus: MooGoldOrder tidak ditemukan.',
@@ -109,6 +125,7 @@ class CheckMooGoldOrderStatus implements
 
             return;
         }
+
 
         /*
         |--------------------------------------------------------------------------
@@ -140,9 +157,10 @@ class CheckMooGoldOrderStatus implements
             return;
         }
 
+
         /*
         |--------------------------------------------------------------------------
-        | FINAL STATUS
+        | CURRENT STATUS
         |--------------------------------------------------------------------------
         */
 
@@ -153,6 +171,13 @@ class CheckMooGoldOrderStatus implements
                     $mooGoldOrder->moogold_status
                 )
             );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | FINAL STATUS
+        |--------------------------------------------------------------------------
+        */
 
         if (
             in_array(
@@ -190,6 +215,7 @@ class CheckMooGoldOrderStatus implements
             return;
         }
 
+
         /*
         |--------------------------------------------------------------------------
         | CHECK STATUS
@@ -201,9 +227,10 @@ class CheckMooGoldOrderStatus implements
                 $mooGoldOrder
             );
 
+
         /*
         |--------------------------------------------------------------------------
-        | STATUS TERBARU
+        | LATEST STATUS
         |--------------------------------------------------------------------------
         */
 
@@ -214,6 +241,7 @@ class CheckMooGoldOrderStatus implements
                     $result->moogold_status
                 )
             );
+
 
         Log::info(
             'MooGold order status checked.',
@@ -232,9 +260,13 @@ class CheckMooGoldOrderStatus implements
             ]
         );
 
+
         /*
         |--------------------------------------------------------------------------
         | PROCESSING
+        |--------------------------------------------------------------------------
+        |
+        | Kalau belum selesai, cek lagi 15 detik kemudian.
         |--------------------------------------------------------------------------
         */
 
@@ -253,13 +285,15 @@ class CheckMooGoldOrderStatus implements
         ) {
 
             $nextCheck =
-                now()->addMinutes(2);
+                now()->addSeconds(15);
+
 
             self::dispatch(
                 $result->id
             )->delay(
                 $nextCheck
             );
+
 
             Log::info(
                 'MooGold order akan dicek kembali.',
@@ -281,8 +315,10 @@ class CheckMooGoldOrderStatus implements
                 ]
             );
 
+
             return;
         }
+
 
         /*
         |--------------------------------------------------------------------------
@@ -321,8 +357,10 @@ class CheckMooGoldOrderStatus implements
                 ]
             );
 
+
             return;
         }
+
 
         /*
         |--------------------------------------------------------------------------
@@ -358,12 +396,14 @@ class CheckMooGoldOrderStatus implements
                 ]
             );
 
+
             return;
         }
 
+
         /*
         |--------------------------------------------------------------------------
-        | UNKNOWN STATUS
+        | UNKNOWN
         |--------------------------------------------------------------------------
         */
 
@@ -385,6 +425,7 @@ class CheckMooGoldOrderStatus implements
             ]
         );
     }
+
 
     /**
      * =========================================================
