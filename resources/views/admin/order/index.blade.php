@@ -21,7 +21,7 @@ Manajemen Order
 
 
 
-<form class="admin-order-filter">
+<form class="admin-order-filter" method="GET" action="{{ route('admin.order.index') }}">
 
 <select name="status"
 class="form-select w-auto"
@@ -148,7 +148,7 @@ Action
 
 <td>
 
-{{$order->user->name ?? 'Guest'}}
+{{ $order->user?->name ?? ($order->guest_name ?: 'Guest') }}
 
 </td>
 
@@ -156,7 +156,7 @@ Action
 
 <td>
 
-{{$order->game->game_name}}
+{{ $order->game?->game_name ?? 'Game tidak ditemukan' }}
 
 </td>
 
@@ -208,9 +208,10 @@ Action
 @endforeach
 
 @if($orderSources['moogold'] && $order->mooGoldOrders->isEmpty())
-	<small class="admin-order-history-line">Belum dikirim ke provider.</small>
-@elseif($orderSources['ditusi'] && $order->ditusiOrders->isEmpty())
-	<small class="admin-order-history-line">Belum dikirim ke provider.</small>
+	<small class="admin-order-history-line">MooGold: Belum dikirim.</small>
+@endif
+@if($orderSources['ditusi'] && $order->ditusiOrders->isEmpty())
+	<small class="admin-order-history-line">Ditusi: Belum dikirim.</small>
 @endif
 
 </td>
@@ -266,6 +267,12 @@ Success
 Canceled
 </span>
 
+@else
+
+<span class="badge bg-secondary">
+{{ $order->status ?: 'Tidak diketahui' }}
+</span>
+
 
 @endif
 
@@ -283,15 +290,17 @@ class="btn btn-sm btn-primary">
 
 <i class="fa-solid fa-eye"></i>
 
+<span class="visually-hidden">Lihat order</span>
+
 </a>
 
 
-@if($order->status=='Paid')
+@if($order->status=='Waiting Payment')
 
 
 <span class="badge bg-danger ms-1">
 
-Menunggu Konfirmasi
+Menunggu Verifikasi
 
 </span>
 

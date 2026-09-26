@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div class="container admin-order-show">
+<main class="container admin-order-show">
 
     {{-- =====================================================
          FLASH MESSAGE
@@ -45,10 +45,6 @@
 
     @endif
 
-<div class="container admin-order-detail">
-
-@auth
-
     <div class="d-flex gap-2 mb-3">
 
         <a
@@ -64,7 +60,6 @@
 
     </div>
 
-@endauth
 <div class="card shadow admin-order-detail-card">
 
 
@@ -97,7 +92,7 @@ Detail Order
 
 Game :
 
-{{$order->game->game_name}}
+{{ $order->game?->game_name ?? 'Game tidak ditemukan' }}
 
 </p>
 
@@ -106,7 +101,7 @@ Game :
 
 User :
 
-{{$order->user->name ?? 'Guest'}}
+{{ $order->user?->name ?? ($order->guest_name ?: 'Guest') }}
 
 </p>
 
@@ -119,13 +114,13 @@ User :
 
 <table class="table table-bordered admin-order-player-table">
 
-@foreach($order->game->player_fields ?? [] as $field)
+@foreach($order->game?->player_fields ?? [] as $field)
 
 <tr>
 
     <th width="220">
 
-        {{ $field['label'] }}
+        {{ $field['label'] ?? $field['name'] ?? 'Data player' }}
 
     </th>
 
@@ -159,7 +154,7 @@ Item
 
 <li>
 
-{{$detail->item->item_name}}
+{{ $detail->item?->item_name ?? 'Item tidak ditemukan' }}
 
 x{{$detail->qty}}
 
@@ -241,6 +236,10 @@ $statusList = [
     'Waiting Payment',
 
     'Paid',
+
+    'Processing',
+
+    'Completed',
 
     'Cancelled'
 
@@ -417,11 +416,9 @@ Update Status
 @endif
 </div>
 
-
 </div>
 
-
-</div>
+</main>
 
 
 @endsection
