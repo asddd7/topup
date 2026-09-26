@@ -153,7 +153,8 @@ class SettingController extends BaseAdminController
 
 
 
-        Cache::forgetMany(['website_settings', 'settings']);
+        Cache::forget('website_settings');
+        Cache::forget('settings');
 
 
         return back()->with(
