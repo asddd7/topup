@@ -135,7 +135,10 @@ Action
 
 <td>
 
-{{$order->payment->payment_name}}
+{{ $order->payment?->payment_name
+	?? ($order->midtrans_payment_type
+		? \Illuminate\Support\Str::headline($order->midtrans_payment_type)
+		: 'Belum ditentukan') }}
 
 </td>
 

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Admin\BaseAdminController;
 use App\Models\Order;
 use App\Models\Game;
-use App\Models\Item;
 
 
 class DashboardController extends BaseAdminController
@@ -34,11 +33,6 @@ Game::count();
 
 
 
-$totalItem =
-Item::count();
-
-
-
 $income =
 Order::where(
 'status',
@@ -63,7 +57,6 @@ compact(
 'totalOrder',
 'waitingPayment',
 'totalGame',
-'totalItem',
 'income',
 'recentOrders'
 

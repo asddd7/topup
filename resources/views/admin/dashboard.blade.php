@@ -39,13 +39,19 @@
 
                 <div class="admin-stat-body">
 
-                    <span class="admin-stat-label">
-                        Total Pesanan
-                    </span>
+                    <div class="admin-stat-copy">
+                        <span class="admin-stat-label">
+                            Total Pesanan
+                        </span>
 
-                    <h2 class="admin-stat-value">
-                        {{ $totalOrder }}
-                    </h2>
+                        <h2 class="admin-stat-value">
+                            {{ $totalOrder }}
+                        </h2>
+                    </div>
+
+                    <span class="admin-stat-icon" aria-hidden="true">
+                        <i class="fa-solid fa-receipt"></i>
+                    </span>
 
                 </div>
 
@@ -58,13 +64,19 @@
 
                 <div class="admin-stat-body">
 
-                    <span class="admin-stat-label">
-                        Menunggu Pembayaran
-                    </span>
+                    <div class="admin-stat-copy">
+                        <span class="admin-stat-label">
+                            Menunggu Pembayaran
+                        </span>
 
-                    <h2 class="admin-stat-value">
-                        {{ $waitingPayment }}
-                    </h2>
+                        <h2 class="admin-stat-value">
+                            {{ $waitingPayment }}
+                        </h2>
+                    </div>
+
+                    <span class="admin-stat-icon" aria-hidden="true">
+                        <i class="fa-regular fa-clock"></i>
+                    </span>
 
                 </div>
 
@@ -77,13 +89,19 @@
 
                 <div class="admin-stat-body">
 
-                    <span class="admin-stat-label">
-                        Jumlah Game
-                    </span>
+                    <div class="admin-stat-copy">
+                        <span class="admin-stat-label">
+                            Jumlah Game
+                        </span>
 
-                    <h2 class="admin-stat-value">
-                        {{ $totalGame }}
-                    </h2>
+                        <h2 class="admin-stat-value">
+                            {{ $totalGame }}
+                        </h2>
+                    </div>
+
+                    <span class="admin-stat-icon" aria-hidden="true">
+                        <i class="fa-solid fa-gamepad"></i>
+                    </span>
 
                 </div>
 
@@ -96,13 +114,19 @@
 
                 <div class="admin-stat-body">
 
-                    <span class="admin-stat-label">
-                        Pendapatan
-                    </span>
+                    <div class="admin-stat-copy">
+                        <span class="admin-stat-label">
+                            Pendapatan
+                        </span>
 
-                    <h2 class="admin-stat-value currency">
-                        Rp {{ number_format($income) }}
-                    </h2>
+                        <h2 class="admin-stat-value currency">
+                            Rp {{ number_format($income) }}
+                        </h2>
+                    </div>
+
+                    <span class="admin-stat-icon" aria-hidden="true">
+                        <i class="fa-solid fa-wallet"></i>
+                    </span>
 
                 </div>
 
@@ -224,6 +248,12 @@
                     Order Terbaru
                 </h2>
 
+                <a href="{{ route('admin.order.index') }}"
+                   class="admin-recent-order-link">
+                    Semua Pesanan
+                    <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                </a>
+
             </div>
 
 
@@ -266,11 +296,10 @@
 
                                 <td>
 
-                                    <span class="admin-recent-order-invoice">
-
+                                    <a class="admin-recent-order-invoice"
+                                       href="{{ route('admin.order.show', $order->id) }}">
                                         {{ $order->invoice_number }}
-
-                                    </span>
+                                    </a>
 
                                 </td>
 
