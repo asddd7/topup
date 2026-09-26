@@ -147,7 +147,7 @@
                     <i class="fa-solid fa-rotate me-2" aria-hidden="true"></i>
                     Coba Lagi
                 </a>
-                <a href="{{ route('login', ['admin' => 1]) }}" class="btn btn-outline-primary px-4">
+                <a href="{{ route('admin.login') }}" class="btn btn-outline-primary px-4">
                     <i class="fa-solid fa-shield-halved me-2" aria-hidden="true"></i>
                     Masuk Admin
                 </a>

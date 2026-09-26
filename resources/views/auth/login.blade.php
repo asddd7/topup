@@ -67,11 +67,15 @@
             {{-- FORM --}}
             <form
                 method="POST"
-                action="{{ route('login') }}"
+                action="{{ ($adminLogin ?? false) ? route('admin.login') : route('login') }}"
                 class="auth-form"
             >
 
                 @csrf
+
+                @if($adminLogin ?? false)
+                    <input type="hidden" name="admin" value="1">
+                @endif
 
 
                 {{-- EMAIL --}}

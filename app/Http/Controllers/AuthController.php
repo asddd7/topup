@@ -17,6 +17,18 @@ class AuthController extends Controller
         ]);
     }
 
+    public function showAdminLogin()
+    {
+        return view('auth.login', ['adminLogin' => true]);
+    }
+
+    public function adminLogin(Request $request)
+    {
+        $request->merge(['admin' => '1']);
+
+        return $this->login($request);
+    }
+
     public function showRegister()
     {
         return view('auth.register');
@@ -68,7 +80,7 @@ class AuthController extends Controller
                     ]);
             }
 
-            if (Auth::user()->role_id == 1) {
+            if ((int) Auth::user()->role_id === 1) {
                 return redirect()->route('admin.dashboard');
             }
 
