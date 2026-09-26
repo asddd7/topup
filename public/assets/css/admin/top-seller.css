@@ -128,7 +128,6 @@
     min-width: 0;
 }
 
-
 /* =========================================================
    HEADER
 ========================================================= */
@@ -162,7 +161,6 @@
     line-height: 1.5;
 }
 
-
 /* =========================================================
    BACK BUTTON
 ========================================================= */
@@ -178,9 +176,7 @@
 
     padding: 0 13px;
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
     border-radius: 9px;
 
@@ -210,32 +206,24 @@
 
     transform: translateX(-2px);
 
-    box-shadow:
-        0 5px 14px
-        rgba(37, 99, 235, 0.08);
+    box-shadow: 0 5px 14px rgba(37, 99, 235, 0.08);
 }
-
 
 /* =========================================================
    ALERT
 ========================================================= */
 
 .top-seller-page .alert-success {
-    border:
-        1px solid
-        #a7f3d0;
+    border: 1px solid #a7f3d0;
 
-    background:
-        #ecfdf5;
+    background: #ecfdf5;
 
-    color:
-        #047857;
+    color: #047857;
 
     border-radius: 11px;
 
     font-size: 12px;
 }
-
 
 /* =========================================================
    FILTER CARD
@@ -244,23 +232,18 @@
 .top-seller-filter-card {
     margin-bottom: 18px;
 
-    border:
-        1px solid
-        var(--theme-border) !important;
+    border: 1px solid var(--theme-border) !important;
 
     border-radius: 16px !important;
 
-    background:
-        var(--theme-surface);
+    background: var(--theme-surface);
 
-    box-shadow:
-        var(--theme-shadow);
+    box-shadow: var(--theme-shadow);
 }
 
 .top-seller-filter-card .card-body {
     padding: 18px;
 }
-
 
 /* =========================================================
    FILTER LABEL
@@ -275,38 +258,29 @@
     margin-bottom: 6px;
 }
 
-
 /* =========================================================
    FILTER INPUT
 ========================================================= */
 
 .top-seller-page .input-group-text {
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
     border-right: 0;
 
-    background:
-        var(--theme-input-bg);
+    background: var(--theme-input-bg);
 
-    color:
-        var(--theme-text-muted);
+    color: var(--theme-text-muted);
 }
 
 .top-seller-page .form-control,
 .top-seller-page .form-select {
     min-height: 40px;
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
-    background:
-        var(--theme-input-bg);
+    background: var(--theme-input-bg);
 
-    color:
-        var(--theme-text);
+    color: var(--theme-text);
 
     font-size: 12px;
 
@@ -323,30 +297,23 @@
 
 .top-seller-page .form-control:hover,
 .top-seller-page .form-select:hover {
-    border-color:
-        color-mix(
-            in srgb,
-            var(--theme-primary) 40%,
-            var(--theme-border)
-        );
+    border-color: color-mix(
+        in srgb,
+        var(--theme-primary) 40%,
+        var(--theme-border)
+    );
 }
 
 .top-seller-page .form-control:focus,
 .top-seller-page .form-select:focus {
-    border-color:
-        var(--theme-primary);
+    border-color: var(--theme-primary);
 
-    background:
-        var(--theme-input-bg);
+    background: var(--theme-input-bg);
 
-    color:
-        var(--theme-text);
+    color: var(--theme-text);
 
-    box-shadow:
-        0 0 0 3px
-        rgba(37, 99, 235, 0.10);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
-
 
 /* =========================================================
    BUTTON
@@ -355,20 +322,16 @@
 .top-seller-page .btn-primary {
     min-height: 40px;
 
-    border-color:
-        var(--theme-primary);
+    border-color: var(--theme-primary);
 
-    background:
-        var(--theme-primary);
+    background: var(--theme-primary);
 
     color: #fff;
 
     font-size: 11px;
     font-weight: 700;
 
-    box-shadow:
-        0 6px 15px
-        rgba(37, 99, 235, 0.16);
+    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.16);
 
     transition:
         background 0.2s ease,
@@ -378,49 +341,37 @@
 }
 
 .top-seller-page .btn-primary:hover {
-    border-color:
-        var(--theme-primary-hover);
+    border-color: var(--theme-primary-hover);
 
-    background:
-        var(--theme-primary-hover);
+    background: var(--theme-primary-hover);
 
     color: #fff;
 
     transform: translateY(-1px);
 
-    box-shadow:
-        0 8px 18px
-        rgba(37, 99, 235, 0.22);
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
 }
 
 .top-seller-page .btn-outline-secondary {
     min-height: 40px;
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
-    background:
-        var(--theme-surface);
+    background: var(--theme-surface);
 
-    color:
-        var(--theme-text-secondary);
+    color: var(--theme-text-secondary);
 
     font-size: 11px;
     font-weight: 700;
 }
 
 .top-seller-page .btn-outline-secondary:hover {
-    border-color:
-        var(--theme-primary);
+    border-color: var(--theme-primary);
 
-    background:
-        var(--theme-primary-soft);
+    background: var(--theme-primary-soft);
 
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 }
-
 
 /* =========================================================
    RESULT INFO
@@ -429,15 +380,13 @@
 .top-seller-result-info {
     margin-bottom: 12px;
 
-    color:
-        var(--theme-text-secondary);
+    color: var(--theme-text-secondary);
 
     font-size: 11px;
 }
 
 .top-seller-result-info strong {
-    color:
-        var(--theme-text);
+    color: var(--theme-text);
 
     font-weight: 750;
 }
@@ -450,22 +399,17 @@
 
     padding: 0 9px;
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
     border-radius: 999px;
 
-    background:
-        var(--theme-surface-soft);
+    background: var(--theme-surface-soft);
 
-    color:
-        var(--theme-text-secondary);
+    color: var(--theme-text-secondary);
 
     font-size: 9px;
     font-weight: 700;
 }
-
 
 /* =========================================================
    ITEM LIST CARD
@@ -474,35 +418,26 @@
 .top-seller-list-card {
     overflow: hidden;
 
-    border:
-        1px solid
-        var(--theme-border) !important;
+    border: 1px solid var(--theme-border) !important;
 
     border-radius: 17px !important;
 
-    background:
-        var(--theme-surface);
+    background: var(--theme-surface);
 
-    box-shadow:
-        var(--theme-shadow);
+    box-shadow: var(--theme-shadow);
 }
 
 .top-seller-list-card .card-header,
 .top-seller-list-card .card-footer {
-    padding:
-        14px
-        18px;
+    padding: 14px 18px;
 
-    background:
-        var(--theme-surface-soft) !important;
+    background: var(--theme-surface-soft) !important;
 
-    border-color:
-        var(--theme-border-soft);
+    border-color: var(--theme-border-soft);
 }
 
 .top-seller-list-card .card-header strong {
-    color:
-        var(--theme-text);
+    color: var(--theme-text);
 
     font-size: 13px;
 }
@@ -510,7 +445,6 @@
 .top-seller-list-card .card-body {
     padding: 18px;
 }
-
 
 /* =========================================================
    ITEM CARD
@@ -529,17 +463,13 @@
 
     overflow: hidden;
 
-    border:
-        1px solid
-        var(--theme-border) !important;
+    border: 1px solid var(--theme-border) !important;
 
     border-radius: 14px !important;
 
-    background:
-        var(--theme-surface);
+    background: var(--theme-surface);
 
-    box-shadow:
-        none;
+    box-shadow: none;
 
     cursor: pointer;
 
@@ -554,15 +484,11 @@
 .top-seller-item-card:hover {
     transform: translateY(-2px);
 
-    border-color:
-        var(--theme-primary) !important;
+    border-color: var(--theme-primary) !important;
 
-    background:
-        var(--theme-surface);
+    background: var(--theme-surface);
 
-    box-shadow:
-        0 10px 24px
-        rgba(37, 99, 235, 0.08);
+    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.08);
 }
 
 .top-seller-item-card.is-out-of-stock {
@@ -574,12 +500,10 @@
 .top-seller-item-card.is-out-of-stock:hover {
     transform: none;
 
-    border-color:
-        var(--theme-border) !important;
+    border-color: var(--theme-border) !important;
 
     box-shadow: none;
 }
-
 
 /* =========================================================
    ITEM BODY
@@ -606,8 +530,7 @@
 
     overflow: hidden;
 
-    color:
-        var(--theme-text);
+    color: var(--theme-text);
 
     font-size: 12px;
     font-weight: 750;
@@ -623,8 +546,7 @@
 
     margin-top: 2px;
 
-    color:
-        var(--theme-text-muted);
+    color: var(--theme-text-muted);
 
     font-size: 9px;
 
@@ -644,8 +566,7 @@
 
     overflow: hidden;
 
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 
     font-size: 10px;
     font-weight: 800;
@@ -655,7 +576,6 @@
     white-space: nowrap;
     text-overflow: ellipsis;
 }
-
 
 /* =========================================================
    ITEM IMAGE
@@ -671,12 +591,9 @@
 
     border-radius: 11px;
 
-    background:
-        var(--theme-primary-soft);
+    background: var(--theme-primary-soft);
 
-    border:
-        1px solid
-        var(--theme-border-soft);
+    border: 1px solid var(--theme-border-soft);
 }
 
 .top-seller-item-image img {
@@ -696,15 +613,12 @@
     align-items: center;
     justify-content: center;
 
-    background:
-        var(--theme-primary-soft);
+    background: var(--theme-primary-soft);
 
-    color:
-        var(--theme-text-muted);
+    color: var(--theme-text-muted);
 
     font-size: 18px;
 }
-
 
 /* =========================================================
    CHECKBOX
@@ -719,12 +633,9 @@
 
     margin: 0;
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
-    background:
-        var(--theme-input-bg);
+    background: var(--theme-input-bg);
 
     cursor: pointer;
 
@@ -735,29 +646,22 @@
 }
 
 .top-seller-checkbox:checked {
-    border-color:
-        var(--theme-primary);
+    border-color: var(--theme-primary);
 
-    background-color:
-        var(--theme-primary);
+    background-color: var(--theme-primary);
 }
 
 .top-seller-checkbox:focus {
-    box-shadow:
-        0 0 0 3px
-        rgba(37, 99, 235, 0.10);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .top-seller-checkbox:disabled {
-    background:
-        var(--theme-border-soft);
+    background: var(--theme-border-soft);
 
-    border-color:
-        var(--theme-border);
+    border-color: var(--theme-border);
 
     cursor: not-allowed;
 }
-
 
 /* =========================================================
    STOCK BADGE
@@ -780,41 +684,28 @@
 }
 
 .top-seller-stock.in-stock {
-    background:
-        #ecfdf5;
+    background: #ecfdf5;
 
-    color:
-        #047857;
+    color: #047857;
 
-    border:
-        1px solid
-        #a7f3d0;
+    border: 1px solid #a7f3d0;
 }
 
 .top-seller-stock.out-of-stock {
-    background:
-        #fef2f2;
+    background: #fef2f2;
 
-    color:
-        #dc2626;
+    color: #dc2626;
 
-    border:
-        1px solid
-        #fecaca;
+    border: 1px solid #fecaca;
 }
 
 .top-seller-stock.unknown {
-    background:
-        var(--theme-surface-soft);
+    background: var(--theme-surface-soft);
 
-    color:
-        var(--theme-text-muted);
+    color: var(--theme-text-muted);
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 }
-
 
 /* =========================================================
    EMPTY
@@ -825,8 +716,7 @@
 
     text-align: center;
 
-    color:
-        var(--theme-text-muted);
+    color: var(--theme-text-muted);
 }
 
 .top-seller-empty i {
@@ -840,8 +730,7 @@
 .top-seller-empty h6 {
     margin: 0 0 5px;
 
-    color:
-        var(--theme-text);
+    color: var(--theme-text);
 
     font-size: 14px;
     font-weight: 750;
@@ -850,52 +739,40 @@
 .top-seller-empty p {
     margin: 0;
 
-    color:
-        var(--theme-text-secondary);
+    color: var(--theme-text-secondary);
 
     font-size: 11px;
 }
-
 
 /* =========================================================
    DARK MODE
 ========================================================= */
 
 [data-theme="dark"] .top-seller-page .alert-success {
-    background:
-        rgba(16, 185, 129, 0.12);
+    background: rgba(16, 185, 129, 0.12);
 
-    border-color:
-        rgba(52, 211, 153, 0.28);
+    border-color: rgba(52, 211, 153, 0.28);
 
-    color:
-        #6ee7b7;
+    color: #6ee7b7;
 }
 
 [data-theme="dark"] .top-seller-stock.in-stock {
-    background:
-        rgba(16, 185, 129, 0.12);
+    background: rgba(16, 185, 129, 0.12);
 
-    color:
-        #6ee7b7;
+    color: #6ee7b7;
 
-    border-color:
-        rgba(52, 211, 153, 0.28);
+    border-color: rgba(52, 211, 153, 0.28);
 }
 
 [data-theme="dark"] .top-seller-stock.out-of-stock {
-    background:
-        rgba(220, 38, 38, 0.12);
+    background: rgba(220, 38, 38, 0.12);
 
-    color:
-        #fca5a5;
+    color: #fca5a5;
 
-    border-color:
-        rgba(248, 113, 113, 0.25);
+    border-color: rgba(248, 113, 113, 0.25);
 }
 
 @media (min-width: 769px) {
-
     .top-seller-page {
         width: 100%;
         max-width: 100%;
@@ -939,7 +816,6 @@
 ========================================================= */
 
 @media (max-width: 768px) {
-
     /* =====================================================
        PAGE
     ===================================================== */
@@ -1026,7 +902,6 @@
         height: 17px;
     }
 
-
     /* =====================================================
        HEADER
     ===================================================== */
@@ -1072,7 +947,6 @@
         font-size: 9px;
     }
 
-
     /* =====================================================
        ALERT
     ===================================================== */
@@ -1084,7 +958,6 @@
         font-size: 10px;
         line-height: 1.4;
     }
-
 
     /* =====================================================
        FILTER CARD
@@ -1104,7 +977,6 @@
         --bs-gutter-y: 9px;
     }
 
-
     /* =====================================================
        FILTER LABEL
     ===================================================== */
@@ -1114,7 +986,6 @@
         font-size: 9px;
         line-height: 1.2;
     }
-
 
     /* =====================================================
        FILTER INPUT
@@ -1140,11 +1011,8 @@
 
     .top-seller-page .form-control:focus,
     .top-seller-page .form-select:focus {
-        box-shadow:
-            0 0 0 2px
-            rgba(37, 99, 235, 0.10);
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
     }
-
 
     /* =====================================================
        FILTER BUTTON
@@ -1166,7 +1034,6 @@
         padding: 0;
     }
 
-
     /* =====================================================
        RESULT INFO
     ===================================================== */
@@ -1184,7 +1051,6 @@
         border-radius: 999px;
         font-size: 8px;
     }
-
 
     /* =====================================================
        LIST CARD
@@ -1224,7 +1090,6 @@
         font-size: 10px;
     }
 
-
     /* =====================================================
        ITEM GRID
     ===================================================== */
@@ -1238,7 +1103,6 @@
         padding-left: 4px;
         padding-right: 4px;
     }
-
 
     /* =====================================================
        ITEM CARD
@@ -1254,15 +1118,12 @@
 
     .top-seller-item-card:hover {
         transform: none;
-        box-shadow:
-            0 5px 14px
-            rgba(37, 99, 235, 0.06);
+        box-shadow: 0 5px 14px rgba(37, 99, 235, 0.06);
     }
 
     .top-seller-item-card.is-out-of-stock {
         opacity: 0.58;
     }
-
 
     /* =====================================================
        ITEM BODY
@@ -1277,7 +1138,6 @@
         align-items: center !important;
     }
 
-
     /* =====================================================
        ITEM IMAGE
     ===================================================== */
@@ -1291,7 +1151,6 @@
     .top-seller-image-placeholder {
         font-size: 14px;
     }
-
 
     /* =====================================================
        ITEM CONTENT
@@ -1319,7 +1178,6 @@
         line-height: 1.25;
     }
 
-
     /* =====================================================
        STOCK BADGE
     ===================================================== */
@@ -1340,7 +1198,6 @@
         font-size: 6px;
     }
 
-
     /* =====================================================
        CHECKBOX
     ===================================================== */
@@ -1352,11 +1209,8 @@
     }
 
     .top-seller-checkbox:focus {
-        box-shadow:
-            0 0 0 2px
-            rgba(37, 99, 235, 0.10);
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
     }
-
 
     /* =====================================================
        EMPTY
@@ -1382,13 +1236,11 @@
     }
 }
 
-
 /* =========================================================
    SMALL MOBILE
 ========================================================= */
 
 @media (max-width: 480px) {
-
     .top-seller-page {
         padding-top: 13px;
         padding-bottom: 28px;
@@ -1398,7 +1250,6 @@
         padding-left: 9px;
         padding-right: 9px;
     }
-
 
     /* HEADER */
 
@@ -1424,7 +1275,6 @@
         width: 100%;
         min-height: 31px;
     }
-
 
     /* FILTER */
 
@@ -1466,7 +1316,6 @@
         min-width: 35px;
     }
 
-
     /* RESULT */
 
     .top-seller-result-info {
@@ -1477,7 +1326,6 @@
         min-height: 20px;
         font-size: 7px;
     }
-
 
     /* LIST */
 
@@ -1504,7 +1352,6 @@
         padding: 8px;
     }
 
-
     /* ITEM GRID */
 
     .top-seller-list-card .row {
@@ -1516,7 +1363,6 @@
         padding-left: 3px;
         padding-right: 3px;
     }
-
 
     /* ITEM */
 
@@ -1554,7 +1400,6 @@
         font-size: 8px;
     }
 
-
     /* STOCK */
 
     .top-seller-stock {
@@ -1567,14 +1412,12 @@
         font-size: 5.5px;
     }
 
-
     /* CHECKBOX */
 
     .top-seller-checkbox {
         width: 16px;
         height: 16px;
     }
-
 
     /* FOOTER BUTTON */
 
@@ -1584,13 +1427,11 @@
     }
 }
 
-
 /* =========================================================
    VERY SMALL PHONE
 ========================================================= */
 
 @media (max-width: 360px) {
-
     .top-seller-page {
         padding-top: 11px;
         padding-bottom: 24px;
@@ -1600,7 +1441,6 @@
         padding-left: 7px;
         padding-right: 7px;
     }
-
 
     /* HEADER */
 
@@ -1616,7 +1456,6 @@
         min-height: 30px;
         font-size: 8px;
     }
-
 
     /* FILTER */
 
@@ -1636,13 +1475,11 @@
         font-size: 8px;
     }
 
-
     /* RESULT */
 
     .top-seller-result-info {
         font-size: 7px;
     }
-
 
     /* LIST */
 
@@ -1658,7 +1495,6 @@
         padding: 6px;
     }
 
-
     /* GRID */
 
     .top-seller-list-card .row {
@@ -1670,7 +1506,6 @@
         padding-left: 2.5px;
         padding-right: 2.5px;
     }
-
 
     /* ITEM */
 
@@ -1708,7 +1543,6 @@
         font-size: 7px;
     }
 
-
     /* STOCK */
 
     .top-seller-item-card .mt-2 {
@@ -1724,7 +1558,6 @@
     .top-seller-stock i {
         font-size: 5px;
     }
-
 
     /* CHECKBOX */
 

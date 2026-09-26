@@ -2,114 +2,90 @@
    DASHBOARD RESPONSIVE
 ========================================================= */
 
-
 /* =========================================================
    LARGE DESKTOP
 ========================================================= */
 
 @media (max-width: 1400px) {
-
     .games-grid {
-        grid-template-columns:
-            repeat(5, minmax(0, 1fr));
+        grid-template-columns: repeat(5, minmax(0, 1fr));
     }
-
 }
-
 
 /* =========================================================
    DESKTOP
 ========================================================= */
 
 @media (max-width: 1200px) {
-
     .dashboard-page .container-fluid {
         padding-left: 22px;
         padding-right: 22px;
     }
 
-
     .games-grid {
-        grid-template-columns:
-            repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
 
         gap: 16px;
     }
-
 
     .promo-banner {
         height: 290px;
     }
 
-
     .market-product-card {
         flex-basis: 205px;
         min-width: 205px;
     }
-
 }
-
 
 /* =========================================================
    TABLET
 ========================================================= */
 
 @media (max-width: 992px) {
-
     .dashboard-page {
         padding-top: 18px;
     }
-
 
     .dashboard-page .container-fluid {
         padding-left: 18px;
         padding-right: 18px;
     }
 
-
     .promo-banner {
         height: 245px;
     }
-
 
     .dashboard-section-title {
         font-size: 24px;
     }
 
-
     .games-grid {
-        grid-template-columns:
-            repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
 
         gap: 14px;
     }
-
 
     .market-product-card {
         flex-basis: 195px;
         min-width: 195px;
     }
-
 }
-
 
 /* =========================================================
    MOBILE
 ========================================================= */
 
 @media (max-width: 768px) {
-
     .dashboard-page {
         padding-top: 10px;
         padding-bottom: 35px;
     }
 
-
     .dashboard-page .container-fluid {
         padding-left: 11px;
         padding-right: 11px;
     }
-
 
     /* -----------------------------------------------------
        BANNER
@@ -118,21 +94,16 @@
     #bannerCarousel {
         border-radius: 15px;
 
-        box-shadow:
-            0 10px 28px
-            rgba(30, 64, 175, 0.10);
+        box-shadow: 0 10px 28px rgba(30, 64, 175, 0.1);
     }
-
 
     .promo-banner {
         height: 165px;
     }
 
-
     .promo-banner-overlay {
         padding: 13px;
     }
-
 
     .promo-badge {
         padding: 5px 8px;
@@ -140,13 +111,11 @@
         font-size: 8px;
     }
 
-
     .banner-control {
         width: 38px;
 
         opacity: 1;
     }
-
 
     .banner-arrow {
         width: 29px;
@@ -155,11 +124,9 @@
         font-size: 10px;
     }
 
-
     .banner-indicators {
         bottom: 5px;
     }
-
 
     .banner-indicators button {
         width: 6px;
@@ -168,11 +135,9 @@
         margin: 0 3px;
     }
 
-
     .banner-indicators button.active {
         width: 19px;
     }
-
 
     /* -----------------------------------------------------
        SECTION
@@ -182,21 +147,17 @@
         margin-top: 28px;
     }
 
-
     .dashboard-games {
         margin-top: 34px;
     }
-
 
     .dashboard-section-header {
         margin-bottom: 16px;
     }
 
-
     .section-title-row {
         align-items: center;
     }
-
 
     .section-eyebrow {
         gap: 5px;
@@ -208,19 +169,16 @@
         letter-spacing: 1.2px;
     }
 
-
     .section-eyebrow::before {
         width: 14px;
         height: 2px;
     }
-
 
     .dashboard-section-title {
         font-size: 20px;
 
         letter-spacing: -0.3px;
     }
-
 
     .dashboard-section-description {
         margin-top: 5px;
@@ -230,7 +188,6 @@
         line-height: 1.5;
     }
 
-
     /* -----------------------------------------------------
        NAV
     ----------------------------------------------------- */
@@ -238,7 +195,6 @@
     .marketplace-nav {
         gap: 5px;
     }
-
 
     .marketplace-arrow {
         width: 31px;
@@ -249,7 +205,6 @@
         font-size: 10px;
     }
 
-
     /* -----------------------------------------------------
        TOP SELLER
     ----------------------------------------------------- */
@@ -259,13 +214,8 @@
 
         margin-right: -11px;
 
-        padding:
-            4px
-            11px
-            13px
-            2px;
+        padding: 4px 11px 13px 2px;
     }
-
 
     .market-product-card {
         flex-basis: 160px;
@@ -274,18 +224,15 @@
         border-radius: 13px;
     }
 
-
     .market-product-info {
         padding: 10px;
     }
-
 
     .market-game-name {
         margin-bottom: 4px;
 
         font-size: 8px;
     }
-
 
     .market-product-name {
         min-height: 32px;
@@ -295,11 +242,9 @@
         font-size: 11px;
     }
 
-
     .market-price {
         font-size: 12px;
     }
-
 
     .market-product-badge {
         top: 7px;
@@ -312,7 +257,6 @@
         font-size: 6px;
     }
 
-
     /* -----------------------------------------------------
        DIVIDER
     ----------------------------------------------------- */
@@ -323,7 +267,6 @@
         margin: 21px 0;
     }
 
-
     .game-market-label {
         padding: 5px 8px;
 
@@ -332,17 +275,13 @@
         letter-spacing: 0.7px;
     }
 
-
     /* -----------------------------------------------------
        GAME SEARCH
     ----------------------------------------------------- */
 
     .dashboard-game-search {
-        margin:
-            18px auto
-            20px;
+        margin: 18px auto 20px;
     }
-
 
     .dashboard-search-label {
         margin-bottom: 6px;
@@ -350,21 +289,15 @@
         font-size: 11px;
     }
 
-
     .dashboard-search-input {
         height: 44px;
 
-        padding:
-            0
-            48px
-            0
-            13px;
+        padding: 0 48px 0 13px;
 
         border-radius: 11px;
 
         font-size: 12px;
     }
-
 
     .dashboard-search-button {
         right: 6px;
@@ -377,40 +310,33 @@
         font-size: 11px;
     }
 
-
     .dashboard-search-info {
         margin-top: 7px;
 
         font-size: 10px;
     }
 
-
     /* -----------------------------------------------------
        GAME GRID
     ----------------------------------------------------- */
 
     .games-grid {
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
 
         gap: 10px;
     }
-
 
     .market-game-card {
         border-radius: 12px;
     }
 
-
     .market-game-info {
         padding: 9px;
     }
 
-
     .market-game-title {
         font-size: 11px;
     }
-
 
     .market-game-publisher {
         margin-top: 3px;
@@ -418,122 +344,95 @@
         font-size: 8px;
     }
 
-
     .market-game-overlay {
         display: flex;
         padding: 8px;
-        background:
-            linear-gradient(
-                transparent 38%,
-                rgba(15, 23, 42, 0.72)
-            );
+        background: linear-gradient(transparent 38%, rgba(15, 23, 42, 0.72));
         opacity: 1;
     }
-
 
     .market-game-action {
         padding: 7px 8px;
         border-radius: 8px;
         font-size: 9px;
     }
-
 }
-
 
 /* =========================================================
    SMALL MOBILE
 ========================================================= */
 
 @media (max-width: 480px) {
-
     .promo-banner {
         height: 140px;
     }
-
 
     .dashboard-section-title {
         font-size: 18px;
     }
 
-
     .dashboard-section-description {
         font-size: 10px;
     }
-
 
     .market-product-card {
         flex-basis: 148px;
         min-width: 148px;
     }
 
-
     .market-product-info {
         padding: 8px;
     }
-
 
     .market-product-name {
         font-size: 10px;
     }
 
-
     .market-price {
         font-size: 11px;
     }
-
 
     .games-grid {
         gap: 8px;
     }
 
-
     .market-game-info {
         padding: 8px;
     }
-
 
     .market-game-title {
         font-size: 10px;
     }
 
-
     .market-game-publisher {
         font-size: 7px;
     }
-
 }
-
 
 /* =========================================================
    VERY SMALL PHONE
 ========================================================= */
 
 @media (max-width: 360px) {
-
     .dashboard-page .container-fluid {
         padding-left: 8px;
         padding-right: 8px;
     }
 
-
     .promo-banner {
         height: 122px;
     }
-
 
     .market-product-card {
         flex-basis: 138px;
         min-width: 138px;
     }
 
-
     .dashboard-section-title {
         font-size: 17px;
     }
 
-
     .games-grid {
         gap: 7px;
     }
-
 }

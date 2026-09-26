@@ -15,42 +15,25 @@
      * Jangan gunakan background solid.
      * Harus semi-transparent agar backdrop blur terlihat.
      */
-    background:
-        color-mix(
-            in srgb,
-            var(--theme-surface) 78%,
-            transparent
-        );
+    background: color-mix(in srgb, var(--theme-surface) 78%, transparent);
 
     /*
      * Efek glass untuk seluruh topbar.
      */
-    -webkit-backdrop-filter:
-        blur(18px)
-        saturate(125%);
+    -webkit-backdrop-filter: blur(18px) saturate(125%);
 
-    backdrop-filter:
-        blur(18px)
-        saturate(125%);
+    backdrop-filter: blur(18px) saturate(125%);
 
-    border-bottom:
-        1px solid
-        color-mix(
-            in srgb,
-            var(--theme-border) 65%,
-            transparent
-        );
+    border-bottom: 1px solid
+        color-mix(in srgb, var(--theme-border) 65%, transparent);
 
-    box-shadow:
-        0 4px 18px
-        rgba(15, 23, 42, 0.06);
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
 
     transition:
         background-color 0.25s ease,
         border-color 0.25s ease,
         box-shadow 0.25s ease;
 }
-
 
 /* =========================================================
    CONTAINER
@@ -61,9 +44,7 @@
 
     min-height: 72px;
 
-    padding:
-        0
-        28px;
+    padding: 0 28px;
 
     display: flex;
 
@@ -72,7 +53,6 @@
 
     gap: 25px;
 }
-
 
 /* =========================================================
    LEFT
@@ -85,7 +65,6 @@
 
     flex-shrink: 0;
 }
-
 
 /* =========================================================
    MOBILE MENU
@@ -102,17 +81,13 @@
     align-items: center;
     justify-content: center;
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
     border-radius: 10px;
 
-    background:
-        var(--theme-surface);
+    background: var(--theme-surface);
 
-    color:
-        var(--theme-text-secondary);
+    color: var(--theme-text-secondary);
 
     transition:
         background-color 0.2s ease,
@@ -121,21 +96,15 @@
         transform 0.2s ease;
 }
 
-
 .topup-mobile-menu:hover {
-    background:
-        var(--theme-primary-soft);
+    background: var(--theme-primary-soft);
 
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 
-    border-color:
-        #93c5fd;
+    border-color: #93c5fd;
 
-    transform:
-        translateY(-1px);
+    transform: translateY(-1px);
 }
-
 
 /* =========================================================
    BRAND
@@ -148,21 +117,16 @@
 
     gap: 11px;
 
-    color:
-        var(--theme-text);
+    color: var(--theme-text);
 
     text-decoration: none;
 
-    transition:
-        color 0.2s ease;
+    transition: color 0.2s ease;
 }
-
 
 .topup-brand:hover {
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 }
-
 
 /* =========================================================
    LOGO
@@ -177,7 +141,6 @@
 
     object-fit: contain;
 }
-
 
 /* =========================================================
    FALLBACK ICON
@@ -194,23 +157,14 @@
 
     border-radius: 12px;
 
-    background:
-        linear-gradient(
-            135deg,
-            var(--theme-primary),
-            #1d4ed8
-        );
+    background: linear-gradient(135deg, var(--theme-primary), #1d4ed8);
 
-    color:
-        #ffffff;
+    color: #ffffff;
 
     font-size: 18px;
 
-    box-shadow:
-        0 7px 16px
-        rgba(37, 99, 235, 0.20);
+    box-shadow: 0 7px 16px rgba(37, 99, 235, 0.2);
 }
-
 
 /* =========================================================
    BRAND INFO
@@ -224,26 +178,21 @@
     line-height: 1.2;
 }
 
-
 .topup-brand-name {
-    color:
-        var(--theme-text);
+    color: var(--theme-text);
 
     font-size: 16px;
 
     font-weight: 700;
 }
 
-
 .topup-brand-info small {
     margin-top: 3px;
 
-    color:
-        var(--theme-text-muted);
+    color: var(--theme-text-muted);
 
     font-size: 10px;
 }
-
 
 /* =========================================================
    CENTER NAVIGATION
@@ -259,14 +208,12 @@
     justify-content: center;
 }
 
-
 .topup-topbar-nav {
     display: flex;
 
     align-items: center;
     justify-content: center;
 }
-
 
 .topup-topbar-nav ul {
     display: flex;
@@ -281,7 +228,6 @@
     list-style: none;
 }
 
-
 .topup-topbar-nav a {
     display: inline-flex;
 
@@ -289,14 +235,11 @@
 
     gap: 7px;
 
-    padding:
-        9px
-        12px;
+    padding: 9px 12px;
 
     border-radius: 10px;
 
-    color:
-        var(--theme-text-secondary);
+    color: var(--theme-text-secondary);
 
     font-size: 13px;
 
@@ -309,35 +252,27 @@
         color 0.2s ease;
 }
 
-
 .topup-topbar-nav a i {
     font-size: 12px;
 }
 
-
 .topup-topbar-nav a:hover {
-    background:
-        var(--theme-primary-soft);
+    background: var(--theme-primary-soft);
 
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 }
-
 
 /* =========================================================
    ACTIVE NAVIGATION
 ========================================================= */
 
 .topup-topbar-nav a.active {
-    background:
-        var(--theme-primary-soft);
+    background: var(--theme-primary-soft);
 
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 
     font-weight: 650;
 }
-
 
 /* =========================================================
    BACK BUTTON
@@ -356,17 +291,13 @@
 
     flex-shrink: 0;
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
     border-radius: 10px;
 
-    background:
-        var(--theme-surface-soft);
+    background: var(--theme-surface-soft);
 
-    color:
-        var(--theme-text-secondary);
+    color: var(--theme-text-secondary);
 
     text-decoration: none;
 
@@ -378,39 +309,27 @@
         box-shadow 0.2s ease;
 }
 
-
 .topup-back-button:hover {
-    background:
-        var(--theme-primary-soft);
+    background: var(--theme-primary-soft);
 
-    border-color:
-        #bfdbfe;
+    border-color: #bfdbfe;
 
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 
-    transform:
-        translateX(-2px);
+    transform: translateX(-2px);
 
-    box-shadow:
-        0 4px 12px
-        rgba(37, 99, 235, 0.08);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.08);
 }
-
 
 .topup-back-button i {
     font-size: 13px;
 
-    transition:
-        transform 0.2s ease;
+    transition: transform 0.2s ease;
 }
-
 
 .topup-back-button:hover i {
-    transform:
-        translateX(-2px);
+    transform: translateX(-2px);
 }
-
 
 /* =========================================================
    RIGHT
@@ -425,7 +344,6 @@
 
     flex-shrink: 0;
 }
-
 
 /* =========================================================
    NOTIFICATION BUTTON
@@ -444,17 +362,13 @@
     align-items: center;
     justify-content: center;
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
     border-radius: 10px;
 
-    background:
-        var(--theme-surface);
+    background: var(--theme-surface);
 
-    color:
-        var(--theme-text-secondary);
+    color: var(--theme-text-secondary);
 
     transition:
         background-color 0.2s ease,
@@ -463,26 +377,19 @@
         transform 0.2s ease;
 }
 
-
 .topup-notification-btn:hover {
-    background:
-        var(--theme-primary-soft);
+    background: var(--theme-primary-soft);
 
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 
-    border-color:
-        #bfdbfe;
+    border-color: #bfdbfe;
 
-    transform:
-        translateY(-1px);
+    transform: translateY(-1px);
 }
-
 
 .topup-notification-btn > i {
     font-size: 15px;
 }
-
 
 /* =========================================================
    NOTIFICATION BADGE
@@ -497,18 +404,14 @@
     min-width: 18px;
     height: 18px;
 
-    padding:
-        0
-        5px;
+    padding: 0 5px;
 
     display: flex;
 
     align-items: center;
     justify-content: center;
 
-    border:
-        2px solid
-        var(--theme-surface);
+    border: 2px solid var(--theme-surface);
 
     border-radius: 999px;
 
@@ -521,7 +424,6 @@
     font-weight: 800;
 }
 
-
 /* =========================================================
    NOTIFICATION DROPDOWN
 ========================================================= */
@@ -529,8 +431,7 @@
 .topup-notification-dropdown {
     width: 360px;
 
-    max-width:
-        calc(100vw - 30px);
+    max-width: calc(100vw - 30px);
 
     margin-top: 10px !important;
 
@@ -538,37 +439,26 @@
 
     overflow: hidden;
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
     border-radius: 14px;
 
-    background:
-        var(--theme-surface);
+    background: var(--theme-surface);
 
-    box-shadow:
-        var(--theme-shadow);
+    box-shadow: var(--theme-shadow);
 }
-
 
 /* =========================================================
    NOTIFICATION HEADER
 ========================================================= */
 
 .topup-notification-header {
-    padding:
-        14px
-        16px;
+    padding: 14px 16px;
 
-    background:
-        var(--theme-surface);
+    background: var(--theme-surface);
 
-    border-bottom:
-        1px solid
-        var(--theme-border-soft);
+    border-bottom: 1px solid var(--theme-border-soft);
 }
-
 
 .topup-notification-header > div {
     display: flex;
@@ -578,112 +468,87 @@
     justify-content: space-between;
 }
 
-
 .topup-notification-header strong {
-    color:
-        var(--theme-text);
+    color: var(--theme-text);
 
     font-size: 13px;
 }
 
-
 .topup-notification-header .badge {
     font-size: 9px;
 }
-
 
 /* =========================================================
    NOTIFICATION ITEM
 ========================================================= */
 
 .topup-notification-item {
-    padding:
-        12px
-        16px !important;
+    padding: 12px 16px !important;
 
     white-space: normal;
 
-    background:
-        var(--theme-surface);
+    background: var(--theme-surface);
 
-    border-bottom:
-        1px solid
-        var(--theme-border-soft);
+    border-bottom: 1px solid var(--theme-border-soft);
 
-    transition:
-        background-color 0.2s ease;
+    transition: background-color 0.2s ease;
 }
-
 
 .topup-notification-item:hover {
-    background:
-        var(--theme-surface-soft);
+    background: var(--theme-surface-soft);
 }
 
-
 .topup-notification-title {
-    color:
-        var(--theme-text);
+    color: var(--theme-text);
 
     font-size: 12px;
 
     font-weight: 700;
 }
 
-
 .topup-notification-message {
     margin-top: 3px;
 
-    color:
-        var(--theme-text-secondary);
+    color: var(--theme-text-secondary);
 
     font-size: 11px;
 
     line-height: 1.5;
 }
 
-
 .topup-notification-time {
     display: block;
 
     margin-top: 5px;
 
-    color:
-        var(--theme-text-muted);
+    color: var(--theme-text-muted);
 
     font-size: 9px;
 }
-
 
 /* =========================================================
    EMPTY NOTIFICATION
 ========================================================= */
 
 .topup-no-notification {
-    padding:
-        32px
-        20px;
+    padding: 32px 20px;
 
     text-align: center;
 
-    color:
-        var(--theme-text-muted);
+    color: var(--theme-text-muted);
 
     font-size: 11px;
 }
-
 
 .topup-no-notification i {
     display: block;
 
     margin-bottom: 8px;
 
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 
     font-size: 22px;
 }
-
 
 /* =========================================================
    USER BUTTON
@@ -706,16 +571,12 @@
 
     cursor: pointer;
 
-    transition:
-        background-color 0.2s ease;
+    transition: background-color 0.2s ease;
 }
-
 
 .topup-user-button:hover {
-    background:
-        var(--theme-primary-soft);
+    background: var(--theme-primary-soft);
 }
-
 
 /* =========================================================
    USER AVATAR
@@ -734,31 +595,21 @@
 
     border-radius: 50%;
 
-    background:
-        linear-gradient(
-            135deg,
-            var(--theme-primary),
-            #1d4ed8
-        );
+    background: linear-gradient(135deg, var(--theme-primary), #1d4ed8);
 
-    color:
-        #ffffff;
+    color: #ffffff;
 
     font-size: 13px;
 
     font-weight: 700;
 
-    box-shadow:
-        0 5px 13px
-        rgba(37, 99, 235, 0.18);
+    box-shadow: 0 5px 13px rgba(37, 99, 235, 0.18);
 }
-
 
 .topup-user-avatar.large {
     width: 42px;
     height: 42px;
 }
-
 
 /* =========================================================
    USER INFO
@@ -774,34 +625,27 @@
     line-height: 1.25;
 }
 
-
 .topup-user-info strong {
-    color:
-        var(--theme-text);
+    color: var(--theme-text);
 
     font-size: 12px;
 }
 
-
 .topup-user-info small {
     margin-top: 3px;
 
-    color:
-        var(--theme-text-muted);
+    color: var(--theme-text-muted);
 
     font-size: 9px;
 }
-
 
 .topup-user-arrow {
     margin-left: 1px;
 
-    color:
-        var(--theme-text-muted);
+    color: var(--theme-text-muted);
 
     font-size: 9px;
 }
-
 
 /* =========================================================
    USER DROPDOWN
@@ -814,19 +658,14 @@
 
     padding: 7px;
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
     border-radius: 14px;
 
-    background:
-        var(--theme-surface);
+    background: var(--theme-surface);
 
-    box-shadow:
-        var(--theme-shadow);
+    box-shadow: var(--theme-shadow);
 }
-
 
 /* =========================================================
    USER DROPDOWN HEADER
@@ -842,7 +681,6 @@
     padding: 9px;
 }
 
-
 .topup-user-dropdown-header > div:last-child {
     display: flex;
 
@@ -851,22 +689,18 @@
     min-width: 0;
 }
 
-
 .topup-user-dropdown-header strong {
-    color:
-        var(--theme-text);
+    color: var(--theme-text);
 
     font-size: 12px;
 }
-
 
 .topup-user-dropdown-header small {
     margin-top: 3px;
 
     overflow: hidden;
 
-    color:
-        var(--theme-text-muted);
+    color: var(--theme-text-muted);
 
     font-size: 9px;
 
@@ -874,7 +708,6 @@
 
     white-space: nowrap;
 }
-
 
 /* =========================================================
    DROPDOWN MENU
@@ -887,43 +720,32 @@
 
     gap: 10px;
 
-    padding:
-        9px
-        10px;
+    padding: 9px 10px;
 
     border-radius: 9px;
 
-    color:
-        var(--theme-text-secondary);
+    color: var(--theme-text-secondary);
 
     font-size: 12px;
 }
 
-
 .topup-user-dropdown .dropdown-item i {
     width: 18px;
 
-    color:
-        var(--theme-text-muted);
+    color: var(--theme-text-muted);
 
     text-align: center;
 }
 
-
 .topup-user-dropdown .dropdown-item:hover {
-    background:
-        var(--theme-primary-soft);
+    background: var(--theme-primary-soft);
 
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 }
-
 
 .topup-user-dropdown .dropdown-item:hover i {
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 }
-
 
 /* =========================================================
    LOGOUT
@@ -934,22 +756,15 @@
     color: #dc2626;
 }
 
-
 .topup-user-dropdown .topup-logout:hover {
-    background:
-        #fef2f2;
+    background: #fef2f2;
 
-    color:
-        #dc2626;
+    color: #dc2626;
 }
 
-
-[data-theme="dark"]
-.topup-user-dropdown .topup-logout:hover {
-    background:
-        rgba(220, 38, 38, 0.12);
+[data-theme="dark"] .topup-user-dropdown .topup-logout:hover {
+    background: rgba(220, 38, 38, 0.12);
 }
-
 
 /* =========================================================
    THEME TOGGLE
@@ -966,17 +781,13 @@
 
     padding: 0;
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
     border-radius: 10px;
 
-    background:
-        var(--theme-surface);
+    background: var(--theme-surface);
 
-    color:
-        var(--theme-text-secondary);
+    color: var(--theme-text-secondary);
 
     cursor: pointer;
 
@@ -987,31 +798,23 @@
         transform 0.2s ease;
 }
 
-
 .theme-toggle:hover {
-    background:
-        var(--theme-primary-soft);
+    background: var(--theme-primary-soft);
 
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 
-    border-color:
-        #93c5fd;
+    border-color: #93c5fd;
 
-    transform:
-        translateY(-1px);
+    transform: translateY(-1px);
 }
-
 
 [data-theme="dark"] .theme-toggle {
     color: #facc15;
 }
 
-
 [data-theme="dark"] .theme-toggle:hover {
     color: #fde68a;
 }
-
 
 /* =========================================================
    LOGIN BUTTON - GUEST
@@ -1027,21 +830,15 @@
 
     min-height: 38px;
 
-    padding:
-        0
-        13px;
+    padding: 0 13px;
 
-    border:
-        1px solid
-        #bfdbfe;
+    border: 1px solid #bfdbfe;
 
     border-radius: 10px;
 
-    background:
-        var(--theme-primary-soft);
+    background: var(--theme-primary-soft);
 
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 
     font-size: 12px;
 
@@ -1057,111 +854,83 @@
         box-shadow 0.2s ease;
 }
 
-
 .topup-login-button:hover {
-    background:
-        var(--theme-primary);
+    background: var(--theme-primary);
 
-    border-color:
-        var(--theme-primary);
+    border-color: var(--theme-primary);
 
-    color:
-        #ffffff;
+    color: #ffffff;
 
-    transform:
-        translateY(-1px);
+    transform: translateY(-1px);
 
-    box-shadow:
-        0 7px 16px
-        rgba(37, 99, 235, 0.18);
+    box-shadow: 0 7px 16px rgba(37, 99, 235, 0.18);
 }
-
 
 .topup-login-button i {
     font-size: 11px;
 }
-
 
 /* =========================================================
    DARK MODE TOPBAR
 ========================================================= */
 
 [data-theme="dark"] .topup-topbar {
-    box-shadow:
-        0 4px 20px
-        rgba(0, 0, 0, 0.24);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.24);
 }
-
 
 [data-theme="dark"] .topup-mobile-menu,
 [data-theme="dark"] .topup-notification-btn,
 [data-theme="dark"] .topup-back-button,
 [data-theme="dark"] .theme-toggle {
-    background:
-        #0f172a;
+    background: #0f172a;
 }
-
 
 [data-theme="dark"] .topup-mobile-menu:hover,
 [data-theme="dark"] .topup-notification-btn:hover,
 [data-theme="dark"] .topup-back-button:hover,
 [data-theme="dark"] .theme-toggle:hover {
-    background:
-        #172554;
+    background: #172554;
 }
-
 
 [data-theme="dark"] .topup-notification-dropdown,
 [data-theme="dark"] .topup-user-dropdown {
-    background:
-        #111827;
+    background: #111827;
 }
-
 
 [data-theme="dark"] .topup-notification-header,
 [data-theme="dark"] .topup-notification-item {
-    background:
-        #111827;
+    background: #111827;
 }
-
 
 [data-theme="dark"] .topup-notification-item:hover {
-    background:
-        #0f172a;
+    background: #0f172a;
 }
-
 
 /* =========================================================
    TABLET
 ========================================================= */
 
 @media (max-width: 1199px) {
-
     .topup-topbar-container {
         padding-left: 20px;
         padding-right: 20px;
     }
-
 
     .topup-topbar-nav a {
         padding-left: 9px;
         padding-right: 9px;
     }
 
-
     .topup-topbar-nav a i {
         display: none;
     }
-
 }
-
 
 /* =========================================================
    MOBILE NAV
 ========================================================= */
 
 @media (max-width: 991px) {
-
     .topup-topbar-navigation {
         display: flex;
 
@@ -1171,42 +940,33 @@
         flex: 1;
     }
 
-
     .topup-topbar-nav {
         display: none !important;
     }
-
 }
-
 
 /* =========================================================
    MOBILE
 ========================================================= */
 
 @media (max-width: 767px) {
-
     .topup-topbar-container {
         min-height: 64px;
 
-        padding:
-            0
-            14px;
+        padding: 0 14px;
 
         gap: 8px;
     }
-
 
     .topup-brand {
         gap: 8px;
     }
-
 
     .topup-brand-logo {
         height: 35px;
 
         max-width: 110px;
     }
-
 
     .topup-brand-icon {
         width: 35px;
@@ -1217,21 +977,17 @@
         font-size: 15px;
     }
 
-
     .topup-brand-name {
         font-size: 13px;
     }
-
 
     .topup-brand-info small {
         display: none;
     }
 
-
     .topup-topbar-right {
         gap: 4px;
     }
-
 
     .theme-toggle {
         width: 35px;
@@ -1242,7 +998,6 @@
         font-size: 12px;
     }
 
-
     .topup-notification-btn {
         width: 35px;
         height: 35px;
@@ -1250,11 +1005,9 @@
         border-radius: 9px;
     }
 
-
     .topup-notification-btn > i {
         font-size: 13px;
     }
-
 
     .topup-user-avatar {
         width: 35px;
@@ -1263,11 +1016,9 @@
         font-size: 11px;
     }
 
-
     .topup-notification-dropdown {
         width: 320px;
     }
-
 
     .topup-back-button {
         width: 35px;
@@ -1278,46 +1029,35 @@
         border-radius: 9px;
     }
 
-
     .topup-back-button i {
         font-size: 12px;
     }
 
-
     .topup-login-button {
         min-height: 35px;
 
-        padding:
-            0
-            10px;
+        padding: 0 10px;
 
         border-radius: 9px;
 
         font-size: 11px;
     }
 
-
     .topup-login-button i {
         font-size: 10px;
     }
-
 }
-
 
 /* =========================================================
    SMALL MOBILE
 ========================================================= */
 
 @media (max-width: 480px) {
-
     .topup-topbar-container {
-        padding:
-            0
-            9px;
+        padding: 0 9px;
 
         gap: 5px;
     }
-
 
     .topup-mobile-menu {
         width: 34px;
@@ -1326,56 +1066,43 @@
         margin-right: 4px;
     }
 
-
     .topup-brand-name {
         font-size: 12px;
     }
 
-
     .topup-brand-logo {
         max-width: 90px;
     }
-
 
     .theme-toggle {
         width: 33px;
         height: 33px;
     }
 
-
     .topup-notification-btn {
         width: 33px;
         height: 33px;
     }
-
 
     .topup-user-avatar {
         width: 33px;
         height: 33px;
     }
 
-
     .topup-notification-dropdown {
-        width:
-            calc(100vw - 18px);
+        width: calc(100vw - 18px);
 
-        max-width:
-            calc(100vw - 18px);
+        max-width: calc(100vw - 18px);
     }
-
 
     .topup-login-button {
         min-height: 33px;
 
-        padding:
-            0
-            9px;
+        padding: 0 9px;
 
         font-size: 10px;
     }
-
 }
-
 
 /* =========================================================
    GAME SEARCH
@@ -1384,49 +1111,26 @@
 .topup-game-search {
     width: 100%;
 
-    padding:
-        8px
-        16px
-        10px;
+    padding: 8px 16px 10px;
 
     /*
      * Transparan tipis agar tetap menyatu
      * dengan topbar.
      */
-    background:
-        color-mix(
-            in srgb,
-            var(--theme-surface) 72%,
-            transparent
-        );
+    background: color-mix(in srgb, var(--theme-surface) 72%, transparent);
 
-    border-top:
-        1px solid
-        color-mix(
-            in srgb,
-            var(--theme-border) 45%,
-            transparent
-        );
+    border-top: 1px solid
+        color-mix(in srgb, var(--theme-border) 45%, transparent);
 
-    border-bottom:
-        1px solid
-        color-mix(
-            in srgb,
-            var(--theme-border) 45%,
-            transparent
-        );
+    border-bottom: 1px solid
+        color-mix(in srgb, var(--theme-border) 45%, transparent);
 
-    -webkit-backdrop-filter:
-        blur(14px);
+    -webkit-backdrop-filter: blur(14px);
 
-    backdrop-filter:
-        blur(14px);
+    backdrop-filter: blur(14px);
 
-    box-shadow:
-        0 3px 12px
-        rgba(15, 23, 42, 0.04);
+    box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
 }
-
 
 /* =========================================================
    SEARCH CONTAINER
@@ -1437,10 +1141,8 @@
 
     max-width: 900px;
 
-    margin:
-        0 auto;
+    margin: 0 auto;
 }
-
 
 /* =========================================================
    LABEL
@@ -1451,8 +1153,7 @@
 
     margin-bottom: 4px;
 
-    color:
-        var(--theme-text-secondary);
+    color: var(--theme-text-secondary);
 
     font-size: 11px;
 
@@ -1460,7 +1161,6 @@
 
     font-weight: 600;
 }
-
 
 /* =========================================================
    SEARCH BOX
@@ -1471,7 +1171,6 @@
 
     width: 100%;
 }
-
 
 /* =========================================================
    INPUT
@@ -1484,41 +1183,23 @@
 
     margin: 0;
 
-    padding:
-        8px
-        44px
-        8px
-        13px;
+    padding: 8px 44px 8px 13px;
 
-    border:
-        1px solid
-        color-mix(
-            in srgb,
-            var(--theme-border) 75%,
-            transparent
-        );
+    border: 1px solid color-mix(in srgb, var(--theme-border) 75%, transparent);
 
     border-radius: 8px;
 
     outline: none;
 
-    background:
-        color-mix(
-            in srgb,
-            var(--theme-input-bg) 82%,
-            transparent
-        );
+    background: color-mix(in srgb, var(--theme-input-bg) 82%, transparent);
 
-    color:
-        var(--theme-text);
+    color: var(--theme-text);
 
     font-size: 12px;
 
     line-height: 1.5;
 
-    box-shadow:
-        0 1px 3px
-        rgba(15, 23, 42, 0.04);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
 
     transition:
         border-color 0.2s ease,
@@ -1526,35 +1207,25 @@
         box-shadow 0.2s ease;
 }
 
-
 .topup-search-input::placeholder {
-    color:
-        var(--theme-text-muted);
+    color: var(--theme-text-muted);
 }
-
 
 .topup-search-input:hover {
-    border-color:
-        color-mix(
-            in srgb,
-            var(--theme-primary) 55%,
-            var(--theme-border)
-        );
+    border-color: color-mix(
+        in srgb,
+        var(--theme-primary) 55%,
+        var(--theme-border)
+    );
 }
-
 
 .topup-search-input:focus {
-    border-color:
-        var(--theme-primary);
+    border-color: var(--theme-primary);
 
-    background:
-        var(--theme-input-bg);
+    background: var(--theme-input-bg);
 
-    box-shadow:
-        0 0 0 3px
-        rgba(37, 99, 235, 0.08);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
 }
-
 
 /* =========================================================
    SEARCH ACTION
@@ -1574,33 +1245,26 @@
     align-items: center;
     justify-content: center;
 
-    transform:
-        translateY(-50%);
+    transform: translateY(-50%);
 }
-
 
 /* =========================================================
    SEARCH ICON
 ========================================================= */
 
 .topup-search-icon {
-    color:
-        var(--theme-text-muted);
+    color: var(--theme-text-muted);
 
     font-size: 13px;
 
     pointer-events: none;
 
-    transition:
-        color 0.2s ease;
+    transition: color 0.2s ease;
 }
-
 
 .topup-search-box:focus-within .topup-search-icon {
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 }
-
 
 /* =========================================================
    CLEAR BUTTON
@@ -1622,18 +1286,15 @@
     align-items: center;
     justify-content: center;
 
-    transform:
-        translate(-50%, -50%);
+    transform: translate(-50%, -50%);
 
     border: 0;
 
     border-radius: 50%;
 
-    background:
-        var(--theme-surface-soft);
+    background: var(--theme-surface-soft);
 
-    color:
-        var(--theme-text-secondary);
+    color: var(--theme-text-secondary);
 
     font-size: 11px;
 
@@ -1645,28 +1306,19 @@
         transform 0.2s ease;
 }
 
-
 .topup-search-button:hover {
-    background:
-        var(--theme-primary-soft);
+    background: var(--theme-primary-soft);
 
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 
-    transform:
-        translate(-50%, -50%)
-        scale(1.05);
+    transform: translate(-50%, -50%) scale(1.05);
 }
-
 
 .topup-search-button:focus {
     outline: none;
 
-    box-shadow:
-        0 0 0 3px
-        rgba(37, 99, 235, 0.08);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
 }
-
 
 /*
  * Saat tombol clear tampil,
@@ -1676,7 +1328,6 @@
     display: none;
 }
 
-
 /* =========================================================
    SEARCH INFO
 ========================================================= */
@@ -1684,8 +1335,7 @@
 .topup-search-info {
     margin-top: 4px;
 
-    color:
-        var(--theme-text-muted);
+    color: var(--theme-text-muted);
 
     font-size: 10px;
 
@@ -1694,94 +1344,60 @@
     text-align: left;
 }
 
-
 .topup-search-info strong {
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 
     font-weight: 700;
 }
-
 
 /* =========================================================
    DARK MODE
 ========================================================= */
 
 [data-theme="dark"] .topup-game-search {
-    background:
-        color-mix(
-            in srgb,
-            var(--theme-surface) 65%,
-            transparent
-        );
+    background: color-mix(in srgb, var(--theme-surface) 65%, transparent);
 
-    border-top-color:
-        rgba(255, 255, 255, 0.06);
+    border-top-color: rgba(255, 255, 255, 0.06);
 
-    border-bottom-color:
-        rgba(255, 255, 255, 0.06);
+    border-bottom-color: rgba(255, 255, 255, 0.06);
 
-    box-shadow:
-        0 3px 14px
-        rgba(0, 0, 0, 0.16);
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.16);
 }
-
 
 [data-theme="dark"] .topup-search-input {
-    background:
-        color-mix(
-            in srgb,
-            var(--theme-input-bg) 78%,
-            transparent
-        );
+    background: color-mix(in srgb, var(--theme-input-bg) 78%, transparent);
 
-    border-color:
-        rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.08);
 }
-
 
 [data-theme="dark"] .topup-search-input:focus {
-    background:
-        var(--theme-input-bg);
+    background: var(--theme-input-bg);
 }
-
 
 [data-theme="dark"] .topup-search-button {
-    background:
-        rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.06);
 
-    color:
-        var(--theme-text-secondary);
+    color: var(--theme-text-secondary);
 }
-
 
 [data-theme="dark"] .topup-search-button:hover {
-    background:
-        rgba(37, 99, 235, 0.18);
+    background: rgba(37, 99, 235, 0.18);
 
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 }
-
 
 /* =========================================================
    MOBILE
 ========================================================= */
 
 @media (max-width: 767px) {
-
     .topup-game-search {
-        padding:
-            7px
-            11px
-            8px;
+        padding: 7px 11px 8px;
     }
-
 
     .topup-game-search-container {
         max-width: none;
     }
-
 
     .topup-search-label {
         margin-bottom: 4px;
@@ -1789,21 +1405,15 @@
         font-size: 10px;
     }
 
-
     .topup-search-input {
         min-height: 40px;
 
-        padding:
-            7px
-            42px
-            7px
-            12px;
+        padding: 7px 42px 7px 12px;
 
         border-radius: 8px;
 
         font-size: 11px;
     }
-
 
     .topup-search-action {
         right: 5px;
@@ -1812,7 +1422,6 @@
         height: 30px;
     }
 
-
     .topup-search-button {
         width: 27px;
         height: 27px;
@@ -1820,11 +1429,9 @@
         font-size: 10px;
     }
 
-
     .topup-search-icon {
         font-size: 12px;
     }
-
 
     .topup-search-info {
         margin-top: 3px;
@@ -1833,20 +1440,14 @@
     }
 }
 
-
 /* =========================================================
    SMALL MOBILE
 ========================================================= */
 
 @media (max-width: 480px) {
-
     .topup-game-search {
-        padding:
-            6px
-            9px
-            7px;
+        padding: 6px 9px 7px;
     }
-
 
     .topup-search-input {
         min-height: 39px;
@@ -1855,7 +1456,6 @@
 
         font-size: 11px;
     }
-
 
     .topup-search-info {
         font-size: 9px;

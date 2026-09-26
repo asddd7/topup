@@ -10,29 +10,17 @@
     width: 100%;
     z-index: 1040;
 
-    padding:
-        7px
-        10px
-        calc(7px + env(safe-area-inset-bottom));
+    padding: 7px 10px calc(7px + env(safe-area-inset-bottom));
 
-    background: color-mix(
-        in srgb,
-        var(--theme-surface) 94%,
-        transparent
-    );
+    background: color-mix(in srgb, var(--theme-surface) 94%, transparent);
 
-    border-top:
-        1px solid
-        var(--theme-border);
+    border-top: 1px solid var(--theme-border);
 
-    box-shadow:
-        0 -10px 30px
-        rgba(15, 23, 42, 0.08);
+    box-shadow: 0 -10px 30px rgba(15, 23, 42, 0.08);
 
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
 }
-
 
 /* =========================================================
    INNER
@@ -48,7 +36,6 @@
     justify-content: center;
     gap: 4px;
 }
-
 
 /* =========================================================
    ITEM
@@ -68,9 +55,7 @@
 
     gap: 4px;
 
-    padding:
-        6px
-        5px;
+    padding: 6px 5px;
 
     border: 0;
     border-radius: 12px;
@@ -87,7 +72,6 @@
         background 0.2s ease,
         transform 0.2s ease;
 }
-
 
 /* =========================================================
    ICON
@@ -117,7 +101,6 @@
     line-height: 1;
 }
 
-
 /* =========================================================
    LABEL
 ========================================================= */
@@ -135,7 +118,6 @@
     text-overflow: ellipsis;
 }
 
-
 /* =========================================================
    HOVER
 ========================================================= */
@@ -143,17 +125,14 @@
 .topup-bottom-nav-item:hover {
     color: var(--theme-primary);
 
-    background:
-        var(--theme-primary-soft);
+    background: var(--theme-primary-soft);
 
     text-decoration: none;
 }
 
-.topup-bottom-nav-item:hover
-.topup-bottom-nav-icon {
+.topup-bottom-nav-item:hover .topup-bottom-nav-icon {
     transform: translateY(-1px);
 }
-
 
 /* =========================================================
    ACTIVE
@@ -163,16 +142,12 @@
     color: var(--theme-primary);
 }
 
-.topup-bottom-nav-item.active
-.topup-bottom-nav-icon {
+.topup-bottom-nav-item.active .topup-bottom-nav-icon {
     background: var(--theme-primary-soft);
     color: var(--theme-primary);
 
-    box-shadow:
-        inset 0 0 0 1px
-        var(--theme-border);
+    box-shadow: inset 0 0 0 1px var(--theme-border);
 }
-
 
 /* =========================================================
    ACTIVE DOT
@@ -190,20 +165,10 @@
 
     transform: translateX(-50%);
 
-    border-radius:
-        0
-        0
-        999px
-        999px;
+    border-radius: 0 0 999px 999px;
 
-    background:
-        linear-gradient(
-            90deg,
-            var(--theme-primary),
-            #60a5fa
-        );
+    background: linear-gradient(90deg, var(--theme-primary), #60a5fa);
 }
-
 
 /* =========================================================
    LOGOUT
@@ -223,15 +188,12 @@
 .topup-bottom-nav-logout:hover {
     color: #dc2626;
 
-    background:
-        rgba(220, 38, 38, 0.05);
+    background: rgba(220, 38, 38, 0.05);
 }
 
-.topup-bottom-nav-logout:hover
-.topup-bottom-nav-icon {
+.topup-bottom-nav-logout:hover .topup-bottom-nav-icon {
     color: #dc2626;
 }
-
 
 /* =========================================================
    FOCUS
@@ -240,23 +202,16 @@
 .topup-bottom-nav-item:focus-visible {
     outline: none;
 
-    box-shadow:
-        0 0 0 3px
-        rgba(37, 99, 235, 0.15);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
-
 
 /* =========================================================
    TABLET
 ========================================================= */
 
 @media (min-width: 768px) {
-
     .topup-bottom-nav {
-        padding:
-            8px
-            18px
-            calc(8px + env(safe-area-inset-bottom));
+        padding: 8px 18px calc(8px + env(safe-area-inset-bottom));
     }
 
     .topup-bottom-nav-inner {
@@ -279,18 +234,13 @@
     }
 }
 
-
 /* =========================================================
    DESKTOP
 ========================================================= */
 
 @media (min-width: 992px) {
-
     .topup-bottom-nav {
-        padding:
-            9px
-            24px
-            calc(9px + env(safe-area-inset-bottom));
+        padding: 9px 24px calc(9px + env(safe-area-inset-bottom));
     }
 
     .topup-bottom-nav-inner {
@@ -311,22 +261,15 @@
     }
 }
 
-
 /* =========================================================
    SMALL MOBILE
 ========================================================= */
 
 @media (max-width: 480px) {
-
     .topup-bottom-nav {
-        padding:
-            5px
-            7px
-            calc(5px + env(safe-area-inset-bottom));
+        padding: 5px 7px calc(5px + env(safe-area-inset-bottom));
 
-        box-shadow:
-            0 -8px 24px
-            rgba(15, 23, 42, 0.08);
+        box-shadow: 0 -8px 24px rgba(15, 23, 42, 0.08);
     }
 
     .topup-bottom-nav-inner {
@@ -336,9 +279,7 @@
     .topup-bottom-nav-item {
         min-height: 53px;
 
-        padding:
-            5px
-            3px;
+        padding: 5px 3px;
 
         border-radius: 10px;
     }
@@ -361,18 +302,13 @@
     }
 }
 
-
 /* =========================================================
    VERY SMALL PHONE
 ========================================================= */
 
 @media (max-width: 360px) {
-
     .topup-bottom-nav {
-        padding:
-            4px
-            5px
-            calc(4px + env(safe-area-inset-bottom));
+        padding: 4px 5px calc(4px + env(safe-area-inset-bottom));
     }
 
     .topup-bottom-nav-item {

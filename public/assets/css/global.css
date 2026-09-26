@@ -4,7 +4,6 @@
 ========================================================= */
 
 :root {
-
     /* =====================================================
        BRAND
     ===================================================== */
@@ -15,7 +14,6 @@
 
     --color-secondary: #6c757d;
 
-
     /* =====================================================
        ACCENT
     ===================================================== */
@@ -23,7 +21,6 @@
     --color-accent: #ffc107;
     --color-accent-dark: #e0a800;
     --color-accent-light: #fff8df;
-
 
     /* =====================================================
        STATUS
@@ -40,7 +37,6 @@
     --color-warning: #ffc107;
     --color-info: #0dcaf0;
 
-
     /* =====================================================
        BACKGROUND
     ===================================================== */
@@ -49,7 +45,6 @@
     --color-bg-white: #ffffff;
     --color-bg-soft: #f8faff;
     --color-bg-dark: #111827;
-
 
     /* =====================================================
        TEXT
@@ -61,7 +56,6 @@
     --color-text-light: #9ca3af;
     --color-text-white: #ffffff;
 
-
     /* =====================================================
        BORDER
     ===================================================== */
@@ -70,13 +64,11 @@
     --color-border-light: #eef1f5;
     --color-border-dark: #d1d5db;
 
-
     /* =====================================================
        CARD
     ===================================================== */
 
     --color-card: #ffffff;
-
 
     /* =====================================================
        SHADOW
@@ -85,7 +77,6 @@
     --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.05);
     --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
     --shadow-lg: 0 15px 40px rgba(15, 23, 42, 0.12);
-
 
     /* =====================================================
        RADIUS
@@ -96,7 +87,6 @@
     --radius-lg: 16px;
     --radius-xl: 20px;
 
-
     /* =====================================================
        TRANSITION
     ===================================================== */
@@ -105,20 +95,17 @@
     --transition-normal: 0.25s ease;
     --transition-slow: 0.35s ease;
 
-
     /* =====================================================
        CONTAINER
     ===================================================== */
 
     --container-max-width: 1400px;
 
-
     /* =====================================================
        FONT
     ===================================================== */
 
-    --font-main: 'Poppins', sans-serif;
-
+    --font-main: "Poppins", sans-serif;
 
     /* =====================================================
        TOPBAR
@@ -128,7 +115,7 @@
     --topbar-border: rgba(255, 255, 255, 0.12);
 
     --topbar-text: var(--color-text-white);
-    --topbar-text-muted: rgba(255, 255, 255, 0.70);
+    --topbar-text-muted: rgba(255, 255, 255, 0.7);
     --topbar-text-soft: rgba(255, 255, 255, 0.78);
 
     --topbar-hover-bg: rgba(255, 255, 255, 0.14);
@@ -153,7 +140,6 @@
     --topbar-shadow: var(--shadow-md);
 }
 
-
 /* =========================================================
    BASE
 ========================================================= */
@@ -164,14 +150,11 @@
     box-sizing: border-box;
 }
 
-
 html {
     scroll-behavior: smooth;
 }
 
-
 body {
-
     margin: 0;
 
     background: var(--color-bg);
@@ -183,42 +166,29 @@ body {
     min-height: 100vh;
 
     -webkit-font-smoothing: antialiased;
-
 }
 
-
 a {
-
     text-decoration: none;
 
     color: inherit;
-
 }
 
-
 img {
-
     max-width: 100%;
 
     display: block;
-
 }
-
 
 button,
 input,
 select,
 textarea {
-
     font-family: inherit;
-
 }
 
-
 button {
-
     cursor: pointer;
-
 }
 
 /* =========================================================
@@ -226,7 +196,6 @@ button {
 ========================================================= */
 
 .theme-toggle {
-
     width: 38px;
     height: 38px;
 
@@ -236,17 +205,13 @@ button {
 
     padding: 0;
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
     border-radius: 11px;
 
-    background:
-        var(--theme-surface);
+    background: var(--theme-surface);
 
-    color:
-        var(--theme-text-secondary);
+    color: var(--theme-text-secondary);
 
     cursor: pointer;
 
@@ -257,24 +222,16 @@ button {
         transform 0.2s ease;
 }
 
-
 .theme-toggle:hover {
+    background: var(--theme-primary-soft);
 
-    background:
-        var(--theme-primary-soft);
+    color: var(--theme-primary);
 
-    color:
-        var(--theme-primary);
+    border-color: var(--theme-primary);
 
-    border-color:
-        var(--theme-primary);
-
-    transform:
-        translateY(-1px);
+    transform: translateY(-1px);
 }
 
-
 [data-theme="dark"] .theme-toggle {
-
     color: #facc15;
 }

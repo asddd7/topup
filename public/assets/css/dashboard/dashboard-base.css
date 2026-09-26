@@ -24,7 +24,6 @@
     color: var(--theme-text);
 }
 
-
 .dashboard-page > .container-fluid {
     width: 100%;
     max-width: 1680px;
@@ -34,7 +33,6 @@
     padding-left: 28px;
     padding-right: 28px;
 }
-
 
 /* =========================================================
    COMMON
@@ -80,12 +78,7 @@
 
     border-radius: 999px;
 
-    background:
-        linear-gradient(
-            90deg,
-            var(--theme-primary),
-            #60a5fa
-        );
+    background: linear-gradient(90deg, var(--theme-primary), #60a5fa);
 }
 
 .dashboard-section-title {
@@ -111,7 +104,6 @@
     line-height: 1.6;
 }
 
-
 /* =========================================================
    EMPTY STATE
 ========================================================= */
@@ -121,16 +113,13 @@
 
     text-align: center;
 
-    background:
-        linear-gradient(
-            180deg,
-            var(--theme-surface),
-            var(--theme-surface-soft)
-        );
+    background: linear-gradient(
+        180deg,
+        var(--theme-surface),
+        var(--theme-surface-soft)
+    );
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
     border-radius: 20px;
 
@@ -165,7 +154,6 @@
 
     font-size: 14px;
 }
-
 
 /* =========================================================
    SECTION SPACING

@@ -56,11 +56,11 @@
 
 .admin-setting-page .setting-tabs {
     display: flex;
-    gap: .4rem;
+    gap: 0.4rem;
     overflow-x: auto;
     flex-wrap: nowrap;
     scrollbar-width: thin;
-    padding-bottom: .35rem;
+    padding-bottom: 0.35rem;
     margin-bottom: 1.5rem !important;
 }
 
@@ -71,26 +71,26 @@
 .admin-setting-page .setting-tabs .nav-link {
     display: inline-flex;
     align-items: center;
-    gap: .35rem;
+    gap: 0.35rem;
 
     min-height: 42px;
-    padding: .65rem .9rem;
+    padding: 0.65rem 0.9rem;
 
-    border-radius: .7rem;
+    border-radius: 0.7rem;
     border: 1px solid transparent;
 
     color: var(--theme-text-secondary);
     background: transparent;
 
-    font-size: .9rem;
+    font-size: 0.9rem;
     font-weight: 600;
 
     white-space: nowrap;
 
     transition:
-        color .2s ease,
-        background-color .2s ease,
-        border-color .2s ease;
+        color 0.2s ease,
+        background-color 0.2s ease,
+        border-color 0.2s ease;
 }
 
 .admin-setting-page .setting-tabs .nav-link:hover {
@@ -105,7 +105,7 @@
 }
 
 .admin-setting-page .setting-tabs .nav-link i {
-    font-size: .85rem;
+    font-size: 0.85rem;
 }
 
 /* =========================================================
@@ -132,12 +132,12 @@
     color: var(--theme-text);
     font-size: 1rem;
     font-weight: 700;
-    margin-bottom: .35rem;
+    margin-bottom: 0.35rem;
 }
 
 .admin-setting-page .setting-section-description {
     color: var(--theme-text-secondary);
-    font-size: .85rem;
+    font-size: 0.85rem;
     margin-bottom: 1rem;
 }
 
@@ -153,9 +153,9 @@
 
 .admin-setting-page .form-label {
     color: var(--theme-text);
-    font-size: .9rem;
+    font-size: 0.9rem;
     font-weight: 600;
-    margin-bottom: .45rem;
+    margin-bottom: 0.45rem;
 }
 
 .admin-setting-page .form-control,
@@ -166,7 +166,7 @@
     color: var(--theme-text);
 
     border: 1px solid var(--theme-border);
-    border-radius: .7rem;
+    border-radius: 0.7rem;
 }
 
 .admin-setting-page textarea.form-control {
@@ -181,7 +181,7 @@
 
     border-color: var(--theme-primary);
 
-    box-shadow: 0 0 0 3px rgba(79, 111, 206, .10);
+    box-shadow: 0 0 0 3px rgba(79, 111, 206, 0.1);
 }
 
 .admin-setting-page .form-control::placeholder {
@@ -191,7 +191,7 @@
 .admin-setting-page .form-text,
 .admin-setting-page small.text-muted {
     color: var(--theme-text-secondary) !important;
-    font-size: .78rem;
+    font-size: 0.78rem;
 }
 
 /* =========================================================
@@ -208,7 +208,7 @@
 
     background: var(--theme-surface-soft);
     border: 1px solid var(--theme-border);
-    border-radius: .75rem;
+    border-radius: 0.75rem;
 }
 
 .admin-setting-page .setting-media-preview img {
@@ -219,15 +219,15 @@
 
 .admin-setting-page .setting-media-empty {
     color: var(--theme-text-muted);
-    font-size: .85rem;
+    font-size: 0.85rem;
     text-align: center;
 }
 
 .admin-setting-page .setting-file-help {
     display: block;
-    margin-top: .45rem;
+    margin-top: 0.45rem;
     color: var(--theme-text-secondary);
-    font-size: .78rem;
+    font-size: 0.78rem;
 }
 
 /* =========================================================
@@ -235,12 +235,12 @@
 ========================================================= */
 
 .admin-setting-page .form-check {
-    padding: .9rem 1rem;
-    margin-bottom: .75rem;
+    padding: 0.9rem 1rem;
+    margin-bottom: 0.75rem;
 
     background: var(--theme-surface-soft);
     border: 1px solid var(--theme-border);
-    border-radius: .75rem;
+    border-radius: 0.75rem;
 }
 
 .admin-setting-page .form-check:last-child {
@@ -253,7 +253,7 @@
 
 .admin-setting-page .form-switch .form-check-input {
     margin-left: -2.2rem;
-    margin-top: .15rem;
+    margin-top: 0.15rem;
 
     width: 2.2rem;
     height: 1.2rem;
@@ -277,7 +277,7 @@
 ========================================================= */
 
 .admin-setting-page .alert {
-    border-radius: .75rem;
+    border-radius: 0.75rem;
     border-width: 1px;
 }
 
@@ -291,9 +291,9 @@
     justify-content: center;
 
     min-height: 44px;
-    padding: .7rem 1rem;
+    padding: 0.7rem 1rem;
 
-    border-radius: .7rem;
+    border-radius: 0.7rem;
 
     font-weight: 600;
 }
@@ -324,7 +324,6 @@
 ========================================================= */
 
 @media (min-width: 768px) {
-
     .admin-setting-page .setting-card .card-body {
         padding: 1.5rem;
     }
@@ -340,10 +339,9 @@
 }
 
 @media (max-width: 575.98px) {
-
     .admin-setting-page {
-        margin-left: -.25rem;
-        margin-right: -.25rem;
+        margin-left: -0.25rem;
+        margin-right: -0.25rem;
     }
 
     .admin-setting-page .setting-page-header h3 {
@@ -351,19 +349,19 @@
     }
 
     .admin-setting-page .setting-page-header small {
-        font-size: .78rem;
+        font-size: 0.78rem;
     }
 
     .admin-setting-page .setting-card {
-        border-radius: .8rem !important;
+        border-radius: 0.8rem !important;
     }
 
     .admin-setting-page .setting-card .card-body {
-        padding: .9rem;
+        padding: 0.9rem;
     }
 
     .admin-setting-page .setting-card .card-footer {
-        padding: .9rem;
+        padding: 0.9rem;
     }
 
     .admin-setting-page .setting-save-button {
@@ -384,7 +382,7 @@
 
     background: var(--theme-surface-soft);
     border: 1px solid var(--theme-border);
-    border-radius: .85rem;
+    border-radius: 0.85rem;
 }
 
 .admin-setting-page .setting-wallet-balance-box {
@@ -397,7 +395,7 @@
 
     background: var(--theme-surface);
     border: 1px solid var(--theme-border);
-    border-radius: .75rem;
+    border-radius: 0.75rem;
 }
 
 .admin-setting-page .setting-wallet-label {
@@ -405,16 +403,16 @@
 
     color: var(--theme-text-secondary);
 
-    font-size: .8rem;
+    font-size: 0.8rem;
     font-weight: 600;
 }
 
 .admin-setting-page .setting-wallet-balance {
     display: flex;
     align-items: baseline;
-    gap: .4rem;
+    gap: 0.4rem;
 
-    margin-top: .15rem;
+    margin-top: 0.15rem;
 
     color: var(--theme-text);
 
@@ -424,27 +422,27 @@
 
 .admin-setting-page .setting-wallet-balance small {
     color: var(--theme-text-secondary);
-    font-size: .78rem;
+    font-size: 0.78rem;
     font-weight: 600;
 }
 
 .admin-setting-page .setting-wallet-status {
     display: block;
 
-    margin-top: .25rem;
+    margin-top: 0.25rem;
 
     color: var(--theme-text-muted);
-    font-size: .75rem;
+    font-size: 0.75rem;
 }
 
 .admin-setting-page .setting-wallet-refresh {
     display: inline-flex;
     align-items: center;
-    gap: .45rem;
+    gap: 0.45rem;
 
     min-height: 40px;
 
-    border-radius: .65rem;
+    border-radius: 0.65rem;
 }
 
 .admin-setting-page .setting-wallet-reload {
@@ -458,7 +456,7 @@
 .admin-setting-page .setting-wallet-reload-button {
     min-height: 44px;
 
-    border-radius: .7rem;
+    border-radius: 0.7rem;
 }
 
 .admin-setting-page .setting-wallet-result {
@@ -468,7 +466,7 @@
 
     background: var(--theme-primary-soft);
     border: 1px solid var(--theme-border);
-    border-radius: .75rem;
+    border-radius: 0.75rem;
 }
 
 .admin-setting-page .setting-wallet-result-title {
@@ -476,36 +474,36 @@
 
     color: var(--theme-primary);
 
-    font-size: .9rem;
+    font-size: 0.9rem;
     font-weight: 700;
 }
 
 .admin-setting-page .setting-wallet-result-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: .75rem;
+    gap: 0.75rem;
 }
 
 .admin-setting-page .setting-wallet-result-grid > div {
-    padding: .75rem;
+    padding: 0.75rem;
 
     background: var(--theme-surface);
     border: 1px solid var(--theme-border);
-    border-radius: .6rem;
+    border-radius: 0.6rem;
 }
 
 .admin-setting-page .setting-wallet-result-grid span {
     display: block;
 
-    margin-bottom: .2rem;
+    margin-bottom: 0.2rem;
 
     color: var(--theme-text-secondary);
-    font-size: .72rem;
+    font-size: 0.72rem;
 }
 
 .admin-setting-page .setting-wallet-result-grid strong {
     color: var(--theme-text);
-    font-size: .85rem;
+    font-size: 0.85rem;
     word-break: break-word;
 }
 
@@ -516,34 +514,32 @@
 .admin-setting-page .setting-wallet-address label {
     display: block;
 
-    margin-bottom: .4rem;
+    margin-bottom: 0.4rem;
 
     color: var(--theme-text);
-    font-size: .8rem;
+    font-size: 0.8rem;
     font-weight: 600;
 }
 
 .admin-setting-page .setting-wallet-address .form-control {
     font-family: monospace;
-    font-size: .8rem;
+    font-size: 0.8rem;
 }
 
 .admin-setting-page .setting-wallet-address small {
     display: block;
 
-    margin-top: .4rem;
+    margin-top: 0.4rem;
 
     color: var(--theme-text-secondary);
-    font-size: .75rem;
+    font-size: 0.75rem;
 }
-
 
 /* =========================================================
    MOOGOLD WALLET - MOBILE
 ========================================================= */
 
 @media (max-width: 575.98px) {
-
     .admin-setting-page .setting-wallet-balance-box {
         flex-direction: column;
         align-items: stretch;
@@ -557,7 +553,6 @@
     .admin-setting-page .setting-wallet-result-grid {
         grid-template-columns: 1fr;
     }
-
 }
 
 /* =========================================================
@@ -567,14 +562,14 @@
 .admin-setting-page .setting-wallet-idr {
     display: flex;
     flex-direction: column;
-    gap: .1rem;
+    gap: 0.1rem;
 
-    margin-top: .35rem;
+    margin-top: 0.35rem;
 }
 
 .admin-setting-page .setting-wallet-idr > span {
     color: var(--theme-text-secondary);
-    font-size: .75rem;
+    font-size: 0.75rem;
 }
 
 .admin-setting-page .setting-wallet-idr strong {
@@ -585,5 +580,5 @@
 
 .admin-setting-page .setting-wallet-idr small {
     color: var(--theme-text-muted);
-    font-size: .7rem;
+    font-size: 0.7rem;
 }

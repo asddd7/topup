@@ -5,18 +5,12 @@
 .admin-layout #sidebar {
     width: 260px !important;
 
-    background:
-        var(--theme-surface) !important;
+    background: var(--theme-surface) !important;
 
-    border-right:
-        1px solid
-        var(--theme-border) !important;
+    border-right: 1px solid var(--theme-border) !important;
 
-    box-shadow:
-        8px 0 28px
-        rgba(15, 23, 42, 0.05) !important;
+    box-shadow: 8px 0 28px rgba(15, 23, 42, 0.05) !important;
 }
-
 
 /* =========================================================
    HEADER
@@ -25,13 +19,9 @@
 .admin-layout #sidebar .offcanvas-header {
     min-height: 70px;
 
-    padding:
-        14px
-        16px;
+    padding: 14px 16px;
 
-    border-bottom:
-        1px solid
-        var(--theme-border);
+    border-bottom: 1px solid var(--theme-border);
 }
 
 .admin-sidebar-brand-icon {
@@ -48,12 +38,11 @@
 
     border-radius: 10px;
 
-    background:
-        linear-gradient(
-            135deg,
-            var(--theme-primary),
-            var(--theme-primary-hover)
-        );
+    background: linear-gradient(
+        135deg,
+        var(--theme-primary),
+        var(--theme-primary-hover)
+    );
 
     color: #fff;
 
@@ -70,8 +59,7 @@
 .admin-sidebar-brand-title {
     margin: 0;
 
-    color:
-        var(--theme-text) !important;
+    color: var(--theme-text) !important;
 
     font-size: 13px;
 
@@ -85,8 +73,7 @@
 
     margin-top: 2px;
 
-    color:
-        var(--theme-text-muted);
+    color: var(--theme-text-muted);
 
     font-size: 7px;
 
@@ -95,14 +82,12 @@
     letter-spacing: 1px;
 }
 
-
 /* =========================================================
    NAV
 ========================================================= */
 
 .admin-sidebar-nav {
-    padding:
-        10px;
+    padding: 10px;
 }
 
 .admin-sidebar-group {
@@ -110,14 +95,9 @@
 }
 
 .admin-sidebar-group-title {
-    margin:
-        0
-        8px
-        0
-        10px;
+    margin: 0 8px 0 10px;
 
-    color:
-        var(--theme-text-muted);
+    color: var(--theme-text-muted);
 
     font-size: 8px;
 
@@ -127,7 +107,6 @@
 
     text-transform: uppercase;
 }
-
 
 /* =========================================================
    LINK
@@ -147,19 +126,15 @@
 
     margin-bottom: 3px;
 
-    padding:
-        8px
-        10px;
+    padding: 8px 10px;
 
     border: 0 !important;
 
     border-radius: 9px !important;
 
-    background:
-        transparent;
+    background: transparent;
 
-    color:
-        var(--theme-text-secondary);
+    color: var(--theme-text-secondary);
 
     font-size: 10px;
 
@@ -176,14 +151,11 @@
 }
 
 .admin-sidebar-link:hover {
-    background:
-        var(--theme-primary-soft);
+    background: var(--theme-primary-soft);
 
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 
-    transform:
-        translateX(2px);
+    transform: translateX(2px);
 }
 
 .admin-sidebar-link i {
@@ -193,31 +165,25 @@
 
     text-align: center;
 
-    color:
-        var(--theme-text-muted);
+    color: var(--theme-text-muted);
 
     font-size: 12px;
 
-    transition:
-        color 0.2s ease;
+    transition: color 0.2s ease;
 }
 
 .admin-sidebar-link:hover i {
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 }
-
 
 /* =========================================================
    ACTIVE
 ========================================================= */
 
 .admin-sidebar-link.active {
-    background:
-        var(--theme-primary-soft);
+    background: var(--theme-primary-soft);
 
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 
     font-weight: 750;
 }
@@ -233,21 +199,14 @@
 
     width: 3px;
 
-    border-radius:
-        0
-        999px
-        999px
-        0;
+    border-radius: 0 999px 999px 0;
 
-    background:
-        var(--theme-primary);
+    background: var(--theme-primary);
 }
 
 .admin-sidebar-link.active i {
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 }
-
 
 /* =========================================================
    BADGE
@@ -263,22 +222,17 @@
     align-items: center;
     justify-content: center;
 
-    padding:
-        0
-        5px;
+    padding: 0 5px;
 
     border-radius: 999px;
 
-    background:
-        #dc2626;
+    background: #dc2626;
 
-    color:
-        #fff;
+    color: #fff;
 
     font-size: 7px;
     font-weight: 800;
 }
-
 
 /* =========================================================
    LOGOUT
@@ -289,32 +243,24 @@
 
     padding-top: 10px;
 
-    border-top:
-        1px solid
-        var(--theme-border);
+    border-top: 1px solid var(--theme-border);
 }
 
 .admin-sidebar-logout {
-    color:
-        #dc2626;
+    color: #dc2626;
 }
 
 .admin-sidebar-logout:hover {
-    background:
-        rgba(220, 38, 38, 0.08);
+    background: rgba(220, 38, 38, 0.08);
 
-    color:
-        #dc2626;
+    color: #dc2626;
 
-    transform:
-        translateX(2px);
+    transform: translateX(2px);
 }
 
 .admin-sidebar-logout i {
-    color:
-        #dc2626;
+    color: #dc2626;
 }
-
 
 /* =========================================================
    SCROLL
@@ -329,44 +275,36 @@
 }
 
 .admin-layout #sidebar .offcanvas-body::-webkit-scrollbar-track {
-    background:
-        var(--theme-surface);
+    background: var(--theme-surface);
 }
 
 .admin-layout #sidebar .offcanvas-body::-webkit-scrollbar-thumb {
-    background:
-        var(--theme-border);
+    background: var(--theme-border);
 
     border-radius: 999px;
 }
 
 .admin-layout #sidebar .offcanvas-body::-webkit-scrollbar-thumb:hover {
-    background:
-        var(--theme-text-muted);
+    background: var(--theme-text-muted);
 }
-
 
 /* =========================================================
    MOBILE
 ========================================================= */
 
 @media (max-width: 991px) {
-
     .admin-layout #sidebar {
         width: 275px !important;
     }
-
 }
 
 @media (max-width: 576px) {
-
     .admin-layout #sidebar {
         width: 255px !important;
     }
 
     .admin-sidebar-nav {
-        padding:
-            8px;
+        padding: 8px;
     }
 
     .admin-sidebar-group {
@@ -380,9 +318,7 @@
     .admin-sidebar-link {
         min-height: 40px;
 
-        padding:
-            8px
-            9px;
+        padding: 8px 9px;
 
         font-size: 9px;
     }
@@ -390,5 +326,4 @@
     .admin-sidebar-link i {
         font-size: 11px;
     }
-
 }

@@ -17,7 +17,7 @@
         ),
         radial-gradient(
             circle at 88% 25%,
-            rgba(59, 130, 246, 0.10),
+            rgba(59, 130, 246, 0.1),
             transparent 28%
         ),
         linear-gradient(
@@ -32,17 +32,11 @@
 
     color: #fff;
 
-    border-top:
-        1px solid
-        color-mix(
-            in srgb,
-            var(--theme-border) 25%,
-            transparent
-        );
+    border-top: 1px solid
+        color-mix(in srgb, var(--theme-border) 25%, transparent);
 
     overflow: hidden;
 }
-
 
 /* =========================================================
    TOP ACCENT
@@ -59,16 +53,14 @@
 
     height: 3px;
 
-    background:
-        linear-gradient(
-            90deg,
-            var(--theme-primary),
-            #3b82f6,
-            #60a5fa,
-            var(--theme-primary)
-        );
+    background: linear-gradient(
+        90deg,
+        var(--theme-primary),
+        #3b82f6,
+        #60a5fa,
+        var(--theme-primary)
+    );
 }
-
 
 /* =========================================================
    CONTAINER
@@ -82,12 +74,8 @@
 
     margin: 0 auto;
 
-    padding:
-        48px
-        32px
-        24px;
+    padding: 48px 32px 24px;
 }
-
 
 /* =========================================================
    FOOTER TOP
@@ -101,7 +89,6 @@
 
     gap: 30px;
 }
-
 
 /* =========================================================
    BRAND
@@ -129,7 +116,6 @@
 
     letter-spacing: -0.5px;
 }
-
 
 /* =========================================================
    SOCIAL MEDIA
@@ -161,14 +147,11 @@
     align-items: center;
     justify-content: center;
 
-    border:
-        1px solid
-        rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 
     border-radius: 11px;
 
-    background:
-        rgba(255, 255, 255, 0.055);
+    background: rgba(255, 255, 255, 0.055);
 
     color: #cbd5e1;
 
@@ -188,22 +171,18 @@
 .topup-footer-social a:hover {
     background: var(--theme-primary);
 
-    border-color:
-        var(--theme-primary);
+    border-color: var(--theme-primary);
 
     color: #fff;
 
     transform: translateY(-3px);
 
-    box-shadow:
-        0 8px 18px
-        rgba(37, 99, 235, 0.25);
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
 }
 
 .topup-footer-social i {
     font-size: 15px;
 }
-
 
 /* =========================================================
    FOOTER LINKS
@@ -212,19 +191,15 @@
 .topup-footer-links {
     display: grid;
 
-    grid-template-columns:
-        repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
 
     gap: 38px;
 
     margin-top: 42px;
     padding-top: 34px;
 
-    border-top:
-        1px solid
-        rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
-
 
 /* =========================================================
    COLUMN
@@ -251,21 +226,13 @@
 
     border-radius: 999px;
 
-    background:
-        linear-gradient(
-            90deg,
-            var(--theme-primary),
-            #60a5fa
-        );
+    background: linear-gradient(90deg, var(--theme-primary), #60a5fa);
 }
 
 .topup-footer-column ul {
     list-style: none;
 
-    margin:
-        16px
-        0
-        0;
+    margin: 16px 0 0;
 
     padding: 0;
 }
@@ -295,7 +262,6 @@
     transform: translateX(4px);
 }
 
-
 /* =========================================================
    FOOTER BOTTOM
 ========================================================= */
@@ -311,9 +277,7 @@
     margin-top: 34px;
     padding-top: 20px;
 
-    border-top:
-        1px solid
-        rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .topup-footer-bottom p {
@@ -324,7 +288,6 @@
     font-size: 11px;
     line-height: 1.5;
 }
-
 
 /* =========================================================
    WHATSAPP CONTACT
@@ -341,18 +304,13 @@
 
     gap: 7px;
 
-    padding:
-        7px
-        11px;
+    padding: 7px 11px;
 
-    border:
-        1px solid
-        rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 
     border-radius: 9px;
 
-    background:
-        rgba(255, 255, 255, 0.035);
+    background: rgba(255, 255, 255, 0.035);
 
     color: #94a3b8;
 
@@ -370,19 +328,9 @@
 .topup-footer-contact a:hover {
     color: #fff;
 
-    background:
-        color-mix(
-            in srgb,
-            var(--theme-primary) 14%,
-            transparent
-        );
+    background: color-mix(in srgb, var(--theme-primary) 14%, transparent);
 
-    border-color:
-        color-mix(
-            in srgb,
-            var(--theme-primary) 35%,
-            transparent
-        );
+    border-color: color-mix(in srgb, var(--theme-primary) 35%, transparent);
 
     transform: translateY(-1px);
 }
@@ -391,7 +339,6 @@
     font-size: 15px;
 }
 
-
 /* =========================================================
    FOOTER NAVIGATION
 ========================================================= */
@@ -399,14 +346,10 @@
 .topup-footer-nav {
     width: 100%;
 
-    background:
-        rgba(2, 6, 23, 0.30);
+    background: rgba(2, 6, 23, 0.3);
 
-    border-bottom:
-        1px solid
-        rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
-
 
 /* =========================================================
    NAV CONTAINER
@@ -418,9 +361,7 @@
 
     margin: 0 auto;
 
-    padding:
-        0
-        32px;
+    padding: 0 32px;
 
     display: flex;
     align-items: center;
@@ -428,7 +369,6 @@
 
     gap: 3px;
 }
-
 
 /* =========================================================
    NAV ITEM
@@ -445,9 +385,7 @@
 
     min-height: 52px;
 
-    padding:
-        0
-        19px;
+    padding: 0 19px;
 
     color: #64748b;
 
@@ -464,8 +402,7 @@
 .topup-footer-nav-item:hover {
     color: #93c5fd;
 
-    background:
-        rgba(255, 255, 255, 0.025);
+    background: rgba(255, 255, 255, 0.025);
 }
 
 .topup-footer-nav-item i {
@@ -481,7 +418,6 @@
 
     transform: translateY(-1px);
 }
-
 
 /* =========================================================
    ACTIVE
@@ -502,72 +438,45 @@
 
     height: 2px;
 
-    border-radius:
-        999px
-        999px
-        0
-        0;
+    border-radius: 999px 999px 0 0;
 
-    background:
-        linear-gradient(
-            90deg,
-            var(--theme-primary),
-            #60a5fa
-        );
+    background: linear-gradient(90deg, var(--theme-primary), #60a5fa);
 
-    box-shadow:
-        0 -2px 10px
-        rgba(37, 99, 235, 0.25);
+    box-shadow: 0 -2px 10px rgba(37, 99, 235, 0.25);
 }
-
 
 /* =========================================================
    TABLET
 ========================================================= */
 
 @media (max-width: 991px) {
-
     .topup-footer-container {
-        padding:
-            42px
-            24px
-            22px;
+        padding: 42px 24px 22px;
     }
 
     .topup-footer-links {
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
 
-        gap:
-            28px
-            36px;
+        gap: 28px 36px;
     }
 
     .topup-footer-nav-container {
-        padding:
-            0
-            24px;
+        padding: 0 24px;
     }
 }
-
 
 /* =========================================================
    MOBILE
 ========================================================= */
 
 @media (max-width: 767px) {
-
     .topup-footer {
         margin-top: 34px;
     }
 
     .topup-footer-container {
-        padding:
-            32px
-            17px
-            17px;
+        padding: 32px 17px 17px;
     }
-
 
     /* -----------------------------------------------------
        TOP
@@ -588,7 +497,6 @@
         font-size: 19px;
     }
 
-
     /* -----------------------------------------------------
        SOCIAL
     ----------------------------------------------------- */
@@ -608,18 +516,14 @@
         font-size: 13px;
     }
 
-
     /* -----------------------------------------------------
        LINKS
     ----------------------------------------------------- */
 
     .topup-footer-links {
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
 
-        gap:
-            24px
-            18px;
+        gap: 24px 18px;
 
         margin-top: 27px;
         padding-top: 24px;
@@ -648,7 +552,6 @@
         font-size: 11px;
     }
 
-
     /* -----------------------------------------------------
        BOTTOM
     ----------------------------------------------------- */
@@ -669,9 +572,7 @@
     }
 
     .topup-footer-contact a {
-        padding:
-            6px
-            9px;
+        padding: 6px 9px;
 
         font-size: 11px;
     }
@@ -680,15 +581,12 @@
         font-size: 13px;
     }
 
-
     /* -----------------------------------------------------
        FOOTER NAV
     ----------------------------------------------------- */
 
     .topup-footer-nav-container {
-        padding:
-            0
-            9px;
+        padding: 0 9px;
 
         gap: 2px;
     }
@@ -698,9 +596,7 @@
 
         min-height: 48px;
 
-        padding:
-            0
-            7px;
+        padding: 0 7px;
 
         gap: 5px;
 
@@ -719,24 +615,18 @@
     }
 }
 
-
 /* =========================================================
    SMALL MOBILE
 ========================================================= */
 
 @media (max-width: 480px) {
-
     .topup-footer {
         margin-top: 28px;
     }
 
     .topup-footer-container {
-        padding:
-            27px
-            14px
-            15px;
+        padding: 27px 14px 15px;
     }
-
 
     /* -----------------------------------------------------
        BRAND + SOCIAL
@@ -766,15 +656,12 @@
         font-size: 12px;
     }
 
-
     /* -----------------------------------------------------
        LINKS
     ----------------------------------------------------- */
 
     .topup-footer-links {
-        gap:
-            19px
-            15px;
+        gap: 19px 15px;
 
         margin-top: 23px;
         padding-top: 20px;
@@ -796,7 +683,6 @@
         font-size: 10px;
     }
 
-
     /* -----------------------------------------------------
        BOTTOM
     ----------------------------------------------------- */
@@ -817,28 +703,21 @@
     .topup-footer-contact a {
         font-size: 10px;
 
-        padding:
-            5px
-            8px;
+        padding: 5px 8px;
     }
-
 
     /* -----------------------------------------------------
        NAV
     ----------------------------------------------------- */
 
     .topup-footer-nav-container {
-        padding:
-            0
-            6px;
+        padding: 0 6px;
     }
 
     .topup-footer-nav-item {
         min-height: 46px;
 
-        padding:
-            0
-            5px;
+        padding: 0 5px;
 
         font-size: 9px;
     }
@@ -853,18 +732,13 @@
     }
 }
 
-
 /* =========================================================
    VERY SMALL PHONE
 ========================================================= */
 
 @media (max-width: 360px) {
-
     .topup-footer-container {
-        padding:
-            24px
-            11px
-            13px;
+        padding: 24px 11px 13px;
     }
 
     .topup-footer-logo {
@@ -882,9 +756,7 @@
     }
 
     .topup-footer-links {
-        gap:
-            17px
-            12px;
+        gap: 17px 12px;
     }
 
     .topup-footer-column h5 {

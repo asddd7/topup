@@ -7,7 +7,6 @@
     min-width: 0;
 }
 
-
 /* =========================================================
    PAGE HEADER
 ========================================================= */
@@ -31,7 +30,6 @@
     line-height: 1.5;
 }
 
-
 /* =========================================================
    FILTER CARD
 ========================================================= */
@@ -54,7 +52,6 @@
     color: var(--theme-text);
     font-size: 0.95rem;
 }
-
 
 /* =========================================================
    FORM
@@ -92,10 +89,8 @@
     color: var(--theme-text);
     background-color: var(--theme-input-bg);
 
-    box-shadow:
-        0 0 0 3px rgba(79, 111, 206, 0.08);
+    box-shadow: 0 0 0 3px rgba(79, 111, 206, 0.08);
 }
-
 
 /* =========================================================
    BUTTON
@@ -118,7 +113,6 @@
     border-color: var(--theme-primary-hover);
     background: var(--theme-primary-hover);
 }
-
 
 /* =========================================================
    RESULT HEADER
@@ -146,7 +140,6 @@
     line-height: 1.5;
 }
 
-
 /* =========================================================
    RESULT CARD
 ========================================================= */
@@ -161,7 +154,6 @@
     box-shadow: var(--theme-shadow);
 }
 
-
 /* =========================================================
    TABLE WRAPPER
 ========================================================= */
@@ -175,7 +167,6 @@
 
     -webkit-overflow-scrolling: touch;
 }
-
 
 /* =========================================================
    TABLE
@@ -224,14 +215,12 @@
 }
 
 .transaction-history-table tbody tr {
-    transition:
-        background-color 0.15s ease;
+    transition: background-color 0.15s ease;
 }
 
 .transaction-history-table tbody tr:hover td {
     background: var(--theme-surface-soft);
 }
-
 
 /* =========================================================
    TABLE COLUMN
@@ -269,7 +258,6 @@
     width: 80px;
 }
 
-
 /* =========================================================
    ORDER ID
 ========================================================= */
@@ -290,19 +278,13 @@
     color: var(--theme-text-secondary);
 
     font-family:
-        SFMono-Regular,
-        Menlo,
-        Monaco,
-        Consolas,
-        "Liberation Mono",
-        monospace;
+        SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 
     font-size: 0.72rem;
 
     text-overflow: ellipsis;
     vertical-align: middle;
 }
-
 
 /* =========================================================
    STATUS
@@ -323,7 +305,6 @@
     line-height: 1;
 }
 
-
 /* =========================================================
    AMOUNT
 ========================================================= */
@@ -333,7 +314,6 @@
     font-size: 0.82rem;
     font-weight: 700;
 }
-
 
 /* =========================================================
    CUSTOMER
@@ -352,7 +332,6 @@
     white-space: nowrap;
 }
 
-
 /* =========================================================
    DATE
 ========================================================= */
@@ -361,7 +340,6 @@
     color: var(--theme-text-secondary);
     font-size: 0.78rem;
 }
-
 
 /* =========================================================
    DETAIL
@@ -380,7 +358,6 @@
 
     font-size: 0.75rem;
 }
-
 
 /* =========================================================
    DETAIL ROW
@@ -432,7 +409,6 @@
     word-break: break-word;
 }
 
-
 /* =========================================================
    EMPTY STATE
 ========================================================= */
@@ -470,7 +446,6 @@
     line-height: 1.5;
 }
 
-
 /* =========================================================
    PAGINATION
 ========================================================= */
@@ -486,7 +461,6 @@
     min-width: 102px;
 }
 
-
 /* =========================================================
    ALERT
 ========================================================= */
@@ -500,13 +474,11 @@
     padding-left: 18px;
 }
 
-
 /* =========================================================
    TABLET
 ========================================================= */
 
 @media (max-width: 991.98px) {
-
     .transaction-history-page .container-fluid {
         padding-right: 14px;
         padding-left: 14px;
@@ -521,13 +493,11 @@
     }
 }
 
-
 /* =========================================================
    MOBILE
 ========================================================= */
 
 @media (max-width: 767.98px) {
-
     .transaction-history-page .container-fluid {
         padding-top: 18px;
         padding-right: 12px;
@@ -550,7 +520,6 @@
         font-size: 0.76rem;
     }
 
-
     /* ---------------------------------------------------------
        HEADER
     --------------------------------------------------------- */
@@ -562,7 +531,6 @@
     .transaction-history-page .page-header-actions .btn {
         width: 100%;
     }
-
 
     /* ---------------------------------------------------------
        FILTER
@@ -580,7 +548,6 @@
         font-size: 0.88rem;
     }
 
-
     /* ---------------------------------------------------------
        FORM
     --------------------------------------------------------- */
@@ -596,7 +563,6 @@
         border-radius: 9px;
     }
 
-
     /* ---------------------------------------------------------
        ACTION
     --------------------------------------------------------- */
@@ -608,7 +574,6 @@
     .transaction-history-page .filter-actions .btn {
         flex: 1 1 auto;
     }
-
 
     /* ---------------------------------------------------------
        RESULT HEADER
@@ -622,7 +587,6 @@
     .transaction-history-result-meta {
         font-size: 0.72rem;
     }
-
 
     /* ---------------------------------------------------------
        TABLE
@@ -646,7 +610,6 @@
         font-size: 0.75rem;
     }
 
-
     /* ---------------------------------------------------------
        DETAIL
     --------------------------------------------------------- */
@@ -654,7 +617,6 @@
     .transaction-history-detail-content {
         padding: 12px;
     }
-
 
     /* ---------------------------------------------------------
        PAGINATION
@@ -673,13 +635,11 @@
     }
 }
 
-
 /* =========================================================
    SMALL MOBILE
 ========================================================= */
 
 @media (max-width: 480px) {
-
     .transaction-history-page .container-fluid {
         padding-top: 14px;
         padding-right: 10px;
@@ -731,7 +691,7 @@
     background: var(--theme-surface);
     border: 1px solid var(--theme-border);
     color: var(--theme-text);
-    border-radius: .9rem;
+    border-radius: 0.9rem;
 }
 
 .transaction-history-page .receipt-modal .modal-header {
@@ -751,7 +711,7 @@
 .transaction-history-page .receipt-editor {
     display: flex;
     flex-direction: column;
-    gap: .75rem;
+    gap: 0.75rem;
 }
 
 .transaction-history-page .receipt-editor-row {
@@ -760,16 +720,16 @@
     justify-content: space-between;
     gap: 1rem;
 
-    padding: .7rem .8rem;
+    padding: 0.7rem 0.8rem;
 
     background: var(--theme-surface-soft);
     border: 1px solid var(--theme-border);
-    border-radius: .65rem;
+    border-radius: 0.65rem;
 }
 
 .transaction-history-page .receipt-editor-row span {
     color: var(--theme-text-secondary);
-    font-size: .8rem;
+    font-size: 0.8rem;
 }
 
 .transaction-history-page .receipt-editor-row strong {
@@ -777,14 +737,14 @@
 
     color: var(--theme-text);
 
-    font-size: .8rem;
+    font-size: 0.8rem;
     text-align: right;
 
     overflow-wrap: anywhere;
 }
 
 .transaction-history-page .receipt-price-editor {
-    margin-top: .25rem;
+    margin-top: 0.25rem;
     padding-top: 1rem;
 
     border-top: 1px solid var(--theme-border);
@@ -793,11 +753,11 @@
 .transaction-history-page .receipt-price-editor small {
     display: block;
 
-    margin-top: .4rem;
+    margin-top: 0.4rem;
 
     color: var(--theme-text-secondary);
 
-    font-size: .72rem;
+    font-size: 0.72rem;
 }
 
 .transaction-history-page .receipt-price-editor .input-group-text {
@@ -818,45 +778,37 @@
 
     border-color: var(--theme-primary);
 
-    box-shadow: 0 0 0 3px rgba(79, 111, 206, .10);
+    box-shadow: 0 0 0 3px rgba(79, 111, 206, 0.1);
 }
-
 
 /* =========================================================
    PRINT BUTTON
 ========================================================= */
 
-.transaction-history-page
-.transaction-history-print-button {
-
+.transaction-history-page .transaction-history-print-button {
     transition:
-        color .2s ease,
-        background-color .2s ease,
-        border-color .2s ease;
-
+        color 0.2s ease,
+        background-color 0.2s ease,
+        border-color 0.2s ease;
 }
 
 @media (max-width: 575.98px) {
-
     .transaction-history-page .receipt-editor-row {
         flex-direction: column;
-        gap: .25rem;
+        gap: 0.25rem;
     }
 
     .transaction-history-page .receipt-editor-row strong {
         max-width: 100%;
         text-align: left;
     }
-
 }
 
 /* =========================================================
    BULK PRINT TOOLBAR
 ========================================================= */
 
-.transaction-history-page
-.transaction-history-bulk-toolbar {
-
+.transaction-history-page .transaction-history-bulk-toolbar {
     display: flex;
 
     align-items: center;
@@ -865,125 +817,82 @@
 
     gap: 1rem;
 
-    padding: .75rem 1rem;
+    padding: 0.75rem 1rem;
 
-    background:
-        var(--theme-surface);
+    background: var(--theme-surface);
 
-    border:
-        1px solid var(--theme-border);
+    border: 1px solid var(--theme-border);
 
-    border-radius:
-        .75rem;
-
+    border-radius: 0.75rem;
 }
 
-
-.transaction-history-page
-.transaction-history-bulk-info {
-
+.transaction-history-page .transaction-history-bulk-info {
     display: flex;
 
     align-items: center;
 
-    gap: .85rem;
-
+    gap: 0.85rem;
 }
 
-
-.transaction-history-page
-.transaction-history-bulk-select {
-
+.transaction-history-page .transaction-history-bulk-select {
     display: flex;
 
     align-items: center;
 
-    gap: .45rem;
-
+    gap: 0.45rem;
 }
 
+.transaction-history-page .transaction-history-bulk-select-label {
+    color: var(--theme-text);
 
-.transaction-history-page
-.transaction-history-bulk-select-label {
-
-    color:
-        var(--theme-text);
-
-    font-size: .82rem;
+    font-size: 0.82rem;
 
     font-weight: 600;
 
     cursor: pointer;
-
 }
 
+.transaction-history-page .transaction-history-selected-count {
+    color: var(--theme-text-secondary);
 
-.transaction-history-page
-.transaction-history-selected-count {
-
-    color:
-        var(--theme-text-secondary);
-
-    font-size: .75rem;
-
+    font-size: 0.75rem;
 }
 
-
-.transaction-history-page
-.transaction-history-bulk-print-button {
-
+.transaction-history-page .transaction-history-bulk-print-button {
     min-width: 125px;
-
 }
-
 
 /* =========================================================
    ROW CHECKBOX
 ========================================================= */
 
-.transaction-history-page
-.transaction-history-row-select {
-
+.transaction-history-page .transaction-history-row-select {
     display: flex;
 
     align-items: center;
 
-    gap: .7rem;
-
+    gap: 0.7rem;
 }
 
-
-.transaction-history-page
-.transaction-history-check-all {
-
+.transaction-history-page .transaction-history-check-all {
     display: flex;
 
     align-items: center;
 
-    gap: .7rem;
-
+    gap: 0.7rem;
 }
 
-
-.transaction-history-page
-.transaction-history-select,
-.transaction-history-page
-#selectAllTransactions,
-.transaction-history-page
-#tableSelectAllTransactions {
-
+.transaction-history-page .transaction-history-select,
+.transaction-history-page #selectAllTransactions,
+.transaction-history-page #tableSelectAllTransactions {
     cursor: pointer;
-
 }
-
 
 /* =========================================================
    BULK RECEIPT MODAL
 ========================================================= */
 
-.transaction-history-page
-.bulk-receipt-toolbar {
-
+.transaction-history-page .bulk-receipt-toolbar {
     display: flex;
 
     align-items: center;
@@ -994,64 +903,44 @@
 
     margin-bottom: 1rem;
 
-    padding: .8rem;
+    padding: 0.8rem;
 
-    background:
-        var(--theme-surface-soft);
+    background: var(--theme-surface-soft);
 
-    border:
-        1px solid var(--theme-border);
+    border: 1px solid var(--theme-border);
 
-    border-radius:
-        .75rem;
-
+    border-radius: 0.75rem;
 }
 
-
-.transaction-history-page
-.bulk-receipt-toolbar > div:first-child {
-
+.transaction-history-page .bulk-receipt-toolbar > div:first-child {
     display: flex;
 
     flex-direction: column;
 
-    gap: .15rem;
-
+    gap: 0.15rem;
 }
 
-
-.transaction-history-page
-.bulk-receipt-toolbar strong {
-
-    color:
-        var(--theme-text);
+.transaction-history-page .bulk-receipt-toolbar strong {
+    color: var(--theme-text);
 
     font-size: 1rem;
-
 }
 
-
-.transaction-history-page
-.bulk-receipt-list {
-
+.transaction-history-page .bulk-receipt-list {
     display: flex;
 
     flex-direction: column;
 
-    gap: .6rem;
+    gap: 0.6rem;
 
     max-height: 55vh;
 
     overflow-y: auto;
 
-    padding-right: .2rem;
-
+    padding-right: 0.2rem;
 }
 
-
-.transaction-history-page
-.bulk-receipt-item {
-
+.transaction-history-page .bulk-receipt-item {
     display: grid;
 
     grid-template-columns:
@@ -1062,25 +951,18 @@
 
     align-items: center;
 
-    gap: .75rem;
+    gap: 0.75rem;
 
-    padding: .8rem;
+    padding: 0.8rem;
 
-    background:
-        var(--theme-surface-soft);
+    background: var(--theme-surface-soft);
 
-    border:
-        1px solid var(--theme-border);
+    border: 1px solid var(--theme-border);
 
-    border-radius:
-        .7rem;
-
+    border-radius: 0.7rem;
 }
 
-
-.transaction-history-page
-.bulk-receipt-item-number {
-
+.transaction-history-page .bulk-receipt-item-number {
     display: flex;
 
     align-items: center;
@@ -1091,198 +973,119 @@
 
     height: 28px;
 
-    border-radius:
-        50%;
+    border-radius: 50%;
 
-    background:
-        var(--theme-primary-soft);
+    background: var(--theme-primary-soft);
 
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 
-    font-size: .75rem;
+    font-size: 0.75rem;
 
     font-weight: 700;
-
 }
 
-
-.transaction-history-page
-.bulk-receipt-item-info {
-
+.transaction-history-page .bulk-receipt-item-info {
     display: flex;
 
     flex-direction: column;
 
     min-width: 0;
-
 }
 
+.transaction-history-page .bulk-receipt-item-info strong {
+    color: var(--theme-text);
 
-.transaction-history-page
-.bulk-receipt-item-info strong {
-
-    color:
-        var(--theme-text);
-
-    font-size: .82rem;
-
+    font-size: 0.82rem;
 }
 
+.transaction-history-page .bulk-receipt-item-info span {
+    margin-top: 0.15rem;
 
-.transaction-history-page
-.bulk-receipt-item-info span {
+    color: var(--theme-text);
 
-    margin-top: .15rem;
-
-    color:
-        var(--theme-text);
-
-    font-size: .78rem;
+    font-size: 0.78rem;
 
     white-space: nowrap;
 
     overflow: hidden;
 
     text-overflow: ellipsis;
-
 }
 
+.transaction-history-page .bulk-receipt-item-info small {
+    margin-top: 0.15rem;
 
-.transaction-history-page
-.bulk-receipt-item-info small {
+    color: var(--theme-text-secondary);
 
-    margin-top: .15rem;
-
-    color:
-        var(--theme-text-secondary);
-
-    font-size: .7rem;
-
+    font-size: 0.7rem;
 }
 
+.transaction-history-page .bulk-receipt-item-date {
+    color: var(--theme-text-secondary);
 
-.transaction-history-page
-.bulk-receipt-item-date {
-
-    color:
-        var(--theme-text-secondary);
-
-    font-size: .72rem;
+    font-size: 0.72rem;
 
     white-space: nowrap;
-
 }
 
-
-.transaction-history-page
-.bulk-receipt-item-price {
-
+.transaction-history-page .bulk-receipt-item-price {
     min-width: 0;
-
 }
 
+.transaction-history-page .bulk-receipt-item-price .form-control {
+    background: var(--theme-input-bg);
 
-.transaction-history-page
-.bulk-receipt-item-price .form-control {
+    color: var(--theme-text);
 
-    background:
-        var(--theme-input-bg);
-
-    color:
-        var(--theme-text);
-
-    border-color:
-        var(--theme-border);
-
+    border-color: var(--theme-border);
 }
 
+.transaction-history-page .bulk-receipt-item-price .input-group-text {
+    background: var(--theme-surface);
 
-.transaction-history-page
-.bulk-receipt-item-price .input-group-text {
+    color: var(--theme-text-secondary);
 
-    background:
-        var(--theme-surface);
-
-    color:
-        var(--theme-text-secondary);
-
-    border-color:
-        var(--theme-border);
-
+    border-color: var(--theme-border);
 }
-
 
 /* =========================================================
    MOBILE
 ========================================================= */
 
 @media (max-width: 767.98px) {
-
-    .transaction-history-page
-    .transaction-history-bulk-toolbar {
-
+    .transaction-history-page .transaction-history-bulk-toolbar {
         align-items: stretch;
 
         flex-direction: column;
-
     }
 
-
-    .transaction-history-page
-    .transaction-history-bulk-info {
-
-        justify-content:
-            space-between;
-
+    .transaction-history-page .transaction-history-bulk-info {
+        justify-content: space-between;
     }
 
-
-    .transaction-history-page
-    .transaction-history-bulk-print-button {
-
+    .transaction-history-page .transaction-history-bulk-print-button {
         width: 100%;
-
     }
 
-
-    .transaction-history-page
-    .bulk-receipt-toolbar {
-
+    .transaction-history-page .bulk-receipt-toolbar {
         align-items: stretch;
 
         flex-direction: column;
-
     }
 
-
-    .transaction-history-page
-    .bulk-receipt-item {
-
+    .transaction-history-page .bulk-receipt-item {
         grid-template-columns:
             30px
             minmax(0, 1fr);
-
     }
 
-
-    .transaction-history-page
-    .bulk-receipt-item-date {
-
-        grid-column:
-            2;
-
+    .transaction-history-page .bulk-receipt-item-date {
+        grid-column: 2;
     }
 
-
-    .transaction-history-page
-    .bulk-receipt-item-price {
-
-        grid-column:
-            2;
-
+    .transaction-history-page .bulk-receipt-item-price {
+        grid-column: 2;
     }
-
 }
 
 /* =========================================================
@@ -1297,7 +1100,7 @@
 
 .table-sortable > span:first-child,
 .table-sortable {
-    transition: color .2s ease;
+    transition: color 0.2s ease;
 }
 
 .table-sortable:hover {
@@ -1327,11 +1130,11 @@
     font-size: 8px;
     line-height: 7px;
     color: var(--theme-text-muted);
-    opacity: .45;
+    opacity: 0.45;
     transition:
-        color .2s ease,
-        opacity .2s ease,
-        transform .2s ease;
+        color 0.2s ease,
+        opacity 0.2s ease,
+        transform 0.2s ease;
 }
 
 .sort-icon-up {
@@ -1343,7 +1146,7 @@
 }
 
 .table-sortable:hover .sort-icon {
-    opacity: .8;
+    opacity: 0.8;
 }
 
 .table-sortable.sort-asc .sort-icon-up,
@@ -1354,7 +1157,7 @@
 
 .table-sortable.sort-asc .sort-icon-down,
 .table-sortable.sort-desc .sort-icon-up {
-    opacity: .25;
+    opacity: 0.25;
 }
 
 .table-sortable.sort-asc .sort-icon-up {

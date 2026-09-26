@@ -125,7 +125,6 @@
     flex-shrink: 0;
 }
 
-
 /* =========================================================
    ORDER HISTORY PAGE
 ========================================================= */
@@ -190,7 +189,6 @@
     line-height: 1.5;
 }
 
-
 /* =========================================================
    ORDER CARD
 ========================================================= */
@@ -201,12 +199,11 @@
 
     margin-bottom: 14px;
 
-    background:
-        linear-gradient(
-            180deg,
-            var(--theme-surface),
-            var(--theme-surface-soft)
-        );
+    background: linear-gradient(
+        180deg,
+        var(--theme-surface),
+        var(--theme-surface-soft)
+    );
 
     border: 1px solid var(--theme-border);
     border-radius: 18px;
@@ -224,8 +221,7 @@
 
     border-color: var(--theme-primary);
 
-    box-shadow:
-        0 14px 32px rgba(37, 99, 235, 0.09);
+    box-shadow: 0 14px 32px rgba(37, 99, 235, 0.09);
 }
 
 .order-card-top {
@@ -237,9 +233,7 @@
 
     padding: 18px 20px;
 
-    border-bottom:
-        1px solid
-        var(--theme-border-soft);
+    border-bottom: 1px solid var(--theme-border-soft);
 }
 
 .order-game-info {
@@ -263,9 +257,7 @@
 
     background: var(--theme-primary-soft);
 
-    box-shadow:
-        0 5px 14px
-        rgba(37, 99, 235, 0.10);
+    box-shadow: 0 5px 14px rgba(37, 99, 235, 0.1);
 }
 
 .order-game-image img {
@@ -332,7 +324,6 @@
     white-space: nowrap;
 }
 
-
 /* =========================================================
    ORDER STATUS
 ========================================================= */
@@ -372,7 +363,6 @@
     color: var(--theme-text-secondary);
     border: 1px solid var(--theme-border);
 }
-
 
 /* =========================================================
    ORDER PRODUCT
@@ -476,7 +466,6 @@
     white-space: nowrap;
 }
 
-
 /* =========================================================
    ORDER META
 ========================================================= */
@@ -492,9 +481,7 @@
 
     background: var(--theme-primary-soft);
 
-    border-top:
-        1px solid
-        var(--theme-border-soft);
+    border-top: 1px solid var(--theme-border-soft);
 }
 
 .order-invoice {
@@ -526,7 +513,6 @@
 
     flex-shrink: 0;
 }
-
 
 /* =========================================================
    ORDER BUTTONS
@@ -564,9 +550,7 @@
 
     color: var(--theme-text-secondary);
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 }
 
 .order-detail-button:hover {
@@ -580,41 +564,32 @@
 }
 
 .order-payment-button {
-    background:
-        linear-gradient(
-            135deg,
-            var(--theme-primary),
-            var(--theme-primary-hover)
-        );
+    background: linear-gradient(
+        135deg,
+        var(--theme-primary),
+        var(--theme-primary-hover)
+    );
 
     color: #fff;
 
-    border:
-        1px solid
-        var(--theme-primary);
+    border: 1px solid var(--theme-primary);
 
-    box-shadow:
-        0 6px 14px
-        rgba(37, 99, 235, 0.18);
+    box-shadow: 0 6px 14px rgba(37, 99, 235, 0.18);
 }
 
 .order-payment-button:hover {
-    background:
-        linear-gradient(
-            135deg,
-            var(--theme-primary-hover),
-            var(--theme-primary)
-        );
+    background: linear-gradient(
+        135deg,
+        var(--theme-primary-hover),
+        var(--theme-primary)
+    );
 
     color: #fff;
 
     transform: translateY(-1px);
 
-    box-shadow:
-        0 8px 18px
-        rgba(37, 99, 235, 0.24);
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.24);
 }
-
 
 /* =========================================================
    EMPTY STATE
@@ -625,16 +600,13 @@
 
     text-align: center;
 
-    background:
-        linear-gradient(
-            180deg,
-            var(--theme-surface),
-            var(--theme-surface-soft)
-        );
+    background: linear-gradient(
+        180deg,
+        var(--theme-surface),
+        var(--theme-surface-soft)
+    );
 
-    border:
-        1px dashed
-        var(--theme-border);
+    border: 1px dashed var(--theme-border);
 
     border-radius: 20px;
 }
@@ -703,7 +675,6 @@
     color: #fff;
     transform: translateY(-1px);
 }
-
 
 /* =========================================================
    ORDER DETAIL PAGE
@@ -801,7 +772,6 @@
     line-height: 1.5;
 }
 
-
 /* =========================================================
    ORDER DETAIL CARD
 ========================================================= */
@@ -809,22 +779,17 @@
 .order-detail-card {
     overflow: hidden;
 
-    background:
-        linear-gradient(
-            180deg,
-            var(--theme-surface),
-            var(--theme-surface-soft)
-        );
+    background: linear-gradient(
+        180deg,
+        var(--theme-surface),
+        var(--theme-surface-soft)
+    );
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
     border-radius: 20px;
 
-    box-shadow:
-        0 12px 35px
-        rgba(15, 23, 42, 0.055);
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.055);
 }
 
 .order-detail-card-header {
@@ -836,9 +801,7 @@
 
     padding: 20px 22px;
 
-    border-bottom:
-        1px solid
-        var(--theme-border-soft);
+    border-bottom: 1px solid var(--theme-border-soft);
 }
 
 .order-detail-game {
@@ -862,9 +825,7 @@
 
     background: var(--theme-primary-soft);
 
-    box-shadow:
-        0 7px 16px
-        rgba(37, 99, 235, 0.10);
+    box-shadow: 0 7px 16px rgba(37, 99, 235, 0.1);
 }
 
 .order-detail-game-image img {
@@ -945,7 +906,6 @@
     white-space: nowrap;
 }
 
-
 /* =========================================================
    STATUS — SOFT VARIANT
 ========================================================= */
@@ -986,7 +946,6 @@
     border-color: var(--theme-border);
 }
 
-
 /* =========================================================
    DETAIL SECTION
 ========================================================= */
@@ -996,9 +955,7 @@
 }
 
 .order-detail-section + .order-detail-section {
-    border-top:
-        1px solid
-        var(--theme-border-soft);
+    border-top: 1px solid var(--theme-border-soft);
 }
 
 .order-detail-section-heading {
@@ -1045,7 +1002,6 @@
     font-size: 10px;
 }
 
-
 /* =========================================================
    PLAYER DATA
 ========================================================= */
@@ -1053,9 +1009,7 @@
 .order-player-data {
     overflow: hidden;
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
     border-radius: 12px;
 
@@ -1071,9 +1025,7 @@
 
     padding: 11px 13px;
 
-    border-bottom:
-        1px solid
-        var(--theme-border-soft);
+    border-bottom: 1px solid var(--theme-border-soft);
 }
 
 .order-player-item:last-child {
@@ -1094,7 +1046,6 @@
     text-align: right;
     word-break: break-word;
 }
-
 
 /* =========================================================
    DETAIL ITEMS
@@ -1117,9 +1068,7 @@
 
     background: var(--theme-surface-soft);
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
     border-radius: 12px;
 }
@@ -1189,7 +1138,6 @@
     white-space: nowrap;
 }
 
-
 /* =========================================================
    TOTAL
 ========================================================= */
@@ -1203,20 +1151,15 @@
 
     padding: 18px 22px;
 
-    background:
-        linear-gradient(
-            135deg,
-            var(--theme-primary-soft),
-            var(--theme-surface-soft)
-        );
+    background: linear-gradient(
+        135deg,
+        var(--theme-primary-soft),
+        var(--theme-surface-soft)
+    );
 
-    border-top:
-        1px solid
-        var(--theme-border);
+    border-top: 1px solid var(--theme-border);
 
-    border-bottom:
-        1px solid
-        var(--theme-border);
+    border-bottom: 1px solid var(--theme-border);
 }
 
 .order-detail-total span {
@@ -1235,7 +1178,6 @@
     white-space: nowrap;
 }
 
-
 /* =========================================================
    MIDTRANS PAYMENT ALERT
 ========================================================= */
@@ -1252,18 +1194,15 @@
     margin: 18px 22px 22px;
     padding: 14px;
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
     border-radius: 14px;
 
-    background:
-        linear-gradient(
-            135deg,
-            var(--theme-primary-soft),
-            var(--theme-surface-soft)
-        );
+    background: linear-gradient(
+        135deg,
+        var(--theme-primary-soft),
+        var(--theme-surface-soft)
+    );
 }
 
 .order-payment-alert-icon {
@@ -1281,9 +1220,7 @@
 
     font-size: 14px;
 
-    box-shadow:
-        0 7px 15px
-        rgba(37, 99, 235, 0.18);
+    box-shadow: 0 7px 15px rgba(37, 99, 235, 0.18);
 }
 
 .order-payment-alert-content {
@@ -1321,12 +1258,11 @@
 
     border-radius: 10px;
 
-    background:
-        linear-gradient(
-            135deg,
-            var(--theme-primary),
-            var(--theme-primary-hover)
-        );
+    background: linear-gradient(
+        135deg,
+        var(--theme-primary),
+        var(--theme-primary-hover)
+    );
 
     color: #fff;
 
@@ -1336,9 +1272,7 @@
     text-decoration: none;
     white-space: nowrap;
 
-    box-shadow:
-        0 8px 17px
-        rgba(37, 99, 235, 0.20);
+    box-shadow: 0 8px 17px rgba(37, 99, 235, 0.2);
 
     transition:
         transform 0.2s ease,
@@ -1347,29 +1281,24 @@
 }
 
 .order-midtrans-button:hover {
-    background:
-        linear-gradient(
-            135deg,
-            var(--theme-primary-hover),
-            var(--theme-primary)
-        );
+    background: linear-gradient(
+        135deg,
+        var(--theme-primary-hover),
+        var(--theme-primary)
+    );
 
     color: #fff;
 
     transform: translateY(-1px);
 
-    box-shadow:
-        0 10px 20px
-        rgba(37, 99, 235, 0.25);
+    box-shadow: 0 10px 20px rgba(37, 99, 235, 0.25);
 }
-
 
 /* =========================================================
    RESPONSIVE — TABLET
 ========================================================= */
 
 @media (max-width: 768px) {
-
     .order-history-page,
     .order-detail-page {
         padding: 24px 0 55px;
@@ -1410,13 +1339,11 @@
     }
 }
 
-
 /* =========================================================
    RESPONSIVE — MOBILE
 ========================================================= */
 
 @media (max-width: 576px) {
-
     /* Payment stepper */
 
     .payment-stepper-list {
@@ -1445,7 +1372,6 @@
     .payment-stepper-item.completed .payment-stepper-mobile-icon {
         color: var(--theme-primary);
     }
-
 
     /* Order history */
 
@@ -1603,7 +1529,6 @@
     .order-empty-state p {
         font-size: 10px;
     }
-
 
     /* Order detail */
 
@@ -1796,13 +1721,11 @@
     }
 }
 
-
 /* =========================================================
    RESPONSIVE — SMALL MOBILE
 ========================================================= */
 
 @media (max-width: 380px) {
-
     .order-history-container,
     .order-detail-container {
         padding: 0 8px;

@@ -16,16 +16,8 @@
     background:
         linear-gradient(
             135deg,
-            color-mix(
-                in srgb,
-                var(--theme-primary-soft) 48%,
-                transparent
-            ),
-            color-mix(
-                in srgb,
-                var(--theme-primary) 12%,
-                transparent
-            )
+            color-mix(in srgb, var(--theme-primary-soft) 48%, transparent),
+            color-mix(in srgb, var(--theme-primary) 12%, transparent)
         ),
         rgba(15, 23, 42, 0.28);
 
@@ -37,7 +29,6 @@
     z-index: 1055;
 }
 
-
 /* =========================================================
    BACKGROUND PAGE VISIBILITY
 ========================================================= */
@@ -48,16 +39,10 @@
     position: absolute;
     inset: 0;
 
-    background:
-        color-mix(
-            in srgb,
-            var(--theme-surface) 8%,
-            transparent
-        );
+    background: color-mix(in srgb, var(--theme-surface) 8%, transparent);
 
     pointer-events: none;
 }
-
 
 /* =========================================================
    AUTH CARD
@@ -69,25 +54,15 @@
     width: 100%;
     max-width: 380px;
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
     border-radius: 24px;
 
-    background:
-        color-mix(
-            in srgb,
-            var(--theme-surface) 97%,
-            transparent
-        );
+    background: color-mix(in srgb, var(--theme-surface) 97%, transparent);
 
     box-shadow:
-        0 30px 80px
-        rgba(30, 64, 175, 0.18),
-
-        0 10px 30px
-        rgba(15, 23, 42, 0.08);
+        0 30px 80px rgba(30, 64, 175, 0.18),
+        0 10px 30px rgba(15, 23, 42, 0.08);
 
     overflow: hidden;
 
@@ -95,7 +70,6 @@
 
     z-index: 2;
 }
-
 
 /* =========================================================
    DECORATIONS
@@ -118,12 +92,7 @@
     top: -110px;
     right: -80px;
 
-    background:
-        color-mix(
-            in srgb,
-            var(--theme-primary) 8%,
-            transparent
-        );
+    background: color-mix(in srgb, var(--theme-primary) 8%, transparent);
 }
 
 .auth-decoration-two {
@@ -133,14 +102,8 @@
     bottom: -75px;
     left: -55px;
 
-    background:
-        color-mix(
-            in srgb,
-            var(--theme-primary) 7%,
-            transparent
-        );
+    background: color-mix(in srgb, var(--theme-primary) 7%, transparent);
 }
-
 
 /* =========================================================
    CARD BODY
@@ -153,7 +116,6 @@
 
     z-index: 1;
 }
-
 
 /* =========================================================
    CLOSE BUTTON
@@ -194,7 +156,6 @@
     transform: rotate(90deg);
 }
 
-
 /* =========================================================
    LOGO
 ========================================================= */
@@ -211,20 +172,17 @@
 
     border-radius: 22px;
 
-    background:
-        linear-gradient(
-            135deg,
-            var(--theme-primary),
-            var(--theme-primary-hover)
-        );
+    background: linear-gradient(
+        135deg,
+        var(--theme-primary),
+        var(--theme-primary-hover)
+    );
 
     color: #fff;
 
     font-size: 30px;
 
-    box-shadow:
-        0 14px 30px
-        rgba(37, 99, 235, 0.28);
+    box-shadow: 0 14px 30px rgba(37, 99, 235, 0.28);
 }
 
 .auth-card .logo img {
@@ -233,7 +191,6 @@
 
     object-fit: contain;
 }
-
 
 /* =========================================================
    AUTH HEADING
@@ -280,7 +237,6 @@
     font-size: 13px;
 }
 
-
 /* =========================================================
    FORM
 ========================================================= */
@@ -288,7 +244,6 @@
 .auth-form {
     position: relative;
 }
-
 
 /* =========================================================
    LABEL
@@ -305,7 +260,6 @@
     font-weight: 600;
 }
 
-
 /* =========================================================
    INPUT WRAPPER
 ========================================================= */
@@ -313,7 +267,6 @@
 .auth-input-wrapper {
     position: relative;
 }
-
 
 /* =========================================================
    INPUT ICON
@@ -335,10 +288,8 @@
 
     z-index: 2;
 
-    transition:
-        color 0.2s ease;
+    transition: color 0.2s ease;
 }
-
 
 /* =========================================================
    INPUT
@@ -348,12 +299,9 @@
     width: 100%;
     height: 46px;
 
-    padding:
-        0 46px 0 44px;
+    padding: 0 46px 0 44px;
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
     border-radius: 13px;
 
@@ -376,12 +324,11 @@
 }
 
 .auth-input:hover {
-    border-color:
-        color-mix(
-            in srgb,
-            var(--theme-primary) 45%,
-            var(--theme-border)
-        );
+    border-color: color-mix(
+        in srgb,
+        var(--theme-primary) 45%,
+        var(--theme-border)
+    );
 }
 
 .auth-input:focus {
@@ -389,9 +336,7 @@
 
     background: var(--theme-input-bg);
 
-    box-shadow:
-        0 0 0 4px
-        rgba(37, 99, 235, 0.10);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 
     outline: none;
 }
@@ -399,7 +344,6 @@
 .auth-input-wrapper:focus-within .input-icon {
     color: var(--theme-primary);
 }
-
 
 /* =========================================================
    PASSWORD TOGGLE
@@ -440,7 +384,6 @@
     color: var(--theme-primary);
 }
 
-
 /* =========================================================
    INVALID
 ========================================================= */
@@ -453,9 +396,7 @@
 .auth-input.is-invalid:focus {
     border-color: #dc2626;
 
-    box-shadow:
-        0 0 0 4px
-        rgba(220, 38, 38, 0.10);
+    box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
 }
 
 .auth-card .invalid-feedback {
@@ -465,7 +406,6 @@
 
     font-size: 12px;
 }
-
 
 /* =========================================================
    REMEMBER
@@ -507,9 +447,7 @@
     align-items: center;
     justify-content: center;
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
     border-radius: 5px;
 
@@ -532,7 +470,6 @@
     transform: scale(1.02);
 }
 
-
 /* =========================================================
    LOGIN BUTTON
 ========================================================= */
@@ -551,21 +488,18 @@
     border: none;
     border-radius: 13px;
 
-    background:
-        linear-gradient(
-            135deg,
-            var(--theme-primary),
-            var(--theme-primary-hover)
-        );
+    background: linear-gradient(
+        135deg,
+        var(--theme-primary),
+        var(--theme-primary-hover)
+    );
 
     color: #fff;
 
     font-size: 14px;
     font-weight: 700;
 
-    box-shadow:
-        0 10px 22px
-        rgba(37, 99, 235, 0.24);
+    box-shadow: 0 10px 22px rgba(37, 99, 235, 0.24);
 
     transition:
         transform 0.2s ease,
@@ -574,20 +508,17 @@
 }
 
 .auth-btn:hover {
-    background:
-        linear-gradient(
-            135deg,
-            var(--theme-primary-hover),
-            var(--theme-primary)
-        );
+    background: linear-gradient(
+        135deg,
+        var(--theme-primary-hover),
+        var(--theme-primary)
+    );
 
     color: #fff;
 
     transform: translateY(-2px);
 
-    box-shadow:
-        0 14px 28px
-        rgba(37, 99, 235, 0.30);
+    box-shadow: 0 14px 28px rgba(37, 99, 235, 0.3);
 
     filter: brightness(1.02);
 }
@@ -603,14 +534,12 @@
 
     font-size: 13px;
 
-    transition:
-        transform 0.2s ease;
+    transition: transform 0.2s ease;
 }
 
 .auth-btn:hover .auth-btn-arrow {
     transform: translateX(3px);
 }
-
 
 /* =========================================================
    REGISTER
@@ -647,8 +576,7 @@
 
     text-decoration: none;
 
-    transition:
-        color 0.2s ease;
+    transition: color 0.2s ease;
 }
 
 .auth-register a:hover {
@@ -656,7 +584,6 @@
 
     text-decoration: underline;
 }
-
 
 /* =========================================================
    SECURITY
@@ -679,7 +606,6 @@
 .auth-security i {
     color: var(--theme-primary);
 }
-
 
 /* =========================================================
    TOPBAR LOGIN BUTTON
@@ -704,9 +630,7 @@
 
     text-decoration: none;
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
     transition:
         background 0.2s ease,
@@ -721,51 +645,40 @@
 
     color: var(--theme-primary-hover);
 
-    border-color:
-        var(--theme-primary);
+    border-color: var(--theme-primary);
 
     transform: translateY(-1px);
 
-    box-shadow:
-        0 4px 12px
-        rgba(37, 99, 235, 0.20);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
 }
 
 .topup-login-button i {
     font-size: 14px;
 }
 
-
 /* =========================================================
    ANIMATION
 ========================================================= */
 
 @keyframes authPopup {
-
     from {
         opacity: 0;
 
-        transform:
-            translateY(14px)
-            scale(0.96);
+        transform: translateY(14px) scale(0.96);
     }
 
     to {
         opacity: 1;
 
-        transform:
-            translateY(0)
-            scale(1);
+        transform: translateY(0) scale(1);
     }
 }
-
 
 /* =========================================================
    MOBILE
 ========================================================= */
 
 @media (max-width: 576px) {
-
     .auth-overlay {
         align-items: center;
         padding: 12px;
@@ -780,7 +693,6 @@
     .auth-card .card-body {
         padding: 26px 20px !important;
     }
-
 
     /* =========================================
        CLOSE
@@ -798,7 +710,6 @@
         font-size: 13px;
     }
 
-
     /* =========================================
        LOGO
     ========================================= */
@@ -813,16 +724,13 @@
 
         font-size: 25px;
 
-        box-shadow:
-            0 10px 22px
-            rgba(37, 99, 235, 0.24);
+        box-shadow: 0 10px 22px rgba(37, 99, 235, 0.24);
     }
 
     .auth-card .logo img {
         width: 41px;
         height: 41px;
     }
-
 
     /* =========================================
        HEADING
@@ -852,7 +760,6 @@
         line-height: 1.5;
     }
 
-
     /* =========================================
        LABEL
     ========================================= */
@@ -863,7 +770,6 @@
         font-size: 12px;
     }
 
-
     /* =========================================
        INPUT
     ========================================= */
@@ -871,8 +777,7 @@
     .auth-input {
         height: 45px;
 
-        padding:
-            0 43px 0 40px;
+        padding: 0 43px 0 40px;
 
         border-radius: 11px;
 
@@ -883,7 +788,6 @@
         left: 13px;
         font-size: 13px;
     }
-
 
     /* =========================================
        PASSWORD TOGGLE
@@ -902,7 +806,6 @@
         font-size: 12px;
     }
 
-
     /* =========================================
        INVALID
     ========================================= */
@@ -911,7 +814,6 @@
         margin-top: 5px;
         font-size: 11px;
     }
-
 
     /* =========================================
        REMEMBER
@@ -935,7 +837,6 @@
         font-size: 9px;
     }
 
-
     /* =========================================
        LOGIN BUTTON
     ========================================= */
@@ -949,16 +850,13 @@
 
         font-size: 13px;
 
-        box-shadow:
-            0 8px 18px
-            rgba(37, 99, 235, 0.22);
+        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
     }
 
     .auth-btn-arrow {
         right: 15px;
         font-size: 11px;
     }
-
 
     /* =========================================
        REGISTER
@@ -973,7 +871,6 @@
         margin-bottom: 14px;
     }
 
-
     /* =========================================
        SECURITY
     ========================================= */
@@ -985,7 +882,6 @@
 
         font-size: 10px;
     }
-
 
     /* =========================================
        TOPBAR LOGIN
@@ -1000,13 +896,11 @@
     }
 }
 
-
 /* =========================================================
    SMALL MOBILE
 ========================================================= */
 
 @media (max-width: 380px) {
-
     .auth-overlay {
         padding: 9px;
     }
@@ -1019,7 +913,6 @@
     .auth-card .card-body {
         padding: 23px 17px !important;
     }
-
 
     /* =========================================
        CLOSE
@@ -1036,7 +929,6 @@
 
         font-size: 12px;
     }
-
 
     /* =========================================
        LOGO
@@ -1057,7 +949,6 @@
         width: 38px;
         height: 38px;
     }
-
 
     /* =========================================
        HEADING
@@ -1082,7 +973,6 @@
         font-size: 11px;
     }
 
-
     /* =========================================
        FORM
     ========================================= */
@@ -1094,8 +984,7 @@
     .auth-input {
         height: 43px;
 
-        padding:
-            0 40px 0 38px;
+        padding: 0 40px 0 38px;
 
         border-radius: 10px;
 
@@ -1113,7 +1002,6 @@
         width: 32px;
         height: 32px;
     }
-
 
     /* =========================================
        REMEMBER
@@ -1135,7 +1023,6 @@
         font-size: 8px;
     }
 
-
     /* =========================================
        BUTTON
     ========================================= */
@@ -1153,7 +1040,6 @@
         font-size: 10px;
     }
 
-
     /* =========================================
        REGISTER
     ========================================= */
@@ -1166,7 +1052,6 @@
     .auth-register-line {
         margin-bottom: 12px;
     }
-
 
     /* =========================================
        SECURITY

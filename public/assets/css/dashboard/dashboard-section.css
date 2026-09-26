@@ -14,7 +14,6 @@
     gap: 20px;
 }
 
-
 /* =========================================================
    MARKETPLACE NAV
 ========================================================= */
@@ -34,9 +33,7 @@
     width: 38px;
     height: 38px;
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
     border-radius: 11px;
 
@@ -44,8 +41,7 @@
 
     color: var(--theme-text-secondary);
 
-    box-shadow:
-        var(--theme-shadow);
+    box-shadow: var(--theme-shadow);
 
     cursor: pointer;
 
@@ -66,9 +62,7 @@
 
     transform: translateY(-2px);
 
-    box-shadow:
-        0 8px 18px
-        rgba(37, 99, 235, 0.20);
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.2);
 }
 
 .marketplace-arrow:active {
@@ -85,7 +79,6 @@
     border-color: var(--theme-primary);
     box-shadow: 0 0 0 3px var(--theme-primary-soft);
 }
-
 
 /* =========================================================
    DIVIDER GAME
@@ -105,13 +98,12 @@
 
     height: 1px;
 
-    background:
-        linear-gradient(
-            90deg,
-            transparent,
-            var(--theme-border),
-            transparent
-        );
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--theme-border),
+        transparent
+    );
 }
 
 .game-market-label {

@@ -22,7 +22,6 @@
     color: var(--theme-text);
 }
 
-
 /* =========================================================
    GLOBAL BOX / WIDTH CONTROL
 ========================================================= */
@@ -62,7 +61,6 @@
     max-width: 100%;
 }
 
-
 /* =========================================================
    MAIN CARD
 ========================================================= */
@@ -74,58 +72,39 @@
 
     overflow: hidden;
 
-    border:
-        1px solid
-        var(--theme-border) !important;
+    border: 1px solid var(--theme-border) !important;
 
     border-radius: 16px !important;
 
-    background:
-        var(--theme-surface);
+    background: var(--theme-surface);
 
-    box-shadow:
-        var(--theme-shadow);
+    box-shadow: var(--theme-shadow);
 }
 
-.admin-layout .discount-page
-    > .container-fluid
-    > .card
-    > .card-header {
-
+.admin-layout .discount-page > .container-fluid > .card > .card-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
 
     min-width: 0;
 
-    padding:
-        15px
-        18px;
+    padding: 15px 18px;
 
     gap: 12px;
 
-    border-bottom:
-        1px solid
-        var(--theme-border-soft);
+    border-bottom: 1px solid var(--theme-border-soft);
 
-    background:
-        var(--theme-surface-soft);
+    background: var(--theme-surface-soft);
 
-    color:
-        var(--theme-text);
+    color: var(--theme-text);
 }
 
-.admin-layout .discount-page
-    > .container-fluid
-    > .card
-    > .card-body {
-
+.admin-layout .discount-page > .container-fluid > .card > .card-body {
     min-width: 0;
     max-width: 100%;
 
     padding: 18px;
 }
-
 
 /* =========================================================
    HEADER TITLE
@@ -139,8 +118,7 @@
 
     overflow: hidden;
 
-    color:
-        var(--theme-text);
+    color: var(--theme-text);
 
     font-size: 15px;
     font-weight: 800;
@@ -152,36 +130,27 @@
 }
 
 .admin-layout .discount-page .card-header h5 i {
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 
     font-size: 13px;
 }
-
 
 /* =========================================================
    HEADER BUTTON
 ========================================================= */
 
 .admin-layout .discount-page .card-header > .btn-primary {
-    flex:
-        0
-        0
-        auto;
+    flex: 0 0 auto;
 
     min-height: 38px;
 
-    padding:
-        8px
-        13px;
+    padding: 8px 13px;
 
-    border-color:
-        var(--theme-primary);
+    border-color: var(--theme-primary);
 
     border-radius: 9px;
 
-    background:
-        var(--theme-primary);
+    background: var(--theme-primary);
 
     color: #fff;
 
@@ -190,9 +159,7 @@
 
     white-space: nowrap;
 
-    box-shadow:
-        0 6px 15px
-        rgba(37, 99, 235, 0.14);
+    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.14);
 
     transition:
         background 0.2s ease,
@@ -202,22 +169,16 @@
 }
 
 .admin-layout .discount-page .card-header > .btn-primary:hover {
-    border-color:
-        var(--theme-primary-hover);
+    border-color: var(--theme-primary-hover);
 
-    background:
-        var(--theme-primary-hover);
+    background: var(--theme-primary-hover);
 
     color: #fff;
 
-    transform:
-        translateY(-1px);
+    transform: translateY(-1px);
 
-    box-shadow:
-        0 8px 18px
-        rgba(37, 99, 235, 0.20);
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.2);
 }
-
 
 /* =========================================================
    SUCCESS ALERT
@@ -226,26 +187,19 @@
 .admin-layout .discount-page .alert-success {
     margin-bottom: 18px;
 
-    padding:
-        10px
-        13px;
+    padding: 10px 13px;
 
-    border:
-        1px solid
-        #a7f3d0;
+    border: 1px solid #a7f3d0;
 
     border-radius: 10px;
 
-    background:
-        #ecfdf5;
+    background: #ecfdf5;
 
-    color:
-        #047857;
+    color: #047857;
 
     font-size: 11px;
     line-height: 1.4;
 }
-
 
 /* =========================================================
    STATISTICS WRAPPER
@@ -259,7 +213,6 @@
     display: flex;
 }
 
-
 /* =========================================================
    STATISTIC CARD
 ========================================================= */
@@ -268,17 +221,13 @@
     width: 100%;
     height: 100%;
 
-    border:
-        1px solid
-        var(--theme-border) !important;
+    border: 1px solid var(--theme-border) !important;
 
     border-radius: 13px !important;
 
-    background:
-        var(--theme-surface);
+    background: var(--theme-surface);
 
-    box-shadow:
-        none !important;
+    box-shadow: none !important;
 }
 
 .admin-layout .discount-page .row.g-3.mb-4 .card-body {
@@ -290,8 +239,7 @@
 
     margin-bottom: 5px;
 
-    color:
-        var(--theme-text-secondary) !important;
+    color: var(--theme-text-secondary) !important;
 
     font-size: 10px;
     font-weight: 600;
@@ -302,8 +250,7 @@
 .admin-layout .discount-page .row.g-3.mb-4 h3 {
     margin: 0;
 
-    color:
-        var(--theme-text);
+    color: var(--theme-text);
 
     font-size: 24px;
     font-weight: 800;
@@ -312,15 +259,12 @@
 }
 
 .admin-layout .discount-page .row.g-3.mb-4 h3.text-success {
-    color:
-        #059669 !important;
+    color: #059669 !important;
 }
 
 .admin-layout .discount-page .row.g-3.mb-4 h3.text-danger {
-    color:
-        #dc2626 !important;
+    color: #dc2626 !important;
 }
-
 
 /* =========================================================
    TABLE RESPONSIVE
@@ -342,7 +286,6 @@
     scrollbar-width: thin;
 }
 
-
 /* =========================================================
    TABLE
 ========================================================= */
@@ -353,48 +296,37 @@
 
     margin: 0;
 
-    border-color:
-        var(--theme-border);
+    border-color: var(--theme-border);
 
-    color:
-        var(--theme-text);
+    color: var(--theme-text);
 
     table-layout: auto;
 }
 
 .admin-layout .discount-page .table > :not(caption) > * > * {
-    padding:
-        11px
-        10px;
+    padding: 11px 10px;
 
     vertical-align: middle;
 
-    border-bottom-color:
-        var(--theme-border-soft);
+    border-bottom-color: var(--theme-border-soft);
 
-    color:
-        var(--theme-text-secondary);
+    color: var(--theme-text-secondary);
 
     font-size: 10px;
 
     white-space: nowrap;
 }
 
-
 /* =========================================================
    TABLE HEADER
 ========================================================= */
 
 .admin-layout .discount-page .table thead th {
-    padding:
-        11px
-        10px;
+    padding: 11px 10px;
 
-    background:
-        var(--theme-surface-soft);
+    background: var(--theme-surface-soft);
 
-    color:
-        var(--theme-text-secondary);
+    color: var(--theme-text-secondary);
 
     font-size: 9px;
     font-weight: 800;
@@ -405,41 +337,32 @@
 
     white-space: nowrap;
 
-    border-bottom:
-        1px solid
-        var(--theme-border);
+    border-bottom: 1px solid var(--theme-border);
 }
-
 
 /* =========================================================
    TABLE ROW
 ========================================================= */
 
 .admin-layout .discount-page .table tbody tr {
-    background:
-        var(--theme-surface);
+    background: var(--theme-surface);
 
-    transition:
-        background 0.18s ease;
+    transition: background 0.18s ease;
 }
 
 .admin-layout .discount-page .table tbody tr:hover {
-    background:
-        var(--theme-surface-soft);
+    background: var(--theme-surface-soft);
 }
 
 .admin-layout .discount-page .table tbody td {
-    color:
-        var(--theme-text-secondary);
+    color: var(--theme-text-secondary);
 }
 
 .admin-layout .discount-page .table tbody td:first-child {
-    color:
-        var(--theme-text-muted);
+    color: var(--theme-text-muted);
 
     font-weight: 700;
 }
-
 
 /* =========================================================
    TABLE TEXT
@@ -455,8 +378,7 @@
 
     overflow: hidden;
 
-    color:
-        var(--theme-text);
+    color: var(--theme-text);
 
     font-size: 10px;
     font-weight: 750;
@@ -468,13 +390,11 @@
 }
 
 .admin-layout .discount-page .table small {
-    color:
-        var(--theme-text-muted) !important;
+    color: var(--theme-text-muted) !important;
 
     font-size: 8px;
     line-height: 1.3;
 }
-
 
 /* =========================================================
    TABLE BADGES
@@ -488,9 +408,7 @@
     min-height: 22px;
     max-width: 180px;
 
-    padding:
-        0
-        8px;
+    padding: 0 8px;
 
     overflow: hidden;
 
@@ -504,74 +422,57 @@
 }
 
 .admin-layout .discount-page .table .bg-dark {
-    background:
-        #1e293b !important;
+    background: #1e293b !important;
 
-    color:
-        #fff !important;
+    color: #fff !important;
 }
 
 .admin-layout .discount-page .table .bg-primary {
-    background:
-        var(--theme-primary) !important;
+    background: var(--theme-primary) !important;
 
-    color:
-        #fff !important;
+    color: #fff !important;
 }
 
 .admin-layout .discount-page .table .bg-info {
-    background:
-        #dbeafe !important;
+    background: #dbeafe !important;
 
-    color:
-        #1d4ed8 !important;
+    color: #1d4ed8 !important;
 }
 
 .admin-layout .discount-page .table .bg-success {
-    background:
-        #dcfce7 !important;
+    background: #dcfce7 !important;
 
-    color:
-        #166534 !important;
+    color: #166534 !important;
 }
 
 .admin-layout .discount-page .table .bg-warning {
-    background:
-        #fef3c7 !important;
+    background: #fef3c7 !important;
 
-    color:
-        #92400e !important;
+    color: #92400e !important;
 }
 
 .admin-layout .discount-page .table .bg-danger {
-    background:
-        #fee2e2 !important;
+    background: #fee2e2 !important;
 
-    color:
-        #b91c1c !important;
+    color: #b91c1c !important;
 }
 
 .admin-layout .discount-page .table .bg-secondary {
-    background:
-        #e2e8f0 !important;
+    background: #e2e8f0 !important;
 
-    color:
-        #475569 !important;
+    color: #475569 !important;
 }
-
 
 /* =========================================================
    TABLE STRONG
 ========================================================= */
 
 .admin-layout .discount-page .table strong {
-    color:
-        var(--theme-text);
+    color: var(--theme-text);
 
     font-size: 10px;
     font-weight: 800;
 }
-
 
 /* =========================================================
    QUOTA
@@ -582,8 +483,7 @@
 }
 
 .admin-layout .discount-page .table td:nth-child(7) strong {
-    color:
-        var(--theme-primary);
+    color: var(--theme-primary);
 }
 
 .admin-layout .discount-page .table td:nth-child(7) small {
@@ -591,7 +491,6 @@
 
     margin-top: 2px;
 }
-
 
 /* =========================================================
    PERIOD
@@ -608,11 +507,8 @@
 .admin-layout .discount-page .table td:nth-child(8) small {
     display: block;
 
-    margin:
-        1px
-        0;
+    margin: 1px 0;
 }
-
 
 /* =========================================================
    ACTION
@@ -642,27 +538,20 @@
 }
 
 .admin-layout .discount-page .table td:last-child .btn-warning {
-    border-color:
-        #f59e0b;
+    border-color: #f59e0b;
 
-    background:
-        #f59e0b;
+    background: #f59e0b;
 
-    color:
-        #fff;
+    color: #fff;
 }
 
 .admin-layout .discount-page .table td:last-child .btn-danger {
-    border-color:
-        #dc2626;
+    border-color: #dc2626;
 
-    background:
-        #dc2626;
+    background: #dc2626;
 
-    color:
-        #fff;
+    color: #fff;
 }
-
 
 /* =========================================================
    EMPTY TABLE
@@ -671,9 +560,7 @@
 .admin-layout .discount-page .table tbody td.text-center {
     height: 220px;
 
-    padding:
-        35px
-        20px;
+    padding: 35px 20px;
 
     white-space: normal;
 }
@@ -683,19 +570,16 @@
 
     margin-bottom: 10px !important;
 
-    color:
-        var(--theme-text-muted) !important;
+    color: var(--theme-text-muted) !important;
 
     font-size: 28px;
 }
 
 .admin-layout .discount-page .table tbody td.text-center .text-muted {
-    color:
-        var(--theme-text-secondary) !important;
+    color: var(--theme-text-secondary) !important;
 
     font-size: 10px;
 }
-
 
 /* =========================================================
    MODAL
@@ -707,39 +591,29 @@
 
     overflow: hidden;
 
-    border:
-        1px solid
-        var(--theme-border) !important;
+    border: 1px solid var(--theme-border) !important;
 
-    background:
-        var(--theme-surface);
+    background: var(--theme-surface);
 
-    color:
-        var(--theme-text);
+    color: var(--theme-text);
 
-    box-shadow:
-        var(--theme-shadow);
+    box-shadow: var(--theme-shadow);
 }
 
 .modal .modal-header {
     min-width: 0;
 
-    border-bottom:
-        1px solid
-        rgba(255, 255, 255, 0.12);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .modal .modal-header.bg-primary {
-    background:
-        var(--theme-primary) !important;
+    background: var(--theme-primary) !important;
 }
 
 .modal .modal-header.bg-warning {
-    background:
-        #f59e0b !important;
+    background: #f59e0b !important;
 
-    color:
-        #111827;
+    color: #111827;
 }
 
 .modal .modal-title {
@@ -765,21 +639,16 @@
     max-width: 100%;
     min-width: 0;
 
-    color:
-        var(--theme-text);
+    color: var(--theme-text);
 }
 
 .modal .modal-footer {
     min-width: 0;
 
-    border-top:
-        1px solid
-        var(--theme-border-soft);
+    border-top: 1px solid var(--theme-border-soft);
 
-    background:
-        var(--theme-surface-soft);
+    background: var(--theme-surface-soft);
 }
-
 
 /* =========================================================
    MODAL FORM
@@ -788,8 +657,7 @@
 .modal .modal-body h6 {
     margin-bottom: 13px !important;
 
-    color:
-        var(--theme-primary) !important;
+    color: var(--theme-primary) !important;
 
     font-size: 12px;
     font-weight: 800;
@@ -798,12 +666,9 @@
 }
 
 .modal .modal-body hr {
-    margin:
-        18px
-        0;
+    margin: 18px 0;
 
-    border-color:
-        var(--theme-border);
+    border-color: var(--theme-border);
 
     opacity: 1;
 }
@@ -831,8 +696,7 @@
 
     margin-bottom: 6px;
 
-    color:
-        var(--theme-text-secondary);
+    color: var(--theme-text-secondary);
 
     font-size: 10px;
     font-weight: 700;
@@ -847,17 +711,13 @@
 
     min-height: 40px;
 
-    border:
-        1px solid
-        var(--theme-border);
+    border: 1px solid var(--theme-border);
 
     border-radius: 8px;
 
-    background:
-        var(--theme-input-bg);
+    background: var(--theme-input-bg);
 
-    color:
-        var(--theme-text);
+    color: var(--theme-text);
 
     font-size: 11px;
 
@@ -865,36 +725,28 @@
 }
 
 .modal .modal-body .form-control::placeholder {
-    color:
-        var(--theme-text-muted);
+    color: var(--theme-text-muted);
 }
 
 .modal .modal-body .form-control:hover,
 .modal .modal-body .form-select:hover {
-    border-color:
-        color-mix(
-            in srgb,
-            var(--theme-primary) 40%,
-            var(--theme-border)
-        );
+    border-color: color-mix(
+        in srgb,
+        var(--theme-primary) 40%,
+        var(--theme-border)
+    );
 }
 
 .modal .modal-body .form-control:focus,
 .modal .modal-body .form-select:focus {
-    border-color:
-        var(--theme-primary);
+    border-color: var(--theme-primary);
 
-    background:
-        var(--theme-input-bg);
+    background: var(--theme-input-bg);
 
-    color:
-        var(--theme-text);
+    color: var(--theme-text);
 
-    box-shadow:
-        0 0 0 3px
-        rgba(37, 99, 235, 0.10);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
-
 
 /* =========================================================
    MODAL TEXT
@@ -902,14 +754,12 @@
 
 .modal .modal-body .text-muted,
 .modal .modal-body small.text-muted {
-    color:
-        var(--theme-text-muted) !important;
+    color: var(--theme-text-muted) !important;
 
     font-size: 9px;
 
     line-height: 1.4;
 }
-
 
 /* =========================================================
    FORM SWITCH
@@ -923,35 +773,28 @@
     width: 2.1em;
     height: 1.1em;
 
-    margin-left:
-        -2.7em;
+    margin-left: -2.7em;
 
-    border-color:
-        var(--theme-border);
+    border-color: var(--theme-border);
 
-    background-color:
-        var(--theme-border);
+    background-color: var(--theme-border);
 
     box-shadow: none;
 }
 
 .modal .modal-body .form-switch .form-check-input:checked {
-    border-color:
-        var(--theme-primary);
+    border-color: var(--theme-primary);
 
-    background-color:
-        var(--theme-primary);
+    background-color: var(--theme-primary);
 }
 
 .modal .modal-body .form-switch .form-check-label {
     margin-bottom: 0;
 
-    color:
-        var(--theme-text-secondary);
+    color: var(--theme-text-secondary);
 
     font-size: 10px;
 }
-
 
 /* =========================================================
    MODAL BUTTON
@@ -960,9 +803,7 @@
 .modal .modal-footer .btn {
     min-height: 38px;
 
-    padding:
-        7px
-        13px;
+    padding: 7px 13px;
 
     border-radius: 8px;
 
@@ -971,111 +812,82 @@
 }
 
 .modal .modal-footer .btn-primary {
-    border-color:
-        var(--theme-primary);
+    border-color: var(--theme-primary);
 
-    background:
-        var(--theme-primary);
+    background: var(--theme-primary);
 
-    color:
-        #fff;
+    color: #fff;
 }
 
 .modal .modal-footer .btn-warning {
-    border-color:
-        #f59e0b;
+    border-color: #f59e0b;
 
-    background:
-        #f59e0b;
+    background: #f59e0b;
 
-    color:
-        #fff;
+    color: #fff;
 }
 
 .modal .modal-footer .btn-secondary {
-    border-color:
-        var(--theme-border);
+    border-color: var(--theme-border);
 
-    background:
-        var(--theme-surface);
+    background: var(--theme-surface);
 
-    color:
-        var(--theme-text-secondary);
+    color: var(--theme-text-secondary);
 }
-
 
 /* =========================================================
    DARK MODE
 ========================================================= */
 
 [data-theme="dark"] .admin-layout .discount-page .alert-success {
-    background:
-        rgba(16, 185, 129, 0.12);
+    background: rgba(16, 185, 129, 0.12);
 
-    border-color:
-        rgba(52, 211, 153, 0.28);
+    border-color: rgba(52, 211, 153, 0.28);
 
-    color:
-        #6ee7b7;
+    color: #6ee7b7;
 }
 
 [data-theme="dark"] .admin-layout .discount-page .table .bg-dark {
-    background:
-        #334155 !important;
+    background: #334155 !important;
 }
 
 [data-theme="dark"] .admin-layout .discount-page .table .bg-info {
-    background:
-        rgba(59, 130, 246, 0.14) !important;
+    background: rgba(59, 130, 246, 0.14) !important;
 
-    color:
-        #93c5fd !important;
+    color: #93c5fd !important;
 }
 
 [data-theme="dark"] .admin-layout .discount-page .table .bg-success {
-    background:
-        rgba(16, 185, 129, 0.14) !important;
+    background: rgba(16, 185, 129, 0.14) !important;
 
-    color:
-        #6ee7b7 !important;
+    color: #6ee7b7 !important;
 }
 
 [data-theme="dark"] .admin-layout .discount-page .table .bg-warning {
-    background:
-        rgba(245, 158, 11, 0.14) !important;
+    background: rgba(245, 158, 11, 0.14) !important;
 
-    color:
-        #fcd34d !important;
+    color: #fcd34d !important;
 }
 
 [data-theme="dark"] .admin-layout .discount-page .table .bg-danger {
-    background:
-        rgba(220, 38, 38, 0.14) !important;
+    background: rgba(220, 38, 38, 0.14) !important;
 
-    color:
-        #fca5a5 !important;
+    color: #fca5a5 !important;
 }
 
 [data-theme="dark"] .admin-layout .discount-page .table .bg-secondary {
-    background:
-        rgba(100, 116, 139, 0.18) !important;
+    background: rgba(100, 116, 139, 0.18) !important;
 
-    color:
-        #cbd5e1 !important;
+    color: #cbd5e1 !important;
 }
-
 
 /* =========================================================
    TABLET
 ========================================================= */
 
 @media (max-width: 992px) {
-
     .admin-layout .discount-page {
-        padding:
-            18px
-            0
-            40px;
+        padding: 18px 0 40px;
     }
 
     .admin-layout .discount-page > .container-fluid {
@@ -1083,21 +895,11 @@
         padding-right: 12px;
     }
 
-    .admin-layout .discount-page
-        > .container-fluid
-        > .card
-        > .card-header {
-
-        padding:
-            13px
-            14px;
+    .admin-layout .discount-page > .container-fluid > .card > .card-header {
+        padding: 13px 14px;
     }
 
-    .admin-layout .discount-page
-        > .container-fluid
-        > .card
-        > .card-body {
-
+    .admin-layout .discount-page > .container-fluid > .card > .card-body {
         padding: 14px;
     }
 
@@ -1108,9 +910,7 @@
     .admin-layout .discount-page .card-header > .btn-primary {
         min-height: 36px;
 
-        padding:
-            7px
-            11px;
+        padding: 7px 11px;
 
         font-size: 9px;
     }
@@ -1128,18 +928,13 @@
     }
 }
 
-
 /* =========================================================
    MOBILE
 ========================================================= */
 
 @media (max-width: 767px) {
-
     .admin-layout .discount-page {
-        padding:
-            14px
-            0
-            30px;
+        padding: 14px 0 30px;
 
         overflow-x: hidden;
     }
@@ -1149,50 +944,32 @@
         padding-right: 9px;
     }
 
-
     /* =====================================================
        MAIN CARD
     ===================================================== */
 
-    .admin-layout .discount-page
-        > .container-fluid
-        > .card {
-
+    .admin-layout .discount-page > .container-fluid > .card {
         border-radius: 13px !important;
     }
 
-    .admin-layout .discount-page
-        > .container-fluid
-        > .card
-        > .card-header {
-
-        padding:
-            10px
-            11px;
+    .admin-layout .discount-page > .container-fluid > .card > .card-header {
+        padding: 10px 11px;
 
         gap: 8px;
 
         flex-wrap: wrap;
     }
 
-    .admin-layout .discount-page
-        > .container-fluid
-        > .card
-        > .card-body {
-
+    .admin-layout .discount-page > .container-fluid > .card > .card-body {
         padding: 10px;
     }
-
 
     /* =====================================================
        HEADER
     ===================================================== */
 
     .admin-layout .discount-page .card-header h5 {
-        flex:
-            1
-            1
-            0;
+        flex: 1 1 0;
 
         min-width: 0;
 
@@ -1206,15 +983,12 @@
     .admin-layout .discount-page .card-header > .btn-primary {
         min-height: 33px;
 
-        padding:
-            6px
-            9px;
+        padding: 6px 9px;
 
         border-radius: 8px;
 
         font-size: 8px;
     }
-
 
     /* =====================================================
        ALERT
@@ -1223,15 +997,12 @@
     .admin-layout .discount-page .alert-success {
         margin-bottom: 12px;
 
-        padding:
-            8px
-            10px;
+        padding: 8px 10px;
 
         border-radius: 8px;
 
         font-size: 9px;
     }
-
 
     /* =====================================================
        STATISTICS
@@ -1244,36 +1015,23 @@
         margin-bottom: 12px !important;
     }
 
-    .admin-layout .discount-page
-        .row.g-3.mb-4
-        .card {
-
+    .admin-layout .discount-page .row.g-3.mb-4 .card {
         border-radius: 10px !important;
     }
 
-    .admin-layout .discount-page
-        .row.g-3.mb-4
-        .card-body {
-
+    .admin-layout .discount-page .row.g-3.mb-4 .card-body {
         padding: 10px;
     }
 
-    .admin-layout .discount-page
-        .row.g-3.mb-4
-        small {
-
+    .admin-layout .discount-page .row.g-3.mb-4 small {
         margin-bottom: 4px;
 
         font-size: 8px;
     }
 
-    .admin-layout .discount-page
-        .row.g-3.mb-4
-        h3 {
-
+    .admin-layout .discount-page .row.g-3.mb-4 h3 {
         font-size: 18px;
     }
-
 
     /* =====================================================
        TABLE
@@ -1290,20 +1048,14 @@
         min-width: 1000px;
     }
 
-    .admin-layout .discount-page
-        .table > :not(caption) > * > * {
-
-        padding:
-            8px
-            8px;
+    .admin-layout .discount-page .table > :not(caption) > * > * {
+        padding: 8px 8px;
 
         font-size: 9px;
     }
 
     .admin-layout .discount-page .table thead th {
-        padding:
-            8px
-            8px;
+        padding: 8px 8px;
 
         font-size: 8px;
     }
@@ -1324,9 +1076,7 @@
 
         max-width: 145px;
 
-        padding:
-            0
-            6px;
+        padding: 0 6px;
 
         font-size: 7px;
     }
@@ -1346,7 +1096,6 @@
         font-size: 8px;
     }
 
-
     /* =====================================================
        MODAL
     ===================================================== */
@@ -1355,8 +1104,7 @@
         width: auto;
         max-width: none;
 
-        margin:
-            8px;
+        margin: 8px;
     }
 
     .modal .modal-content {
@@ -1367,9 +1115,7 @@
     }
 
     .modal .modal-header {
-        padding:
-            10px
-            11px;
+        padding: 10px 11px;
     }
 
     .modal .modal-title {
@@ -1385,12 +1131,9 @@
         max-width: 100%;
         min-width: 0;
 
-        max-height:
-            calc(100vh - 138px);
+        max-height: calc(100vh - 138px);
 
-        padding:
-            13px
-            11px;
+        padding: 13px 11px;
 
         overflow-x: hidden;
         overflow-y: auto;
@@ -1405,9 +1148,7 @@
     }
 
     .modal .modal-body hr {
-        margin:
-            14px
-            0;
+        margin: 14px 0;
     }
 
     .modal .modal-body .form-label,
@@ -1421,9 +1162,7 @@
     .modal .modal-body .form-select {
         min-height: 36px;
 
-        padding:
-            7px
-            9px;
+        padding: 7px 9px;
 
         border-radius: 7px;
 
@@ -1449,17 +1188,13 @@
     }
 
     .modal .modal-footer {
-        padding:
-            9px
-            11px;
+        padding: 9px 11px;
     }
 
     .modal .modal-footer .btn {
         min-height: 35px;
 
-        padding:
-            6px
-            11px;
+        padding: 6px 11px;
 
         border-radius: 7px;
 
@@ -1467,18 +1202,13 @@
     }
 }
 
-
 /* =========================================================
    SMALL MOBILE
 ========================================================= */
 
 @media (max-width: 480px) {
-
     .admin-layout .discount-page {
-        padding:
-            10px
-            0
-            24px;
+        padding: 10px 0 24px;
     }
 
     .admin-layout .discount-page > .container-fluid {
@@ -1486,17 +1216,10 @@
         padding-right: 7px;
     }
 
-
     /* HEADER */
 
-    .admin-layout .discount-page
-        > .container-fluid
-        > .card
-        > .card-header {
-
-        padding:
-            9px
-            10px;
+    .admin-layout .discount-page > .container-fluid > .card > .card-header {
+        padding: 9px 10px;
     }
 
     .admin-layout .discount-page .card-header h5 {
@@ -1506,35 +1229,24 @@
     .admin-layout .discount-page .card-header > .btn-primary {
         min-height: 31px;
 
-        padding:
-            5px
-            8px;
+        padding: 5px 8px;
 
         font-size: 7px;
     }
 
-
     /* BODY */
 
-    .admin-layout .discount-page
-        > .container-fluid
-        > .card
-        > .card-body {
-
+    .admin-layout .discount-page > .container-fluid > .card > .card-body {
         padding: 8px;
     }
-
 
     /* ALERT */
 
     .admin-layout .discount-page .alert-success {
-        padding:
-            7px
-            8px;
+        padding: 7px 8px;
 
         font-size: 8px;
     }
-
 
     /* STATISTICS */
 
@@ -1543,34 +1255,21 @@
         --bs-gutter-y: 5px;
     }
 
-    .admin-layout .discount-page
-        .row.g-3.mb-4
-        .card {
-
+    .admin-layout .discount-page .row.g-3.mb-4 .card {
         border-radius: 8px !important;
     }
 
-    .admin-layout .discount-page
-        .row.g-3.mb-4
-        .card-body {
-
+    .admin-layout .discount-page .row.g-3.mb-4 .card-body {
         padding: 8px;
     }
 
-    .admin-layout .discount-page
-        .row.g-3.mb-4
-        small {
-
+    .admin-layout .discount-page .row.g-3.mb-4 small {
         font-size: 7px;
     }
 
-    .admin-layout .discount-page
-        .row.g-3.mb-4
-        h3 {
-
+    .admin-layout .discount-page .row.g-3.mb-4 h3 {
         font-size: 16px;
     }
-
 
     /* TABLE */
 
@@ -1578,20 +1277,14 @@
         min-width: 960px;
     }
 
-    .admin-layout .discount-page
-        .table > :not(caption) > * > * {
-
-        padding:
-            8px
-            7px;
+    .admin-layout .discount-page .table > :not(caption) > * > * {
+        padding: 8px 7px;
 
         font-size: 8px;
     }
 
     .admin-layout .discount-page .table thead th {
-        padding:
-            8px
-            7px;
+        padding: 8px 7px;
 
         font-size: 7px;
     }
@@ -1612,9 +1305,7 @@
 
         max-width: 120px;
 
-        padding:
-            0
-            5px;
+        padding: 0 5px;
 
         font-size: 6.5px;
     }
@@ -1630,12 +1321,10 @@
         font-size: 7px;
     }
 
-
     /* MODAL */
 
     .modal .modal-dialog {
-        margin:
-            6px;
+        margin: 6px;
     }
 
     .modal .modal-content {
@@ -1643,9 +1332,7 @@
     }
 
     .modal .modal-header {
-        padding:
-            9px
-            10px;
+        padding: 9px 10px;
     }
 
     .modal .modal-title {
@@ -1653,12 +1340,9 @@
     }
 
     .modal .modal-body {
-        max-height:
-            calc(100vh - 122px);
+        max-height: calc(100vh - 122px);
 
-        padding:
-            11px
-            9px;
+        padding: 11px 9px;
     }
 
     .modal .modal-body h6 {
@@ -1668,9 +1352,7 @@
     }
 
     .modal .modal-body hr {
-        margin:
-            12px
-            0;
+        margin: 12px 0;
     }
 
     .modal .modal-body .form-label,
@@ -1682,9 +1364,7 @@
     .modal .modal-body .form-select {
         min-height: 34px;
 
-        padding:
-            6px
-            8px;
+        padding: 6px 8px;
 
         font-size: 8px;
     }
@@ -1695,29 +1375,23 @@
     }
 
     .modal .modal-footer {
-        padding:
-            8px
-            9px;
+        padding: 8px 9px;
     }
 
     .modal .modal-footer .btn {
         min-height: 33px;
 
-        padding:
-            5px
-            9px;
+        padding: 5px 9px;
 
         font-size: 8px;
     }
 }
-
 
 /* =========================================================
    VERY SMALL PHONE
 ========================================================= */
 
 @media (max-width: 360px) {
-
     .admin-layout .discount-page {
         padding-top: 8px;
         padding-bottom: 20px;
@@ -1728,14 +1402,9 @@
         padding-right: 5px;
     }
 
-
     /* HEADER */
 
-    .admin-layout .discount-page
-        > .container-fluid
-        > .card
-        > .card-header {
-
+    .admin-layout .discount-page > .container-fluid > .card > .card-header {
         padding: 7px 8px;
     }
 
@@ -1746,24 +1415,16 @@
     .admin-layout .discount-page .card-header > .btn-primary {
         min-height: 29px;
 
-        padding:
-            4px
-            7px;
+        padding: 4px 7px;
 
         font-size: 6.5px;
     }
 
-
     /* BODY */
 
-    .admin-layout .discount-page
-        > .container-fluid
-        > .card
-        > .card-body {
-
+    .admin-layout .discount-page > .container-fluid > .card > .card-body {
         padding: 7px;
     }
-
 
     /* STATISTICS */
 
@@ -1772,27 +1433,17 @@
         --bs-gutter-y: 4px;
     }
 
-    .admin-layout .discount-page
-        .row.g-3.mb-4
-        .card-body {
-
+    .admin-layout .discount-page .row.g-3.mb-4 .card-body {
         padding: 7px;
     }
 
-    .admin-layout .discount-page
-        .row.g-3.mb-4
-        small {
-
+    .admin-layout .discount-page .row.g-3.mb-4 small {
         font-size: 6.5px;
     }
 
-    .admin-layout .discount-page
-        .row.g-3.mb-4
-        h3 {
-
+    .admin-layout .discount-page .row.g-3.mb-4 h3 {
         font-size: 14px;
     }
-
 
     /* TABLE */
 
@@ -1800,12 +1451,10 @@
         min-width: 920px;
     }
 
-
     /* MODAL */
 
     .modal .modal-dialog {
-        margin:
-            5px;
+        margin: 5px;
     }
 
     .modal .modal-header {
@@ -1817,17 +1466,12 @@
     }
 
     .modal .modal-body {
-        max-height:
-            calc(100vh - 112px);
+        max-height: calc(100vh - 112px);
 
-        padding:
-            9px
-            8px;
+        padding: 9px 8px;
     }
 
     .modal .modal-footer {
-        padding:
-            7px
-            8px;
+        padding: 7px 8px;
     }
 }
