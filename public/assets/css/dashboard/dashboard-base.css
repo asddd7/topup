@@ -27,12 +27,12 @@
 
 .dashboard-page > .container-fluid {
     width: 100%;
-    max-width: none;
+    max-width: 1680px;
 
-    margin: 0;
+    margin: 0 auto;
 
-    padding-left: 32px;
-    padding-right: 32px;
+    padding-left: 28px;
+    padding-right: 28px;
 }
 
 
@@ -42,7 +42,7 @@
 
 .dashboard-section-container {
     width: 100%;
-    max-width: 1380px;
+    max-width: 1450px;
 
     margin: 0 auto;
 }
@@ -172,9 +172,9 @@
 ========================================================= */
 
 .dashboard-products {
-    margin-top: 38px;
+    margin-top: 44px;
 }
 
 .dashboard-games {
-    margin-top: 48px;
+    margin-top: 54px;
 }

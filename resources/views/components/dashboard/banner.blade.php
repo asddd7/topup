@@ -4,7 +4,9 @@
         id="bannerCarousel"
         class="carousel slide"
         data-bs-ride="carousel"
-        data-bs-interval="3500"
+        data-bs-interval="5000"
+        data-bs-pause="hover"
+        aria-label="Promo game"
     >
 
         <div class="carousel-inner">
@@ -98,6 +100,7 @@
             type="button"
             data-bs-target="#bannerCarousel"
             data-bs-slide="prev"
+            aria-label="Promo sebelumnya"
         >
 
             <span class="banner-arrow">
@@ -116,6 +119,7 @@
             type="button"
             data-bs-target="#bannerCarousel"
             data-bs-slide="next"
+            aria-label="Promo berikutnya"
         >
 
             <span class="banner-arrow">
