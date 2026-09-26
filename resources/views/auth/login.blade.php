@@ -48,15 +48,17 @@
 
                 <span class="auth-badge">
                     <i class="fa-solid fa-shield-halved"></i>
-                    Akun Aman
+                    {{ ($adminLogin ?? false) ? 'Akses Admin' : 'Akun Aman' }}
                 </span>
 
                 <h3>
-                    Selamat Datang
+                    {{ ($adminLogin ?? false) ? 'Login Admin' : 'Selamat Datang' }}
                 </h3>
 
                 <p>
-                    Masuk ke akun Anda untuk melanjutkan
+                    {{ ($adminLogin ?? false)
+                        ? 'Gunakan akun administrator untuk membuka dashboard.'
+                        : 'Masuk ke akun Anda untuk melanjutkan' }}
                 </p>
 
             </div>
@@ -92,7 +94,7 @@
                             name="email"
                             value="{{ old('email') }}"
                             class="form-control auth-input @error('email') is-invalid @enderror"
-                            placeholder="Masukkan email Anda"
+                            placeholder="{{ ($adminLogin ?? false) ? 'Email admin' : 'Masukkan email Anda' }}"
                             autocomplete="email"
                             required
                             autofocus
@@ -189,7 +191,7 @@
 
                     <span>
                         <i class="fa-solid fa-right-to-bracket me-2"></i>
-                        Login ke Akun
+                        {{ ($adminLogin ?? false) ? 'Masuk ke Dashboard Admin' : 'Login ke Akun' }}
                     </span>
 
                 </button>
@@ -198,6 +200,7 @@
 
 
             {{-- REGISTER --}}
+            @unless($adminLogin ?? false)
             <div class="auth-register">
 
                 <div class="auth-register-line"></div>
@@ -212,6 +215,7 @@
                 </a>
 
             </div>
+            @endunless
 
 
             {{-- FOOTER --}}

@@ -10,6 +10,9 @@ class WebsiteMaintenanceMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
+        $isAdmin = $request->user()
+            && (int) $request->user()->role_id === 1;
+
         $allowedPaths = [
             'login',
             'register',
@@ -19,12 +22,12 @@ class WebsiteMaintenanceMiddleware
             'up',
         ];
 
-        if (
-            (string) setting('maintenance', '0') !== '1'
-            || $request->is($allowedPaths)
+        $canAccessDuringMaintenance =
+            $request->is($allowedPaths)
             || $request->is('admin', 'admin/*')
-            || ($request->user() && (int) $request->user()->role_id === 1)
-        ) {
+            || $isAdmin;
+
+        if ((string) setting('maintenance', '0') !== '1' || $canAccessDuringMaintenance) {
             return $next($request);
         }
 

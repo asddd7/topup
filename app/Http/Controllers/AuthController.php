@@ -9,9 +9,12 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function showLogin()
+    public function showLogin(Request $request)
     {
-        return view('auth.login');
+        return view('auth.login', [
+            'adminLogin' => $request->boolean('admin')
+                || (bool) session('maintenance_admin'),
+        ]);
     }
 
     public function showRegister()
@@ -47,6 +50,23 @@ class AuthController extends Controller
         if(Auth::attempt($credentials,$request->filled('remember'))){
 
             $request->session()->regenerate();
+
+            $adminLogin = $request->boolean('admin')
+                || (bool) session('maintenance_admin');
+
+            if (
+                ($adminLogin || (string) setting('maintenance', '0') === '1')
+                && (int) Auth::user()->role_id !== 1
+            ) {
+                Auth::logout();
+
+                return back()
+                    ->withInput($request->only('email'))
+                    ->with('maintenance_admin', true)
+                    ->withErrors([
+                        'email' => 'Website sedang maintenance. Hanya akun admin yang dapat masuk saat ini.',
+                    ]);
+            }
 
             if (Auth::user()->role_id == 1) {
                 return redirect()->route('admin.dashboard');
