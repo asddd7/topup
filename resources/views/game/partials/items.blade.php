@@ -148,7 +148,7 @@
                     @if($item->bundleItems->isNotEmpty())
 
                         <small class="text-muted d-block mb-2">
-                            Isi paket: {{ $item->bundleItems->pluck('item_name')->implode(', ') }}
+                            Isi paket: {{ $item->bundleItems->map(fn ($component) => $component->item_name.' x '.$component->pivot->quantity)->implode(', ') }}
                         </small>
 
                     @endif

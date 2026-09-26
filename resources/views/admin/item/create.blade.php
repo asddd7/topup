@@ -171,7 +171,8 @@
 
                             @forelse($bundleOptions as $bundleOption)
 
-                                <div class="form-check">
+                                <div class="d-flex align-items-center justify-content-between gap-2 py-1">
+                                    <div class="form-check">
                                     <input
                                         id="create_bundle_{{ $bundleOption->id }}"
                                         class="form-check-input"
@@ -184,6 +185,17 @@
                                            for="create_bundle_{{ $bundleOption->id }}">
                                         {{ $bundleOption->item_name }}
                                     </label>
+                                    </div>
+
+                                    <input
+                                        type="number"
+                                        class="form-control form-control-sm"
+                                        style="max-width: 88px;"
+                                        name="bundle_quantities[{{ $bundleOption->id }}]"
+                                        value="{{ old('bundle_quantities.'.$bundleOption->id, 1) }}"
+                                        min="1"
+                                        max="1000"
+                                        aria-label="Jumlah {{ $bundleOption->item_name }} dalam bundle">
                                 </div>
 
                             @empty
@@ -195,7 +207,7 @@
                         </div>
 
                         <small class="text-muted">
-                            Centang item yang akan dimasukkan. Harga item di atas menjadi harga paket.
+                            Centang satu atau beberapa item dan atur jumlahnya. Harga item di atas menjadi harga paket.
                         </small>
 
                     </div>

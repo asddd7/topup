@@ -148,17 +148,19 @@ public function store(    Request $request,
         'qty'=>'required|integer',
         'price'=>'required',
         'image'=>'nullable|image|max:2048',
-        'bundle_items'=>'nullable|array|min:2',
+        'bundle_items'=>'nullable|array',
         'bundle_items.*'=>[
             'integer',
             'distinct',
             Rule::exists('items', 'id')
                 ->where('game_id', $game->id),
         ],
+        'bundle_quantities'=>'nullable|array',
+        'bundle_quantities.*'=>'integer|min:1|max:1000',
 
     ]);
 
-    $bundleItemIds = $this->validatedBundleItemIds(
+    $bundleComponents = $this->validatedBundleComponents(
         $request,
         $game
     );
@@ -200,13 +202,7 @@ $item = Item::create([
 
 ]);
 
-$item->bundleItems()->sync(
-    collect($bundleItemIds)
-        ->mapWithKeys(fn ($id) => [
-            $id => ['quantity' => 1],
-        ])
-        ->all()
-);
+$item->bundleItems()->sync($bundleComponents);
 
 $this->activity->log(
     'Item',
@@ -236,17 +232,19 @@ public function update(
         'qty'=>'required|integer',
         'price'=>'required',
         'image'=>'nullable|image|max:2048',
-        'bundle_items'=>'nullable|array|min:2',
+        'bundle_items'=>'nullable|array',
         'bundle_items.*'=>[
             'integer',
             'distinct',
             Rule::exists('items', 'id')
                 ->where('game_id', $game->id),
         ],
+        'bundle_quantities'=>'nullable|array',
+        'bundle_quantities.*'=>'integer|min:1|max:1000',
 
     ]);
 
-    $bundleItemIds = $this->validatedBundleItemIds(
+    $bundleComponents = $this->validatedBundleComponents(
         $request,
         $game,
         $item
@@ -290,13 +288,7 @@ public function update(
 
     ]);
 
-    $item->bundleItems()->sync(
-        collect($bundleItemIds)
-            ->mapWithKeys(fn ($id) => [
-                $id => ['quantity' => 1],
-            ])
-            ->all()
-    );
+    $item->bundleItems()->sync($bundleComponents);
 
 $this->activity->log(
     'Item',
@@ -345,7 +337,7 @@ $this->activity->log(
 
 }
 
-private function validatedBundleItemIds(
+private function validatedBundleComponents(
     Request $request,
     Game $game,
     ?Item $item = null
@@ -354,10 +346,6 @@ private function validatedBundleItemIds(
         'intval',
         $request->input('bundle_items', [])
     );
-
-    if ($ids === []) {
-        return [];
-    }
 
     $validCount = Item::query()
         ->where('game_id', $game->id)
@@ -372,7 +360,18 @@ private function validatedBundleItemIds(
         ]);
     }
 
-    return $ids;
+    $quantities = $request->input('bundle_quantities', []);
+
+    return collect($ids)
+        ->mapWithKeys(fn ($id) => [
+            $id => [
+                'quantity' => max(
+                    1,
+                    (int) ($quantities[$id] ?? 1)
+                ),
+            ],
+        ])
+        ->all();
 }
 
 public function destroy(

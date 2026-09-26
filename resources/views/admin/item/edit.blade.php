@@ -148,6 +148,7 @@ Komponen Bundle (opsional)
 
 @forelse($bundleOptions->where('id', '!=', $item->id) as $bundleOption)
 
+<div class="d-flex align-items-center justify-content-between gap-2 py-1">
 <div class="form-check">
 <input id="edit_bundle_{{ $item->id }}_{{ $bundleOption->id }}"
        class="form-check-input"
@@ -162,6 +163,16 @@ Komponen Bundle (opsional)
 </label>
 </div>
 
+<input type="number"
+       class="form-control form-control-sm"
+       style="max-width: 88px;"
+       name="bundle_quantities[{{ $bundleOption->id }}]"
+       value="{{ old('bundle_quantities.'.$bundleOption->id, data_get($item->bundleItems->firstWhere('id', $bundleOption->id), 'pivot.quantity', 1)) }}"
+       min="1"
+       max="1000"
+       aria-label="Jumlah {{ $bundleOption->item_name }} dalam bundle">
+</div>
+
 @empty
 
 <span class="text-muted">Belum ada item biasa untuk dijadikan komponen.</span>
@@ -171,7 +182,7 @@ Komponen Bundle (opsional)
 </div>
 
 <small class="text-muted">
-Centang item yang akan dimasukkan. Harga item di atas menjadi harga paket.
+Centang satu atau beberapa item dan atur jumlahnya. Harga item di atas menjadi harga paket.
 </small>
 
 </div>

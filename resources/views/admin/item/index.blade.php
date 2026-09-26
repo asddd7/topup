@@ -357,7 +357,7 @@ No Image
 <br>
 
 <small class="text-primary">
-    Bundle: {{$item->bundleItems->pluck('item_name')->implode(', ')}}
+    Bundle: {{$item->bundleItems->map(fn ($component) => $component->item_name.' x '.$component->pivot->quantity)->implode(', ')}}
 </small>
 
 @endif
