@@ -137,6 +137,45 @@ Nama Item
 
 
 
+<div class="mb-3">
+
+<label class="form-label">
+Komponen Bundle (opsional)
+</label>
+
+<div class="border rounded p-2"
+     style="max-height: 180px; overflow-y: auto;">
+
+@forelse($bundleOptions->where('id', '!=', $item->id) as $bundleOption)
+
+<div class="form-check">
+<input id="edit_bundle_{{ $item->id }}_{{ $bundleOption->id }}"
+       class="form-check-input"
+       type="checkbox"
+       name="bundle_items[]"
+       value="{{ $bundleOption->id }}"
+       {{ in_array($bundleOption->id, old('bundle_items', $item->bundleItems->modelKeys())) ? 'checked' : '' }}>
+
+<label class="form-check-label"
+       for="edit_bundle_{{ $item->id }}_{{ $bundleOption->id }}">
+{{$bundleOption->item_name}}
+</label>
+</div>
+
+@empty
+
+<span class="text-muted">Belum ada item biasa untuk dijadikan komponen.</span>
+
+@endforelse
+
+</div>
+
+<small class="text-muted">
+Centang item yang akan dimasukkan. Harga item di atas menjadi harga paket.
+</small>
+
+</div>
+
 <div class="row">
 
 

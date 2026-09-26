@@ -49,8 +49,14 @@
                 */
 
                 $requiresPlayerValidation =
-                    !empty($item->moogold_product_id) &&
-                    !empty($item->moogold_variation_id);
+                    $item->bundleItems->contains(function ($component) {
+                        return
+                            !empty($component->moogold_product_id) &&
+                            !empty($component->moogold_variation_id);
+                    }) || (
+                        !empty($item->moogold_product_id) &&
+                        !empty($item->moogold_variation_id)
+                    );
 
 
                 /*
@@ -138,6 +144,14 @@
                     <h3>
                         {{ $item->item_name }}
                     </h3>
+
+                    @if($item->bundleItems->isNotEmpty())
+
+                        <small class="text-muted d-block mb-2">
+                            Isi paket: {{ $item->bundleItems->pluck('item_name')->implode(', ') }}
+                        </small>
+
+                    @endif
 
 
                     {{-- =================================================

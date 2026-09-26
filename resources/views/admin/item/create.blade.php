@@ -163,6 +163,46 @@
                     <div class="mb-3">
 
                         <label class="form-label">
+                            Komponen Bundle (opsional)
+                        </label>
+
+                        <div class="border rounded p-2"
+                             style="max-height: 180px; overflow-y: auto;">
+
+                            @forelse($bundleOptions as $bundleOption)
+
+                                <div class="form-check">
+                                    <input
+                                        id="create_bundle_{{ $bundleOption->id }}"
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        name="bundle_items[]"
+                                        value="{{ $bundleOption->id }}"
+                                        {{ in_array($bundleOption->id, old('bundle_items', [])) ? 'checked' : '' }}>
+
+                                    <label class="form-check-label"
+                                           for="create_bundle_{{ $bundleOption->id }}">
+                                        {{ $bundleOption->item_name }}
+                                    </label>
+                                </div>
+
+                            @empty
+
+                                <span class="text-muted">Belum ada item biasa untuk dijadikan komponen.</span>
+
+                            @endforelse
+
+                        </div>
+
+                        <small class="text-muted">
+                            Centang item yang akan dimasukkan. Harga item di atas menjadi harga paket.
+                        </small>
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
                             Deskripsi
                         </label>
 

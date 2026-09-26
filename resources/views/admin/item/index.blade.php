@@ -85,6 +85,19 @@
 
 <div class="card-body">
 
+@if($errors->any())
+
+<div class="alert alert-danger">
+    <strong>Item belum tersimpan.</strong>
+    <ul class="mb-0 mt-2">
+        @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+
+@endif
+
 
 <form method="GET"
       action="{{ route('admin.game.items',$game->id) }}">
@@ -239,6 +252,16 @@
 
 @endif
 
+@if(session('error'))
+
+<div class="alert alert-danger">
+
+{{session('error')}}
+
+</div>
+
+@endif
+
 
 
 
@@ -328,6 +351,16 @@ No Image
 {{$item->item_name}}
 
 </strong>
+
+@if($item->bundleItems->isNotEmpty())
+
+<br>
+
+<small class="text-primary">
+    Bundle: {{$item->bundleItems->pluck('item_name')->implode(', ')}}
+</small>
+
+@endif
 
 <br>
 

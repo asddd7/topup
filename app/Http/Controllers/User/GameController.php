@@ -33,7 +33,10 @@ public function __construct(
         $itemsQuery = Item::query()
             ->where('game_id', $game->id)
             ->where('is_active', 1)
-            ->with('category');
+            ->whereDoesntHave('bundleItems', function ($query) {
+                $query->where('is_active', false);
+            })
+            ->with(['category', 'bundleItems']);
 
         /*
         |--------------------------------------------------------------------------
@@ -44,7 +47,16 @@ public function __construct(
         if ($game->id === 1) {
 
             $itemsQuery
-                ->where('moogold_product_id', 2362359);
+                ->where(function ($query) {
+                    $query
+                        ->where('moogold_product_id', 2362359)
+                        ->orWhereHas('bundleItems', function ($bundleQuery) {
+                            $bundleQuery->where(
+                                'moogold_product_id',
+                                2362359
+                            );
+                        });
+                });
 
         }
 
@@ -373,7 +385,7 @@ public function validatePlayer(
         ],
     ]);
 
-    $item = Item::with('game')
+    $item = Item::with(['game', 'bundleItems'])
         ->where('id', $validated['item_id'])
         ->where('game_id', $validated['game_id'])
         ->where('is_active', 1)
@@ -387,6 +399,12 @@ public function validatePlayer(
     }
 
     $game = $item->game;
+
+        $item = $item->bundleItems->first(
+            fn ($component) => !empty(
+                $component->moogold_product_id
+            )
+        ) ?? $item;
 
     if (!$game) {
         return response()->json([

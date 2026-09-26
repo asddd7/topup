@@ -8,6 +8,8 @@ use App\Models\Game;
 use App\Models\ItemCategory;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 
 class ItemController extends BaseAdminController
@@ -18,7 +20,8 @@ public function index(Request $request, Game $game)
 
     $query = Item::with([
         'category',
-        'game'
+        'game',
+        'bundleItems',
     ])
     ->where('game_id',$game->id);
 
@@ -113,6 +116,12 @@ public function index(Request $request, Game $game)
         'category_name'
     )->get();
 
+    $bundleOptions = Item::query()
+        ->where('game_id', $game->id)
+        ->whereDoesntHave('bundleItems')
+        ->orderBy('item_name')
+        ->get();
+
 
 
     return view(
@@ -120,7 +129,8 @@ public function index(Request $request, Game $game)
         compact(
             'game',
             'items',
-            'categories'
+            'categories',
+            'bundleOptions'
         )
     );
 
@@ -137,9 +147,21 @@ public function store(    Request $request,
         'item_name'=>'required',
         'qty'=>'required|integer',
         'price'=>'required',
-        'image'=>'nullable|image|max:2048'
+        'image'=>'nullable|image|max:2048',
+        'bundle_items'=>'nullable|array|min:2',
+        'bundle_items.*'=>[
+            'integer',
+            'distinct',
+            Rule::exists('items', 'id')
+                ->where('game_id', $game->id),
+        ],
 
     ]);
+
+    $bundleItemIds = $this->validatedBundleItemIds(
+        $request,
+        $game
+    );
 
 
     $image=null;
@@ -177,6 +199,15 @@ $item = Item::create([
     'is_active' => $request->has('is_active')
 
 ]);
+
+$item->bundleItems()->sync(
+    collect($bundleItemIds)
+        ->mapWithKeys(fn ($id) => [
+            $id => ['quantity' => 1],
+        ])
+        ->all()
+);
+
 $this->activity->log(
     'Item',
     'Create',
@@ -204,9 +235,22 @@ public function update(
         'item_name'=>'required',
         'qty'=>'required|integer',
         'price'=>'required',
-        'image'=>'nullable|image|max:2048'
+        'image'=>'nullable|image|max:2048',
+        'bundle_items'=>'nullable|array|min:2',
+        'bundle_items.*'=>[
+            'integer',
+            'distinct',
+            Rule::exists('items', 'id')
+                ->where('game_id', $game->id),
+        ],
 
     ]);
+
+    $bundleItemIds = $this->validatedBundleItemIds(
+        $request,
+        $game,
+        $item
+    );
     $old = $item->toArray();
 
     $image = $item->image;
@@ -246,6 +290,14 @@ public function update(
 
     ]);
 
+    $item->bundleItems()->sync(
+        collect($bundleItemIds)
+            ->mapWithKeys(fn ($id) => [
+                $id => ['quantity' => 1],
+            ])
+            ->all()
+    );
+
 $this->activity->log(
     'Item',
     'Update',
@@ -273,14 +325,54 @@ $this->activity->log(
     public function edit(Game $game, Item $item)
 {
 
+    $bundleOptions = Item::query()
+        ->where('game_id', $game->id)
+        ->where('id', '!=', $item->id)
+        ->whereDoesntHave('bundleItems')
+        ->orderBy('item_name')
+        ->get();
+
+    $item->load('bundleItems');
+
     return view(
         'admin.item.edit',
         compact(
             'game',
-            'item'
+            'item',
+            'bundleOptions'
         )
     );
 
+}
+
+private function validatedBundleItemIds(
+    Request $request,
+    Game $game,
+    ?Item $item = null
+): array {
+    $ids = array_map(
+        'intval',
+        $request->input('bundle_items', [])
+    );
+
+    if ($ids === []) {
+        return [];
+    }
+
+    $validCount = Item::query()
+        ->where('game_id', $game->id)
+        ->whereIn('id', $ids)
+        ->whereDoesntHave('bundleItems')
+        ->when($item, fn ($query) => $query->where('id', '!=', $item->id))
+        ->count();
+
+    if ($validCount !== count($ids)) {
+        throw ValidationException::withMessages([
+            'bundle_items' => 'Komponen harus berupa item biasa dari game yang sama.',
+        ]);
+    }
+
+    return $ids;
 }
 
 public function destroy(
@@ -294,6 +386,13 @@ public function destroy(
 
         abort(403);
 
+    }
+
+    if ($item->bundles()->exists()) {
+        return back()->with(
+            'error',
+            'Item ini masih digunakan dalam bundle. Hapus dari bundle terlebih dahulu.'
+        );
     }
 
 $old = $item->toArray();

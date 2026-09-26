@@ -9,6 +9,7 @@ use App\Models\Item;
 use App\Models\Notification;
 use App\Models\Order;
 use App\Models\User;
+use App\Services\ItemBundlePricingService;
 use App\Services\PromotionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -134,13 +135,36 @@ class OrderController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $item = Item::with('game')
+        $item = Item::with(['game', 'bundleItems'])
             ->where('id', $request->item_id)
             ->where('game_id', $request->game_id)
             ->where('is_active', 1)
             ->firstOrFail();
 
         $game = $item->game;
+
+        if (
+            $item->bundleItems->contains(
+                fn ($component) => !$component->is_active
+            )
+        ) {
+            throw new \RuntimeException(
+                'Bundle ini memiliki komponen yang sedang nonaktif.'
+            );
+        }
+
+        $unavailableComponent = $item->bundleItems->first(
+            fn ($component) => (int) $component->stock
+                < max(1, (int) $component->pivot->quantity)
+        );
+
+        if ($unavailableComponent) {
+            throw new \RuntimeException(
+                'Stock komponen "' .
+                $unavailableComponent->item_name .
+                '" tidak mencukupi untuk bundle ini.'
+            );
+        }
 
         $gamePlayerFields =
             $game->player_fields ?? [];
@@ -631,21 +655,20 @@ class OrderController extends Controller
                 |--------------------------------------------------------------------------
                 */
 
-                $order
-                    ->details()
-                    ->create([
-                        'item_id' =>
-                            $item->id,
+                $detailLines = app(
+                    ItemBundlePricingService::class
+                )->allocate($item, $totalPrice);
 
-                        'qty' =>
-                            1,
-
-                        'price' =>
-                            $totalPrice,
-
-                        'subtotal' =>
-                            $totalPrice,
-                    ]);
+                foreach ($detailLines as $detailLine) {
+                    $order
+                        ->details()
+                        ->create([
+                            'item_id' => $detailLine['item']->id,
+                            'qty' => $detailLine['qty'],
+                            'price' => $detailLine['price'],
+                            'subtotal' => $detailLine['subtotal'],
+                        ]);
+                }
 
                 /*
                 |--------------------------------------------------------------------------

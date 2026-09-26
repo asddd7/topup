@@ -47,9 +47,16 @@
 
 .market-game-card a {
     display: block;
+    height: 100%;
 
     color: inherit;
     text-decoration: none;
+}
+
+.market-game-card a:focus-visible {
+    outline: 2px solid var(--theme-primary);
+    outline-offset: -4px;
+    border-radius: 16px;
 }
 
 
@@ -113,6 +120,7 @@
 ========================================================= */
 
 .market-game-info {
+    min-width: 0;
     padding: 14px;
 }
 
@@ -129,6 +137,7 @@
     line-height: 1.4;
     font-weight: 750;
 
+    line-clamp: 2;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
 }
@@ -175,6 +184,18 @@
 
 .market-game-card:hover .market-game-overlay {
     opacity: 1;
+}
+
+@media (hover: none) {
+    .market-game-overlay {
+        background:
+            linear-gradient(
+                transparent 45%,
+                rgba(15, 23, 42, 0.62)
+            );
+
+        opacity: 1;
+    }
 }
 
 .market-game-action {
@@ -255,6 +276,42 @@
         margin-top: 4px;
 
         font-size: 9px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .games-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 14px;
+    }
+
+    .market-game-info {
+        padding: 12px;
+    }
+
+    .market-game-title {
+        font-size: 13px;
+    }
+
+    .market-game-publisher {
+        font-size: 10px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .market-game-card,
+    .market-game-image img,
+    .market-game-overlay {
+        transition: none;
+    }
+
+    .market-game-card:hover,
+    .market-game-card:hover .market-game-image img {
+        transform: none;
     }
 }
 

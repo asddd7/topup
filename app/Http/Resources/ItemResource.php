@@ -40,6 +40,9 @@ class ItemResource extends JsonResource
 
             'top_seller' => (bool) $this->top_seller,
 
+            'is_bundle' => $this->relationLoaded('bundleItems')
+                && $this->bundleItems->isNotEmpty(),
+
             'category' => new CategoryResource(
                 $this->whenLoaded('category')
             ),
@@ -66,6 +69,16 @@ class ItemResource extends JsonResource
                     ? asset('storage/' . $this->game->image)
                     : null,
             ];
+        }
+
+        if ($this->relationLoaded('bundleItems')) {
+            $data['bundle_items'] = $this->bundleItems
+                ->map(fn ($item) => [
+                    'id' => $item->id,
+                    'name' => $item->item_name,
+                    'quantity' => (int) $item->pivot->quantity,
+                ])
+                ->values();
         }
 
         return $data;

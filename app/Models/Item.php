@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Models\Game;
 
 class Item extends Model
@@ -99,5 +100,29 @@ protected function casts(): array
             ItemCategory::class,
             'category_id'
         );
+    }
+
+    public function bundleItems(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            self::class,
+            'item_bundle_components',
+            'bundle_item_id',
+            'component_item_id'
+        )
+            ->withPivot('quantity')
+            ->withTimestamps();
+    }
+
+    public function bundles(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            self::class,
+            'item_bundle_components',
+            'component_item_id',
+            'bundle_item_id'
+        )
+            ->withPivot('quantity')
+            ->withTimestamps();
     }
 }

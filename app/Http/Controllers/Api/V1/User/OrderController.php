@@ -8,6 +8,7 @@ use App\Models\Game;
 use App\Models\Item;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Services\ItemBundlePricingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -97,6 +98,7 @@ class OrderController extends Controller
             $subtotal = 0;
 
             $details = [];
+            $reservedStock = [];
 
 
             /*
@@ -108,6 +110,7 @@ class OrderController extends Controller
             foreach ($validated['items'] as $requestItem) {
 
                 $item = Item::query()
+                    ->with('bundleItems')
                     ->where('id', $requestItem['item_id'])
                     ->where('game_id', $game->id)
                     ->where('is_active', 1)
@@ -129,36 +132,48 @@ class OrderController extends Controller
                 |--------------------------------------------------------------------------
                 */
 
-                if ($item->stock < $requestItem['qty']) {
-                    throw ValidationException::withMessages([
-                        'items' => [
-                            "Stock {$item->item_name} tidak mencukupi.",
-                        ],
-                    ]);
-                }
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | Hitung subtotal item
-                |--------------------------------------------------------------------------
-                */
-
                 $qty = $requestItem['qty'];
-
-                $price = (float) $item->price;
-
-                $itemSubtotal = $price * $qty;
-
+                $itemSubtotal = (float) $item->price * $qty;
                 $subtotal += $itemSubtotal;
 
+                $detailLines = app(
+                    ItemBundlePricingService::class
+                )->allocate($item, $itemSubtotal, $qty);
 
-                $details[] = [
-                    'item' => $item,
-                    'qty' => $qty,
-                    'price' => $price,
-                    'subtotal' => $itemSubtotal,
-                ];
+                foreach ($detailLines as $detailLine) {
+                    $lineItem = $detailLine['item']->id === $item->id
+                        ? $item
+                        : Item::query()
+                            ->whereKey($detailLine['item']->id)
+                            ->lockForUpdate()
+                            ->first();
+
+                    $alreadyReserved = $reservedStock[
+                        $detailLine['item']->id
+                    ] ?? 0;
+
+                    if (
+                        !$lineItem
+                        || !$lineItem->is_active
+                        || (int) $lineItem->game_id !== (int) $game->id
+                        || $lineItem->stock
+                            < $alreadyReserved + $detailLine['qty']
+                    ) {
+                        throw ValidationException::withMessages([
+                            'items' => [
+                                "Stock komponen {$detailLine['item']->item_name} tidak mencukupi.",
+                            ],
+                        ]);
+                    }
+
+                    $reservedStock[$lineItem->id] =
+                        $alreadyReserved + $detailLine['qty'];
+
+                    $details[] = [
+                        ...$detailLine,
+                        'item' => $lineItem,
+                    ];
+                }
             }
 
 

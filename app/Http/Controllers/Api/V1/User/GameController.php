@@ -64,10 +64,26 @@ class GameController extends Controller
 
             $query
                 ->where('is_active', 1)
-                ->whereNotNull('moogold_product_id')
-                ->where('moogold_product_id', '!=', '')
-                ->whereNotNull('moogold_variation_id')
-                ->where('moogold_variation_id', '!=', '');
+                ->whereDoesntHave('bundleItems', function ($componentQuery) {
+                    $componentQuery->where('is_active', false);
+                })
+                ->where(function ($itemQuery) {
+                    $itemQuery
+                        ->where(function ($regularQuery) {
+                            $regularQuery
+                                ->whereNotNull('moogold_product_id')
+                                ->where('moogold_product_id', '!=', '')
+                                ->whereNotNull('moogold_variation_id')
+                                ->where('moogold_variation_id', '!=', '');
+                        })
+                        ->orWhereHas('bundleItems', function ($componentQuery) {
+                            $componentQuery
+                                ->whereNotNull('moogold_product_id')
+                                ->where('moogold_product_id', '!=', '')
+                                ->whereNotNull('moogold_variation_id')
+                                ->where('moogold_variation_id', '!=', '');
+                        });
+                });
 
 
             $query
@@ -77,6 +93,7 @@ class GameController extends Controller
         },
 
             'items.category',
+            'items.bundleItems',
         ]);
 
 
