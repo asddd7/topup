@@ -2,15 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\Admin\BaseAdminController;
-use App\Models\ActivityLog;
-use App\Models\Payment;
-use App\Models\Order;
-use App\Models\Banner;
 use App\Models\Setting;
-use App\Integrations\MooGold\MooGoldService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class SettingController extends BaseAdminController
@@ -35,15 +30,19 @@ class SettingController extends BaseAdminController
         |--------------------------------------------------------------------------
         */
 
-            $request->validate([
-
-                'app_logo' =>
-                    'nullable|image|mimes:png,jpg,jpeg,svg,webp|max:2048',
-
-                'app_favicon' =>
-                    'nullable|image|mimes:png,jpg,jpeg,ico,svg,webp|max:1024',
-
-            ]);
+        $validated = $request->validate([
+            'app_name' => 'nullable|string|max:100',
+            'whatsapp' => 'nullable|string|max:30',
+            'email' => 'nullable|email|max:255',
+            'address' => 'nullable|string|max:1000',
+            'facebook' => 'nullable|url|max:255',
+            'instagram' => 'nullable|url|max:255',
+            'youtube' => 'nullable|url|max:255',
+            'maintenance' => 'required|boolean',
+            'allow_guest_checkout' => 'required|boolean',
+            'app_logo' => 'nullable|image|mimes:png,jpg,jpeg,svg,webp|max:2048',
+            'app_favicon' => 'nullable|image|mimes:png,jpg,jpeg,ico,svg,webp|max:1024',
+        ]);
 
         /*
         |--------------------------------------------------------------------------
@@ -130,32 +129,31 @@ class SettingController extends BaseAdminController
         }
 
 
-        foreach(
-            $request->except(
-                '_token',
-                '_method',
-                'app_logo',
-                'app_favicon'
-            ) as $key=>$value
-        ){
+        $groups = [
+            'app_name' => 'general',
+            'whatsapp' => 'contact',
+            'email' => 'contact',
+            'address' => 'contact',
+            'facebook' => 'social',
+            'instagram' => 'social',
+            'youtube' => 'social',
+            'maintenance' => 'system',
+            'allow_guest_checkout' => 'system',
+        ];
 
-            $setting = Setting::updateOrCreate(
-
+        foreach ($groups as $key => $group) {
+            Setting::updateOrCreate(
+                ['setting_key' => $key],
                 [
-                    'setting_key'=>$key
-                ],
-
-                [
-                    'setting_value'=>$value,
-                    'group'=>'general'
+                    'setting_value' => (string) $validated[$key],
+                    'group' => $group,
                 ]
-
             );
         }
 
 
 
-        Cache::forget('website_settings');
+        Cache::forgetMany(['website_settings', 'settings']);
 
 
         return back()->with(

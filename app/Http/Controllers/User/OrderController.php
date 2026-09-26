@@ -97,6 +97,12 @@ class OrderController extends Controller
         Request $request,
         PromotionService $promotion
     ) {
+        if (!Auth::check() && (string) setting('allow_guest_checkout', '1') !== '1') {
+            return back()->withInput()->withErrors([
+                'checkout' => 'Checkout guest sedang dinonaktifkan. Silakan login terlebih dahulu.',
+            ]);
+        }
+
         /*
         |--------------------------------------------------------------------------
         | 1. BASIC VALIDATION

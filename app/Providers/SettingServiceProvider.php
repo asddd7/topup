@@ -33,7 +33,7 @@ class SettingServiceProvider extends ServiceProvider
             return;
         }
 
-        Cache::rememberForever('settings', function () {
+        Cache::rememberForever('website_settings', function () {
 
             return Setting::pluck(
                 'setting_value',

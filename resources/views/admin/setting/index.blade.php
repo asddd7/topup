@@ -37,8 +37,19 @@
 
     @endif
 
+    @if($errors->any())
+    <div class="alert alert-danger">
+        <i class="fa-solid fa-circle-exclamation me-2"></i>
+        <ul class="mb-0 ps-3">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
     <form
-        action="{{ route('admin.setting.update',1) }}"
+        action="{{ route('admin.setting.update') }}"
         method="POST"
         enctype="multipart/form-data">
 

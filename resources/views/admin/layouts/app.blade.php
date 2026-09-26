@@ -11,7 +11,11 @@
     <meta name="csrf-token"
           content="{{ csrf_token() }}">
 
-    <title>{{ setting('app_name') }}</title>
+    <title>{{ setting('app_name', 'TopUp Game') }}</title>
+
+    @if(setting('app_favicon'))
+        <link rel="icon" href="{{ asset('storage/' . setting('app_favicon')) }}">
+    @endif
 
     {{-- SET THEME BEFORE PAGE RENDER --}}
     <script>
