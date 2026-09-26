@@ -6,19 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class Notification extends Model
 {
-
     protected $fillable = [
-
         'user_id',
         'order_id',
         'item_id',
         'title',
         'message',
         'is_read',
-        'read_at'
-
+        'read_at',
     ];
 
+    protected $casts = [
+        'is_read' => 'boolean',
+        'read_at' => 'datetime',
+    ];
 
     public function user()
     {
@@ -36,8 +37,26 @@ class Notification extends Model
         return $this->belongsTo(Item::class);
     }
 
-    public function stock()
+    public function scopeUnread($query)
     {
-        return $this->belongsTo(Item::class,'item_id');
+        return $query->where('is_read', false);
+    }
+
+    public function markAsRead(): void
+    {
+        if (!$this->is_read) {
+            $this->forceFill([
+                'is_read' => true,
+                'read_at' => now(),
+            ])->save();
+        }
+    }
+
+    public function markAsUnread(): void
+    {
+        $this->forceFill([
+            'is_read' => false,
+            'read_at' => null,
+        ])->save();
     }
 }

@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\StockController;
 use App\Http\Controllers\Admin\MooGoldProductMappingController;
 use App\Http\Controllers\Admin\TopSellerController;
 use App\Http\Controllers\Admin\MooGoldTransactionHistoryController;
+use App\Http\Controllers\Admin\NotificationController;
 
 use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\User\GameController as UserGameController;
@@ -471,6 +472,36 @@ Route::resource(
     'index',
     'show'
 ]);
+
+Route::get(
+    'notification',
+    [NotificationController::class, 'index']
+)->name('notification.index');
+
+Route::post(
+    'notification/read-all',
+    [NotificationController::class, 'markAllRead']
+)->name('notification.read-all');
+
+Route::post(
+    'notification/{notification}/read',
+    [NotificationController::class, 'read']
+)->name('notification.read');
+
+Route::get(
+    'notification/{notification}',
+    [NotificationController::class, 'read']
+)->name('notification.open');
+
+Route::patch(
+    'notification/{notification}/toggle-read',
+    [NotificationController::class, 'toggleRead']
+)->name('notification.toggle-read');
+
+Route::delete(
+    'notification/{notification}',
+    [NotificationController::class, 'destroy']
+)->name('notification.destroy');
 
 /*
 |--------------------------------------------------------------------------

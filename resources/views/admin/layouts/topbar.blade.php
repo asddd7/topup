@@ -141,7 +141,7 @@
                         <li>
 
                             <a
-                                href="#"
+                                href="{{ route('admin.notification.open', $notif) }}"
                                 class="dropdown-item topup-notification-item"
                             >
 
@@ -189,6 +189,15 @@
 
 
                 </ul>
+
+                <form
+                    action="{{ route('admin.notification.read-all') }}"
+                    method="POST"
+                    class="d-none"
+                    id="mark-all-notifications-read"
+                >
+                    @csrf
+                </form>
             
             </div>
 

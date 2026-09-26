@@ -342,6 +342,27 @@
 
                 </a>
 
+                {{-- NOTIFICATIONS --}}
+
+                <a
+                    href="{{ route('admin.notification.index') }}"
+                    class="admin-sidebar-link {{ request()->routeIs('admin.notification.*') ? 'active' : '' }}"
+                >
+
+                    <i class="fa-solid fa-bell"></i>
+
+                    <span>
+                        Notifikasi
+                    </span>
+
+                    @if(($notificationCount ?? 0) > 0)
+                        <span class="admin-sidebar-badge">
+                            {{ $notificationCount }}
+                        </span>
+                    @endif
+
+                </a>
+
 
                 {{-- PROFILE --}}
 

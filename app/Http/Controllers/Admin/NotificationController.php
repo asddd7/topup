@@ -2,64 +2,69 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 
-class NotificationController extends Controller
+class NotificationController extends BaseAdminController
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $notifications = Notification::with(['order', 'item'])
+            ->where('user_id', $request->user()->id)
+            ->when($request->boolean('unread'), fn ($query) => $query->unread())
+            ->latest()
+            ->paginate(20)
+            ->withQueryString();
+
+        return view('admin.notification.index', compact('notifications'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function markAllRead(Request $request)
     {
-        //
+        Notification::where('user_id', $request->user()->id)
+            ->unread()
+            ->update([
+                'is_read' => true,
+                'read_at' => now(),
+            ]);
+
+        return back()->with('success', 'Semua notifikasi telah ditandai sudah dibaca.');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function read(Request $request, Notification $notification)
     {
-        //
+        abort_unless((int) $notification->user_id === (int) $request->user()->id, 404);
+
+        $notification->markAsRead();
+
+        if ($notification->order_id) {
+            return redirect()->route('admin.order.show', $notification->order_id);
+        }
+
+        if ($notification->item_id) {
+            return redirect()->route('admin.stock.index');
+        }
+
+        return redirect()->route('admin.notification.index');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function toggleRead(Request $request, Notification $notification)
     {
-        //
+        abort_unless((int) $notification->user_id === (int) $request->user()->id, 404);
+
+        $notification->is_read
+            ? $notification->markAsUnread()
+            : $notification->markAsRead();
+
+        return back()->with('success', 'Status notifikasi diperbarui.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function destroy(Request $request, Notification $notification)
     {
-        //
-    }
+        abort_unless((int) $notification->user_id === (int) $request->user()->id, 404);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        $notification->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return back()->with('success', 'Notifikasi telah dihapus.');
     }
 }

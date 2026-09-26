@@ -37,25 +37,16 @@ class AppServiceProvider extends ServiceProvider
             if(auth()->check()){
 
 
-$notifications = Notification::where(
-        'user_id',
-        auth()->id()
-    )
-    ->where('is_read',0)
-    ->latest()
-    ->take(5)
-    ->get();
-
-$notificationCount = $notifications->count();
-
-
-
                 $view->with([
-
-                    'notifications'=>$notifications,
-
-                    'notificationCount'=>$notificationCount
-
+                    'notifications' => Notification::with(['order', 'item'])
+                        ->where('user_id', auth()->id())
+                        ->unread()
+                        ->latest()
+                        ->take(5)
+                        ->get(),
+                    'notificationCount' => Notification::where('user_id', auth()->id())
+                        ->unread()
+                        ->count(),
                 ]);
 
             }else{
