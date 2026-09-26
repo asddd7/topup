@@ -47,6 +47,11 @@ class OrderController extends BaseAdminController
             'user',
             'game',
             'payment',
+            'details.item',
+            'details.mooGoldOrder',
+            'details.ditusiOrder',
+            'mooGoldOrders',
+            'ditusiOrders',
         ])
             ->when(
                 $status,

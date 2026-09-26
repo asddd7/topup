@@ -58,6 +58,10 @@ selected
 
 
 
+<th>
+Sumber / History
+</th>
+
 
 <div class="table-responsive admin-order-table-wrap">
 
@@ -69,6 +73,79 @@ selected
 <tr>
 
 <th>
+<td class="admin-order-source-cell">
+
+@php
+	$orderSources = [
+		'manual' => $order->details->isEmpty(),
+		'moogold' => $order->mooGoldOrders->isNotEmpty(),
+		'ditusi' => $order->ditusiOrders->isNotEmpty(),
+	];
+
+	foreach ($order->details as $detail) {
+		$item = $detail->item;
+
+		$usesMooGold = $detail->mooGoldOrder !== null
+			|| (
+				$item
+				&& !empty($item->moogold_category_id)
+				&& !empty($item->moogold_variation_id)
+			);
+
+		$usesDitusi = $detail->ditusiOrder !== null
+			|| (
+				$item
+				&& (bool) $item->ditusi_enabled
+				&& trim((string) $item->ditusi_product_code) !== ''
+			);
+
+		$orderSources['moogold'] = $orderSources['moogold'] || $usesMooGold;
+		$orderSources['ditusi'] = $orderSources['ditusi'] || $usesDitusi;
+		$orderSources['manual'] = $orderSources['manual'] || (!$usesMooGold && !$usesDitusi);
+	}
+@endphp
+
+<div class="admin-order-source-badges">
+
+	@if($orderSources['manual'])
+		<span class="badge admin-order-source-badge manual">Manual</span>
+	@endif
+
+	@if($orderSources['moogold'])
+		<span class="badge admin-order-source-badge moogold">MooGold</span>
+	@endif
+
+	@if($orderSources['ditusi'])
+		<span class="badge admin-order-source-badge api">Ditusi API</span>
+	@endif
+
+</div>
+
+@foreach($order->mooGoldOrders->take(2) as $history)
+	<small class="admin-order-history-line">
+		MooGold: {{ $history->moogold_status ?: 'History tercatat' }}
+		@if($history->moogold_order_id)
+			· #{{ $history->moogold_order_id }}
+		@endif
+	</small>
+@endforeach
+
+@foreach($order->ditusiOrders->take(2) as $history)
+	<small class="admin-order-history-line">
+		Ditusi: {{ $history->status ?: 'History tercatat' }}
+		@if($history->ditusi_transaction_id)
+			· #{{ $history->ditusi_transaction_id }}
+		@endif
+	</small>
+@endforeach
+
+@if($orderSources['moogold'] && $order->mooGoldOrders->isEmpty())
+	<small class="admin-order-history-line">Belum dikirim ke provider.</small>
+@elseif($orderSources['ditusi'] && $order->ditusiOrders->isEmpty())
+	<small class="admin-order-history-line">Belum dikirim ke provider.</small>
+@endif
+
+</td>
 Invoice
 </th>
 
