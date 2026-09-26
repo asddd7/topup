@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div class="container">
+<div class="container admin-order-show">
 
     {{-- =====================================================
          FLASH MESSAGE
@@ -45,7 +45,7 @@
 
     @endif
 
-<div class="container">
+<div class="container admin-order-detail">
 
 @auth
 
@@ -65,7 +65,7 @@
     </div>
 
 @endauth
-<div class="card shadow">
+<div class="card shadow admin-order-detail-card">
 
 
 <div class="card-header bg-primary text-white">
@@ -115,7 +115,9 @@ User :
     Data Player
 </h5>
 
-<table class="table table-bordered">
+<div class="admin-order-player-table-wrap">
+
+<table class="table table-bordered admin-order-player-table">
 
 @foreach($order->game->player_fields ?? [] as $field)
 
@@ -139,6 +141,8 @@ User :
 
 </table>
 
+</div>
+
 
 
 <h5>
@@ -148,7 +152,7 @@ Item
 </h5>
 
 
-<ul>
+<ul class="admin-order-items">
 
 @foreach($order->details as $detail)
 
@@ -202,7 +206,7 @@ src="{{asset('storage/'.$order->payment_proof)}}"
 
 width="300"
 
-class="img-thumbnail">
+class="img-thumbnail admin-order-payment-proof">
 
 
 @endif
@@ -215,7 +219,8 @@ class="img-thumbnail">
 
 
 <form action="{{route('admin.order.update',$order)}}"
-method="POST">
+method="POST"
+class="admin-order-status-form">
 
 
 @csrf

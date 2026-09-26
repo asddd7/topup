@@ -4,10 +4,10 @@
 @section('content')
 
 
-<div class="container-fluid">
+<div class="container-fluid admin-order-index">
 
 
-<h3 class="fw-bold mb-4">
+<h3 class="fw-bold mb-4 admin-order-page-title">
 
 <i class="fa-solid fa-cart-shopping"></i>
 
@@ -17,14 +17,14 @@ Manajemen Order
 
 
 
-<div class="card shadow">
+<div class="card shadow admin-order-list-card">
 
 
 <div class="card-body">
 
 
 
-<form>
+<form class="admin-order-filter">
 
 <select name="status"
 class="form-select w-auto"
@@ -59,7 +59,9 @@ selected
 
 
 
-<table class="table table-hover mt-3">
+<div class="table-responsive admin-order-table-wrap">
+
+<table class="table table-hover mt-3 admin-order-table">
 
 
 <thead>
@@ -244,6 +246,8 @@ Menunggu Konfirmasi
 
 
 </table>
+
+</div>
 
 
 </div>
