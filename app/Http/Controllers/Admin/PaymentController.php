@@ -88,7 +88,7 @@ class PaymentController extends BaseAdminController
         ][$type] ?? ucwords(str_replace('_', ' ', $type));
     }
 
-    public function toggleActive(Payment $payment)
+    public function toggleActive(Request $request, Payment $payment)
     {
         $old = $payment->toArray();
         $payment->update(['is_active' => !$payment->is_active]);

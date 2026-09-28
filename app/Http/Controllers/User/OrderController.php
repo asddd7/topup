@@ -8,6 +8,7 @@ use App\Models\Game;
 use App\Models\Item;
 use App\Models\Notification;
 use App\Models\Order;
+use App\Models\Payment;
 use App\Models\User;
 use App\Services\ItemBundlePricingService;
 use App\Services\PromotionService;
@@ -134,6 +135,16 @@ class OrderController extends Controller
                 'max:255',
             ],
         ]);
+
+        $paymentType = strtolower(trim((string) $request->midtrans_payment_type));
+
+        if (!Payment::where('is_active', true)
+            ->whereRaw('LOWER(payment_type) = ?', [$paymentType])
+            ->exists()) {
+            return back()->withInput()->withErrors([
+                'midtrans_payment_type' => 'Metode pembayaran tersebut sedang tidak tersedia.',
+            ]);
+        }
 
         /*
         |--------------------------------------------------------------------------

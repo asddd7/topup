@@ -117,6 +117,22 @@ public function __construct(
                 $this->midtrans
                     ->getSnapPaymentChannels();
 
+            $activePaymentTypes = Payment::query()
+                ->where('is_active', true)
+                ->pluck('payment_type')
+                ->map(fn ($type) => strtolower(trim((string) $type)))
+                ->filter()
+                ->flip();
+
+            $paymentChannels = collect($paymentChannels)
+                ->filter(function (array $channel) use ($activePaymentTypes) {
+                    $type = strtolower(trim((string) ($channel['name'] ?? '')));
+
+                    return $type !== '' && $activePaymentTypes->has($type);
+                })
+                ->values()
+                ->all();
+
         } catch (\Throwable $e) {
 
             \Log::error(
