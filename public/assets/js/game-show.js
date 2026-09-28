@@ -1579,6 +1579,7 @@ window.toggleItem = function (
             name,
             price: parseFloat(price) || 0,
             requiresPlayerValidation,
+            quantity: 1,
         });
     }
 
@@ -1605,9 +1606,47 @@ window.toggleItem = function (
     }
 };
 
+window.changeItemQuantity = function (id, delta) {
+    const item = selectedItems.get(String(id));
+
+    if (!item) {
+        return;
+    }
+
+    item.quantity = Math.min(
+        99,
+        Math.max(1, (item.quantity || 1) + delta)
+    );
+
+    updateMultiSelection();
+
+    if (selectedPaymentType) {
+        calculatePromos();
+    }
+};
+
+window.setItemQuantity = function (id, value) {
+    const item = selectedItems.get(String(id));
+
+    if (!item) {
+        return;
+    }
+
+    const quantity = parseInt(value, 10) || 1;
+    item.quantity = Math.min(99, Math.max(1, quantity));
+    updateMultiSelection();
+
+    if (selectedPaymentType) {
+        calculatePromos();
+    }
+};
+
 function updateMultiSelection() {
     const items = Array.from(selectedItems.values());
-    const subtotal = items.reduce((sum, item) => sum + item.price, 0);
+    const subtotal = items.reduce(
+        (sum, item) => sum + item.price * (item.quantity || 1),
+        0
+    );
     const primary = items[0];
     const requiresPlayerValidation = items.some(
         (item) => item.requiresPlayerValidation
@@ -1630,7 +1669,7 @@ function updateMultiSelection() {
     const selectedItem = document.getElementById('selected_item');
     if (selectedItem) {
         selectedItem.innerText = items.length
-            ? items.map((item) => item.name).join(' + ')
+            ? items.map((item) => `${item.name} x${item.quantity || 1}`).join(' + ')
             : 'Belum dipilih';
     }
 
@@ -1649,11 +1688,16 @@ function updateMultiSelection() {
         subtotalInput.value = subtotal;
     }
 
+    const totalInput = document.getElementById('total_price');
+    if (totalInput) {
+        totalInput.value = subtotal;
+    }
+
     const inputs = document.getElementById('selectedItemsInputs');
     if (inputs) {
         inputs.innerHTML = items.map((item, index) => `
             <input type="hidden" name="items[${index}][item_id]" value="${item.id}">
-            <input type="hidden" name="items[${index}][qty]" value="1">
+            <input type="hidden" name="items[${index}][qty]" value="${item.quantity || 1}">
         `).join('');
     }
 
@@ -1664,6 +1708,26 @@ function updateMultiSelection() {
         const button = card.querySelector('.game-item-button span');
         if (button) {
             button.textContent = isSelected ? 'Terpilih' : 'Pilih';
+        }
+
+        let quantityControl = card.querySelector('.game-item-quantity-control');
+
+        if (isSelected) {
+            const item = selectedItems.get(String(card.dataset.itemId));
+
+            if (!quantityControl) {
+                quantityControl = document.createElement('div');
+                quantityControl.className = 'game-item-quantity-control';
+                card.querySelector('.game-item-body')?.appendChild(quantityControl);
+            }
+
+            quantityControl.innerHTML = `
+                <button type="button" class="game-item-quantity-button" onclick="changeItemQuantity('${item.id}', -1)" aria-label="Kurangi jumlah">-</button>
+                <input type="number" min="1" max="99" value="${item.quantity || 1}" onchange="setItemQuantity('${item.id}', this.value)" aria-label="Jumlah item">
+                <button type="button" class="game-item-quantity-button" onclick="changeItemQuantity('${item.id}', 1)" aria-label="Tambah jumlah">+</button>
+            `;
+        } else {
+            quantityControl?.remove();
         }
     });
 

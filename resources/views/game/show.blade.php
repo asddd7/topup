@@ -50,7 +50,7 @@
 @push('styles')
     <link
         rel="stylesheet"
-        href="{{ asset('assets/css/game-show.css') }}"
+        href="{{ asset('assets/css/game-show.css') }}?v={{ filemtime(public_path('assets/css/game-show.css')) }}"
     >
 @endpush
 
@@ -78,7 +78,7 @@
     </script>
 
     <script
-        src="{{ asset('assets/js/game-show.js') }}"
+        src="{{ asset('assets/js/game-show.js') }}?v={{ filemtime(public_path('assets/js/game-show.js')) }}"
         defer
     ></script>
 

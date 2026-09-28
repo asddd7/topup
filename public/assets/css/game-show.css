@@ -372,6 +372,48 @@
     color: #fff;
 }
 
+.game-item-quantity-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.game-item-quantity-button {
+    display: inline-grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--theme-border);
+    border-radius: 7px;
+    background: var(--theme-surface-soft);
+    color: var(--theme-text);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.game-item-quantity-button:hover {
+    border-color: var(--theme-primary);
+    background: var(--theme-primary-soft);
+    color: var(--theme-primary);
+}
+
+.game-item-quantity-control input {
+    width: 52px;
+    height: 28px;
+    padding: 2px 5px;
+    border: 1px solid var(--theme-border);
+    border-radius: 7px;
+    background: var(--theme-input-bg);
+    color: var(--theme-text);
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+}
+
 /* =========================================================
    EMPTY
 ========================================================= */
