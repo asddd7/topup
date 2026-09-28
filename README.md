@@ -1,58 +1,383 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# DIMTOPUP
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+DIMTOPUP adalah platform top-up game berbasis Laravel untuk mengelola katalog game, item top-up, bundle, promo, pembayaran, order, dan fulfillment provider.
 
-## About Laravel
+## Fitur
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Checkout untuk user login dan guest.
+- Pemilihan beberapa item sekaligus dengan qty per item.
+- Bundle item dengan perhitungan komponen dan stock.
+- Validasi player dan server untuk produk yang membutuhkan data MooGold.
+- Pembayaran melalui Midtrans Snap.
+- Sinkronisasi channel pembayaran aktif dari Midtrans.
+- Pengelolaan metode pembayaran manual dan toggle aktif/nonaktif.
+- Voucher, promo otomatis, promo metode pembayaran, flash sale, dan promo user baru.
+- Batas kuota promo global dan per user.
+- Dashboard admin untuk game, item, kategori, stock, banner, order, payment, promo, dan activity log.
+- Provider fulfillment MooGold dan Ditusi.
+- Riwayat transaksi provider.
+- Notifikasi admin untuk order baru dan stock rendah.
+- Maintenance mode dengan akses khusus admin.
+- REST API versi 1 menggunakan Laravel Sanctum.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Teknologi
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.3+
+- Laravel 13
+- MySQL
+- Laravel Sanctum
+- Laravel Queue dengan database driver
+- Midtrans Snap
+- MooGold API
+- Ditusi API
+- Bootstrap 5
+- Vite
+- Pest
 
-## Learning Laravel
+## Persyaratan
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Pastikan perangkat sudah memiliki:
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- PHP 8.3 atau lebih baru
+- Composer
+- Node.js dan npm
+- MySQL
+- PHP extension yang dibutuhkan Laravel, termasuk `curl`, `fileinfo`, `mbstring`, `openssl`, `pdo`, dan `tokenizer`
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## Instalasi Lokal
 
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+1. Clone repository dan masuk ke folder proyek.
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone <repository-url> topup
+cd topup
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+2. Install dependency PHP.
 
-## Contributing
+```bash
+composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+3. Buat file environment.
 
-## Code of Conduct
+```bash
+copy .env.example .env
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Linux/macOS:
 
-## Security Vulnerabilities
+```bash
+cp .env.example .env
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+4. Generate application key.
 
-## License
+```bash
+php artisan key:generate
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+5. Buat database MySQL, lalu isi koneksi database pada `.env`.
+
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=topup
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+6. Jalankan migration.
+
+```bash
+php artisan migrate
+```
+
+Jika tersedia seeder:
+
+```bash
+php artisan db:seed
+```
+
+7. Buat symbolic link storage.
+
+```bash
+php artisan storage:link
+```
+
+8. Install dan build asset frontend.
+
+```bash
+npm install
+npm run build
+```
+
+## Menjalankan Aplikasi
+
+Untuk server web sederhana:
+
+```bash
+php artisan serve
+```
+
+Buka `http://127.0.0.1:8000`.
+
+Untuk development lengkap dengan server, queue, log, dan Vite:
+
+```bash
+composer run dev
+```
+
+Atau jalankan proses secara terpisah:
+
+```bash
+php artisan serve
+php artisan queue:listen --tries=1 --timeout=0
+php artisan pail
+npm run dev
+```
+
+## Konfigurasi Environment
+
+### Aplikasi dan database
+
+```dotenv
+APP_NAME=Topup
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=topup
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### Session, cache, dan queue
+
+Proyek menggunakan database untuk session, cache, dan queue secara default.
+
+```dotenv
+SESSION_DRIVER=database
+CACHE_STORE=database
+QUEUE_CONNECTION=database
+```
+
+Pastikan migration tabel `sessions`, `cache`, dan `jobs` sudah dijalankan.
+
+### Midtrans
+
+```dotenv
+MIDTRANS_IS_PRODUCTION=false
+MIDTRANS_MERCHANT_ID=
+MIDTRANS_CLIENT_KEY=
+MIDTRANS_SERVER_KEY=
+```
+
+Midtrans digunakan untuk:
+
+- Mengambil channel pembayaran aktif.
+- Membuat transaksi Snap.
+- Menampilkan halaman pembayaran.
+- Menerima webhook status transaksi.
+- Mengubah status order setelah pembayaran terverifikasi.
+
+Jangan commit `MIDTRANS_SERVER_KEY` atau credential provider ke repository.
+
+### MooGold
+
+```dotenv
+MOOGOLD_BASE_URL=https://moogold.com/wp-json/v1/api
+MOOGOLD_PARTNER_ID=
+MOOGOLD_SECRET_KEY=
+MOOGOLD_TIMEOUT=120
+```
+
+MooGold digunakan untuk sinkronisasi produk, mengambil server list, validasi player, membuat order, dan membaca saldo/order detail.
+
+### Ditusi
+
+```dotenv
+DITUSI_BASE_URL=https://api.ditusi.co.id/api/dev/v1
+DITUSI_CLIENT_ID=
+DITUSI_CLIENT_KEY=
+DITUSI_WEBHOOK_TOKEN=
+DITUSI_TIMEOUT=30
+```
+
+Gunakan endpoint sandbox saat development dan credential production hanya di environment production.
+
+## Akun dan Akses
+
+Area admin dilindungi middleware role administrator dan tersedia pada prefix `/admin`.
+
+Login admin:
+
+```text
+/admin/login
+```
+
+Saat maintenance mode aktif, user biasa tidak dapat masuk ke halaman publik atau checkout. Admin tetap dapat login dan mengakses dashboard.
+
+Role utama:
+
+- `role_id = 1`: administrator
+- `role_id = 2`: user
+
+## Alur Order
+
+1. User memilih game.
+2. User memilih satu atau beberapa item.
+3. User menentukan qty masing-masing item.
+4. Sistem memvalidasi item, bundle, stock, player data, dan payment type.
+5. Sistem menghitung promo dan total order.
+6. Order dibuat dengan status `Waiting Payment`.
+7. User diarahkan ke Midtrans Snap.
+8. Webhook Midtrans memproses status pembayaran.
+9. Order yang sudah `Paid` diproses oleh fulfillment service.
+10. Provider MooGold atau Ditusi menjalankan top-up.
+11. Stock, promo usage, provider history, dan notifikasi diperbarui.
+
+## Pengaturan Admin
+
+Halaman `/admin/setting` mengatur:
+
+- Nama website
+- Logo dan favicon
+- WhatsApp, email, dan alamat
+- Social media
+- Maintenance mode
+- Guest checkout
+- Pemeriksaan saldo MooGold
+
+Jika `allow_guest_checkout` dimatikan, checkout guest ditolak di server. Jika `maintenance` aktif, hanya admin yang tetap dapat mengakses panel.
+
+## Pembayaran
+
+Channel pembayaran Midtrans dapat diambil dari merchant preferences melalui halaman admin payment.
+
+Gunakan tombol **Sinkron Midtrans** pada halaman:
+
+```text
+/admin/payment
+```
+
+Status payment dapat diubah dengan toggle aktif/nonaktif. User hanya melihat channel yang aktif, dan server juga menolak payment type yang sudah nonaktif.
+
+## API
+
+API tersedia di prefix:
+
+```text
+/api/v1
+```
+
+Kelompok endpoint utama:
+
+- User API untuk game, item, dan order.
+- Admin API untuk pengelolaan order dan katalog.
+- Midtrans webhook dan Snap.
+- Integrasi MooGold.
+- Integrasi Ditusi.
+
+Gunakan Sanctum sesuai konfigurasi autentikasi API proyek.
+
+## Testing dan Validasi
+
+Jalankan unit/feature test:
+
+```bash
+php artisan test
+```
+
+Atau melalui script Composer:
+
+```bash
+composer run test
+```
+
+Validasi Blade:
+
+```bash
+php artisan view:cache
+```
+
+Build frontend:
+
+```bash
+npm run build
+```
+
+Pemeriksaan whitespace Git:
+
+```bash
+git diff --check
+```
+
+## Struktur Direktori Penting
+
+```text
+app/
+  Http/Controllers/
+  Integrations/
+    Ditusi/
+    Midtrans/
+    MooGold/
+  Models/
+  Observers/
+  Services/
+    TopUp/
+config/
+database/
+  migrations/
+  seeders/
+public/
+  assets/
+resources/
+  js/
+  views/
+routes/
+  web.php
+  api.php
+storage/
+tests/
+```
+
+## Queue Worker
+
+Fulfillment provider diproses melalui queue. Pada development, jalankan:
+
+```bash
+php artisan queue:listen --tries=1 --timeout=0
+```
+
+Pada production, gunakan process manager seperti Supervisor atau service worker platform hosting agar queue tetap berjalan.
+
+## Keamanan
+
+- Jangan commit file `.env`.
+- Jangan membagikan server key Midtrans, secret MooGold, atau credential Ditusi.
+- Gunakan HTTPS di production.
+- Pastikan webhook provider memakai signature/token validation.
+- Set `APP_DEBUG=false` di production.
+- Gunakan database dan queue production yang terpisah dari development.
+
+## Catatan Deployment
+
+Sebelum deployment:
+
+```bash
+composer install --no-dev --optimize-autoloader
+php artisan migrate --force
+php artisan storage:link
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+npm install
+npm run build
+```
+
+Pastikan worker queue, scheduler jika digunakan, storage publik, webhook provider, dan environment variables sudah dikonfigurasi di server.
