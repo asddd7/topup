@@ -1653,6 +1653,7 @@ function updateMultiSelection() {
     );
 
     selectedPrice = subtotal;
+    appliedPromos = [];
 
     playerValidation.requiresValidation = requiresPlayerValidation;
 
@@ -1678,8 +1679,18 @@ function updateMultiSelection() {
         originalPrice.innerText = formatRupiah(subtotal);
     }
 
+    const discountPrice = document.getElementById('discount_price');
+    if (discountPrice) {
+        discountPrice.innerText = '0';
+    }
+
+    const discountInput = document.getElementById('discount_total');
+    if (discountInput) {
+        discountInput.value = '0';
+    }
+
     const finalPrice = document.getElementById('final_price');
-    if (finalPrice && !appliedPromos.length) {
+    if (finalPrice) {
         finalPrice.innerText = formatRupiah(subtotal);
     }
 
@@ -1784,13 +1795,9 @@ function updatePaymentTotals()
 
 
     const total =
-        parseFloat(
-            totalInput?.value
-            ??
-            selectedPrice
-            ??
-            0
-        );
+        selectedItems.size > 0
+            ? selectedPrice
+            : parseFloat(totalInput?.value || 0);
 
 
     document
