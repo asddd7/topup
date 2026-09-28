@@ -11,9 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('items', function (Blueprint $table) {
-            $table->unique('moogold_variation_id');
-        });
+        /*
+         * The preceding MooGold columns migration already creates the
+         * named unique index. Keep this migration safe for databases that
+         * were created from either migration history.
+         */
+        if (
+            Schema::hasColumn('items', 'moogold_variation_id')
+            && ! Schema::hasIndex('items', ['moogold_variation_id'], 'unique')
+        ) {
+            Schema::table('items', function (Blueprint $table) {
+                $table->unique(
+                    'moogold_variation_id',
+                    'items_moogold_variation_id_unique'
+                );
+            });
+        }
     }
 
     /**
@@ -21,8 +34,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('items', function (Blueprint $table) {
-            //
-        });
+        if (Schema::hasIndex('items', 'items_moogold_variation_id_unique')) {
+            Schema::table('items', function (Blueprint $table) {
+                $table->dropUnique('items_moogold_variation_id_unique');
+            });
+        }
     }
 };

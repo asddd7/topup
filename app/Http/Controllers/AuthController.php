@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -42,10 +43,15 @@ class AuthController extends Controller
             'password'=>'required|min:8|confirmed'
         ]);
 
+        $customerRole = Role::firstOrCreate([
+            'role_name' => 'Customer',
+        ]);
+
         User::create([
             'name'=>$request->name,
             'email'=>$request->email,
             'password'=>Hash::make($request->password),
+            'role_id'=>$customerRole->getKey(),
         ]);
 
         return redirect()->route('login')

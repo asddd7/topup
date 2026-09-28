@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -24,7 +25,13 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        // role_id is required by the users table. Keep the factory aligned
+        // with the application roles even when tests do not run seeders.
+        Role::firstOrCreate(['role_name' => 'Admin']);
+        $customerRole = Role::firstOrCreate(['role_name' => 'Customer']);
+
         return [
+            'role_id' => $customerRole->getKey(),
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),

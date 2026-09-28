@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -49,7 +50,9 @@ class RegisterController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $userRoleId = 2;
+        $userRoleId = Role::firstOrCreate([
+            'role_name' => 'Customer',
+        ])->getKey();
 
         $user = User::create([
             'name' => $request->name,
