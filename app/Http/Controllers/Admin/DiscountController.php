@@ -9,7 +9,6 @@ use App\Models\Discount;
 use App\Models\Game;
 use App\Models\Item;
 use App\Models\Payment;
-use App\Models\DiscountUsage;
 
 class DiscountController extends BaseAdminController
 {
@@ -112,7 +111,7 @@ public function store(Request $request)
 
         'trigger_type' => [
             'required',
-            'in:voucher,automatic,new_user,flash_sale,payment_method',
+            'in:voucher,automatic,new_user,first_order,flash_sale,payment_method',
         ],
 
         'minimum_purchase' => [
@@ -139,9 +138,9 @@ public function store(Request $request)
             'min:0',
         ],
 
-        'payment_id' => [
+        'payment_type' => [
             'nullable',
-            'exists:payments,id',
+            'exists:payments,payment_type',
         ],
 
         'start_date' => [
@@ -236,8 +235,9 @@ public function store(Request $request)
         'quota_used' =>
             0,
 
-        'payment_id' =>
-            $request->input('payment_id'),
+        'payment_type' => $request->filled('payment_type')
+            ? strtolower(trim($request->input('payment_type')))
+            : null,
 
     ]);
 
@@ -334,14 +334,14 @@ public function update(
             'exists:items,id',
         ],
 
-        'payment_id' => [
+        'payment_type' => [
             'nullable',
-            'exists:payments,id',
+            'exists:payments,payment_type',
         ],
 
         'trigger_type' => [
             'required',
-            'in:voucher,automatic,new_user,flash_sale,payment_method',
+            'in:voucher,automatic,new_user,first_order,flash_sale,payment_method',
         ],
 
         'minimum_purchase' => [
@@ -464,8 +464,9 @@ public function update(
         'usage_per_user' =>
             $usagePerUser,
 
-        'payment_id' =>
-            $request->input('payment_id'),
+        'payment_type' => $request->filled('payment_type')
+            ? strtolower(trim($request->input('payment_type')))
+            : null,
 
     ]);
 

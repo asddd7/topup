@@ -98,34 +98,10 @@ User Baru
 </option>
 
 
-<option value="first_order"
-{{$discount->trigger_type=='first_order'?'selected':''}}>
-
-Order Pertama
-
-</option>
-
-
-<option value="birthday"
-{{$discount->trigger_type=='birthday'?'selected':''}}>
-
-Birthday
-
-</option>
-
-
 <option value="flash_sale"
 {{$discount->trigger_type=='flash_sale'?'selected':''}}>
 
 Flash Sale
-
-</option>
-
-
-<option value="event"
-{{$discount->trigger_type=='event'?'selected':''}}>
-
-Event
 
 </option>
 
@@ -305,7 +281,7 @@ Semua Item
     </label>
 
     <select
-        name="payment_id"
+        name="payment_type"
         class="form-select">
 
         <option value="">
@@ -315,8 +291,8 @@ Semua Item
         @foreach($payments as $payment)
 
             <option
-                value="{{ $payment->id }}"
-                {{ $discount->payment_id == $payment->id ? 'selected' : '' }}>
+                value="{{ $payment->payment_type }}"
+                {{ $discount->payment_type == $payment->payment_type ? 'selected' : '' }}>
 
                 {{ $payment->payment_name }}
 

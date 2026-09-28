@@ -168,7 +168,7 @@ class PromotionService
             */
 
             if (
-                $discount->trigger_type === 'new_user'
+                in_array($discount->trigger_type, ['new_user', 'first_order'], true)
                 &&
                 !$this->isNewUser($user)
             ) {
@@ -1277,9 +1277,9 @@ class PromotionService
             $newUserQuery =
                 (clone $baseQuery)
 
-                    ->where(
+                    ->whereIn(
                         'trigger_type',
-                        'new_user'
+                        ['new_user', 'first_order']
                     )
 
                     ->orderByDesc(

@@ -20,12 +20,13 @@ class Discount extends Model
 
         'game_id',
         'item_id',
-        'payment_id',
+        'payment_type',
 
         'start_date',
         'end_date',
 
         'usage_limit',
+        'usage_per_user',
         'quota_used',
 
         'is_active',

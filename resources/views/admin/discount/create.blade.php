@@ -173,7 +173,7 @@
                         </label>
 
                         <select
-                            name="payment_id"
+                            name="payment_type"
                             class="form-select"
                         >
 
@@ -183,7 +183,7 @@
 
                             @foreach($payments as $payment)
 
-                                <option value="{{ $payment->id }}">
+                                <option value="{{ $payment->payment_type }}">
 
                                     {{ $payment->payment_name }}
 

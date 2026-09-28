@@ -260,6 +260,10 @@ Action
                         User Baru
                         @break
 
+                    @case('first_order')
+                        Order Pertama
+                        @break
+
                     @case('flash_sale')
                         Flash Sale
                         @break
@@ -498,7 +502,7 @@ Action
     <tr>
 
         <td
-            colspan="9"
+            colspan="10"
             class="text-center py-5"
         >
 
