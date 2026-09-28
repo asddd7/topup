@@ -5,7 +5,7 @@
     aria-hidden="true"
 >
 
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered admin-game-modal">
 
         <div class="modal-content border-0 shadow rounded-4">
 

@@ -3,7 +3,7 @@
         tabindex="-1">
 
 
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered admin-game-modal">
 
 
     <div class="modal-content shadow border-0 rounded-4">

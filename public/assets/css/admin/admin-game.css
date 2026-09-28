@@ -1,0 +1,225 @@
+/* =========================================================
+   ADMIN GAME MANAGEMENT
+========================================================= */
+
+.admin-game-page {
+    color: var(--theme-text);
+}
+
+.admin-game-page > .card {
+    overflow: hidden;
+    border: 1px solid var(--theme-border);
+    border-radius: var(--theme-radius-lg);
+    background: var(--theme-surface);
+    box-shadow: var(--theme-shadow) !important;
+}
+
+.admin-game-page > .card > .card-header,
+.admin-game-page > .card > .card-body {
+    border-color: var(--theme-border);
+    background: var(--theme-surface);
+    color: var(--theme-text);
+}
+
+.admin-game-page > .card > .card-header {
+    padding: 1rem 1.25rem;
+}
+
+.admin-game-page > .card > .card-body {
+    padding: 1.25rem;
+}
+
+.admin-game-page .admin-game-table {
+    min-width: 760px;
+    margin-bottom: 0;
+    color: var(--theme-text);
+    vertical-align: middle;
+}
+
+.admin-game-page .admin-game-table > :not(caption) > * > * {
+    border-color: var(--theme-border-soft);
+    background: var(--theme-surface);
+    color: var(--theme-text);
+}
+
+.admin-game-page .admin-game-table thead th {
+    border-bottom-color: var(--theme-border);
+    background: var(--theme-surface-soft);
+    color: var(--theme-text-secondary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.admin-game-page .admin-game-table tbody td {
+    font-size: 0.875rem;
+}
+
+.admin-game-page .admin-game-table tbody tr:hover > * {
+    background: var(--theme-surface-hover);
+}
+
+.admin-game-page .admin-game-logo {
+    width: 56px;
+    height: 56px;
+    border: 1px solid var(--theme-border);
+    border-radius: var(--theme-radius-sm);
+    background: var(--theme-surface-soft);
+    object-fit: cover;
+}
+
+.admin-game-page .admin-game-input-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    min-width: 150px;
+}
+
+.admin-game-page .admin-game-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.admin-game-page .admin-game-actions .btn {
+    min-width: 36px;
+    min-height: 34px;
+}
+
+.admin-game-modal .modal-content {
+    overflow: hidden;
+    border: 1px solid var(--theme-border) !important;
+    border-radius: var(--theme-radius-lg) !important;
+    background: var(--theme-surface);
+    color: var(--theme-text);
+    box-shadow: var(--theme-shadow-lg);
+}
+
+.admin-game-modal .modal-header {
+    border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+.admin-game-modal .modal-body,
+.admin-game-modal .modal-footer {
+    border-color: var(--theme-border);
+    background: var(--theme-surface);
+    color: var(--theme-text);
+}
+
+.admin-game-modal .modal-body {
+    max-height: min(72vh, 760px);
+    overflow-y: auto;
+}
+
+.admin-game-modal .form-label,
+.admin-game-modal .form-check-label,
+.admin-game-modal h6 {
+    color: var(--theme-text);
+}
+
+.admin-game-modal .form-control,
+.admin-game-modal .form-select {
+    border-color: var(--theme-border);
+    background-color: var(--theme-input-bg);
+    color: var(--theme-text);
+}
+
+.admin-game-modal .form-control::placeholder {
+    color: var(--theme-text-muted);
+}
+
+.admin-game-modal .form-control:focus,
+.admin-game-modal .form-select:focus {
+    border-color: var(--theme-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--theme-primary-rgb), 0.15);
+}
+
+.admin-game-modal .text-muted,
+.admin-game-modal small.text-muted {
+    color: var(--theme-text-secondary) !important;
+}
+
+.admin-game-modal hr {
+    border-color: var(--theme-border);
+    opacity: 1;
+}
+
+.admin-game-modal .bg-light {
+    border-color: var(--theme-border) !important;
+    background: var(--theme-surface-soft) !important;
+}
+
+.admin-game-modal .player-field {
+    border: 1px solid var(--theme-border);
+    background: var(--theme-surface-soft);
+    color: var(--theme-text);
+    box-shadow: var(--theme-shadow-sm);
+}
+
+.admin-game-modal .player-field .card-body {
+    padding: 1rem;
+}
+
+.admin-game-modal .player-field .form-label {
+    margin-bottom: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.admin-game-modal .player-field .btn-danger {
+    min-width: 40px;
+}
+
+.admin-game-modal .input-group > .btn {
+    white-space: nowrap;
+}
+
+.admin-game-modal .game-logo-preview,
+.admin-game-modal img[width="80"] {
+    width: 80px;
+    height: 80px;
+    border: 1px solid var(--theme-border);
+    object-fit: cover;
+}
+
+@media (max-width: 768px) {
+    .admin-game-page > .card > .card-header,
+    .admin-game-page > .card > .card-body {
+        padding: 1rem;
+    }
+
+    .admin-game-page > .card > .card-header {
+        align-items: flex-start !important;
+        gap: 0.75rem;
+        flex-direction: column;
+    }
+
+    .admin-game-page > .card > .card-header .btn {
+        width: 100%;
+    }
+
+    .admin-game-modal {
+        margin: 0.5rem;
+    }
+
+    .admin-game-modal .modal-body {
+        max-height: calc(100vh - 150px);
+    }
+
+    .admin-game-modal .input-group {
+        flex-wrap: wrap;
+    }
+
+    .admin-game-modal .input-group .form-control,
+    .admin-game-modal .input-group .btn {
+        width: 100%;
+        border-radius: var(--theme-radius-sm) !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .admin-game-modal *,
+    .admin-game-page * {
+        transition: none !important;
+    }
+}

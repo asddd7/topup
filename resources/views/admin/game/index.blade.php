@@ -7,7 +7,7 @@
 @section('content')
 
 
-<div class="container-fluid">
+<div class="container-fluid admin-game-page">
 
 
 <div class="card shadow-sm">
@@ -56,7 +56,7 @@ Data Game
 <div class="table-responsive">
 
 
-<table class="table table-hover align-middle">
+<table class="table table-hover align-middle admin-game-table">
 
 
 <thead>
@@ -105,9 +105,9 @@ Action
 
 @if($game->game_logo)
 
-<img src="{{asset('storage/'.$game->game_logo)}}"
-width="60"
-class="rounded">
+<img src="{{ asset('storage/'.$game->game_logo) }}"
+class="rounded admin-game-logo"
+alt="{{ $game->game_name }}">
 
 
 @else
@@ -145,6 +145,7 @@ No Logo
 
 <td>
 
+<div class="admin-game-input-badges">
 @foreach($game->player_fields ?? [] as $field)
 
 <span class="badge bg-primary">
@@ -154,10 +155,11 @@ No Logo
 </span>
 
 @endforeach
+</div>
 
 </td>
 
-<td>
+<td class="admin-game-actions">
 
 
 @if($game->is_active)
