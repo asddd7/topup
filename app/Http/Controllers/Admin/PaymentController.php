@@ -103,7 +103,7 @@ class PaymentController extends BaseAdminController
             $payment->fresh()->toArray()
         );
 
-        if ($request->expectsJson()) {
+        if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'success' => true,
                 'is_active' => (bool) $payment->is_active,

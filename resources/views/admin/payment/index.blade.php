@@ -336,7 +336,21 @@ document.addEventListener('DOMContentLoaded', function () {
 					credentials: 'same-origin',
 				});
 
-				const result = await response.json();
+				const responseText = await response.text();
+				let result;
+
+				try {
+					result = JSON.parse(responseText);
+				} catch (parseError) {
+					if (response.ok) {
+						window.location.reload();
+						return;
+					}
+
+					throw new Error(
+						`Server mengembalikan response tidak valid (HTTP ${response.status}).`
+					);
+				}
 
 				if (!response.ok || !result.success) {
 					throw new Error(result.message || 'Status payment gagal diubah.');
