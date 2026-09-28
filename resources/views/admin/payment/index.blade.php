@@ -191,13 +191,13 @@ class="rounded">
 
 @if($payment->is_active)
 
-<span class="badge bg-success">
+<span class="payment-status-badge badge bg-success">
 Aktif
 </span>
 
 @else
 
-<span class="badge bg-danger">
+<span class="payment-status-badge badge bg-danger">
 Nonaktif
 </span>
 
@@ -212,7 +212,7 @@ Nonaktif
 <form
 action="{{ route('admin.payment.toggle-active', $payment) }}"
 method="POST"
-class="d-inline-flex align-items-center gap-2"
+class="payment-toggle-form d-inline-flex align-items-center gap-2"
 >
 @csrf
 @method('PATCH')
@@ -307,6 +307,67 @@ onclick="return confirm('Hapus payment?')">
 
 @endforeach
 
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+	document.querySelectorAll('.payment-toggle-form').forEach(function (form) {
+		form.addEventListener('submit', async function (event) {
+			event.preventDefault();
+
+			const button = form.querySelector('.payment-status-toggle');
+			const row = form.closest('tr');
+			const badge = row?.querySelector('.payment-status-badge');
+			const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+
+			if (!button || button.classList.contains('is-changing')) {
+				return;
+			}
+
+			button.classList.add('is-changing');
+
+			try {
+				const response = await fetch(form.action, {
+					method: 'PATCH',
+					headers: {
+						Accept: 'application/json',
+						'X-CSRF-TOKEN': csrfToken,
+						'X-Requested-With': 'XMLHttpRequest',
+					},
+					credentials: 'same-origin',
+				});
+
+				const result = await response.json();
+
+				if (!response.ok || !result.success) {
+					throw new Error(result.message || 'Status payment gagal diubah.');
+				}
+
+				const isActive = Boolean(result.is_active);
+				button.classList.toggle('is-active', isActive);
+				button.setAttribute('aria-checked', isActive ? 'true' : 'false');
+				button.title = isActive ? 'Nonaktifkan payment' : 'Aktifkan payment';
+				button.querySelector('.visually-hidden').textContent =
+					isActive ? 'Nonaktifkan' : 'Aktifkan';
+
+				if (badge) {
+					badge.classList.toggle('bg-success', isActive);
+					badge.classList.toggle('bg-danger', !isActive);
+					badge.textContent = isActive ? 'Aktif' : 'Nonaktif';
+				}
+			} catch (error) {
+				window.Swal
+					? Swal.fire('Gagal', error.message, 'error')
+					: alert(error.message);
+			} finally {
+				window.setTimeout(function () {
+					button.classList.remove('is-changing');
+				}, 220);
+			}
+		});
+	});
+});
+</script>
+@endpush
 
 
 @endsection

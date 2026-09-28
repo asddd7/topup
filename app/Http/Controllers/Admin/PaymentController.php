@@ -103,6 +103,14 @@ class PaymentController extends BaseAdminController
             $payment->fresh()->toArray()
         );
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'is_active' => (bool) $payment->is_active,
+                'message' => 'Status payment berhasil diubah.',
+            ]);
+        }
+
         return back()->with(
             'success',
             'Status ' . $payment->payment_name . ' berhasil diubah.'
