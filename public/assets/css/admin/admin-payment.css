@@ -1,0 +1,66 @@
+/* =========================================================
+   ADMIN PAYMENT
+========================================================= */
+
+.admin-payment-page .payment-status-toggle {
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+}
+
+.admin-payment-page .payment-status-toggle-track {
+    display: inline-flex;
+    align-items: center;
+    width: 38px;
+    height: 22px;
+    padding: 3px;
+    border: 1px solid var(--theme-border-strong);
+    border-radius: 999px;
+    background: var(--theme-surface-soft);
+    transition:
+        background-color var(--theme-transition-fast),
+        border-color var(--theme-transition-fast);
+}
+
+.admin-payment-page .payment-status-toggle-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--theme-text-muted);
+    box-shadow: var(--theme-shadow-sm);
+    transform: translateX(0);
+    transition:
+        background-color var(--theme-transition-fast),
+        transform var(--theme-transition-fast);
+}
+
+.admin-payment-page
+    .payment-status-toggle.is-active
+    .payment-status-toggle-track {
+    border-color: var(--theme-success);
+    background: var(--theme-success-soft);
+}
+
+.admin-payment-page
+    .payment-status-toggle.is-active
+    .payment-status-toggle-thumb {
+    background: var(--theme-success);
+    transform: translateX(16px);
+}
+
+.admin-payment-page
+    .payment-status-toggle:focus-visible
+    .payment-status-toggle-track {
+    outline: 3px solid rgba(var(--theme-primary-rgb), 0.25);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .admin-payment-page .payment-status-toggle-track,
+    .admin-payment-page .payment-status-toggle-thumb {
+        transition: none;
+    }
+}

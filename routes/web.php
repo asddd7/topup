@@ -480,6 +480,11 @@ Route::post(
     [PaymentController::class, 'syncMidtrans']
 )->name('payment.sync-midtrans');
 
+Route::patch(
+    'payment/{payment}/toggle-active',
+    [PaymentController::class, 'toggleActive']
+)->name('payment.toggle-active');
+
 Route::resource(
     'activity-log',
     ActivityLogController::class

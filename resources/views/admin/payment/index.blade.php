@@ -209,6 +209,31 @@ Nonaktif
 
 <td>
 
+<form
+action="{{ route('admin.payment.toggle-active', $payment) }}"
+method="POST"
+class="d-inline-flex align-items-center gap-2"
+>
+@csrf
+@method('PATCH')
+
+<button
+type="submit"
+class="payment-status-toggle {{ $payment->is_active ? 'is-active' : '' }}"
+role="switch"
+aria-checked="{{ $payment->is_active ? 'true' : 'false' }}"
+title="{{ $payment->is_active ? 'Nonaktifkan' : 'Aktifkan' }} payment"
+>
+<span class="payment-status-toggle-track">
+<span class="payment-status-toggle-thumb"></span>
+</span>
+<span class="visually-hidden">
+{{ $payment->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+</span>
+</button>
+
+</form>
+
 
 <button
 class="btn btn-warning btn-sm"
