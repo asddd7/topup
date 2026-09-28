@@ -1,0 +1,555 @@
+/* =========================================================
+   UI POLISH
+   Shared refinements for customer and admin pages.
+   The file intentionally only contains presentation rules so
+   existing page-specific behaviour remains unchanged.
+========================================================= */
+
+:root {
+    --ui-focus-ring: 0 0 0 4px rgba(var(--theme-primary-rgb), 0.16);
+    --ui-control-height: 44px;
+    --ui-content-gutter: clamp(14px, 2.2vw, 32px);
+}
+
+html {
+    text-rendering: optimizeLegibility;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    overflow-x: hidden;
+    line-height: 1.55;
+}
+
+::selection {
+    background: rgba(var(--theme-primary-rgb), 0.2);
+    color: var(--theme-text);
+}
+
+button,
+a,
+input,
+select,
+textarea {
+    -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: none;
+    box-shadow: var(--ui-focus-ring);
+}
+
+.page-wrapper,
+.main-content,
+.content-wrapper {
+    min-width: 0;
+}
+
+.content-wrapper {
+    overflow-wrap: anywhere;
+}
+
+/* Shared surfaces */
+.card,
+.modal-content,
+.alert,
+.dropdown-menu {
+    border-radius: var(--theme-radius-lg, 16px);
+}
+
+.card {
+    border: 1px solid var(--theme-border);
+}
+
+.card-header,
+.card-footer {
+    border-color: var(--theme-border);
+}
+
+.card-header:not([class*="bg-"]),
+.card-footer:not([class*="bg-"]) {
+    background: color-mix(in srgb, var(--theme-surface) 92%, var(--theme-primary-soft));
+}
+
+.card-header {
+    padding: 1rem 1.25rem;
+}
+
+.card-footer {
+    padding: .85rem 1.25rem;
+}
+
+.alert {
+    border-width: 1px;
+    box-shadow: var(--theme-shadow-sm);
+}
+
+/* Controls */
+.btn {
+    min-height: 40px;
+    border-radius: 10px;
+    font-weight: 650;
+    letter-spacing: .01em;
+    transition:
+        transform var(--theme-transition-fast),
+        box-shadow var(--theme-transition-fast),
+        background-color var(--theme-transition-fast),
+        border-color var(--theme-transition-fast),
+        color var(--theme-transition-fast);
+}
+
+.btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btn-sm {
+    min-height: 34px;
+    border-radius: 8px;
+}
+
+.btn-lg {
+    min-height: 48px;
+    border-radius: 12px;
+}
+
+.form-control,
+.form-select {
+    min-height: var(--ui-control-height);
+    border-radius: 10px;
+    padding: .625rem .85rem;
+}
+
+.form-control[type="file"] {
+    padding: .5rem .65rem;
+}
+
+.input-group > .form-control,
+.input-group > .form-select,
+.input-group > .btn {
+    min-height: var(--ui-control-height);
+}
+
+.form-label {
+    margin-bottom: .45rem;
+    font-size: .82rem;
+    font-weight: 650;
+}
+
+.form-text,
+.invalid-feedback,
+.valid-feedback {
+    line-height: 1.45;
+}
+
+/* Tables remain readable on narrow screens and preserve rounded cards. */
+.table-responsive {
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+}
+
+.table-responsive > .table {
+    min-width: 640px;
+}
+
+.table > :not(caption) > * > * {
+    padding: .8rem .9rem;
+    vertical-align: middle;
+}
+
+.table thead th {
+    color: var(--theme-text-secondary);
+    font-size: .72rem;
+    font-weight: 750;
+    letter-spacing: .055em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+/* Modal and dropdown rhythm */
+.modal-content {
+    border: 1px solid var(--theme-border);
+    box-shadow: var(--theme-shadow-lg);
+}
+
+.modal-header,
+.modal-footer {
+    border-color: var(--theme-border);
+}
+
+.modal-header {
+    padding: 1rem 1.25rem;
+}
+
+.modal-body {
+    padding: 1.25rem;
+}
+
+.dropdown-menu {
+    border: 1px solid var(--theme-border);
+    padding: .4rem;
+    box-shadow: var(--theme-shadow-lg);
+}
+
+.dropdown-item {
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    border-radius: 8px;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background: var(--theme-primary-soft);
+    color: var(--theme-primary);
+}
+
+/* Customer pages */
+.main-content {
+    padding-inline: var(--ui-content-gutter);
+    padding-bottom: clamp(84px, 7vw, 104px);
+}
+
+.topup-footer {
+    position: relative;
+    z-index: 1;
+}
+
+.order-history-container,
+.order-detail-container {
+    width: 100%;
+    max-width: 1180px;
+    margin-inline: auto;
+}
+
+.game-show-page,
+.dashboard-page {
+    width: 100%;
+}
+
+.auth-overlay {
+    min-height: var(--app-viewport-height, 100vh);
+}
+
+/* Standalone authentication routes (verification and password flows). */
+.guest-page {
+    min-height: var(--app-viewport-height, 100vh);
+    margin: 0;
+    background:
+        radial-gradient(circle at 10% 0%, rgba(var(--theme-primary-rgb), .14), transparent 32%),
+        radial-gradient(circle at 90% 100%, rgba(var(--theme-info-rgb), .1), transparent 35%),
+        var(--theme-bg);
+}
+
+.guest-shell {
+    width: min(100%, 560px);
+    min-height: var(--app-viewport-height, 100vh);
+    margin-inline: auto;
+    padding: clamp(28px, 7vw, 72px) 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 18px;
+}
+
+.guest-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.guest-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--theme-text);
+    font-size: 1rem;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.guest-brand:hover {
+    color: var(--theme-primary);
+}
+
+.guest-logo {
+    width: 44px;
+    height: 44px;
+    padding: 9px;
+    border-radius: 13px;
+    background: linear-gradient(135deg, var(--theme-primary), var(--theme-primary-hover));
+    fill: #fff;
+    box-shadow: 0 10px 22px rgba(var(--theme-primary-rgb), .22);
+}
+
+.guest-card {
+    width: 100%;
+    padding: clamp(20px, 5vw, 32px);
+    border: 1px solid var(--theme-border);
+    border-radius: 20px;
+    background: var(--theme-surface);
+    color: var(--theme-text);
+    box-shadow: var(--theme-shadow-lg);
+}
+
+.guest-card form {
+    margin: 0;
+}
+
+.guest-card label {
+    display: block;
+    margin-bottom: .45rem;
+    color: var(--theme-text);
+    font-size: .82rem;
+    font-weight: 650;
+}
+
+.guest-card input {
+    width: 100%;
+    min-height: 44px;
+    padding: .625rem .85rem;
+    border: 1px solid var(--theme-border);
+    border-radius: 10px;
+    background: var(--theme-input-bg);
+    color: var(--theme-text);
+}
+
+.guest-card input:focus {
+    outline: none;
+    border-color: var(--theme-primary);
+    box-shadow: var(--ui-focus-ring);
+}
+
+.guest-card button {
+    min-height: 42px;
+    padding: .6rem 1rem;
+    border: 1px solid var(--theme-primary);
+    border-radius: 10px;
+    background: var(--theme-primary);
+    color: var(--theme-text-on-primary);
+    font-weight: 700;
+}
+
+.guest-card button:hover {
+    background: var(--theme-primary-hover);
+}
+
+.guest-card .text-gray-600,
+.guest-card .text-gray-700 {
+    color: var(--theme-text-secondary);
+}
+
+.guest-card .text-green-600 {
+    color: var(--theme-success);
+}
+
+.guest-card .text-red-600 {
+    color: var(--theme-danger);
+}
+
+.guest-card .text-sm {
+    font-size: .875rem;
+}
+
+.guest-card .font-medium {
+    font-weight: 600;
+}
+
+.guest-card .mb-4 {
+    margin-bottom: 1rem;
+}
+
+.guest-card .mt-1 {
+    margin-top: .25rem;
+}
+
+.guest-card .mt-2 {
+    margin-top: .5rem;
+}
+
+.guest-card .mt-4 {
+    margin-top: 1rem;
+}
+
+.guest-card .flex {
+    display: flex;
+}
+
+.guest-card .items-center {
+    align-items: center;
+}
+
+.guest-card .justify-end {
+    justify-content: flex-end;
+}
+
+.guest-card .justify-between {
+    justify-content: space-between;
+}
+
+.guest-card .underline {
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .guest-shell {
+        padding-inline: 12px;
+    }
+
+    .guest-card {
+        padding: 20px 16px;
+        border-radius: 16px;
+    }
+
+    .guest-card .justify-between {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 12px;
+    }
+}
+
+/* Admin pages */
+.admin-layout .main-content {
+    padding: clamp(16px, 2.5vw, 32px);
+    padding-bottom: clamp(72px, 7vw, 96px);
+}
+
+.admin-layout .content-wrapper {
+    width: 100%;
+    max-width: 1600px;
+    margin-inline: auto;
+}
+
+.admin-layout .container-fluid {
+    --bs-gutter-x: 1.25rem;
+}
+
+.admin-layout .page-title,
+.admin-layout h1,
+.admin-layout h2,
+.admin-layout h3 {
+    letter-spacing: -.02em;
+}
+
+.admin-layout .table-responsive {
+    border: 1px solid var(--theme-border-soft);
+    border-radius: 14px;
+}
+
+.admin-layout .table-responsive > .table {
+    margin-bottom: 0;
+}
+
+/* Keep the fixed customer navigation from covering content. */
+@media (max-width: 991.98px) {
+    .main-content {
+        padding-bottom: 88px;
+    }
+
+    .admin-layout .main-content {
+        padding: 14px 12px 88px;
+    }
+
+    .admin-layout .container-fluid {
+        --bs-gutter-x: .75rem;
+    }
+
+    .card-header,
+    .card-footer {
+        padding: .85rem 1rem;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .modal-dialog {
+        margin: .6rem;
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: .9rem 1rem;
+    }
+
+    .modal-footer {
+        gap: .5rem;
+    }
+
+    .modal-footer > .btn {
+        flex: 1 1 auto;
+    }
+
+    .admin-layout .topup-topbar-container {
+        gap: 8px;
+        padding-inline: 12px;
+    }
+
+    .admin-layout .main-content {
+        padding-inline: 10px;
+    }
+
+    .admin-layout .card {
+        border-radius: 14px;
+    }
+
+    .admin-layout .card-body {
+        padding: 1rem;
+    }
+
+    .table-responsive {
+        border-radius: 12px;
+    }
+
+    .table-responsive > .table {
+        min-width: 560px;
+    }
+
+    .table > :not(caption) > * > * {
+        padding: .65rem .7rem;
+    }
+
+    .btn:not(.btn-sm) {
+        min-height: 44px;
+    }
+
+    .form-control,
+    .form-select {
+        min-height: 44px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-content {
+        padding-inline: 10px;
+    }
+
+    .card-header,
+    .card-footer {
+        padding-inline: .85rem;
+    }
+
+    .admin-layout .main-content {
+        padding-inline: 8px;
+    }
+
+    .dropdown-menu {
+        max-width: calc(100vw - 20px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .btn:hover:not(:disabled) {
+        transform: none;
+    }
+}
