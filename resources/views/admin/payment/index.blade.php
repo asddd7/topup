@@ -7,13 +7,13 @@
 @section('content')
 
 
-<div class="container-fluid">
+<div class="container-fluid admin-payment-page">
 
 
 <div class="card shadow-sm">
 
 
-<div class="card-header d-flex justify-content-between">
+<div class="card-header d-flex justify-content-between align-items-center gap-3">
 
 
 <h5 class="fw-bold">
@@ -26,6 +26,15 @@ Metode Pembayaran
 
 
 
+<div class="d-flex flex-wrap gap-2">
+<form action="{{ route('admin.payment.sync-midtrans') }}" method="POST">
+@csrf
+<button class="btn btn-outline-primary" type="submit">
+<i class="fa-solid fa-arrows-rotate"></i>
+Sinkron Midtrans
+</button>
+</form>
+
 <button class="btn btn-primary"
 data-bs-toggle="modal"
 data-bs-target="#createPaymentModal">
@@ -37,6 +46,7 @@ Tambah Payment
 
 
 </button>
+</div>
 
 
 </div>
@@ -56,6 +66,26 @@ Tambah Payment
 </div>
 
 @endif
+
+@if(session('error'))
+<div class="alert alert-danger">{{ session('error') }}</div>
+@endif
+
+<div class="alert {{ $midtransError ? 'alert-warning' : 'alert-info' }} d-flex justify-content-between align-items-center gap-3">
+	<div>
+		<strong><i class="fa-solid fa-cloud me-1"></i> Midtrans</strong>
+		<div class="small">
+			{{ $midtransError ?? count($midtransChannels) . ' channel aktif tersedia dari merchant preferences Midtrans.' }}
+		</div>
+	</div>
+	@if(!$midtransError)
+		<div class="d-flex flex-wrap gap-1 justify-content-end">
+			@foreach($midtransChannels as $channel)
+				<span class="badge bg-primary">{{ $channel['name'] }}</span>
+			@endforeach
+		</div>
+	@endif
+</div>
 
 
 

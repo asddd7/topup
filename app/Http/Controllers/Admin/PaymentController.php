@@ -3,23 +3,89 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Admin\BaseAdminController;
+use App\Integrations\Midtrans\MidtransService;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 
 class PaymentController extends BaseAdminController
 {
+    public function __construct(
+        \App\Services\ActivityLogService $activity,
+        protected MidtransService $midtrans
+    ) {
+        parent::__construct($activity);
+    }
 
     public function index()
     {
-
         $payments = Payment::latest()->get();
+
+        try {
+            $midtransChannels = $this->midtrans->getSnapPaymentChannels();
+            $midtransError = null;
+        } catch (\Throwable $e) {
+            report($e);
+            $midtransChannels = [];
+            $midtransError = 'Channel Midtrans tidak dapat diambil saat ini.';
+        }
 
 
         return view(
             'admin.payment.index',
-            compact('payments')
+            compact('payments', 'midtransChannels', 'midtransError')
         );
 
+    }
+
+    public function syncMidtrans()
+    {
+        try {
+            $channels = $this->midtrans->getSnapPaymentChannels();
+        } catch (\Throwable $e) {
+            report($e);
+
+            return back()->with('error', 'Gagal mengambil channel pembayaran dari Midtrans.');
+        }
+
+        foreach ($channels as $channel) {
+            $type = strtolower(trim((string) ($channel['name'] ?? '')));
+
+            if ($type === '') {
+                continue;
+            }
+
+            Payment::updateOrCreate(
+                ['payment_type' => $type],
+                [
+                    'payment_name' => $this->midtransPaymentLabel($type),
+                    'payment_number' => 'Midtrans',
+                    'account_name' => 'Midtrans',
+                    'is_active' => true,
+                ]
+            );
+        }
+
+        return back()->with('success', count($channels) . ' channel Midtrans berhasil disinkronkan.');
+    }
+
+    private function midtransPaymentLabel(string $type): string
+    {
+        return [
+            'credit_card' => 'Kartu Kredit',
+            'bca_va' => 'BCA Virtual Account',
+            'bni_va' => 'BNI Virtual Account',
+            'bri_va' => 'BRI Virtual Account',
+            'cimb_va' => 'CIMB Niaga Virtual Account',
+            'gopay' => 'GoPay',
+            'ovo' => 'OVO',
+            'dana' => 'DANA',
+            'shopeepay' => 'ShopeePay',
+            'other_qris' => 'QRIS',
+            'alfamart' => 'Alfamart',
+            'indomaret' => 'Indomaret',
+            'akulaku' => 'Akulaku',
+            'kredivo' => 'Kredivo',
+        ][$type] ?? ucwords(str_replace('_', ' ', $type));
     }
 
 

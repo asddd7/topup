@@ -475,6 +475,11 @@ Route::resource(
     PaymentController::class
 );
 
+Route::post(
+    'payment/sync-midtrans',
+    [PaymentController::class, 'syncMidtrans']
+)->name('payment.sync-midtrans');
+
 Route::resource(
     'activity-log',
     ActivityLogController::class
