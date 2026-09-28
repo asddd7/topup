@@ -118,9 +118,28 @@ class OrderController extends Controller
             ],
 
             'item_id' => [
+                'nullable',
+                'integer',
+                'exists:items,id',
+            ],
+
+            'items' => [
+                'nullable',
+                'array',
+                'min:1',
+            ],
+
+            'items.*.item_id' => [
                 'required',
                 'integer',
                 'exists:items,id',
+            ],
+
+            'items.*.qty' => [
+                'required',
+                'integer',
+                'min:1',
+                'max:99',
             ],
 
             'midtrans_payment_type' => [
@@ -138,6 +157,27 @@ class OrderController extends Controller
 
         $paymentType = strtolower(trim((string) $request->midtrans_payment_type));
 
+        $requestedItems = collect($request->input('items', []));
+
+        if ($requestedItems->isEmpty() && $request->filled('item_id')) {
+            $requestedItems = collect([
+                [
+                    'item_id' => $request->integer('item_id'),
+                    'qty' => 1,
+                ],
+            ]);
+        }
+
+        if ($requestedItems->isEmpty()) {
+            return back()->withInput()->withErrors([
+                'items' => 'Pilih minimal satu item untuk dibeli.',
+            ]);
+        }
+
+        $requestedQuantities = $requestedItems
+            ->groupBy('item_id')
+            ->map(fn ($lines) => $lines->sum(fn ($line) => (int) $line['qty']));
+
         if (!Payment::where('is_active', true)
             ->whereRaw('LOWER(payment_type) = ?', [$paymentType])
             ->exists()) {
@@ -152,35 +192,42 @@ class OrderController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $item = Item::with(['game', 'bundleItems'])
-            ->where('id', $request->item_id)
+        $selectedItems = Item::with(['game', 'bundleItems'])
+            ->whereIn('id', $requestedQuantities->keys())
             ->where('game_id', $request->game_id)
             ->where('is_active', 1)
-            ->firstOrFail();
+            ->get()
+            ->keyBy('id');
+
+        if ($selectedItems->count() !== $requestedQuantities->count()) {
+            return back()->withInput()->withErrors([
+                'items' => 'Salah satu item tidak tersedia atau bukan milik game ini.',
+            ]);
+        }
+
+        $item = $selectedItems->first();
 
         $game = $item->game;
 
-        if (
-            $item->bundleItems->contains(
-                fn ($component) => !$component->is_active
-            )
-        ) {
-            throw new \RuntimeException(
-                'Bundle ini memiliki komponen yang sedang nonaktif.'
-            );
-        }
+        foreach ($selectedItems as $selected) {
+            $quantity = (int) $requestedQuantities[$selected->id];
 
-        $unavailableComponent = $item->bundleItems->first(
-            fn ($component) => (int) $component->stock
-                < max(1, (int) $component->pivot->quantity)
-        );
+            if ($selected->bundleItems->contains(fn ($component) => !$component->is_active)) {
+                throw new \RuntimeException(
+                    'Bundle "' . $selected->item_name . '" memiliki komponen yang sedang nonaktif.'
+                );
+            }
 
-        if ($unavailableComponent) {
-            throw new \RuntimeException(
-                'Stock komponen "' .
-                $unavailableComponent->item_name .
-                '" tidak mencukupi untuk bundle ini.'
+            $unavailableComponent = $selected->bundleItems->first(
+                fn ($component) => (int) $component->stock
+                    < max(1, (int) $component->pivot->quantity) * $quantity
             );
+
+            if ($unavailableComponent) {
+                throw new \RuntimeException(
+                    'Stock komponen "' . $unavailableComponent->item_name . '" tidak mencukupi.'
+                );
+            }
         }
 
         $gamePlayerFields =
@@ -207,11 +254,14 @@ class OrderController extends Controller
                 $gamePlayerFields
             );
 
-        if (
-            !empty($item->moogold_product_id) &&
-            $hasReadonlyServerField &&
-            empty($game->moogold_server_id)
-        ) {
+        $usesMooGold = $selectedItems->contains(function ($selected) {
+            return !empty($selected->moogold_product_id)
+                || $selected->bundleItems->contains(
+                    fn ($component) => !empty($component->moogold_product_id)
+                );
+        });
+
+        if ($usesMooGold && $hasReadonlyServerField && empty($game->moogold_server_id)) {
             throw new \RuntimeException(
                 'Server MooGold belum dikonfigurasi untuk game ini.'
             );
@@ -407,6 +457,8 @@ class OrderController extends Controller
             function () use (
                 $request,
                 $item,
+                $selectedItems,
+                $requestedQuantities,
                 $playerData,
                 $promotion
             ) {
@@ -416,8 +468,10 @@ class OrderController extends Controller
                 |--------------------------------------------------------------------------
                 */
 
-                $subtotal =
-                    (float) $item->price;
+                $subtotal = $selectedItems->sum(
+                    fn ($selected) => (float) $selected->price
+                        * (int) $requestedQuantities[$selected->id]
+                );
 
                 /*
                 |--------------------------------------------------------------------------
@@ -672,19 +726,28 @@ class OrderController extends Controller
                 |--------------------------------------------------------------------------
                 */
 
-                $detailLines = app(
-                    ItemBundlePricingService::class
-                )->allocate($item, $totalPrice);
+                foreach ($selectedItems as $selected) {
+                    $quantity = (int) $requestedQuantities[$selected->id];
+                    $lineSubtotal = (float) $selected->price * $quantity;
+                    $lineTotal = round(
+                        $subtotal > 0
+                            ? $lineSubtotal * $totalPrice / $subtotal
+                            : 0,
+                        2
+                    );
 
-                foreach ($detailLines as $detailLine) {
-                    $order
-                        ->details()
-                        ->create([
+                    $detailLines = app(
+                        ItemBundlePricingService::class
+                    )->allocate($selected, $lineTotal, $quantity);
+
+                    foreach ($detailLines as $detailLine) {
+                        $order->details()->create([
                             'item_id' => $detailLine['item']->id,
                             'qty' => $detailLine['qty'],
                             'price' => $detailLine['price'],
                             'subtotal' => $detailLine['subtotal'],
                         ]);
+                    }
                 }
 
                 /*

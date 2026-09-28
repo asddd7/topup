@@ -8,6 +8,8 @@ const gameShowPage =
 
 let selectedPrice = 0;
 
+const selectedItems = new Map();
+
 
 let playerValidation = {
     valid: false,
@@ -26,6 +28,8 @@ let selectedPaymentType = null;
 let selectedVoucher = null;
 
 let appliedPromos = [];
+
+let promoRequestId = 0;
 
 let checkoutProcessing = false;
 
@@ -1559,6 +1563,113 @@ window.selectItem = function(
 
 };
 
+window.toggleItem = function (
+    id,
+    name,
+    price,
+    requiresPlayerValidation = false
+) {
+    const key = String(id);
+
+    if (selectedItems.has(key)) {
+        selectedItems.delete(key);
+    } else {
+        selectedItems.set(key, {
+            id,
+            name,
+            price: parseFloat(price) || 0,
+            requiresPlayerValidation,
+        });
+    }
+
+    if (selectedItems.size === 0) {
+        window.selectItem('', 'Belum dipilih', 0, false);
+    } else {
+        const primary = selectedItems.values().next().value;
+
+        if (!document.getElementById('item_id')?.value
+            || !selectedItems.has(String(document.getElementById('item_id').value))) {
+            window.selectItem(
+                primary.id,
+                primary.name,
+                primary.price,
+                primary.requiresPlayerValidation
+            );
+        }
+    }
+
+    updateMultiSelection();
+
+    if (selectedItems.size && selectedPaymentType) {
+        calculatePromos();
+    }
+};
+
+function updateMultiSelection() {
+    const items = Array.from(selectedItems.values());
+    const subtotal = items.reduce((sum, item) => sum + item.price, 0);
+    const primary = items[0];
+    const requiresPlayerValidation = items.some(
+        (item) => item.requiresPlayerValidation
+    );
+
+    selectedPrice = subtotal;
+
+    playerValidation.requiresValidation = requiresPlayerValidation;
+
+    const playerValidationBox = document.querySelector('.player-validation');
+    if (playerValidationBox) {
+        playerValidationBox.style.display = requiresPlayerValidation ? '' : 'none';
+    }
+
+    const itemInput = document.getElementById('item_id');
+    if (itemInput) {
+        itemInput.value = primary?.id || '';
+    }
+
+    const selectedItem = document.getElementById('selected_item');
+    if (selectedItem) {
+        selectedItem.innerText = items.length
+            ? items.map((item) => item.name).join(' + ')
+            : 'Belum dipilih';
+    }
+
+    const originalPrice = document.getElementById('original_price');
+    if (originalPrice) {
+        originalPrice.innerText = formatRupiah(subtotal);
+    }
+
+    const finalPrice = document.getElementById('final_price');
+    if (finalPrice && !appliedPromos.length) {
+        finalPrice.innerText = formatRupiah(subtotal);
+    }
+
+    const subtotalInput = document.getElementById('original_subtotal');
+    if (subtotalInput) {
+        subtotalInput.value = subtotal;
+    }
+
+    const inputs = document.getElementById('selectedItemsInputs');
+    if (inputs) {
+        inputs.innerHTML = items.map((item, index) => `
+            <input type="hidden" name="items[${index}][item_id]" value="${item.id}">
+            <input type="hidden" name="items[${index}][qty]" value="1">
+        `).join('');
+    }
+
+    document.querySelectorAll('.game-item-card').forEach((card) => {
+        const isSelected = selectedItems.has(String(card.dataset.itemId));
+        card.classList.toggle('is-selected', isSelected);
+
+        const button = card.querySelector('.game-item-button span');
+        if (button) {
+            button.textContent = isSelected ? 'Terpilih' : 'Pilih';
+        }
+    });
+
+    updatePaymentTotals();
+}
+
 
 /* =========================================================
    PAYMENT METHOD
@@ -1821,6 +1932,8 @@ function calculatePromos()
        REQUEST
     ----------------------------------------------------- */
 
+    const requestId = ++promoRequestId;
+
     fetch(
         gameConfig.voucherCalculateUrl,
         {
@@ -1875,6 +1988,10 @@ function calculatePromos()
     })
 
     .then(function(data) {
+
+        if (requestId !== promoRequestId) {
+            return;
+        }
 
         appliedPromos =
             data.discounts || [];

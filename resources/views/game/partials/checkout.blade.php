@@ -164,6 +164,8 @@
                         id="item_id"
                     >
 
+                    <div id="selectedItemsInputs"></div>
+
                     <input
                         type="hidden"
                         name="subtotal"

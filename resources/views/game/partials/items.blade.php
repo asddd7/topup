@@ -213,7 +213,7 @@
                     <button
                         type="button"
                         class="game-item-button"
-                        onclick="selectItem(
+                        onclick="toggleItem(
                             @js($item->id),
                             @js($item->item_name),
                             @js($item->price),
