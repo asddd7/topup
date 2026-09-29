@@ -1135,3 +1135,25 @@
         font-size: 11px;
     }
 }
+
+/* Keep input text clear of the leading icon and password control. */
+.auth-card .auth-input {
+    box-sizing: border-box;
+    padding-left: 52px !important;
+    padding-right: 48px !important;
+}
+
+.auth-card .auth-input-wrapper > .input-icon {
+    left: 17px;
+}
+
+@media (max-width: 576px) {
+    .auth-card .auth-input {
+        padding-left: 48px !important;
+        padding-right: 44px !important;
+    }
+
+    .auth-card .auth-input-wrapper > .input-icon {
+        left: 15px;
+    }
+}
