@@ -306,7 +306,7 @@
                     <li>
 
                         <a
-                            href="#"
+                            href="{{ route('admin.setting.index') }}"
                             class="dropdown-item"
                         >
 

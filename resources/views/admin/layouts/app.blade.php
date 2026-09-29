@@ -73,6 +73,7 @@
 
     @auth
         @include('profile.modal')
+        @include('admin.profile.modal')
     @endauth
 
     @include('admin.layouts.footer')
