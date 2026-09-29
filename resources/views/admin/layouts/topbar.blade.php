@@ -289,7 +289,7 @@
                             href="#"
                             class="dropdown-item"
                             data-bs-toggle="modal"
-                            data-bs-target="#profileModal"
+                            data-bs-target="#adminProfileModal"
                         >
 
                             <i class="fa-regular fa-user"></i>

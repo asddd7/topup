@@ -72,7 +72,6 @@
     </div>
 
     @auth
-        @include('profile.modal')
         @include('admin.profile.modal')
     @endauth
 
