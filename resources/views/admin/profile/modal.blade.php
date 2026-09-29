@@ -220,6 +220,27 @@
 
 
 
+            @if(session('status') === 'verification-link-sent')
+                <div class="alert alert-success mx-3 mt-3 mb-0" role="status">
+                    Tautan verifikasi baru sudah dikirim ke email Anda.
+                </div>
+            @endif
+
+            <div class="d-flex flex-wrap gap-2 px-3 pt-3">
+                @unless(Auth::user()->hasVerifiedEmail())
+                    <form method="POST" action="{{ route('verification.send') }}">
+                        @csrf
+                        <button type="submit" class="btn btn-outline-primary btn-sm">
+                            <i class="fa-solid fa-envelope me-1"></i> Kirim ulang verifikasi
+                        </button>
+                    </form>
+                @endunless
+
+                <a href="{{ route('password.request') }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="fa-solid fa-key me-1"></i> Lupa password?
+                </a>
+            </div>
+
             <div class="modal-footer">
 
 
@@ -279,3 +300,15 @@
     </div>
 
 </div>
+@if(session('status') === 'verification-link-sent')
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const modal = document.getElementById('adminProfileModal');
+                if (modal && window.bootstrap) {
+                    bootstrap.Modal.getOrCreateInstance(modal).show();
+                }
+            });
+        </script>
+    @endpush
+@endif
