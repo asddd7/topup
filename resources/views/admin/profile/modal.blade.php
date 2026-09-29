@@ -212,6 +212,21 @@
 
 
                 </table>
+                <form method="POST" action="{{ route('profile.email.update') }}" class="px-3 pb-3">
+                    @csrf
+                    @method('PATCH')
+                    <label for="profile-email" class="form-label">Ganti email</label>
+                    <div class="input-group">
+                        <input id="profile-email" type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', Auth::user()->email) }}" autocomplete="email" required>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                    @error('email')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
+                    @if(session('status') === 'profile-email-unchanged')
+                        <div class="form-text">Email yang dimasukkan sama dengan email saat ini.</div>
+                    @endif
+                </form>
 
 
 
@@ -300,7 +315,7 @@
     </div>
 
 </div>
-@if(session('status') === 'verification-link-sent')
+@if(session('status') === 'verification-link-sent' || session('status') === 'profile-email-unchanged' || $errors->has('email'))
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function () {

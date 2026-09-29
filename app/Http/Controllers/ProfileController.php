@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -35,6 +36,33 @@ class ProfileController extends Controller
         $request->user()->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    }
+
+    /**
+     * Update the authenticated user's email and send a fresh verification link.
+     */
+    public function updateEmail(Request $request): RedirectResponse
+    {
+        $request->merge([
+            'email' => mb_strtolower(trim((string) $request->input('email'))),
+        ]);
+
+        $validated = $request->validate([
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique('users')->ignore($request->user()->id)],
+        ]);
+
+        $user = $request->user();
+
+        if ($user->email === $validated['email']) {
+            return back()->with('status', 'profile-email-unchanged');
+        }
+
+        $user->email = $validated['email'];
+        $user->email_verified_at = null;
+        $user->save();
+        $user->sendEmailVerificationNotification();
+
+        return back()->with('status', 'verification-link-sent');
     }
 
     /**

@@ -28,6 +28,10 @@ use App\Http\Controllers\User\VoucherController;
 
 use App\Http\Controllers\ProfileController;
 
+Route::patch('/profile/email', [ProfileController::class, 'updateEmail'])
+    ->middleware('auth')
+    ->name('profile.email.update');
+
 
 /*
 |--------------------------------------------------------------------------
