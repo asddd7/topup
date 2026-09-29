@@ -184,6 +184,12 @@
 
                     </label>
 
+                    @unless($adminLogin ?? false)
+                        <a href="{{ route('password.request') }}" class="auth-forgot-link">
+                            Lupa password?
+                        </a>
+                    @endunless
+
                 </div>
 
 
