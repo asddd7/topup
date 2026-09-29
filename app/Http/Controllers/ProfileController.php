@@ -66,6 +66,20 @@ class ProfileController extends Controller
     }
 
     /**
+     * Update the authenticated user's display name.
+     */
+    public function updateName(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+
+        $request->user()->update($validated);
+
+        return back()->with('status', 'profile-name-updated');
+    }
+
+    /**
      * Delete the user's account.
      */
     public function destroy(Request $request): RedirectResponse

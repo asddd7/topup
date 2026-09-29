@@ -32,6 +32,10 @@ Route::patch('/profile/email', [ProfileController::class, 'updateEmail'])
     ->middleware('auth')
     ->name('profile.email.update');
 
+Route::patch('/profile/name', [ProfileController::class, 'updateName'])
+    ->middleware('auth')
+    ->name('profile.name.update');
+
 
 /*
 |--------------------------------------------------------------------------

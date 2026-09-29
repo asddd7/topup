@@ -35,14 +35,28 @@
                 <table class="table table-borderless">
 
                     <tr>
-                        <th width="35%">Nama</th>
-                        <td>{{ Auth::user()->name }}</td>
-                    </tr>
+    <th>Nama pengguna</th>
+    <td>
+        <div class="d-flex align-items-center gap-2">
+            <span>{{ Auth::user()->name }}</span>
+            <button type="button" class="btn btn-link btn-sm p-0" data-bs-toggle="collapse" data-bs-target="#userProfileNameEditor" aria-label="Edit nama pengguna" title="Edit nama pengguna">
+                <i class="fa-solid fa-pen"></i>
+            </button>
+        </div>
+    </td>
+</tr>
 
                     <tr>
-                        <th>Email</th>
-                        <td>{{ Auth::user()->email }}</td>
-                    </tr>
+    <th>Email</th>
+    <td>
+        <div class="d-flex align-items-center gap-2">
+            <span>{{ Auth::user()->email }}</span>
+            <button type="button" class="btn btn-link btn-sm p-0" data-bs-toggle="collapse" data-bs-target="#userProfileEmailEditor" aria-label="Edit email" title="Edit email">
+                <i class="fa-solid fa-pen"></i>
+            </button>
+        </div>
+    </td>
+</tr>
 
                     <tr>
                         <th>Bergabung</th>
@@ -71,21 +85,42 @@
                     </tr>
 
                 </table>
-                <form method="POST" action="{{ route('profile.email.update') }}" class="px-3 pb-3">
-                    @csrf
-                    @method('PATCH')
-                    <label for="profile-email" class="form-label">Ganti email</label>
-                    <div class="input-group">
-                        <input id="profile-email" type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', Auth::user()->email) }}" autocomplete="email" required>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
-                    </div>
-                    @error('email')
-                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                    @enderror
-                    @if(session('status') === 'profile-email-unchanged')
-                        <div class="form-text">Email yang dimasukkan sama dengan email saat ini.</div>
-                    @endif
-                </form>
+                <div id="userProfileNameEditor" class="collapse px-3 pt-3 @if($errors->has('name') || session('status') === 'profile-name-updated') show @endif">
+                    <form method="POST" action="{{ route('profile.name.update') }}" class="pb-3">
+                        @if(session('status') === 'profile-name-updated')
+                            <div class="alert alert-success py-2" role="status">Nama pengguna berhasil diperbarui.</div>
+                        @endif
+                        @csrf
+                        @method('PATCH')
+                        <label for="user-profile-name" class="form-label">Nama pengguna</label>
+                        <div class="input-group">
+                            <input id="user-profile-name" type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', Auth::user()->name) }}" autocomplete="name" maxlength="255" required>
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        </div>
+                        @error('name')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </form>
+                </div>
+
+                <div id="userProfileEmailEditor" class="collapse px-3 @if($errors->has('email') || session('status') === 'profile-email-unchanged' || session('status') === 'verification-link-sent') show @endif">
+                    <form method="POST" action="{{ route('profile.email.update') }}" class="pb-3">
+                        @csrf
+                        @method('PATCH')
+                        <label for="user-profile-email" class="form-label">Email</label>
+                        <div class="input-group">
+                            <input id="user-profile-email" type="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', Auth::user()->email) }}" autocomplete="email" required>
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        </div>
+                        @error('email')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                        @if(session('status') === 'profile-email-unchanged')
+                            <div class="form-text">Email yang dimasukkan sama dengan email saat ini.</div>
+                        @endif
+                    </form>
+                </div>
+
 
             </div>
 
@@ -139,7 +174,7 @@
         </div>
     </div>
 </div>
-@if(session('status') === 'verification-link-sent' || session('status') === 'profile-email-unchanged' || $errors->has('email'))
+@if(session('status') === 'verification-link-sent' || session('status') === 'profile-email-unchanged' || session('status') === 'profile-name-updated' || $errors->has('email') || $errors->has('name'))
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function () {
