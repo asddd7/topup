@@ -2,6 +2,11 @@
 
 @section('content')
 
+@php
+    $supportWhatsapp = preg_replace('/\D+/', '', (string) setting('whatsapp', ''));
+    $supportMessage = 'Halo, saya butuh bantuan terkait transaksi ' . $order->invoice_number . '.';
+@endphp
+
 <div class="order-detail-page">
 
     <div class="order-detail-container">
@@ -368,6 +373,25 @@
 
                 </div>
 
+            @endif
+
+            @if($supportWhatsapp)
+                <div class="order-support">
+                    <div class="order-support-content">
+                        <h4>Butuh bantuan?</h4>
+                        <p>Hubungi tim kami jika ada kendala dengan transaksi ini.</p>
+                    </div>
+
+                    <a
+                        href="https://wa.me/{{ $supportWhatsapp }}?text={{ rawurlencode($supportMessage) }}"
+                        class="order-support-button"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <i class="fa-brands fa-whatsapp"></i>
+                        <span>Butuh bantuan?</span>
+                    </a>
+                </div>
             @endif
 
 
